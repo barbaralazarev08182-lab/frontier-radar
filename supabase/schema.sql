@@ -1,0 +1,19 @@
+-- ============================================================================
+-- Frontier Radar · schema.sql
+-- 规范 Schema 的唯一真相源是 supabase/migrations/ 下的迁移文件。
+-- 本文件仅为快速查阅的扁平快照，请勿在此直接修改——改动请走新迁移。
+-- 当前快照对应：0001_init.sql
+-- ----------------------------------------------------------------------------
+-- 表清单：
+--   sources                 数据源注册表
+--   collection_runs         采集器运行日志
+--   raw_items               原始不可变 payload
+--   items                   归一化去重条目
+--   item_metrics_snapshot   每日指标快照
+--   score_components        评分维度拆解
+--   tags / item_tags        规范化标签
+--   ai_analyses             AI 结构化分析结果
+--   saved_items             用户收藏
+--   ideas / idea_items      Idea Lab 灵感
+-- 完整 DDL 见 supabase/migrations/0001_init.sql
+-- ============================================================================

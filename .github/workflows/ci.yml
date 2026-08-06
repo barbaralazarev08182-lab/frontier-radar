@@ -1,0 +1,55 @@
+# GitHub Actions CI — Frontier Radar
+# 无需任何密钥；仅验证类型检查、Lint、测试和构建
+# 不运行采集器、不访问外部 API、不写入数据库
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck / Lint / Test / Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        node-version: [22]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies (npm ci)
+        run: npm ci
+
+      - name: TypeCheck (tsc --noEmit)
+        run: npm run typecheck
+
+      - name: Lint (eslint)
+        run: npm run lint
+
+      - name: Test (tsx --test)
+        run: npm run test
+
+      - name: Build (next build)
+        run: npm run build
+        env:
+          # 避免构建时 telemetry 和沙箱相关变量干扰
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_OPTIONS: ""
