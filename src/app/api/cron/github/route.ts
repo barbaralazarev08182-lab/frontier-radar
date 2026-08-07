@@ -14,9 +14,9 @@ export const runtime = "nodejs";
 export const maxDuration = 180;
 
 /**
- * GitHub 每日小批量采集 Cron。
- * 为避免平台函数超时，每次只轮换 1 个查询组、每页 3 条、最多 3 次 Search，
- * 并仅补充 1 个 README。缺少 GITHUB_TOKEN 时返回 200 + skipped。
+ * GitHub 每日最小批量采集 Cron。
+ * 生产环境先以 1 个查询组 × 1 条查询 × 1 个仓库稳定运行，跳过 README，
+ * 避免 GitHub Search + 多次 Supabase 顺序写入导致函数超时。
  */
 export async function GET(request: Request) {
   const auth = checkCronAuth(request);
@@ -41,8 +41,8 @@ export async function GET(request: Request) {
       baseUrl: process.env.GITHUB_API_BASE_URL ?? "https://api.github.com",
       apiVersion: process.env.GITHUB_API_VERSION ?? "2026-03-10",
       token,
-      timeoutMs: Number(process.env.GITHUB_REQUEST_TIMEOUT_MS) || 15_000,
-      maxRetries: Number(process.env.GITHUB_MAX_RETRIES) || 2,
+      timeoutMs: Number(process.env.GITHUB_REQUEST_TIMEOUT_MS) || 10_000,
+      maxRetries: Number(process.env.GITHUB_MAX_RETRIES) || 1,
     });
 
     let resumeCursor: string | null = null;
@@ -54,20 +54,27 @@ export async function GET(request: Request) {
       // 读取不到游标则从第一个启用组开始。
     }
 
+    // 每个组只保留第一条查询；collector 继续使用轮换游标选择下一组。
+    const groups = enabledGroups().map((group) => ({
+      ...group,
+      queries: group.queries.slice(0, 1),
+    }));
+
     const collector = new GitHubCollector({
       client,
       sink,
       sourceId,
       discoveryDays: Number(process.env.GITHUB_DISCOVERY_DAYS) || 7,
       pagesPerQuery: 1,
-      perPage: 3,
-      enrichLimit: 1,
+      perPage: 1,
+      enrichLimit: 0,
       minStars: 0,
-      readmeMaxBytes: 30_000,
-      groups: enabledGroups(),
+      readmeMaxBytes: 10_000,
+      groups,
       budget: loadBudgetConfig(),
       maxGroups: 1,
-      maxSearchRequests: 3,
+      maxSearchRequests: 1,
+      skipReadme: true,
       resumeCursor,
       getQueryEtag: (key) => sink.getQueryEtag(key),
       getReadmeEtag: (id) => sink.getReadmeEtag(id),
