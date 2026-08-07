@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { VISITOR_COOKIE, VISITOR_MAX_AGE_SECONDS } from "@/lib/personalization/constants";
+import { rebuildUserInterestVector } from "@/lib/personalization/profile";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -55,6 +56,9 @@ export async function POST(request: Request) {
     if (error) {
       return NextResponse.json({ error: "feedback_write_failed" }, { status: 500 });
     }
+
+    // 0012 尚未执行时这里会失败，但不影响反馈本身；执行迁移后自动开始维护兴趣向量。
+    await rebuildUserInterestVector(supabase, visitorId).catch(() => null);
 
     const response = NextResponse.json({ ok: true });
     response.cookies.set(VISITOR_COOKIE, visitorId, {
