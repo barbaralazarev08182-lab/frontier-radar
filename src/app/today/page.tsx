@@ -3,7 +3,10 @@ import { cookies } from "next/headers";
 import { ArrowRight } from "lucide-react";
 import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
-import { dedupeProjectFeed } from "@/lib/feed/project-dedupe";
+import {
+  clusterProjectFeed,
+  type ProjectEntity,
+} from "@/lib/feed/project-entities";
 import {
   getDiscoveryExplanations,
   type DiscoveryExplanation,
@@ -50,6 +53,7 @@ export default async function TodayPage() {
   let strongestInterests: Array<{ key: InterestKey; weight: number }> = [];
   let explanations = new Map<string, DiscoveryExplanation>();
   let discoveryLanes = new Map<string, DiscoveryLane>();
+  let projectEntities = new Map<string, ProjectEntity>();
 
   try {
     const provider = getFeedProvider();
@@ -59,10 +63,12 @@ export default async function TodayPage() {
       const cookieStore = await cookies();
       const visitorId = cookieStore.get(VISITOR_COOKIE)?.value ?? null;
       const personalized = await personalizeFeed(feed, visitorId);
-      const deduped = dedupeProjectFeed(personalized.feed);
       strongestInterests = personalized.strongestInterests;
 
-      const mixed = buildDiscoveryMix(deduped, strongestInterests, DAILY_RADAR_LIMIT);
+      const clustered = clusterProjectFeed(personalized.feed);
+      projectEntities = clustered.entities;
+
+      const mixed = buildDiscoveryMix(clustered.feed, strongestInterests, DAILY_RADAR_LIMIT);
       feed = mixed.feed;
       discoveryLanes = mixed.lanes;
 
@@ -104,7 +110,7 @@ export default async function TodayPage() {
             7 things worth your attention today.
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            5 个核心兴趣 + 1 个相邻探索 + 1 个高质量随机发现。不是 Trending 榜，也不把你困在信息茧房里。
+            5 个核心兴趣 + 1 个相邻探索 + 1 个高质量随机发现。同一个项目跨平台出现时，只占一个位置，但保留全部来源证据。
           </p>
         </div>
 
@@ -164,6 +170,7 @@ export default async function TodayPage() {
                     featured={index === 0}
                     rank={index + 1}
                     discoveryLane={discoveryLanes.get(item.id) ?? "core"}
+                    projectEntity={projectEntities.get(item.id) ?? null}
                     whyNow={explanation?.whyNow ?? null}
                     whyYou={explanation?.whyYou ?? null}
                   />
