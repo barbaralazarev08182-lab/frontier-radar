@@ -9,7 +9,7 @@ export const maxDuration = 60;
 
 /**
  * arXiv 每日小批量采集 Cron（无需 Token）。
- * 生产环境先保持小批量，确保 Hobby 部署稳定完成。
+ * 论文保留为补充信号，但不再占据主要候选池；每次最多采集 3 篇。
  */
 export async function GET(request: Request) {
   const auth = checkCronAuth(request);
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const supabase = createAdminClient();
     const result = await collectArxiv(supabase, {
       sourceId: "arxiv",
-      maxResultsPerQuery: 10,
+      maxResultsPerQuery: 3,
       maxGroups: 1,
       discoveryDays: Number(process.env.ARXIV_DISCOVERY_DAYS) || 7,
       dryRun: false,
