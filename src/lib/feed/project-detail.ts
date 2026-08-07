@@ -20,6 +20,8 @@ export interface ProjectEvidenceDetail {
   url: string;
   externalUrl: string | null;
   homepage: string | null;
+  publishedAt: string | null;
+  updatedAt: string | null;
   momentum: MomentumHistory | null;
 }
 
@@ -64,7 +66,6 @@ export async function loadProjectDetail(itemId: string): Promise<ProjectDetailDa
   if (targetError) throw new Error(`读取项目详情失败: ${targetError.message}`);
   if (!targetRaw) return null;
 
-  // 详情页以目标 item 为第一个候选，确保聚类后的主条目就是用户点开的项目。
   const { data: recentRaw, error: recentError } = await supabase
     .from("frontier_feed_v1")
     .select("*")
@@ -116,6 +117,8 @@ export async function loadProjectDetail(itemId: string): Promise<ProjectDetailDa
         url: entry.url,
         externalUrl: link?.external_url ?? null,
         homepage: link?.homepage ?? null,
+        publishedAt: entry.publishedAt,
+        updatedAt: entry.updatedAt,
         momentum,
       };
     })
