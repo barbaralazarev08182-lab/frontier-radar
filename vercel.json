@@ -14,6 +14,10 @@
       "schedule": "0 22 * * *"
     },
     {
+      "path": "/api/cron/hackernews",
+      "schedule": "0 23 * * *"
+    },
+    {
       "path": "/api/cron/analyze",
       "schedule": "0 0 * * *"
     }
