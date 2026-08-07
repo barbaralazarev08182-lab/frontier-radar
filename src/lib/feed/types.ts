@@ -5,7 +5,12 @@
  * 数据来源由 FeedProvider 统一提供（fixture / supabase）。
  */
 
-export type FeedSource = "github" | "huggingface" | "arxiv" | "hackernews";
+export type FeedSource =
+  | "github"
+  | "huggingface"
+  | "arxiv"
+  | "hackernews"
+  | "producthunt";
 
 export type FeedContentType =
   | "repo"
@@ -83,6 +88,7 @@ export const FEED_SOURCES: FeedSource[] = [
   "github",
   "huggingface",
   "hackernews",
+  "producthunt",
   "arxiv",
 ];
 
