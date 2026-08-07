@@ -5,14 +5,15 @@
  * 数据来源由 FeedProvider 统一提供（fixture / supabase）。
  */
 
-export type FeedSource = "github" | "huggingface" | "arxiv";
+export type FeedSource = "github" | "huggingface" | "arxiv" | "hackernews";
 
 export type FeedContentType =
   | "repo"
   | "model"
   | "dataset"
   | "space"
-  | "paper";
+  | "paper"
+  | "product";
 
 export type AvailabilityStatus = "yes" | "no" | "unknown";
 export type ReproductionDifficulty = "easy" | "medium" | "hard" | "unknown";
@@ -78,7 +79,12 @@ export interface FeedResult {
 
 export const FEED_PAGE_SIZE = 20;
 
-export const FEED_SOURCES: FeedSource[] = ["github", "huggingface", "arxiv"];
+export const FEED_SOURCES: FeedSource[] = [
+  "github",
+  "huggingface",
+  "hackernews",
+  "arxiv",
+];
 
 export const FEED_CONTENT_TYPES: FeedContentType[] = [
   "repo",
@@ -86,6 +92,7 @@ export const FEED_CONTENT_TYPES: FeedContentType[] = [
   "dataset",
   "space",
   "paper",
+  "product",
 ];
 
 export const FEED_SORTS: FeedSort[] = ["score", "newest", "updated"];
