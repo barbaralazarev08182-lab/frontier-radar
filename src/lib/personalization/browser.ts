@@ -14,7 +14,7 @@ export type FeedbackEventType =
 export interface FeedbackMetadata {
   rank?: number;
   lane?: "core" | "adjacent" | "wildcard";
-  surface?: "today" | "explore";
+  surface?: "today" | "explore" | "project_detail";
   algorithm_variant?: string;
   source?: string;
   content_type?: string;
