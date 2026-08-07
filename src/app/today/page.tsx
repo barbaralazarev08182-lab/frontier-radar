@@ -4,6 +4,11 @@ import { ArrowRight } from "lucide-react";
 import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
 import { dedupeProjectFeed } from "@/lib/feed/project-dedupe";
+import {
+  getDiscoveryExplanations,
+  type DiscoveryExplanation,
+} from "@/lib/feed/discovery-explanations";
+import type { InterestKey } from "@/config/interest-profile";
 import { ItemCard } from "@/components/frontier/item-card";
 import { DataModeBadge } from "@/components/frontier/data-mode-badge";
 import { EmptyState } from "@/components/frontier/empty-state";
@@ -38,6 +43,8 @@ export default async function TodayPage() {
   let personalizationApplied = false;
   let personalizationSignals = 0;
   let personalizationMode: "vector" | "rules" | null = null;
+  let strongestInterests: Array<{ key: InterestKey; weight: number }> = [];
+  let explanations = new Map<string, DiscoveryExplanation>();
 
   try {
     const provider = getFeedProvider();
@@ -52,6 +59,8 @@ export default async function TodayPage() {
       personalizationApplied = personalized.applied;
       personalizationSignals = personalized.signalCount;
       personalizationMode = personalized.mode;
+      strongestInterests = personalized.strongestInterests;
+      explanations = await getDiscoveryExplanations(feed.items, strongestInterests);
     }
   } catch (err) {
     error =
@@ -136,11 +145,20 @@ export default async function TodayPage() {
           ) : null}
 
           <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {feed.items.map((item, index) => (
-              <div key={item.id} className={index === 0 ? "md:col-span-2" : undefined}>
-                <ItemCard item={item} featured={index === 0} rank={index + 1} />
-              </div>
-            ))}
+            {feed.items.map((item, index) => {
+              const explanation = explanations.get(item.id);
+              return (
+                <div key={item.id} className={index === 0 ? "md:col-span-2" : undefined}>
+                  <ItemCard
+                    item={item}
+                    featured={index === 0}
+                    rank={index + 1}
+                    whyNow={explanation?.whyNow ?? null}
+                    whyYou={explanation?.whyYou ?? null}
+                  />
+                </div>
+              );
+            })}
           </section>
 
           <div className="flex justify-end border-t border-border/70 pt-4">
