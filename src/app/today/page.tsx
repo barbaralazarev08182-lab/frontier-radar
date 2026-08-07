@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
 import { ItemCard } from "@/components/frontier/item-card";
 import { DataModeBadge } from "@/components/frontier/data-mode-badge";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
+import { VISITOR_COOKIE } from "@/lib/personalization/constants";
+import { personalizeFeed } from "@/lib/personalization/server";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Today · Frontier Radar" };
@@ -29,9 +32,21 @@ export default async function TodayPage() {
 
   let feed: FeedResult | null = null;
   let error: { kind: "unconfigured" | "query"; message: string } | null = null;
+  let personalizationApplied = false;
+  let personalizationSignals = 0;
+
   try {
     const provider = getFeedProvider();
     feed = await provider.getFeed(query);
+
+    if (feed) {
+      const cookieStore = await cookies();
+      const visitorId = cookieStore.get(VISITOR_COOKIE)?.value ?? null;
+      const personalized = await personalizeFeed(feed, visitorId);
+      feed = personalized.feed;
+      personalizationApplied = personalized.applied;
+      personalizationSignals = personalized.signalCount;
+    }
   } catch (err) {
     error =
       err instanceof FeedUnconfiguredError
@@ -51,7 +66,6 @@ export default async function TodayPage() {
 
   return (
     <div className="space-y-6">
-      {/* 顶部区域 */}
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">Frontier Radar</h1>
@@ -59,10 +73,17 @@ export default async function TodayPage() {
         </div>
         <p className="text-sm text-muted-foreground">{today}</p>
         <p className="text-sm text-muted-foreground">
-          每天用十分钟了解真正值得关注的 AI、机器学习和创意项目。
+          发现值得你点开的新科技项目、AI 应用、工具与实验。
         </p>
         {feed && !error ? (
-          <p className="text-xs text-muted-foreground">本页 {feed.items.length} 条</p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            <span>本页 {feed.items.length} 条</span>
+            {personalizationApplied ? (
+              <span>已根据你的 {personalizationSignals} 条近期反馈个性化排序</span>
+            ) : (
+              <span>点“感兴趣 / 不感兴趣”，排序会逐渐学习你的偏好</span>
+            )}
+          </div>
         ) : null}
       </header>
 
@@ -80,7 +101,6 @@ export default async function TodayPage() {
         />
       ) : (
         <>
-          {/* 趋势标签 */}
           {topTags.length > 0 ? (
             <nav className="flex flex-wrap items-center gap-2">
               <span className="text-xs text-muted-foreground">趋势：</span>
@@ -97,7 +117,6 @@ export default async function TodayPage() {
             </nav>
           ) : null}
 
-          {/* 今日精选卡片 */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {feed.items.map((item) => (
               <ItemCard key={item.id} item={item} />
