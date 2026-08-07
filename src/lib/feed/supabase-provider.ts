@@ -16,7 +16,6 @@ import type {
 } from "./types";
 import { FEED_PAGE_SIZE } from "./types";
 
-/** View 行结构（与 0008_frontier_feed_view.sql 对应） */
 export interface FeedViewRow {
   item_id: string;
   source_slug: string;
@@ -53,7 +52,7 @@ function enumValue<T extends string>(v: unknown, allowed: T[], fallback: T): T {
 function toFeedSource(slug: string): FeedSource {
   return enumValue<FeedSource>(
     slug,
-    ["github", "huggingface", "hackernews", "arxiv"],
+    ["github", "huggingface", "hackernews", "producthunt", "arxiv"],
     "github"
   );
 }
@@ -66,7 +65,6 @@ function toFeedType(t: string): FeedContentType {
   );
 }
 
-/** 把 View 行映射为统一 Feed 类型。无 AI 分析时回退 description 与 unknown。 */
 export function mapFeedRow(row: FeedViewRow): FrontierFeedItem {
   const a = row.analysis_result;
   const metrics: FrontierFeedItem["metrics"] = {};
@@ -94,16 +92,8 @@ export function mapFeedRow(row: FeedViewRow): FrontierFeedItem {
       typeof a?.whyItMatters === "string" ? a.whyItMatters : str(row.why_it_matters),
     targetUsers: strArray(a?.targetUsers),
     possibleUses: strArray(a?.possibleUses),
-    hasCode: enumValue<FrontierFeedItem["hasCode"]>(
-      a?.hasCode,
-      ["yes", "no", "unknown"],
-      "unknown"
-    ),
-    hasDemo: enumValue<FrontierFeedItem["hasDemo"]>(
-      a?.hasDemo,
-      ["yes", "no", "unknown"],
-      "unknown"
-    ),
+    hasCode: enumValue<FrontierFeedItem["hasCode"]>(a?.hasCode, ["yes", "no", "unknown"], "unknown"),
+    hasDemo: enumValue<FrontierFeedItem["hasDemo"]>(a?.hasDemo, ["yes", "no", "unknown"], "unknown"),
     reproductionDifficulty: enumValue<FrontierFeedItem["reproductionDifficulty"]>(
       a?.reproductionDifficulty,
       ["easy", "medium", "hard", "unknown"],
@@ -136,9 +126,7 @@ export class SupabaseFeedProvider implements FeedProvider {
   }
 
   async getFeed(query: FeedQuery): Promise<FeedResult> {
-    let q = this.supabase
-      .from("frontier_feed_v1")
-      .select("*", { count: "exact" });
+    let q = this.supabase.from("frontier_feed_v1").select("*", { count: "exact" });
 
     if (query.source) q = q.eq("source_slug", query.source);
     if (query.type) q = q.eq("content_type", query.type);
@@ -180,9 +168,7 @@ export class SupabaseFeedProvider implements FeedProvider {
       throw new FeedQueryError(`数据库查询失败: ${message}`);
     }
 
-    const items = (Array.isArray(data) ? data : []).map((row) =>
-      mapFeedRow(row as FeedViewRow)
-    );
+    const items = (Array.isArray(data) ? data : []).map((row) => mapFeedRow(row as FeedViewRow));
 
     return {
       items,
