@@ -4,6 +4,7 @@ import { runHuggingFaceCollection } from "@/lib/jobs";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 180;
 
 /**
  * Hugging Face 每日小批量采集 Cron（允许匿名访问）。
