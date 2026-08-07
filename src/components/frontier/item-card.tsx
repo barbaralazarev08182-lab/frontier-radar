@@ -1,5 +1,6 @@
 import { ArrowUpRight, Code, Play, Sparkles } from "lucide-react";
 import type { FrontierFeedItem } from "@/lib/feed/types";
+import type { DiscoveryLane } from "@/lib/feed/discovery-mix";
 import { getRadarSignals } from "@/lib/feed/radar-signals";
 import { SourceBadge } from "./source-badge";
 import { ScoreBadge } from "./score-badge";
@@ -23,6 +24,12 @@ const DIFFICULTY_LABEL: Record<string, string> = {
   unknown: "复现：未知",
 };
 
+const LANE_LABEL: Record<DiscoveryLane, string> = {
+  core: "CORE",
+  adjacent: "ADJACENT",
+  wildcard: "WILDCARD",
+};
+
 function formatDate(iso: string | null): string | null {
   if (!iso) return null;
   const d = new Date(iso);
@@ -37,19 +44,27 @@ function signalClass(signal: string): string {
   return "border-border bg-muted/50 text-muted-foreground";
 }
 
+function laneClass(lane: DiscoveryLane): string {
+  if (lane === "adjacent") return "border-amber-500/30 bg-amber-500/10 text-amber-300";
+  if (lane === "wildcard") return "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300";
+  return "border-border/80 bg-muted/35 text-muted-foreground";
+}
+
 interface ItemCardProps {
   item: FrontierFeedItem;
   featured?: boolean;
   rank?: number;
+  discoveryLane?: DiscoveryLane;
   whyNow?: string | null;
   whyYou?: string | null;
 }
 
-/** 单个项目发现卡片。Explore 默认普通卡；Today 可附加个性化解释。 */
+/** 单个项目发现卡片。Explore 默认普通卡；Today 可附加个性化解释与探索分层。 */
 export function ItemCard({
   item,
   featured = false,
   rank,
+  discoveryLane,
   whyNow = null,
   whyYou = null,
 }: ItemCardProps) {
@@ -70,6 +85,11 @@ export function ItemCard({
         {typeof rank === "number" ? (
           <span className="font-mono text-xs tabular-nums text-muted-foreground">
             {String(rank).padStart(2, "0")}
+          </span>
+        ) : null}
+        {discoveryLane ? (
+          <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold tracking-wider ${laneClass(discoveryLane)}`}>
+            {LANE_LABEL[discoveryLane]}
           </span>
         ) : null}
         <SourceBadge source={item.source} />
