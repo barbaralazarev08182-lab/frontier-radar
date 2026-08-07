@@ -57,6 +57,7 @@ export function ItemCard({
   const displayText = noAnalysis ? item.description : item.summaryZh;
   const date = formatDate(item.updatedAt ?? item.publishedAt);
   const radarSignals = getRadarSignals(item, featured ? 4 : 3);
+  const buildIdeas = item.possibleUses.slice(0, featured ? 2 : 1);
 
   return (
     <article
@@ -145,6 +146,19 @@ export function ItemCard({
               {whyYou}
             </p>
           ) : null}
+        </div>
+      ) : null}
+
+      {buildIdeas.length > 0 ? (
+        <div className="rounded-lg border border-violet-500/15 bg-violet-500/[0.04] p-3">
+          <p className="mb-1.5 font-mono text-[10px] font-semibold tracking-wider text-violet-300">
+            BUILD ON THIS
+          </p>
+          <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
+            {buildIdeas.map((idea) => (
+              <p key={idea}>→ {idea}</p>
+            ))}
+          </div>
         </div>
       ) : null}
 
