@@ -1,16 +1,13 @@
 /**
- * score_components 数据访问层 + items.latest_score 更新（阶段 1.5）。
+ * score_components 数据访问层 + items.latest_score 更新。
  *
- * 每次评分写入：
- *  - freshness / interest_relevance / source_signal / editorial_value（有 AI 时）四个组件
- *  - total 汇总行（normalized_score = 总分，score_version 标记）
- *
- * 不覆盖用户收藏、笔记或采集数据（只写评分相关列）。
+ * Discovery Score v3 会把各个公开评分维度逐项写入 score_components，
+ * 再写一条 total 汇总行。无 AI 时仍然使用项目元数据与启发式信号生成完整分；
+ * AI 只会增强 Novelty / Idea Spark 等维度，不再决定“有没有正式分”。
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { BasicScoreResult } from "@/lib/scoring/basic-score";
 
-/** 今天（业务日按 YYYY-MM-DD，与采集器一致）。 */
 function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -40,8 +37,8 @@ export async function upsertBasicScore(
     normalized_score: result.total,
     weight: 1,
     rationale: result.hasAi
-      ? `总分 ${result.scoreVersion}`
-      : `总分 ${result.scoreVersion}（临时分：无 AI 分析，不含 editorial value）`,
+      ? `总分 ${result.scoreVersion} · 已使用缓存 AI 分析增强 Novelty / Idea Spark`
+      : `总分 ${result.scoreVersion} · 无 AI，使用项目与增长信号完整评分`,
     score_version: result.scoreVersion,
   });
 
