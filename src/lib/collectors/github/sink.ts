@@ -33,7 +33,7 @@ export class SupabaseCollectorSink implements CollectorSink {
   ) {}
 
   async startRun(): Promise<string> {
-    return createRun(this.supabase, this.sourceId);
+    return createRun(this.supabase, "github");
   }
 
   async finishRun(input: FinishRunInput): Promise<void> {
