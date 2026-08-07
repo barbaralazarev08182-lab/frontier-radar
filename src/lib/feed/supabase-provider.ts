@@ -51,11 +51,19 @@ function enumValue<T extends string>(v: unknown, allowed: T[], fallback: T): T {
 }
 
 function toFeedSource(slug: string): FeedSource {
-  return enumValue<FeedSource>(slug, ["github", "huggingface", "arxiv"], "github");
+  return enumValue<FeedSource>(
+    slug,
+    ["github", "huggingface", "hackernews", "arxiv"],
+    "github"
+  );
 }
 
 function toFeedType(t: string): FeedContentType {
-  return enumValue<FeedContentType>(t, ["repo", "model", "dataset", "space", "paper"], "repo");
+  return enumValue<FeedContentType>(
+    t,
+    ["repo", "model", "dataset", "space", "paper", "product"],
+    "repo"
+  );
 }
 
 /** 把 View 行映射为统一 Feed 类型。无 AI 分析时回退 description 与 unknown。 */
