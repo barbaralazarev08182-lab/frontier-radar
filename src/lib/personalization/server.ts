@@ -7,7 +7,6 @@ import {
   strongestVectorInterests,
   vectorizeFeedItem,
 } from "./vector";
-import { trySemanticPersonalization } from "./semantic-ranking";
 
 interface UserEventRow {
   item_id: string;
@@ -34,7 +33,7 @@ interface StoredInterestVectorRow {
 export interface PersonalizationResult {
   feed: FeedResult;
   applied: boolean;
-  mode: "semantic" | "vector" | "rules" | null;
+  mode: "vector" | "rules" | null;
   signalCount: number;
   strongestInterests: Array<{ key: InterestKey; weight: number }>;
 }
@@ -56,18 +55,12 @@ function numberArray(value: unknown): number[] {
   if (Array.isArray(value)) {
     return value.map((entry) => Number(entry)).filter((entry) => Number.isFinite(entry));
   }
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (
-      (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
-      (trimmed.startsWith("[") && trimmed.endsWith("]"))
-    ) {
-      return trimmed
-        .slice(1, -1)
-        .split(",")
-        .map((entry) => Number(entry.trim()))
-        .filter((entry) => Number.isFinite(entry));
-    }
+  if (typeof value === "string" && value.startsWith("{") && value.endsWith("}")) {
+    return value
+      .slice(1, -1)
+      .split(",")
+      .map((entry) => Number(entry))
+      .filter((entry) => Number.isFinite(entry));
   }
   return [];
 }
@@ -138,7 +131,6 @@ function rankWithInterestVector(
     return {
       item,
       index,
-      // 相似度最多提供 ±28 分；公共 Frontier Score 仍保留为基础质量先验。
       rankScore: base + clamp(similarity, -1, 1) * 28,
     };
   });
@@ -147,7 +139,6 @@ function rankWithInterestVector(
   return { ...feed, items: scored.map((entry) => entry.item) };
 }
 
-/** 旧规则层：向量表尚未建好或用户画像尚未生成时使用。 */
 async function personalizeWithRules(
   feed: FeedResult,
   visitorId: string
@@ -225,14 +216,6 @@ async function personalizeWithRules(
   };
 }
 
-/**
- * Personalization v2：
- *  1) multilingual semantic embedding + cosine similarity
- *  2) 21 维可解释兴趣向量
- *  3) 关键词规则层
- *  4) 公共 Feed
- * 任一增强层不可用时自动降级，不影响页面可用性。
- */
 export async function personalizeFeed(
   feed: FeedResult,
   visitorId: string | null | undefined
@@ -242,21 +225,6 @@ export async function personalizeFeed(
   }
 
   const supabase = createAdminClient();
-
-  try {
-    const semantic = await trySemanticPersonalization(supabase, feed, visitorId);
-    if (semantic) {
-      return {
-        feed: semantic.feed,
-        applied: true,
-        mode: "semantic",
-        signalCount: semantic.signalCount,
-        strongestInterests: [],
-      };
-    }
-  } catch {
-    // 继续走可解释向量层。
-  }
 
   try {
     const { data, error } = await supabase
