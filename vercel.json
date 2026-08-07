@@ -26,6 +26,10 @@
       "schedule": "0 0 * * *"
     },
     {
+      "path": "/api/cron/momentum-refresh",
+      "schedule": "15 0 * * *"
+    },
+    {
       "path": "/api/cron/rescore",
       "schedule": "30 0 * * *"
     }
