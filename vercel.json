@@ -10,6 +10,10 @@
       "schedule": "0 20 * * *"
     },
     {
+      "path": "/api/cron/producthunt",
+      "schedule": "30 21 * * *"
+    },
+    {
       "path": "/api/cron/arxiv",
       "schedule": "0 22 * * *"
     },
