@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { mapFeedRow, type FeedViewRow } from "./supabase-provider";
 import { clusterProjectFeed, type ProjectEntity } from "./project-entities";
+import { tryLoadPersistentProjectEntity } from "./persistent-project-entities";
 import { loadMomentumHistory, type MomentumHistory } from "@/lib/scoring/momentum-history";
 import { getDiscoveryExplanations } from "./discovery-explanations";
 import type { FeedResult, FrontierFeedItem } from "./types";
@@ -66,19 +67,29 @@ export async function loadProjectDetail(itemId: string): Promise<ProjectDetailDa
   if (targetError) throw new Error(`读取项目详情失败: ${targetError.message}`);
   if (!targetRaw) return null;
 
-  const { data: recentRaw, error: recentError } = await supabase
-    .from("frontier_feed_v1")
-    .select("*")
-    .neq("item_id", itemId)
-    .order("updated_at", { ascending: false, nullsFirst: false })
-    .limit(120);
-  if (recentError) throw new Error(`读取跨来源候选失败: ${recentError.message}`);
-
   const targetRow = targetRaw as unknown as FeedViewRow;
   const target = mapFeedRow(targetRow);
-  const recent = ((recentRaw ?? []) as unknown as FeedViewRow[]).map(mapFeedRow);
-  const clustered = clusterProjectFeed(feed([target, ...recent]));
-  const entity = clustered.entities.get(target.id);
+
+  let entity: ProjectEntity | null = null;
+  try {
+    entity = await tryLoadPersistentProjectEntity(target);
+  } catch {
+    entity = null;
+  }
+
+  if (!entity) {
+    const { data: recentRaw, error: recentError } = await supabase
+      .from("frontier_feed_v1")
+      .select("*")
+      .neq("item_id", itemId)
+      .order("updated_at", { ascending: false, nullsFirst: false })
+      .limit(120);
+    if (recentError) throw new Error(`读取跨来源候选失败: ${recentError.message}`);
+
+    const recent = ((recentRaw ?? []) as unknown as FeedViewRow[]).map(mapFeedRow);
+    const clustered = clusterProjectFeed(feed([target, ...recent]));
+    entity = clustered.entities.get(target.id) ?? null;
+  }
   if (!entity) return null;
 
   const evidenceIds = entity.evidence.map((entry) => entry.itemId);
