@@ -4,6 +4,7 @@ import { runGithubCollection } from "@/lib/jobs";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 180;
 
 /**
  * GitHub 每日小批量采集 Cron。
