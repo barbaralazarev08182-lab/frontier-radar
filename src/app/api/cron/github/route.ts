@@ -14,9 +14,9 @@ export const runtime = "nodejs";
 export const maxDuration = 180;
 
 /**
- * GitHub 每日最小批量采集 Cron。
- * 生产环境先以 1 个查询组 × 1 条查询 × 1 个仓库稳定运行，跳过 README，
- * 避免 GitHub Search + 多次 Supabase 顺序写入导致函数超时。
+ * GitHub 科技项目发现 Cron。
+ * 生产环境保持“小而稳定”：2 个主题组 × 每组 1 条查询 × 每条最多 3 个仓库，
+ * 跳过 README 富化，理论上单次最多发现约 6 个候选项目。
  */
 export async function GET(request: Request) {
   const auth = checkCronAuth(request);
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
       // 读取不到游标则从第一个启用组开始。
     }
 
-    // 每个组只保留第一条查询；collector 继续使用轮换游标选择下一组。
+    // 每个主题只执行最具代表性的第一条查询，靠轮换覆盖不同兴趣方向。
     const groups = enabledGroups().map((group) => ({
       ...group,
       queries: group.queries.slice(0, 1),
@@ -64,16 +64,16 @@ export async function GET(request: Request) {
       client,
       sink,
       sourceId,
-      discoveryDays: Number(process.env.GITHUB_DISCOVERY_DAYS) || 7,
+      discoveryDays: Number(process.env.GITHUB_DISCOVERY_DAYS) || 10,
       pagesPerQuery: 1,
-      perPage: 1,
+      perPage: 3,
       enrichLimit: 0,
       minStars: 0,
       readmeMaxBytes: 10_000,
       groups,
       budget: loadBudgetConfig(),
-      maxGroups: 1,
-      maxSearchRequests: 1,
+      maxGroups: 2,
+      maxSearchRequests: 2,
       skipReadme: true,
       resumeCursor,
       getQueryEtag: (key) => sink.getQueryEtag(key),
