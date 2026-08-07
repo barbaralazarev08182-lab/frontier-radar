@@ -111,7 +111,6 @@ function evidenceOf(item: FrontierFeedItem, matchReason: ProjectMatchReason): Pr
 }
 
 function buildEntity(entries: Array<{ item: FrontierFeedItem; reason: ProjectMatchReason }>): ProjectEntity {
-  // 输入 Feed 已经做过公共排序 + 个性化，因此第一条就是这个实体应展示的主条目。
   const primary = entries[0]!.item;
   const evidence = entries.map((entry, index) =>
     evidenceOf(entry.item, index === 0 ? "primary" : entry.reason)
@@ -170,5 +169,41 @@ export function clusterProjectFeed(feed: FeedResult): ProjectEntityFeed {
   return {
     feed: { ...feed, items: entities.map((entity) => entity.primary) },
     entities: new Map(entities.map((entity) => [entity.primary.id, entity])),
+  };
+}
+
+/**
+ * 多来源同时出现是外部确认信号，但不能覆盖 Personal Match / Idea Spark。
+ * 因此这里只允许一个高可信跨来源实体最多向前移动 1 位，而且前后公共分差不能太大。
+ */
+export function promoteCrossSourceEvidence(input: ProjectEntityFeed): ProjectEntityFeed {
+  const items = [...input.feed.items];
+
+  for (let index = 1; index < items.length; index++) {
+    const item = items[index]!;
+    const entity = input.entities.get(item.id);
+    if (!entity?.crossSource) continue;
+
+    const evidenceStrength =
+      (entity.matchConfidence === "url" ? 2 : 1) +
+      (entity.sources.length >= 3 ? 2 : 1) +
+      (entity.hasCodeAnywhere ? 1 : 0) +
+      (entity.hasDemoAnywhere ? 1 : 0);
+    if (evidenceStrength < 3 || (item.score ?? 0) < 50) continue;
+
+    const previous = items[index - 1]!;
+    const previousEntity = input.entities.get(previous.id);
+    if (previousEntity?.crossSource) continue;
+
+    const scoreGap = (previous.score ?? 0) - (item.score ?? 0);
+    if (scoreGap > 8) continue;
+
+    items[index - 1] = item;
+    items[index] = previous;
+  }
+
+  return {
+    feed: { ...input.feed, items },
+    entities: input.entities,
   };
 }
