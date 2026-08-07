@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { loadProjectDetail } from "@/lib/feed/project-detail";
+import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { SourceBadge } from "@/components/frontier/source-badge";
 import { ScoreBadge } from "@/components/frontier/score-badge";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
@@ -60,10 +61,7 @@ function compactNumber(value: number): string {
   return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
-function momentumLines(
-  source: string,
-  history: Awaited<ReturnType<typeof loadProjectDetail>> extends infer _T ? import("@/lib/scoring/momentum-history").MomentumHistory | null : never
-): string[] {
+function momentumLines(source: string, history: MomentumHistory | null): string[] {
   if (!history) return [];
   const lines: string[] = [];
   const d24 = history.delta24h;
