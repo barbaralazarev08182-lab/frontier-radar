@@ -15,11 +15,40 @@ const EVENT_TYPES = new Set([
   "dwell",
 ]);
 
+const METADATA_KEYS = new Set([
+  "rank",
+  "lane",
+  "surface",
+  "algorithm_variant",
+  "source",
+  "content_type",
+  "measurement",
+  "session_id",
+]);
+
 function isUuid(value: unknown): value is string {
   return (
     typeof value === "string" &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
   );
+}
+
+function sanitizeMetadata(value: unknown): Record<string, string | number | boolean> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const input = value as Record<string, unknown>;
+  const output: Record<string, string | number | boolean> = {};
+
+  for (const [key, raw] of Object.entries(input)) {
+    if (!METADATA_KEYS.has(key)) continue;
+    if (typeof raw === "string") {
+      output[key] = raw.slice(0, 120);
+    } else if (typeof raw === "number" && Number.isFinite(raw)) {
+      output[key] = Math.max(-1_000_000, Math.min(1_000_000, raw));
+    } else if (typeof raw === "boolean") {
+      output[key] = raw;
+    }
+  }
+  return output;
 }
 
 export async function POST(request: Request) {
@@ -29,6 +58,7 @@ export async function POST(request: Request) {
     const itemId = body.itemId;
     const eventType = body.eventType;
     const dwellMs = body.dwellMs;
+    const metadata = sanitizeMetadata(body.metadata);
 
     if (!isUuid(visitorId) || !isUuid(itemId)) {
       return NextResponse.json({ error: "invalid_id" }, { status: 400 });
@@ -51,18 +81,21 @@ export async function POST(request: Request) {
       item_id: itemId,
       event_type: eventType,
       dwell_ms: safeDwellMs,
-      metadata: {},
+      metadata,
     });
 
     if (error) {
       return NextResponse.json({ error: "feedback_write_failed" }, { status: 500 });
     }
 
-    // 推荐画像是增强层：迁移尚未执行或某种向量尚未生成时，不能阻断反馈本身。
-    await Promise.allSettled([
-      rebuildUserInterestVector(supabase, visitorId),
-      rebuildUserSemanticProfile(supabase, visitorId),
-    ]);
+    // Dwell 先作为训练/评估信号落库，不为每一次可见停留都重建用户向量；
+    // 下一次显式反馈会把此前 dwell 一并吸收到画像中。
+    if (eventType !== "dwell") {
+      await Promise.allSettled([
+        rebuildUserInterestVector(supabase, visitorId),
+        rebuildUserSemanticProfile(supabase, visitorId),
+      ]);
+    }
 
     const response = NextResponse.json({ ok: true });
     response.cookies.set(VISITOR_COOKIE, visitorId, {
