@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { VISITOR_COOKIE, VISITOR_MAX_AGE_SECONDS } from "@/lib/personalization/constants";
 import { rebuildUserInterestVector } from "@/lib/personalization/profile";
+import { rebuildUserSemanticProfile } from "@/lib/personalization/semantic-profile";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -57,8 +58,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "feedback_write_failed" }, { status: 500 });
     }
 
-    // 0012 尚未执行时这里会失败，但不影响反馈本身；执行迁移后自动开始维护兴趣向量。
-    await rebuildUserInterestVector(supabase, visitorId).catch(() => null);
+    // 推荐画像是增强层：迁移尚未执行或某种向量尚未生成时，不能阻断反馈本身。
+    await Promise.allSettled([
+      rebuildUserInterestVector(supabase, visitorId),
+      rebuildUserSemanticProfile(supabase, visitorId),
+    ]);
 
     const response = NextResponse.json({ ok: true });
     response.cookies.set(VISITOR_COOKIE, visitorId, {
