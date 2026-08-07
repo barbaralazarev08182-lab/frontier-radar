@@ -23,6 +23,9 @@ supabase/.temp
 *.tsbuildinfo
 next-env.d.ts
 
+# local recommendation / ML outputs
+data/*.jsonl
+
 # misc
 .DS_Store
 *.pem
@@ -41,7 +44,5 @@ logs/
 
 # local npm cache (sandbox workaround)
 .npm-cache/
-
-.workbuddy/
 
 .workbuddy/
