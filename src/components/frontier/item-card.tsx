@@ -1,12 +1,14 @@
 import { ArrowUpRight, Code, Play, Sparkles } from "lucide-react";
 import type { FrontierFeedItem } from "@/lib/feed/types";
 import type { DiscoveryLane } from "@/lib/feed/discovery-mix";
+import type { FeedbackMetadata } from "@/lib/personalization/browser";
 import { getRadarSignals } from "@/lib/feed/radar-signals";
 import { SourceBadge } from "./source-badge";
 import { ScoreBadge } from "./score-badge";
 import { MetricRow } from "./metric-row";
 import { FeedbackActions } from "./feedback-actions";
 import { TrackedSourceLink } from "./tracked-source-link";
+import { RecommendationObserver } from "./recommendation-observer";
 
 const TYPE_LABEL: Record<string, string> = {
   repo: "Repository",
@@ -73,6 +75,14 @@ export function ItemCard({
   const date = formatDate(item.updatedAt ?? item.publishedAt);
   const radarSignals = getRadarSignals(item, featured ? 4 : 3);
   const buildIdeas = item.possibleUses.slice(0, featured ? 2 : 1);
+  const trackingMetadata: FeedbackMetadata = {
+    rank,
+    lane: discoveryLane,
+    surface: discoveryLane ? "today" : "explore",
+    algorithm_variant: discoveryLane ? "daily-radar-mix-v1" : "explore-v1",
+    source: item.source,
+    content_type: item.contentType,
+  };
 
   return (
     <article
@@ -81,6 +91,10 @@ export function ItemCard({
         featured ? "p-6 md:min-h-72" : "p-4",
       ].join(" ")}
     >
+      {discoveryLane && typeof rank === "number" ? (
+        <RecommendationObserver itemId={item.id} metadata={trackingMetadata} />
+      ) : null}
+
       <div className="flex flex-wrap items-center gap-2">
         {typeof rank === "number" ? (
           <span className="font-mono text-xs tabular-nums text-muted-foreground">
@@ -119,6 +133,7 @@ export function ItemCard({
           itemId={item.id}
           href={item.canonicalUrl}
           className="hover:text-primary hover:underline"
+          metadata={trackingMetadata}
         >
           {item.title}
         </TrackedSourceLink>
@@ -211,11 +226,12 @@ export function ItemCard({
           ))}
         </span>
         <span className="flex flex-wrap items-center gap-2">
-          <FeedbackActions itemId={item.id} />
+          <FeedbackActions itemId={item.id} metadata={trackingMetadata} />
           <TrackedSourceLink
             itemId={item.id}
             href={item.canonicalUrl}
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+            metadata={trackingMetadata}
           >
             打开项目
             <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
