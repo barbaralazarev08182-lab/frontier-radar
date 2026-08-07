@@ -8,6 +8,7 @@ import {
   promoteCrossSourceEvidence,
   type ProjectEntity,
 } from "@/lib/feed/project-entities";
+import { tryLoadPersistentProjectFeed } from "@/lib/feed/persistent-project-entities";
 import {
   getDiscoveryExplanations,
   type DiscoveryExplanation,
@@ -66,7 +67,15 @@ export default async function TodayPage() {
       const personalized = await personalizeFeed(feed, visitorId);
       strongestInterests = personalized.strongestInterests;
 
-      const clustered = clusterProjectFeed(personalized.feed);
+      let clustered = clusterProjectFeed(personalized.feed);
+      if (mode === "supabase") {
+        try {
+          clustered = (await tryLoadPersistentProjectFeed(personalized.feed)) ?? clustered;
+        } catch {
+          // Project persistence is an incremental rollout. Runtime clustering remains
+          // the safety net if the migration is not applied or materialization fails.
+        }
+      }
       const confirmed = promoteCrossSourceEvidence(clustered);
       projectEntities = confirmed.entities;
 
