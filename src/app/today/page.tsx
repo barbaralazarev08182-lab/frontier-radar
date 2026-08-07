@@ -5,6 +5,7 @@ import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } f
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
 import {
   clusterProjectFeed,
+  promoteCrossSourceEvidence,
   type ProjectEntity,
 } from "@/lib/feed/project-entities";
 import {
@@ -66,9 +67,10 @@ export default async function TodayPage() {
       strongestInterests = personalized.strongestInterests;
 
       const clustered = clusterProjectFeed(personalized.feed);
-      projectEntities = clustered.entities;
+      const confirmed = promoteCrossSourceEvidence(clustered);
+      projectEntities = confirmed.entities;
 
-      const mixed = buildDiscoveryMix(clustered.feed, strongestInterests, DAILY_RADAR_LIMIT);
+      const mixed = buildDiscoveryMix(confirmed.feed, strongestInterests, DAILY_RADAR_LIMIT);
       feed = mixed.feed;
       discoveryLanes = mixed.lanes;
 
@@ -110,7 +112,7 @@ export default async function TodayPage() {
             7 things worth your attention today.
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            5 个核心兴趣 + 1 个相邻探索 + 1 个高质量随机发现。同一个项目跨平台出现时，只占一个位置，但保留全部来源证据。
+            5 个核心兴趣 + 1 个相邻探索 + 1 个高质量随机发现。跨平台同时出现会作为温和确认信号，但不会压过真正的兴趣匹配与 Idea Spark。
           </p>
         </div>
 
