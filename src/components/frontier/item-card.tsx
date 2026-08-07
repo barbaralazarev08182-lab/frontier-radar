@@ -9,6 +9,7 @@ import { ScoreBadge } from "./score-badge";
 import { MetricRow } from "./metric-row";
 import { FeedbackActions } from "./feedback-actions";
 import { TrackedSourceLink } from "./tracked-source-link";
+import { TrackedDetailLink } from "./tracked-detail-link";
 import { RecommendationObserver } from "./recommendation-observer";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -143,14 +144,14 @@ export function ItemCard({
       ) : null}
 
       <h3 className={featured ? "text-xl font-semibold leading-tight tracking-tight md:text-2xl" : "text-base font-semibold leading-snug"}>
-        <TrackedSourceLink
+        <TrackedDetailLink
           itemId={item.id}
-          href={item.canonicalUrl}
+          href={`/project/${item.id}`}
           className="hover:text-primary hover:underline"
           metadata={trackingMetadata}
         >
           {item.title}
-        </TrackedSourceLink>
+        </TrackedDetailLink>
       </h3>
 
       {noAnalysis ? (
@@ -277,6 +278,14 @@ export function ItemCard({
         </span>
         <span className="flex flex-wrap items-center gap-2">
           <FeedbackActions itemId={item.id} metadata={trackingMetadata} />
+          <TrackedDetailLink
+            itemId={item.id}
+            href={`/project/${item.id}`}
+            className="text-xs font-medium text-muted-foreground hover:text-foreground"
+            metadata={trackingMetadata}
+          >
+            查看情报
+          </TrackedDetailLink>
           <TrackedSourceLink
             itemId={item.id}
             href={item.canonicalUrl}
