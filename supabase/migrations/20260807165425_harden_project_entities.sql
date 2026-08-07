@@ -1,0 +1,11 @@
+-- ============================================================================
+-- Frontier Radar · migration history alignment
+--
+-- The persistent Project Entity hardening DDL already lives in
+-- 0015_harden_project_entities.sql and is applied in production. The Supabase
+-- connector recorded one additional timestamped migration while replaying the
+-- same idempotent change. Keep this no-op file so repository migration history
+-- matches the production ledger without mutating Supabase's migration metadata.
+-- ============================================================================
+
+-- Intentionally no-op.
