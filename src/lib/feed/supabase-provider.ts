@@ -152,7 +152,7 @@ export class SupabaseFeedProvider implements FeedProvider {
         break;
       case "score":
       default:
-        q = q.order("latest_score", { ascending: false });
+        q = q.order("latest_score", { ascending: false, nullsFirst: false });
         break;
     }
 
