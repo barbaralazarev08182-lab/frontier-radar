@@ -34,6 +34,7 @@ export default async function TodayPage() {
   let error: { kind: "unconfigured" | "query"; message: string } | null = null;
   let personalizationApplied = false;
   let personalizationSignals = 0;
+  let personalizationMode: "vector" | "rules" | null = null;
 
   try {
     const provider = getFeedProvider();
@@ -46,6 +47,7 @@ export default async function TodayPage() {
       feed = personalized.feed;
       personalizationApplied = personalized.applied;
       personalizationSignals = personalized.signalCount;
+      personalizationMode = personalized.mode;
     }
   } catch (err) {
     error =
@@ -79,7 +81,10 @@ export default async function TodayPage() {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span>本页 {feed.items.length} 条</span>
             {personalizationApplied ? (
-              <span>已根据你的 {personalizationSignals} 条近期反馈个性化排序</span>
+              <span>
+                {personalizationMode === "vector" ? "兴趣向量推荐" : "规则个性化"}
+                · 已学习 {personalizationSignals} 条近期反馈
+              </span>
             ) : (
               <span>点“感兴趣 / 不感兴趣”，排序会逐渐学习你的偏好</span>
             )}
