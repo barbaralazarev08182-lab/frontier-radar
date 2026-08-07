@@ -12,6 +12,7 @@ const TYPE_LABEL: Record<string, string> = {
   dataset: "Dataset",
   space: "Space",
   paper: "Paper",
+  product: "Project",
 };
 
 const DIFFICULTY_LABEL: Record<string, string> = {
