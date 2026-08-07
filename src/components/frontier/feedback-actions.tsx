@@ -2,15 +2,24 @@
 
 import { useState } from "react";
 import { Heart, ThumbsDown } from "lucide-react";
-import { trackFeedback } from "@/lib/personalization/browser";
+import {
+  trackFeedback,
+  type FeedbackMetadata,
+} from "@/lib/personalization/browser";
 
-export function FeedbackActions({ itemId }: { itemId: string }) {
+export function FeedbackActions({
+  itemId,
+  metadata,
+}: {
+  itemId: string;
+  metadata?: FeedbackMetadata;
+}) {
   const [choice, setChoice] = useState<"interested" | "not_interested" | null>(null);
 
   function choose(next: "interested" | "not_interested") {
     if (choice === next) return;
     setChoice(next);
-    trackFeedback(itemId, next);
+    trackFeedback(itemId, next, undefined, metadata);
   }
 
   return (
