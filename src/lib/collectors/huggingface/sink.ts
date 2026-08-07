@@ -7,7 +7,7 @@
  * 与 GitHub sink 的区别：
  *   - source_id 通过 sources.slug = "huggingface" 解析为 UUID
  *   - source_item_id 含类型前缀（model:/dataset:/space:）
- *   - 指标快照写入 downloads + likes
+ *   - 指标快照真实写入 downloads + likes
  *   - Card 写入 model_card / dataset_card / space_readme
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -60,7 +60,6 @@ export class HFCollectorSink {
     const n = input.normalized;
     const sourceUuid = await this.getSourceId();
 
-    // 1) 原始 payload（不可变，按 payload_hash 去重）
     const rawInserted = await insertRawItem(this.supabase, {
       source_id: sourceUuid,
       source_item_id: n.sourceItemId,
@@ -71,17 +70,13 @@ export class HFCollectorSink {
       collection_run_id: input.collectionRunId,
     });
 
-    // 2) 归一化条目 upsert
-    // 注意：HF 内容使用通用字段映射到 items 表
     const { id: itemId, inserted } = await upsertItem(
       this.supabase,
       sourceUuid,
-      // 将 NormalizedHFItem 映射为 upsertItem 需要的形状
-      // 由于 upsertItem 期望 NormalizedRepo 类型，这里做适配
       {
         sourceItemId: n.sourceItemId,
         dedupeKey: n.dedupeKey,
-        itemType: n.itemType as "repo", // items 表目前只有 repo 类型，HF 用 repo 占位
+        itemType: n.itemType as "repo",
         title: n.title,
         canonicalUrl: n.canonicalUrl,
         description: n.description,
@@ -119,19 +114,20 @@ export class HFCollectorSink {
       } as never
     );
 
-    // 3) 指标快照（downloads + likes）
+    // Hugging Face 指标保持原语义：downloads 不伪装成 GitHub stars，likes 也独立存储。
     await insertSnapshot(this.supabase, {
       item_id: itemId,
       collection_run_id: input.collectionRunId,
       snapshot_date: input.snapshotDate,
-      stars: n.likes,
+      stars: null,
       forks: null,
       watchers: null,
       open_issues: null,
       subscribers: null,
+      downloads: n.downloads,
+      likes: n.likes,
     });
 
-    // 4) Card 写入 item_documents
     let cardWritten = false;
     if (input.card?.card?.content) {
       const cardContent = input.card.card.content;
