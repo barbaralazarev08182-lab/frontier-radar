@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { checkCronAuth } from "@/lib/cron/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeBasicScore } from "@/lib/scoring/basic-score";
+import {
+  applyHistoricalMomentum,
+  loadMomentumHistory,
+} from "@/lib/scoring/momentum-history";
 import type { ItemAnalysisResult } from "@/lib/ai/types";
 import {
   upsertBasicScore,
@@ -66,8 +70,9 @@ async function mapLimit<T>(
 }
 
 /**
- * 每日轻量重算最近项目的 Discovery Score。
- * 不调用 AI，只复用已缓存的 analysis_result + 最新指标，因此成本基本是数据库读写。
+ * 每日重算最近项目的 Discovery Score。
+ * 优先使用真实 24h / 7d 指标快照计算 Momentum；历史不足时自动回退 age-adjusted velocity。
+ * 不调用 AI，只复用已缓存的 analysis_result。
  */
 export async function GET(request: Request) {
   const auth = checkCronAuth(request);
@@ -93,13 +98,18 @@ export async function GET(request: Request) {
     const rows = (data ?? []) as unknown as FeedScoreRow[];
 
     let rescored = 0;
+    let historicalMomentum = 0;
     let errors = 0;
     let firstError: string | null = null;
 
     await mapLimit(rows, 6, async (row) => {
       try {
         const metrics = row.metrics ?? {};
-        const score = computeBasicScore({
+        const [history] = await Promise.all([
+          loadMomentumHistory(supabase, row.item_id),
+        ]);
+
+        const base = computeBasicScore({
           source: row.source_slug,
           itemType: row.content_type,
           title: row.title,
@@ -113,6 +123,18 @@ export async function GET(request: Request) {
           likes: numberOrNull(metrics.likes),
           aiResult: validAiResult(row.analysis_result),
         });
+
+        const score = applyHistoricalMomentum(base, row.source_slug, history);
+        const baseMomentum = base.components.find((component) => component.dimension === "momentum");
+        const finalMomentum = score.components.find((component) => component.dimension === "momentum");
+        if (
+          history &&
+          baseMomentum &&
+          finalMomentum &&
+          finalMomentum.rationale !== baseMomentum.rationale
+        ) {
+          historicalMomentum++;
+        }
 
         await upsertBasicScore(supabase, row.item_id, score);
         await updateLatestScore(supabase, row.item_id, score.total);
@@ -129,6 +151,7 @@ export async function GET(request: Request) {
       score_version: "discovery-frontier-v3",
       candidates: rows.length,
       rescored,
+      historical_momentum: historicalMomentum,
       errors,
       message: firstError ?? undefined,
       duration_ms: Date.now() - startedAt,
@@ -139,6 +162,7 @@ export async function GET(request: Request) {
         job: "rescore",
         status: "failed",
         rescored: 0,
+        historical_momentum: 0,
         errors: 1,
         message: err instanceof Error ? err.message : String(err),
         duration_ms: Date.now() - startedAt,
