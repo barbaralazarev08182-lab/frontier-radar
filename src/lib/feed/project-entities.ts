@@ -1,22 +1,8 @@
 import type { FeedResult, FrontierFeedItem, FeedSource, FeedContentType } from "./types";
 
 const STOP_WORDS = new Set([
-  "a",
-  "an",
-  "and",
-  "app",
-  "for",
-  "from",
-  "hn",
-  "new",
-  "of",
-  "open",
-  "product",
-  "show",
-  "source",
-  "the",
-  "tool",
-  "with",
+  "a", "an", "and", "app", "for", "from", "hn", "new", "of", "open",
+  "product", "show", "source", "the", "tool", "with",
 ]);
 
 export type ProjectMatchReason = "exact_url" | "title_match" | "primary";
@@ -58,15 +44,12 @@ export function canonicalProjectUrl(raw: string): string | null {
     const url = new URL(raw);
     const host = url.hostname.toLowerCase().replace(/^www\./, "");
     const parts = url.pathname.split("/").filter(Boolean);
-
     if (host === "github.com" && parts.length >= 2) {
       return `github.com/${parts[0]!.toLowerCase()}/${parts[1]!.replace(/\.git$/i, "").toLowerCase()}`;
     }
-
     if (host === "huggingface.co" && parts[0] === "spaces" && parts.length >= 3) {
       return `huggingface.co/spaces/${parts[1]!.toLowerCase()}/${parts[2]!.toLowerCase()}`;
     }
-
     const path = url.pathname.replace(/\/+$/, "") || "/";
     return `${host}${path}`.toLowerCase();
   } catch {
@@ -86,18 +69,15 @@ function titleTokens(title: string): string[] {
 
 export function similarProjectTitle(a: FrontierFeedItem, b: FrontierFeedItem): boolean {
   if (a.source === b.source) return false;
-
   const aTokens = new Set(titleTokens(a.title));
   const bTokens = new Set(titleTokens(b.title));
   if (aTokens.size < 2 || bTokens.size < 2) return false;
-
   let intersection = 0;
   for (const token of aTokens) if (bTokens.has(token)) intersection++;
   const union = new Set([...aTokens, ...bTokens]).size;
   const jaccard = union > 0 ? intersection / union : 0;
   const smaller = Math.min(aTokens.size, bTokens.size);
   const containment = smaller > 0 ? intersection / smaller : 0;
-
   return jaccard >= 0.8 || (intersection >= 2 && containment === 1);
 }
 
@@ -130,23 +110,15 @@ function evidenceOf(item: FrontierFeedItem, matchReason: ProjectMatchReason): Pr
   };
 }
 
-function bestPrimary(items: FrontierFeedItem[]): FrontierFeedItem {
-  return items.reduce((best, item) => {
-    const bestScore = best.score ?? -1;
-    const itemScore = item.score ?? -1;
-    return itemScore > bestScore ? item : best;
-  });
-}
-
-function buildEntity(items: Array<{ item: FrontierFeedItem; reason: ProjectMatchReason }>): ProjectEntity {
-  const primary = bestPrimary(items.map((entry) => entry.item));
-  const evidence = items
-    .map((entry) => evidenceOf(entry.item, entry.item.id === primary.id ? "primary" : entry.reason))
-    .sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
-
+function buildEntity(entries: Array<{ item: FrontierFeedItem; reason: ProjectMatchReason }>): ProjectEntity {
+  // 输入 Feed 已经做过公共排序 + 个性化，因此第一条就是这个实体应展示的主条目。
+  const primary = entries[0]!.item;
+  const evidence = entries.map((entry, index) =>
+    evidenceOf(entry.item, index === 0 ? "primary" : entry.reason)
+  );
   const sources = [...new Set(evidence.map((entry) => entry.source))];
-  const firstTimes = items.map((entry) => timestamp(entry.item, "first")).filter((value): value is number => value !== null);
-  const latestTimes = items.map((entry) => timestamp(entry.item, "latest")).filter((value): value is number => value !== null);
+  const firstTimes = entries.map((entry) => timestamp(entry.item, "first")).filter((value): value is number => value !== null);
+  const latestTimes = entries.map((entry) => timestamp(entry.item, "latest")).filter((value): value is number => value !== null);
   const matchedByUrl = evidence.some((entry) => entry.matchReason === "exact_url");
   const matchedByTitle = evidence.some((entry) => entry.matchReason === "title_match");
 
@@ -164,10 +136,7 @@ function buildEntity(items: Array<{ item: FrontierFeedItem; reason: ProjectMatch
   };
 }
 
-/**
- * 将已经排序好的 Feed 聚合为项目实体。
- * 主条目仍然取实体中公共/个性化排序分最高的 item，但所有重复来源都会保留下来作为证据。
- */
+/** 聚合重复条目，但保留每个来源作为 Project Intelligence evidence。 */
 export function clusterProjectFeed(feed: FeedResult): ProjectEntityFeed {
   const clusters: Array<Array<{ item: FrontierFeedItem; reason: ProjectMatchReason }>> = [];
 
@@ -177,23 +146,20 @@ export function clusterProjectFeed(feed: FeedResult): ProjectEntityFeed {
     let reason: ProjectMatchReason = "primary";
 
     for (const cluster of clusters) {
-      let matched = false;
       for (const existing of cluster) {
         const existingUrl = canonicalProjectUrl(existing.item.canonicalUrl);
         if (itemUrl && existingUrl && itemUrl === existingUrl) {
           target = cluster;
           reason = "exact_url";
-          matched = true;
           break;
         }
         if (similarProjectTitle(existing.item, item)) {
           target = cluster;
           reason = "title_match";
-          matched = true;
           break;
         }
       }
-      if (matched) break;
+      if (target) break;
     }
 
     if (target) target.push({ item, reason });
@@ -201,17 +167,8 @@ export function clusterProjectFeed(feed: FeedResult): ProjectEntityFeed {
   }
 
   const entities = clusters.map(buildEntity);
-  const entityByPrimaryId = new Map(entities.map((entity) => [entity.primary.id, entity]));
-  const primaryItems = entities
-    .map((entity) => entity.primary)
-    .sort((a, b) => {
-      const ai = feed.items.findIndex((item) => item.id === a.id);
-      const bi = feed.items.findIndex((item) => item.id === b.id);
-      return ai - bi;
-    });
-
   return {
-    feed: { ...feed, items: primaryItems },
-    entities: entityByPrimaryId,
+    feed: { ...feed, items: entities.map((entity) => entity.primary) },
+    entities: new Map(entities.map((entity) => [entity.primary.id, entity])),
   };
 }
