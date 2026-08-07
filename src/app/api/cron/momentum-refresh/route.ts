@@ -176,7 +176,9 @@ async function refreshHuggingFace(
   if (items.length === 0) return stats;
   const runId = await startRun(supabase, source.id);
   const token = process.env.HF_TOKEN;
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const headers: Record<string, string> = token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
 
   for (const item of items) {
     const identity = hfIdentity(item);
