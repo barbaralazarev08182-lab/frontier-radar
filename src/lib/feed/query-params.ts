@@ -33,6 +33,7 @@ function asSource(value: string | null): FeedSource | null {
     value === "github" ||
     value === "huggingface" ||
     value === "hackernews" ||
+    value === "producthunt" ||
     value === "arxiv"
   ) {
     return value;
