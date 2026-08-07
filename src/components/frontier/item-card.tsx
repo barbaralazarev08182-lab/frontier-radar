@@ -41,10 +41,18 @@ interface ItemCardProps {
   item: FrontierFeedItem;
   featured?: boolean;
   rank?: number;
+  whyNow?: string | null;
+  whyYou?: string | null;
 }
 
-/** 单个项目发现卡片。Explore 默认普通卡；Today 可用 featured + rank。 */
-export function ItemCard({ item, featured = false, rank }: ItemCardProps) {
+/** 单个项目发现卡片。Explore 默认普通卡；Today 可附加个性化解释。 */
+export function ItemCard({
+  item,
+  featured = false,
+  rank,
+  whyNow = null,
+  whyYou = null,
+}: ItemCardProps) {
   const noAnalysis = !item.summaryZh && !item.whyItMatters;
   const displayText = noAnalysis ? item.description : item.summaryZh;
   const date = formatDate(item.updatedAt ?? item.publishedAt);
@@ -122,6 +130,23 @@ export function ItemCard({ item, featured = false, rank }: ItemCardProps) {
           ) : null}
         </>
       )}
+
+      {whyNow || whyYou ? (
+        <div className="grid gap-2 rounded-lg border border-border/60 bg-background/35 p-3 text-xs leading-relaxed md:grid-cols-2">
+          {whyNow ? (
+            <p className="text-muted-foreground">
+              <span className="mr-1.5 font-mono text-[10px] font-semibold tracking-wider text-emerald-300">WHY NOW</span>
+              {whyNow}
+            </p>
+          ) : null}
+          {whyYou ? (
+            <p className="text-muted-foreground">
+              <span className="mr-1.5 font-mono text-[10px] font-semibold tracking-wider text-violet-300">WHY YOU</span>
+              {whyYou}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground">
         {item.author ? <span>{item.author}</span> : null}
