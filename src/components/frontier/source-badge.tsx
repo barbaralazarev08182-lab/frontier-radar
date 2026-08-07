@@ -5,6 +5,7 @@ const SOURCE_LABEL: Record<FeedSource, string> = {
   huggingface: "Hugging Face",
   arxiv: "arXiv",
   hackernews: "Show HN",
+  producthunt: "Product Hunt",
 };
 
 const SOURCE_STYLE: Record<FeedSource, string> = {
@@ -12,6 +13,7 @@ const SOURCE_STYLE: Record<FeedSource, string> = {
   huggingface: "bg-amber-950/60 text-amber-200 border-amber-800/60",
   arxiv: "bg-sky-950/60 text-sky-200 border-sky-800/60",
   hackernews: "bg-orange-950/60 text-orange-200 border-orange-800/60",
+  producthunt: "bg-rose-950/60 text-rose-200 border-rose-800/60",
 };
 
 /** 来源徽标（Server Component，静态样式）。 */
