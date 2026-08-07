@@ -4,7 +4,6 @@
  * 只读查询 frontier_feed_v1 View（服务端执行，anon key，不触达 service role）。
  * 缺配置时抛 FeedUnconfiguredError（页面显示清晰错误，不悄悄回退 fixture）。
  */
-
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { FeedQueryError, FeedUnconfiguredError, type FeedProvider } from "./provider";
 import { resolvePublishableKey, resolveSupabaseUrl } from "@/lib/env/supabase-keys";
@@ -152,7 +151,7 @@ export class SupabaseFeedProvider implements FeedProvider {
         break;
       case "score":
       default:
-        q = q.order("latest_score", { ascending: false });
+        q = q.order("latest_score", { ascending: false, nullsFirst: false });
         break;
     }
 
