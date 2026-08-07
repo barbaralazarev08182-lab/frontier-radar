@@ -7,6 +7,7 @@ import {
   strongestVectorInterests,
   vectorizeFeedItem,
 } from "./vector";
+import { trySemanticPersonalization } from "./semantic-ranking";
 
 interface UserEventRow {
   item_id: string;
@@ -33,7 +34,7 @@ interface StoredInterestVectorRow {
 export interface PersonalizationResult {
   feed: FeedResult;
   applied: boolean;
-  mode: "vector" | "rules" | null;
+  mode: "semantic" | "vector" | "rules" | null;
   signalCount: number;
   strongestInterests: Array<{ key: InterestKey; weight: number }>;
 }
@@ -55,12 +56,18 @@ function numberArray(value: unknown): number[] {
   if (Array.isArray(value)) {
     return value.map((entry) => Number(entry)).filter((entry) => Number.isFinite(entry));
   }
-  if (typeof value === "string" && value.startsWith("{") && value.endsWith("}")) {
-    return value
-      .slice(1, -1)
-      .split(",")
-      .map((entry) => Number(entry))
-      .filter((entry) => Number.isFinite(entry));
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (
+      (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+      (trimmed.startsWith("[") && trimmed.endsWith("]"))
+    ) {
+      return trimmed
+        .slice(1, -1)
+        .split(",")
+        .map((entry) => Number(entry.trim()))
+        .filter((entry) => Number.isFinite(entry));
+    }
   }
   return [];
 }
@@ -219,8 +226,12 @@ async function personalizeWithRules(
 }
 
 /**
- * Personalization v1：优先使用持久化 User Interest Vector + cosine similarity；
- * 0012 尚未执行或画像不存在时回退到 v0 规则层；任何个性化故障都不影响公共 Feed。
+ * Personalization v2：
+ *  1) multilingual semantic embedding + cosine similarity
+ *  2) 21 维可解释兴趣向量
+ *  3) 关键词规则层
+ *  4) 公共 Feed
+ * 任一增强层不可用时自动降级，不影响页面可用性。
  */
 export async function personalizeFeed(
   feed: FeedResult,
@@ -231,6 +242,21 @@ export async function personalizeFeed(
   }
 
   const supabase = createAdminClient();
+
+  try {
+    const semantic = await trySemanticPersonalization(supabase, feed, visitorId);
+    if (semantic) {
+      return {
+        feed: semantic.feed,
+        applied: true,
+        mode: "semantic",
+        signalCount: semantic.signalCount,
+        strongestInterests: [],
+      };
+    }
+  } catch {
+    // 继续走可解释向量层。
+  }
 
   try {
     const { data, error } = await supabase
