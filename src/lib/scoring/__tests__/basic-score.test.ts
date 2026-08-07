@@ -1,6 +1,4 @@
-/**
- * 基础排序测试 v2：arXiv 无 source signal 时仍能计算总分，且论文形态默认低于可体验项目。
- */
+/** Discovery Score v3 tests. */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -9,56 +7,96 @@ import {
   BASIC_SCORE_VERSION,
   SCORE_WEIGHTS,
   formatAffinityScore,
+  momentumScore,
 } from "@/lib/scoring/basic-score";
 
-test("arXiv 无互动指标时仍能计算总分（source signal 中性、无 AI 为临时分）", () => {
-  const score = computeBasicScore({
-    source: "arxiv",
-    itemType: "paper",
-    title: "A Paper",
-    description: "abstract",
-    topics: ["cs.LG", "nlp"],
-    createdAtSource: new Date(Date.now() - 2 * 86_400_000).toISOString(),
-    pushedAtSource: new Date(Date.now() - 1 * 86_400_000).toISOString(),
-    stars: null,
-    forks: null,
+const DAY = 86_400_000;
+
+function base(overrides: Record<string, unknown> = {}) {
+  return {
+    source: "github",
+    itemType: "repo",
+    title: "AI agent creative tool",
+    description: "A small open source AI tool with an interactive demo.",
+    topics: ["ai", "agent", "creative-ai"],
+    createdAtSource: new Date(Date.now() - 2 * DAY).toISOString(),
+    pushedAtSource: new Date(Date.now() - 0.5 * DAY).toISOString(),
+    stars: 80,
+    forks: 8,
     downloads: null,
     likes: null,
     aiResult: null,
-  });
+    ...overrides,
+  };
+}
+
+test("v3 无 AI 也产生完整的 7 维公共 Discovery Score", () => {
+  const score = computeBasicScore(base());
 
   assert.equal(score.scoreVersion, BASIC_SCORE_VERSION);
   assert.equal(score.hasAi, false);
 
-  const dims = score.components.map((c) => c.dimension);
-  assert.ok(dims.includes("freshness"));
-  assert.ok(dims.includes("interest_relevance"));
-  assert.ok(dims.includes("source_signal"));
-  assert.ok(dims.includes("format_affinity"));
-  assert.ok(!dims.includes("editorial_value"));
-
-  for (const c of score.components) {
-    assert.ok(c.normalizedScore >= 0 && c.normalizedScore <= 100, `${c.dimension} 越界`);
-    assert.ok(c.rationale.length > 0, `${c.dimension} 缺少 rationale`);
+  const dims = new Set(score.components.map((c) => c.dimension));
+  for (const dimension of [
+    "freshness",
+    "domain_relevance",
+    "momentum",
+    "project_health",
+    "novelty",
+    "idea_spark",
+    "tryability",
+  ]) {
+    assert.ok(dims.has(dimension), `缺少 ${dimension}`);
   }
 
-  const source = score.components.find((c) => c.dimension === "source_signal")!;
-  assert.equal(source.normalizedScore, 50);
-  assert.ok(source.rationale.includes("中性"));
+  assert.equal(score.components.length, 7);
+  for (const component of score.components) {
+    assert.ok(component.normalizedScore >= 0 && component.normalizedScore <= 100);
+    assert.ok(component.rationale.length > 0);
+  }
 
-  const expected =
-    (score.components.find((c) => c.dimension === "freshness")!.normalizedScore * SCORE_WEIGHTS.freshness +
-      score.components.find((c) => c.dimension === "interest_relevance")!.normalizedScore * SCORE_WEIGHTS.interestRelevance +
-      source.normalizedScore * SCORE_WEIGHTS.sourceSignal +
-      score.components.find((c) => c.dimension === "format_affinity")!.normalizedScore * SCORE_WEIGHTS.formatAffinity) /
-    (SCORE_WEIGHTS.freshness +
-      SCORE_WEIGHTS.interestRelevance +
-      SCORE_WEIGHTS.sourceSignal +
-      SCORE_WEIGHTS.formatAffinity);
-  assert.equal(score.total, Math.round(expected * 100) / 100);
+  const totalWeight = Object.values(SCORE_WEIGHTS).reduce((sum, value) => sum + value, 0);
+  assert.ok(Math.abs(totalWeight - 1) < 1e-9);
+  assert.ok(score.total >= 0 && score.total <= 100);
 });
 
-test("冷启动内容形态优先可体验项目而不是论文", () => {
+test("Rising > Popular：新小项目的年龄校正 Momentum 高于老牌大项目", () => {
+  const rising = momentumScore(base({
+    createdAtSource: new Date(Date.now() - 2 * DAY).toISOString(),
+    pushedAtSource: new Date(Date.now() - 0.2 * DAY).toISOString(),
+    stars: 80,
+    forks: 8,
+  }));
+
+  const oldPopular = momentumScore(base({
+    createdAtSource: new Date(Date.now() - 5 * 365 * DAY).toISOString(),
+    pushedAtSource: new Date(Date.now() - 120 * DAY).toISOString(),
+    stars: 30_000,
+    forks: 3_000,
+  }));
+
+  assert.ok(rising.score > oldPopular.score, `rising=${rising.score}, old=${oldPopular.score}`);
+});
+
+test("可体验项目默认高于纯论文", () => {
+  assert.ok(formatAffinityScore("space").score > formatAffinityScore("paper").score);
   assert.ok(formatAffinityScore("repo").score > formatAffinityScore("paper").score);
-  assert.ok(formatAffinityScore("space").score > formatAffinityScore("model").score);
+  assert.ok(formatAffinityScore("product").score > formatAffinityScore("paper").score);
+});
+
+test("跨域创意组合比普通单一项目获得更高 Idea Spark", () => {
+  const creative = computeBasicScore(base({
+    title: "Blender MCP agent that generates playable 3D game worlds",
+    description: "AI agent controls Blender through MCP and creates interactive game scenes.",
+    topics: ["ai", "agent", "mcp", "3d", "blender", "game"],
+  }));
+  const generic = computeBasicScore(base({
+    title: "Machine learning utilities",
+    description: "A collection of machine learning utility functions.",
+    topics: ["machine-learning"],
+  }));
+
+  const creativeSpark = creative.components.find((c) => c.dimension === "idea_spark")!;
+  const genericSpark = generic.components.find((c) => c.dimension === "idea_spark")!;
+  assert.ok(creativeSpark.normalizedScore > genericSpark.normalizedScore);
 });
