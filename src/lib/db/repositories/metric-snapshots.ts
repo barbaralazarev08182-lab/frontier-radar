@@ -1,22 +1,27 @@
 /**
- * item_metrics_snapshot 数据访问层（阶段 1.2.1 加固）。
+ * item_metrics_snapshot 数据访问层。
  *
- * 变更：
- *   - 唯一约束从 (item_id, snapshot_date) 改为 (item_id, collection_run_id)
- *   - 同一天多次运行产生独立快照，不再覆盖
- *   - 写入时必须提供 collection_run_id
+ * 每次采集运行写一份独立快照，供 Momentum / Rising 计算使用。
+ * GitHub 主要使用 stars / forks；Hugging Face 使用 downloads / likes；
+ * 其他来源可通过 score_raw / raw_extra 保存来源特有的公开互动信号。
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface NewMetricSnapshot {
   item_id: string;
   collection_run_id: string;
-  snapshot_date: string; // YYYY-MM-DD（业务日，保留用于聚合查询）
+  snapshot_date: string;
   stars: number | null;
   forks: number | null;
   watchers: number | null;
   open_issues: number | null;
   subscribers: number | null;
+  downloads?: number | null;
+  likes?: number | null;
+  views?: number | null;
+  citations?: number | null;
+  score_raw?: number | null;
+  raw_extra?: Record<string, unknown>;
 }
 
 /** 写入快照；每次采集运行独立一份，不覆盖历史快照。 */
@@ -36,6 +41,12 @@ export async function insertSnapshot(
         watchers: snap.watchers,
         open_issues: snap.open_issues,
         subscribers: snap.subscribers,
+        downloads: snap.downloads ?? null,
+        likes: snap.likes ?? null,
+        views: snap.views ?? null,
+        citations: snap.citations ?? null,
+        score_raw: snap.score_raw ?? null,
+        raw_extra: snap.raw_extra ?? {},
         captured_at: new Date().toISOString(),
       },
       { onConflict: "item_id,collection_run_id" }
