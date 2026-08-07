@@ -17,6 +17,8 @@ import type { NormalizedArxivPaper } from "./normalize";
 import { computePayloadHash } from "@/lib/hash";
 import { insertRawItem } from "@/lib/db/repositories/raw-items";
 import { insertDocument } from "@/lib/db/repositories/item-documents";
+import { ensureSourceId } from "@/lib/db/repositories/sources";
+import type { SourceSlug } from "@/lib/types";
 
 export interface ArxivPersistInput {
   sourceId: string;
@@ -81,7 +83,7 @@ async function upsertPaperItem(
         source_url: n.canonicalUrl,
         external_url: n.canonicalUrl,
         topics: n.categories,
-        has_code: false, // 不推断论文是否附代码
+        has_code: false,
         has_demo: false,
         has_dataset: false,
         created_at_source: n.publishedAt,
@@ -99,14 +101,30 @@ async function upsertPaperItem(
 }
 
 export class ArxivCollectorSink {
-  constructor(private readonly supabase: SupabaseClient, private readonly sourceId: string) {}
+  private resolvedSourceId: string | null = null;
+
+  constructor(
+    private readonly supabase: SupabaseClient,
+    private readonly sourceId: string
+  ) {}
+
+  private async getSourceId(): Promise<string> {
+    if (!this.resolvedSourceId) {
+      this.resolvedSourceId = await ensureSourceId(
+        this.supabase,
+        this.sourceId as SourceSlug
+      );
+    }
+    return this.resolvedSourceId;
+  }
 
   async persistPaper(input: ArxivPersistInput): Promise<ArxivPersistOutcome> {
     const n = input.normalized;
+    const sourceUuid = await this.getSourceId();
 
     // 1) 原始 payload（按 payload_hash 去重；论文新版本 → 新 payload → 新记录）
     const rawInserted = await insertRawItem(this.supabase, {
-      source_id: input.sourceId,
+      source_id: sourceUuid,
       source_item_id: n.sourceItemId,
       item_type: "paper",
       source_url: n.canonicalUrl,
@@ -118,7 +136,7 @@ export class ArxivCollectorSink {
     // 2) 归一化条目 upsert
     const { id: itemId, inserted } = await upsertPaperItem(
       this.supabase,
-      input.sourceId,
+      sourceUuid,
       n
     );
 
