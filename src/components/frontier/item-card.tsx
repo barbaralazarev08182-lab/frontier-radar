@@ -1,6 +1,7 @@
-import { ArrowUpRight, Code, Play, Sparkles } from "lucide-react";
+import { ArrowUpRight, Code, Play, Radar, Sparkles } from "lucide-react";
 import type { FrontierFeedItem } from "@/lib/feed/types";
 import type { DiscoveryLane } from "@/lib/feed/discovery-mix";
+import type { ProjectEntity } from "@/lib/feed/project-entities";
 import type { FeedbackMetadata } from "@/lib/personalization/browser";
 import { getRadarSignals } from "@/lib/feed/radar-signals";
 import { SourceBadge } from "./source-badge";
@@ -17,6 +18,14 @@ const TYPE_LABEL: Record<string, string> = {
   space: "Space",
   paper: "Paper",
   product: "Project",
+};
+
+const SOURCE_LABEL: Record<string, string> = {
+  github: "GitHub",
+  huggingface: "Hugging Face",
+  hackernews: "Show HN",
+  producthunt: "Product Hunt",
+  arxiv: "arXiv",
 };
 
 const DIFFICULTY_LABEL: Record<string, string> = {
@@ -57,16 +66,18 @@ interface ItemCardProps {
   featured?: boolean;
   rank?: number;
   discoveryLane?: DiscoveryLane;
+  projectEntity?: ProjectEntity | null;
   whyNow?: string | null;
   whyYou?: string | null;
 }
 
-/** 单个项目发现卡片。Explore 默认普通卡；Today 可附加个性化解释与探索分层。 */
+/** 单个项目发现卡片。Today 额外展示探索分层、推荐解释与跨来源 Project Intelligence。 */
 export function ItemCard({
   item,
   featured = false,
   rank,
   discoveryLane,
+  projectEntity = null,
   whyNow = null,
   whyYou = null,
 }: ItemCardProps) {
@@ -83,6 +94,9 @@ export function ItemCard({
     source: item.source,
     content_type: item.contentType,
   };
+  const crossSourceEntity = projectEntity?.crossSource ? projectEntity : null;
+  const hasCode = projectEntity?.hasCodeAnywhere ?? item.hasCode === "yes";
+  const hasDemo = projectEntity?.hasDemoAnywhere ?? item.hasDemo === "yes";
 
   return (
     <article
@@ -167,6 +181,42 @@ export function ItemCard({
         </>
       )}
 
+      {crossSourceEntity ? (
+        <div className="rounded-lg border border-cyan-500/15 bg-cyan-500/[0.035] p-3">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <Radar className="h-3.5 w-3.5 text-cyan-300" />
+            <span className="font-mono text-[10px] font-semibold tracking-wider text-cyan-300">
+              PROJECT INTELLIGENCE
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {crossSourceEntity.sources.length} 个来源
+              {crossSourceEntity.firstSeenAt ? ` · 最早 ${formatDate(crossSourceEntity.firstSeenAt)}` : ""}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {crossSourceEntity.evidence.map((evidence) => (
+              <TrackedSourceLink
+                key={evidence.itemId}
+                itemId={evidence.itemId}
+                href={evidence.url}
+                metadata={{
+                  ...trackingMetadata,
+                  source: evidence.source,
+                  content_type: evidence.contentType,
+                }}
+                className="rounded-full border border-border/80 bg-background/55 px-2.5 py-1 text-[10px] font-medium text-muted-foreground transition-colors hover:border-cyan-500/30 hover:text-foreground"
+              >
+                {SOURCE_LABEL[evidence.source] ?? evidence.source}
+                {evidence.contentType === "repo" ? " · Code" : evidence.contentType === "space" ? " · Demo" : ""}
+              </TrackedSourceLink>
+            ))}
+          </div>
+          {crossSourceEntity.matchConfidence === "title" ? (
+            <p className="mt-2 text-[10px] text-muted-foreground/70">跨来源关联依据：项目名称高度匹配</p>
+          ) : null}
+        </div>
+      ) : null}
+
       {whyNow || whyYou ? (
         <div className="grid gap-2 rounded-lg border border-border/60 bg-background/35 p-3 text-xs leading-relaxed md:grid-cols-2">
           {whyNow ? (
@@ -200,12 +250,12 @@ export function ItemCard({
       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground">
         {item.author ? <span>{item.author}</span> : null}
         {date ? <span>{date}</span> : null}
-        {item.hasCode === "yes" ? (
+        {hasCode ? (
           <span className="inline-flex items-center gap-1">
             <Code className="h-3 w-3" /> 有代码
           </span>
         ) : null}
-        {item.hasDemo === "yes" ? (
+        {hasDemo ? (
           <span className="inline-flex items-center gap-1">
             <Play className="h-3 w-3" /> 有 Demo
           </span>
