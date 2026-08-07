@@ -3,6 +3,7 @@ import type { FeedQuery, FeedSource } from "@/lib/feed/types";
 const SOURCE_OPTIONS: Array<{ value: FeedSource; label: string }> = [
   { value: "github", label: "GitHub" },
   { value: "huggingface", label: "Hugging Face" },
+  { value: "hackernews", label: "Show HN" },
   { value: "arxiv", label: "arXiv" },
 ];
 
@@ -11,6 +12,7 @@ const TYPE_OPTIONS = [
   { value: "model", label: "模型" },
   { value: "dataset", label: "数据集" },
   { value: "space", label: "Space" },
+  { value: "product", label: "项目 / 产品" },
   { value: "paper", label: "论文" },
 ];
 
