@@ -111,6 +111,7 @@ export async function collectHuggingFace(
   let totalUpdated = 0;
   let errors = 0;
   let cardsWritten = 0;
+  let firstPersistError: string | null = null;
 
   try {
     // 2) 发现内容
@@ -160,7 +161,7 @@ export async function collectHuggingFace(
     // 4) 持久化
     const snapshotDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-    for (const { item, type } of allItems) {
+    for (const { item } of allItems) {
       try {
         const card = cardMap.get(item.sourceItemId) ?? null;
         const outcome = await sink.persistItem({
@@ -175,9 +176,11 @@ export async function collectHuggingFace(
         if (outcome.cardWritten) cardsWritten++;
       } catch (err) {
         errors++;
+        const message = err instanceof Error ? err.message : String(err);
+        if (!firstPersistError) firstPersistError = message;
         log.warn("hf.collect.persist_error", {
           source_item_id: item.sourceItemId,
-          error: err instanceof Error ? err.message : String(err),
+          error: message,
         });
       }
     }
@@ -198,7 +201,7 @@ export async function collectHuggingFace(
         },
         rate_limit_remaining: null,
         rate_limit_reset_at: null,
-        error_message: null,
+        error_message: firstPersistError,
         metadata: {
           models_found: discovery.models.length,
           datasets_found: discovery.datasets.length,
@@ -224,6 +227,7 @@ export async function collectHuggingFace(
         duration_ms: Date.now() - startedAt,
         errors,
       },
+      error: firstPersistError ?? undefined,
     };
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
