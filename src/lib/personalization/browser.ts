@@ -1,3 +1,9 @@
+import {
+  VISITOR_COOKIE,
+  VISITOR_MAX_AGE_SECONDS,
+  VISITOR_STORAGE_KEY,
+} from "./constants";
+
 export type FeedbackEventType =
   | "interested"
   | "not_interested"
@@ -5,13 +11,19 @@ export type FeedbackEventType =
   | "open_detail"
   | "dwell";
 
-const VISITOR_KEY = "frontier_radar_visitor_id";
+function syncVisitorCookie(id: string): void {
+  document.cookie = `${VISITOR_COOKIE}=${encodeURIComponent(id)}; Path=/; Max-Age=${VISITOR_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
 
 export function getVisitorId(): string {
-  const existing = window.localStorage.getItem(VISITOR_KEY);
-  if (existing) return existing;
+  const existing = window.localStorage.getItem(VISITOR_STORAGE_KEY);
+  if (existing) {
+    syncVisitorCookie(existing);
+    return existing;
+  }
   const id = window.crypto.randomUUID();
-  window.localStorage.setItem(VISITOR_KEY, id);
+  window.localStorage.setItem(VISITOR_STORAGE_KEY, id);
+  syncVisitorCookie(id);
   return id;
 }
 
