@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
+import { dedupeProjectFeed } from "@/lib/feed/project-dedupe";
 import { ItemCard } from "@/components/frontier/item-card";
 import { DataModeBadge } from "@/components/frontier/data-mode-badge";
 import { EmptyState } from "@/components/frontier/empty-state";
@@ -44,7 +45,7 @@ export default async function TodayPage() {
       const cookieStore = await cookies();
       const visitorId = cookieStore.get(VISITOR_COOKIE)?.value ?? null;
       const personalized = await personalizeFeed(feed, visitorId);
-      feed = personalized.feed;
+      feed = dedupeProjectFeed(personalized.feed);
       personalizationApplied = personalized.applied;
       personalizationSignals = personalized.signalCount;
       personalizationMode = personalized.mode;
@@ -100,7 +101,7 @@ export default async function TodayPage() {
           description="采集与 AI 分析尚未运行，或当前筛选没有命中任何条目。"
           hint={
             mode === "supabase"
-              ? "提示：运行 npm run collect:github / collect:huggingface / collect:arxiv 与 npm run analyze:items 生成内容"
+              ? "提示：自动采集任务会持续补充 GitHub、Hugging Face、Show HN、Product Hunt 与 arXiv 内容"
               : null
           }
         />
