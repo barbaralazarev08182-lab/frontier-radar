@@ -8,6 +8,10 @@ import {
   getDiscoveryExplanations,
   type DiscoveryExplanation,
 } from "@/lib/feed/discovery-explanations";
+import {
+  buildDiscoveryMix,
+  type DiscoveryLane,
+} from "@/lib/feed/discovery-mix";
 import type { InterestKey } from "@/config/interest-profile";
 import { ItemCard } from "@/components/frontier/item-card";
 import { DataModeBadge } from "@/components/frontier/data-mode-badge";
@@ -45,6 +49,7 @@ export default async function TodayPage() {
   let personalizationMode: "vector" | "rules" | null = null;
   let strongestInterests: Array<{ key: InterestKey; weight: number }> = [];
   let explanations = new Map<string, DiscoveryExplanation>();
+  let discoveryLanes = new Map<string, DiscoveryLane>();
 
   try {
     const provider = getFeedProvider();
@@ -55,11 +60,15 @@ export default async function TodayPage() {
       const visitorId = cookieStore.get(VISITOR_COOKIE)?.value ?? null;
       const personalized = await personalizeFeed(feed, visitorId);
       const deduped = dedupeProjectFeed(personalized.feed);
-      feed = { ...deduped, items: deduped.items.slice(0, DAILY_RADAR_LIMIT) };
+      strongestInterests = personalized.strongestInterests;
+
+      const mixed = buildDiscoveryMix(deduped, strongestInterests, DAILY_RADAR_LIMIT);
+      feed = mixed.feed;
+      discoveryLanes = mixed.lanes;
+
       personalizationApplied = personalized.applied;
       personalizationSignals = personalized.signalCount;
       personalizationMode = personalized.mode;
-      strongestInterests = personalized.strongestInterests;
       explanations = await getDiscoveryExplanations(feed.items, strongestInterests);
     }
   } catch (err) {
@@ -95,20 +104,21 @@ export default async function TodayPage() {
             7 things worth your attention today.
           </p>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            不是 Trending 榜。优先发现新、正在起势、可试玩，以及可能让你产生新想法的科技项目。
+            5 个核心兴趣 + 1 个相邻探索 + 1 个高质量随机发现。不是 Trending 榜，也不把你困在信息茧房里。
           </p>
         </div>
 
         {feed && !error ? (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span>Daily Radar · {feed.items.length} picks</span>
+            <span>5 Core · 1 Adjacent · 1 Wildcard</span>
             {personalizationApplied ? (
               <span>
                 {personalizationMode === "vector" ? "兴趣向量推荐" : "规则个性化"}
                 · 已学习 {personalizationSignals} 条近期反馈
               </span>
             ) : (
-              <span>你的反馈会逐渐改变这 7 个位置</span>
+              <span>你的反馈会逐渐改变 Core，同时保留探索位</span>
             )}
           </div>
         ) : null}
@@ -153,6 +163,7 @@ export default async function TodayPage() {
                     item={item}
                     featured={index === 0}
                     rank={index + 1}
+                    discoveryLane={discoveryLanes.get(item.id) ?? "core"}
                     whyNow={explanation?.whyNow ?? null}
                     whyYou={explanation?.whyYou ?? null}
                   />
