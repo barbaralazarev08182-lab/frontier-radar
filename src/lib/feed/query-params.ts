@@ -29,7 +29,14 @@ function firstParam(value: SearchParamValue): string | null {
 }
 
 function asSource(value: string | null): FeedSource | null {
-  if (value === "github" || value === "huggingface" || value === "arxiv") return value;
+  if (
+    value === "github" ||
+    value === "huggingface" ||
+    value === "hackernews" ||
+    value === "arxiv"
+  ) {
+    return value;
+  }
   return null;
 }
 
