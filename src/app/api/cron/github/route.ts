@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { checkCronAuth } from "@/lib/cron/auth";
-import { runGithubCollection } from "@/lib/jobs";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { ensureSourceId } from "@/lib/db/repositories/sources";
+import { getState } from "@/lib/db/repositories/collector-state";
+import { GitHubClient } from "@/lib/github/client";
+import { GitHubCollector } from "@/lib/collectors/github/collector";
+import { SupabaseCollectorSink } from "@/lib/collectors/github/sink";
+import { loadBudgetConfig } from "@/lib/collectors/github/budget";
+import { enabledGroups } from "@/config/github-discovery";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -8,13 +15,94 @@ export const maxDuration = 180;
 
 /**
  * GitHub 每日小批量采集 Cron。
- * 缺少 GITHUB_TOKEN 时返回 200 + skipped；任务失败返回 500。
+ * 为避免平台函数超时，每次只轮换 1 个查询组、每页 3 条、最多 3 次 Search，
+ * 并仅补充 1 个 README。缺少 GITHUB_TOKEN 时返回 200 + skipped。
  */
 export async function GET(request: Request) {
   const auth = checkCronAuth(request);
   if (!auth.authorized) return auth.response;
 
-  const result = await runGithubCollection();
-  const status = result.status === "failed" ? 500 : 200;
-  return NextResponse.json(result, { status });
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) {
+    return NextResponse.json({
+      job: "github",
+      status: "skipped",
+      errors: 0,
+      message: "缺少 GITHUB_TOKEN，GitHub 采集跳过",
+    });
+  }
+
+  try {
+    const supabase = createAdminClient();
+    const sourceId = await ensureSourceId(supabase, "github");
+    const sink = new SupabaseCollectorSink(supabase, sourceId);
+
+    const client = new GitHubClient({
+      baseUrl: process.env.GITHUB_API_BASE_URL ?? "https://api.github.com",
+      apiVersion: process.env.GITHUB_API_VERSION ?? "2026-03-10",
+      token,
+      timeoutMs: Number(process.env.GITHUB_REQUEST_TIMEOUT_MS) || 15_000,
+      maxRetries: Number(process.env.GITHUB_MAX_RETRIES) || 2,
+    });
+
+    let resumeCursor: string | null = null;
+    try {
+      const state = await getState(supabase, sourceId, "__rotation_cursor__");
+      const cursor = state?.state_value?.cursor;
+      if (typeof cursor === "string" && cursor) resumeCursor = cursor;
+    } catch {
+      // 读取不到游标则从第一个启用组开始。
+    }
+
+    const collector = new GitHubCollector({
+      client,
+      sink,
+      sourceId,
+      discoveryDays: Number(process.env.GITHUB_DISCOVERY_DAYS) || 7,
+      pagesPerQuery: 1,
+      perPage: 3,
+      enrichLimit: 1,
+      minStars: 0,
+      readmeMaxBytes: 30_000,
+      groups: enabledGroups(),
+      budget: loadBudgetConfig(),
+      maxGroups: 1,
+      maxSearchRequests: 3,
+      resumeCursor,
+      getQueryEtag: (key) => sink.getQueryEtag(key),
+      getReadmeEtag: (id) => sink.getReadmeEtag(id),
+    });
+
+    const result = await collector.collect();
+
+    return NextResponse.json(
+      {
+        job: "github",
+        status: result.status === "success" ? "succeeded" : result.status,
+        discovered: result.discovered ?? result.itemsFetched,
+        persisted: (result.inserted ?? 0) + (result.updated ?? 0),
+        errors: result.errorCount,
+        message: result.errors[0] ?? undefined,
+        stats: {
+          inserted: result.inserted ?? 0,
+          updated: result.updated ?? 0,
+          unchanged: result.unchanged ?? 0,
+          snapshots: result.snapshots ?? 0,
+          requests: result.requests ?? 0,
+          duration_ms: result.durationMs,
+        },
+      },
+      { status: result.status === "failed" ? 500 : 200 }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      {
+        job: "github",
+        status: "failed",
+        errors: 1,
+        message: err instanceof Error ? err.message : String(err),
+      },
+      { status: 500 }
+    );
+  }
 }
