@@ -32,6 +32,10 @@
     {
       "path": "/api/cron/rescore",
       "schedule": "30 0 * * *"
+    },
+    {
+      "path": "/api/cron/project-entities",
+      "schedule": "45 0 * * *"
     }
   ]
 }
