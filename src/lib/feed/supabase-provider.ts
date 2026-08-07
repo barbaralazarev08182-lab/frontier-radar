@@ -151,7 +151,9 @@ export class SupabaseFeedProvider implements FeedProvider {
         break;
       case "score":
       default:
-        q = q.order("latest_score", { ascending: false, nullsFirst: false });
+        q = q
+          .order("analysis_created_at", { ascending: false, nullsFirst: false })
+          .order("latest_score", { ascending: false, nullsFirst: false });
         break;
     }
 
