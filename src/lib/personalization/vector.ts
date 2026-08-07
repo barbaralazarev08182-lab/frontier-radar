@@ -104,7 +104,9 @@ export function vectorizeFeedItem(item: FrontierFeedItem): number[] {
 
 export function addScaledVector(target: number[], source: number[], scale: number): void {
   const length = Math.min(target.length, source.length);
-  for (let i = 0; i < length; i++) target[i] += source[i] * scale;
+  for (let i = 0; i < length; i++) {
+    target[i] = (target[i] ?? 0) + (source[i] ?? 0) * scale;
+  }
 }
 
 export function l2Normalize(vector: number[]): number[] {
@@ -121,9 +123,11 @@ export function cosineSimilarity(a: number[], b: number[]): number {
   let normA = 0;
   let normB = 0;
   for (let i = 0; i < length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+    const av = a[i] ?? 0;
+    const bv = b[i] ?? 0;
+    dot += av * bv;
+    normA += av * av;
+    normB += bv * bv;
   }
   if (normA === 0 || normB === 0) return 0;
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
