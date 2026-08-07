@@ -7,6 +7,7 @@ import {
   strongestVectorInterests,
   vectorizeFeedItem,
 } from "./vector";
+import { trySemanticPersonalization } from "./semantic-ranking";
 
 interface UserEventRow {
   item_id: string;
@@ -225,6 +226,21 @@ export async function personalizeFeed(
   }
 
   const supabase = createAdminClient();
+
+  try {
+    const semantic = await trySemanticPersonalization(supabase, feed, visitorId);
+    if (semantic) {
+      return {
+        feed: semantic.feed,
+        applied: true,
+        mode: "vector",
+        signalCount: semantic.signalCount,
+        strongestInterests: [],
+      };
+    }
+  } catch {
+    // semantic embedding 尚未准备好时继续现有推荐层。
+  }
 
   try {
     const { data, error } = await supabase
