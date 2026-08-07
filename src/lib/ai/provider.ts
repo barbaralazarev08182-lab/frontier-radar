@@ -2,7 +2,7 @@
  * Frontier Radar · AI Provider 抽象层（阶段 1.5 实现）。
  *
  * 业务代码只依赖 AiProvider 接口。
- * 当前实现 DeepSeekProvider 基于现有 OpenAI 兼容 Chat Completions 客户端。
+ * 当前实现 TencentProvider 基于 TokenHubClient（OpenAI 兼容 Chat Completions）。
  * 解析失败允许一次修复重试；第二次仍失败抛错，不生成假分析。
  */
 
@@ -26,7 +26,7 @@ import { TokenHubClient, type TokenHubClientOptions } from "./tokenhub-client";
 import type { Logger } from "@/lib/logger";
 
 /** Provider 标识 */
-export type AiProviderSlug = "deepseek";
+export type AiProviderSlug = "tencent";
 
 /** 结构化分析请求输入 */
 export interface AnalyzeItemInput extends PreparedAnalysisInput {
@@ -57,7 +57,7 @@ export interface AiProvider {
   analyzeItem(input: AnalyzeItemInput): Promise<AnalyzeItemOutput>;
 }
 
-export interface DeepSeekProviderOptions {
+export interface TencentProviderOptions {
   client: TokenHubClient;
   model: string;
   promptVersion?: string;
@@ -65,16 +65,16 @@ export interface DeepSeekProviderOptions {
   logger?: Logger;
 }
 
-/** DeepSeek / OpenAI 兼容 Provider */
-export class DeepSeekProvider implements AiProvider {
-  readonly slug: AiProviderSlug = "deepseek";
+/** 腾讯 TokenHub / OpenAI 兼容 Provider */
+export class TencentProvider implements AiProvider {
+  readonly slug: AiProviderSlug = "tencent";
   readonly model: string;
   private readonly client: TokenHubClient;
   private readonly promptVersion: string;
   private readonly schemaVersion: string;
   private readonly logger: Logger;
 
-  constructor(opts: DeepSeekProviderOptions) {
+  constructor(opts: TencentProviderOptions) {
     this.model = opts.model;
     this.client = opts.client;
     this.promptVersion = opts.promptVersion ?? ANALYSIS_PROMPT_VERSION;
@@ -117,12 +117,8 @@ export class DeepSeekProvider implements AiProvider {
   }
 }
 
-// 向后兼容旧测试/导入名；实际 provider 标识已是 deepseek。
-export type TencentProviderOptions = DeepSeekProviderOptions;
-export { DeepSeekProvider as TencentProvider };
-
 /**
- * Provider 工厂：构建 DeepSeekProvider。
+ * Provider 工厂：构建 TencentProvider。
  * 未配置（缺 baseUrl / key / model）时由调用方在调用前校验，这里只做装配。
  */
 export function createAiProvider(opts: {
@@ -132,7 +128,7 @@ export function createAiProvider(opts: {
   logger?: Logger;
 }): AiProvider {
   const client = new TokenHubClient(opts.tokenHub);
-  return new DeepSeekProvider({
+  return new TencentProvider({
     client,
     model: opts.tokenHub.model,
     promptVersion: opts.promptVersion,
