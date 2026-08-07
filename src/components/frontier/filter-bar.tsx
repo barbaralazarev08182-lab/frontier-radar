@@ -4,6 +4,7 @@ const SOURCE_OPTIONS: Array<{ value: FeedSource; label: string }> = [
   { value: "github", label: "GitHub" },
   { value: "huggingface", label: "Hugging Face" },
   { value: "hackernews", label: "Show HN" },
+  { value: "producthunt", label: "Product Hunt" },
   { value: "arxiv", label: "arXiv" },
 ];
 
