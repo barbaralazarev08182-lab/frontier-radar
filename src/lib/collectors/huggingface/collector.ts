@@ -20,9 +20,13 @@ import type { Logger } from "@/lib/logger";
 
 export interface HFCollectorOptions {
   sourceId?: string; // 默认 "huggingface"
-  /** 每种类型最大采集数量 */
+  /** 兼容旧调用：每种类型默认最大采集数量 */
   limitPerType: number;
-  /** 每种类型 enrichment 数量 */
+  /** 可选的分类型配额；用于产品发现时提升 Space 占比。 */
+  modelLimit?: number;
+  datasetLimit?: number;
+  spaceLimit?: number;
+  /** enrichment 总数量（按 Spaces → Models → Datasets 顺序优先） */
   enrichLimit: number;
   /** 是否跳过 Card 获取 */
   skipCards: boolean;
@@ -56,9 +60,7 @@ class DryRunSink {
   }
 }
 
-/**
- * 执行一次完整的 HuggingFace Hub 采集。
- */
+/** 执行一次完整的 HuggingFace Hub 采集。 */
 export async function collectHuggingFace(
   supabase: SupabaseClient | null,
   opts: HFCollectorOptions,
@@ -74,7 +76,6 @@ export async function collectHuggingFace(
 
   let runId: string | null = null;
 
-  // 1) 创建采集运行记录
   if (!opts.dryRun && supabase) {
     try {
       runId = await createRun(supabase, sourceId);
@@ -114,18 +115,26 @@ export async function collectHuggingFace(
   let firstPersistError: string | null = null;
 
   try {
-    // 2) 发现内容
-    log.info("hf.collect.discovering", { limit_per_type: opts.limitPerType });
+    log.info("hf.collect.discovering", {
+      model_limit: opts.modelLimit ?? opts.limitPerType,
+      dataset_limit: opts.datasetLimit ?? opts.limitPerType,
+      space_limit: opts.spaceLimit ?? opts.limitPerType,
+    });
 
     const discovery = await discoverHFContent(client, {
       limitPerType: opts.limitPerType,
+      modelLimit: opts.modelLimit,
+      datasetLimit: opts.datasetLimit,
+      spaceLimit: opts.spaceLimit,
       logger: log,
     });
 
+    // Frontier Radar 的项目发现模式优先可直接试玩的 Spaces。
+    // Enrichment 也按这个顺序分配，让最有价值的候选更容易拿到 README/Card。
     const allItems = [
+      ...discovery.spaces.map((s) => ({ item: s.normalized, type: "space" as const })),
       ...discovery.models.map((m) => ({ item: m.normalized, type: "model" as const })),
       ...discovery.datasets.map((d) => ({ item: d.normalized, type: "dataset" as const })),
-      ...discovery.spaces.map((s) => ({ item: s.normalized, type: "space" as const })),
     ];
 
     log.info("hf.collect.discovered", {
@@ -138,7 +147,6 @@ export async function collectHuggingFace(
         discovery.totalDiscovered.spaces,
     });
 
-    // 3) Enrich Cards
     let enrichedCards: EnrichedCard[] = [];
     if (!opts.skipCards && allItems.length > 0) {
       const enrichResult = await enrichHFCards(
@@ -155,11 +163,8 @@ export async function collectHuggingFace(
       });
     }
 
-    // 构建 Card 索引（按 sourceItemId 快速查找）
     const cardMap = new Map(enrichedCards.map((c) => [c.sourceItemId, c]));
-
-    // 4) 持久化
-    const snapshotDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const snapshotDate = new Date().toISOString().slice(0, 10);
 
     for (const { item } of allItems) {
       try {
@@ -185,7 +190,6 @@ export async function collectHuggingFace(
       }
     }
 
-    // 5) 完成运行记录
     if (!opts.dryRun && supabase && runId) {
       await finishRun(supabase, runId, {
         status: errors > 0 ? "partial" : "success",
@@ -209,6 +213,7 @@ export async function collectHuggingFace(
           cards_fetched: enrichedCards.length,
           cardsWritten,
           requests_made: client.getRequestCount(),
+          discovery_mode: "spaces-first",
         } as Record<string, unknown>,
       });
     }
