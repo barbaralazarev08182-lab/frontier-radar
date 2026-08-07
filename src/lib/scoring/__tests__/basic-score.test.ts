@@ -1,10 +1,15 @@
 /**
- * 基础排序测试（阶段 1.5）：arXiv 无 source signal 时仍能计算总分。
+ * 基础排序测试 v2：arXiv 无 source signal 时仍能计算总分，且论文形态默认低于可体验项目。
  */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { computeBasicScore, BASIC_SCORE_VERSION, SCORE_WEIGHTS } from "@/lib/scoring/basic-score";
+import {
+  computeBasicScore,
+  BASIC_SCORE_VERSION,
+  SCORE_WEIGHTS,
+  formatAffinityScore,
+} from "@/lib/scoring/basic-score";
 
 test("arXiv 无互动指标时仍能计算总分（source signal 中性、无 AI 为临时分）", () => {
   const score = computeBasicScore({
@@ -23,31 +28,37 @@ test("arXiv 无互动指标时仍能计算总分（source signal 中性、无 AI
   });
 
   assert.equal(score.scoreVersion, BASIC_SCORE_VERSION);
-  assert.equal(score.hasAi, false); // 临时分明确标记
+  assert.equal(score.hasAi, false);
 
-  // 组件齐全：freshness / interest_relevance / source_signal
   const dims = score.components.map((c) => c.dimension);
   assert.ok(dims.includes("freshness"));
   assert.ok(dims.includes("interest_relevance"));
   assert.ok(dims.includes("source_signal"));
+  assert.ok(dims.includes("format_affinity"));
   assert.ok(!dims.includes("editorial_value"));
 
-  // 所有组件在 0–100
   for (const c of score.components) {
     assert.ok(c.normalizedScore >= 0 && c.normalizedScore <= 100, `${c.dimension} 越界`);
     assert.ok(c.rationale.length > 0, `${c.dimension} 缺少 rationale`);
   }
 
-  // source signal 为中性 50，不伪造热度
   const source = score.components.find((c) => c.dimension === "source_signal")!;
   assert.equal(source.normalizedScore, 50);
   assert.ok(source.rationale.includes("中性"));
 
-  // 临时分 = 三个组件按权重归一化
   const expected =
     (score.components.find((c) => c.dimension === "freshness")!.normalizedScore * SCORE_WEIGHTS.freshness +
       score.components.find((c) => c.dimension === "interest_relevance")!.normalizedScore * SCORE_WEIGHTS.interestRelevance +
-      source.normalizedScore * SCORE_WEIGHTS.sourceSignal) /
-    (SCORE_WEIGHTS.freshness + SCORE_WEIGHTS.interestRelevance + SCORE_WEIGHTS.sourceSignal);
+      source.normalizedScore * SCORE_WEIGHTS.sourceSignal +
+      score.components.find((c) => c.dimension === "format_affinity")!.normalizedScore * SCORE_WEIGHTS.formatAffinity) /
+    (SCORE_WEIGHTS.freshness +
+      SCORE_WEIGHTS.interestRelevance +
+      SCORE_WEIGHTS.sourceSignal +
+      SCORE_WEIGHTS.formatAffinity);
   assert.equal(score.total, Math.round(expected * 100) / 100);
+});
+
+test("冷启动内容形态优先可体验项目而不是论文", () => {
+  assert.ok(formatAffinityScore("repo").score > formatAffinityScore("paper").score);
+  assert.ok(formatAffinityScore("space").score > formatAffinityScore("model").score);
 });
