@@ -8,8 +8,9 @@ export const runtime = "nodejs";
 export const maxDuration = 180;
 
 /**
- * Hugging Face 每日小批量采集 Cron（允许匿名访问）。
- * 为避免长任务被平台/网络层中断，每次仅抓每类 5 条，并少量补充 Card。
+ * Hugging Face 每日项目发现 Cron。
+ * 候选池明确偏向可试玩的 Spaces：12 Spaces + 2 Models + 2 Datasets。
+ * Spaces 按 trendingScore 发现，并优先拿 Card/README。
  */
 export async function GET(request: Request) {
   const auth = checkCronAuth(request);
@@ -20,7 +21,10 @@ export async function GET(request: Request) {
     const result = await collectHuggingFace(supabase, {
       sourceId: "huggingface",
       limitPerType: 5,
-      enrichLimit: 2,
+      modelLimit: 2,
+      datasetLimit: 2,
+      spaceLimit: 12,
+      enrichLimit: 6,
       skipCards: false,
       dryRun: false,
       hfClientOpts: {
