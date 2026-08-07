@@ -1,15 +1,8 @@
 /**
- * GitHub 仓库发现配置（阶段 1.2）。
+ * GitHub 仓库发现配置（科技项目发现 v2）。
  *
- * 设计原则：
- *  - 查询词集中在此文件，采集器实现不写死查询。
- *  - 每个查询模板使用 {since} 占位符，由采集器在运行时替换为明确时间窗口
- *    （默认最近 GITHUB_DISCOVERY_DAYS 天），保证发现结果可复现、可审计。
- *  - 不依赖 GitHub Trending（不抓取/解析其 HTML），仅使用官方 REST 搜索接口。
- *  - 不用单一宽泛查询抓全部 AI 项目；按领域拆组，每组独立优先级。
- *
- * 注意：模板不含 archived:false / fork:false，由采集器在拼接最终查询时统一追加，
- * 以保证各查询行为一致且不易遗漏。
+ * 目标从“按学科找 AI 仓库”调整为“发现 AI 被做成了什么新东西”：
+ * UI / 游戏 / 软件联动 / Agent / MCP / 3D / 创意工具 / 开发者工具优先。
  */
 
 export interface DiscoveryGroup {
@@ -24,30 +17,53 @@ export interface DiscoveryGroup {
 
 export const DISCOVERY_GROUPS: DiscoveryGroup[] = [
   {
-    id: "ai-agent",
-    label: "AI Agent",
-    priority: 100,
+    id: "ai-integrations",
+    label: "AI × Software Integrations",
+    priority: 120,
     enabled: true,
     queries: [
-      "topic:ai-agent created:>{since}",
-      "topic:ai-agents created:>{since}",
-      '"ai agent" in:name,description,readme created:>{since}',
+      'ai integration in:name,description,readme created:>{since}',
+      'ai plugin in:name,description,readme created:>{since}',
+      'ai extension in:name,description,readme created:>{since}',
     ],
   },
   {
-    id: "agent-skills",
-    label: "Agent Skills",
-    priority: 98,
+    id: "ai-creative-tools",
+    label: "Creative AI Tools",
+    priority: 118,
     enabled: true,
     queries: [
-      "topic:agent-skills created:>{since}",
-      '"agent skills" in:name,description created:>{since}',
+      '"ai tool" in:name,description,readme created:>{since}',
+      '"creative ai" in:name,description,readme created:>{since}',
+      '"generative design" in:name,description,readme created:>{since}',
+    ],
+  },
+  {
+    id: "ai-games",
+    label: "AI Games / Playable Experiments",
+    priority: 116,
+    enabled: true,
+    queries: [
+      'ai game in:name,description,readme created:>{since}',
+      'generative game in:name,description,readme created:>{since}',
+      'ai npc in:name,description,readme created:>{since}',
+    ],
+  },
+  {
+    id: "ai-ui",
+    label: "AI UI / New Interaction",
+    priority: 114,
+    enabled: true,
+    queries: [
+      '"generative ui" in:name,description,readme created:>{since}',
+      '"ai ui" in:name,description,readme created:>{since}',
+      '"interactive ai" in:name,description,readme created:>{since}',
     ],
   },
   {
     id: "mcp",
-    label: "MCP",
-    priority: 97,
+    label: "MCP / Tool Connections",
+    priority: 112,
     enabled: true,
     queries: [
       "topic:mcp created:>{since}",
@@ -56,156 +72,162 @@ export const DISCOVERY_GROUPS: DiscoveryGroup[] = [
     ],
   },
   {
-    id: "machine-learning",
-    label: "Machine Learning",
-    priority: 90,
+    id: "browser-desktop-agents",
+    label: "Browser / Desktop Agents",
+    priority: 110,
     enabled: true,
     queries: [
-      "topic:machine-learning created:>{since}",
-      "topic:ml created:>{since}",
+      '"browser agent" in:name,description,readme created:>{since}',
+      '"computer use" in:name,description,readme created:>{since}',
+      '"desktop agent" in:name,description,readme created:>{since}',
     ],
   },
   {
-    id: "deep-learning",
-    label: "Deep Learning",
-    priority: 88,
+    id: "ai-coding",
+    label: "AI Coding / Vibe Coding",
+    priority: 108,
     enabled: true,
     queries: [
-      "topic:deep-learning created:>{since}",
-      '"deep learning" in:name,description stars:>10 created:>{since}',
+      '"ai coding" in:name,description,readme created:>{since}',
+      '"coding agent" in:name,description,readme created:>{since}',
+      '"vibe coding" in:name,description,readme created:>{since}',
     ],
   },
   {
-    id: "llm-nlp",
-    label: "LLM / NLP",
-    priority: 95,
+    id: "ai-agent",
+    label: "AI Agent",
+    priority: 106,
     enabled: true,
     queries: [
-      "topic:llm created:>{since}",
-      "topic:large-language-models created:>{since}",
-      "topic:nlp created:>{since}",
+      "topic:ai-agent created:>{since}",
+      '"ai agent" in:name,description,readme created:>{since}',
+      "topic:ai-agents created:>{since}",
     ],
   },
   {
-    id: "computer-vision",
-    label: "Computer Vision",
-    priority: 82,
+    id: "ai-3d",
+    label: "AI × 3D / Blender / Game Engines",
+    priority: 104,
     enabled: true,
     queries: [
-      "topic:computer-vision created:>{since}",
-      "topic:cv created:>{since}",
+      'ai 3d in:name,description,readme created:>{since}',
+      'ai blender in:name,description,readme created:>{since}',
+      'ai unity unreal godot in:name,description created:>{since}',
     ],
   },
   {
-    id: "speech-audio",
-    label: "Speech / Audio",
-    priority: 85,
+    id: "multimodal-apps",
+    label: "Multimodal Apps",
+    priority: 102,
     enabled: true,
     queries: [
-      "topic:speech-recognition created:>{since}",
-      "topic:audio created:>{since}",
+      'multimodal app in:name,description,readme created:>{since}',
+      'vision agent in:name,description,readme created:>{since}',
+      'video ai in:name,description,readme created:>{since}',
     ],
   },
   {
-    id: "speaker-recognition",
-    label: "Speaker Recognition",
-    priority: 86,
+    id: "ai-audio-creative",
+    label: "AI Audio / Music / Voice Tools",
+    priority: 100,
     enabled: true,
     queries: [
-      "topic:speaker-recognition created:>{since}",
-      '"speaker recognition" in:name,description created:>{since}',
-    ],
-  },
-  {
-    id: "multimodal",
-    label: "Multimodal",
-    priority: 92,
-    enabled: true,
-    queries: [
-      "topic:multimodal created:>{since}",
-      "topic:multimodal-learning created:>{since}",
-    ],
-  },
-  {
-    id: "reinforcement-learning",
-    label: "Reinforcement Learning",
-    priority: 80,
-    enabled: true,
-    queries: [
-      "topic:reinforcement-learning created:>{since}",
-      "topic:rl created:>{since}",
-    ],
-  },
-  {
-    id: "education-ai",
-    label: "Education AI",
-    priority: 78,
-    enabled: true,
-    queries: [
-      "topic:education created:>{since}",
-      '"education ai" in:name,description created:>{since}',
+      'ai audio tool in:name,description,readme created:>{since}',
+      'ai music in:name,description,readme created:>{since}',
+      'voice ai tool in:name,description,readme created:>{since}',
     ],
   },
   {
     id: "developer-tools",
     label: "Developer Tools",
-    priority: 84,
+    priority: 98,
     enabled: true,
     queries: [
+      'ai developer tool in:name,description,readme created:>{since}',
       "topic:developer-tools created:>{since}",
       '"developer tool" in:name,description created:>{since}',
     ],
   },
   {
-    id: "vibe-coding",
-    label: "Vibe Coding",
+    id: "small-ai-projects",
+    label: "Small / Experimental AI Projects",
     priority: 96,
     enabled: true,
     queries: [
-      '"vibe coding" in:name,description,readme created:>{since}',
-      "topic:ai-coding created:>{since}",
+      'ai prototype in:name,description,readme created:>{since} stars:<500',
+      'ai demo in:name,description,readme created:>{since} stars:<500',
+      'ai playground in:name,description,readme created:>{since} stars:<500',
     ],
   },
   {
-    id: "quant-finance",
-    label: "Quantitative Finance",
-    priority: 76,
+    id: "new-ai-capabilities",
+    label: "New AI Capabilities",
+    priority: 92,
     enabled: true,
     queries: [
-      "topic:quantitative-finance created:>{since}",
-      "topic:quant created:>{since}",
-      '"quant finance" in:name,description created:>{since}',
+      '"computer use" in:name,description created:>{since}',
+      '"tool use" in:name,description created:>{since}',
+      '"real-time" ai in:name,description created:>{since}',
     ],
+  },
+
+  // 以下传统学科组仍保留配置，暂不进入生产 GitHub 轮换；
+  // 对应内容主要由 Hugging Face / arXiv 覆盖。
+  {
+    id: "llm-nlp",
+    label: "LLM / NLP",
+    priority: 60,
+    enabled: false,
+    queries: ["topic:llm created:>{since}", "topic:nlp created:>{since}"],
+  },
+  {
+    id: "machine-learning",
+    label: "Machine Learning",
+    priority: 50,
+    enabled: false,
+    queries: ["topic:machine-learning created:>{since}", "topic:ml created:>{since}"],
+  },
+  {
+    id: "computer-vision",
+    label: "Computer Vision",
+    priority: 48,
+    enabled: false,
+    queries: ["topic:computer-vision created:>{since}", "topic:cv created:>{since}"],
+  },
+  {
+    id: "speaker-recognition",
+    label: "Speaker Recognition",
+    priority: 46,
+    enabled: false,
+    queries: ["topic:speaker-recognition created:>{since}"],
+  },
+  {
+    id: "reinforcement-learning",
+    label: "Reinforcement Learning",
+    priority: 44,
+    enabled: false,
+    queries: ["topic:reinforcement-learning created:>{since}"],
+  },
+  {
+    id: "education-ai",
+    label: "Education AI",
+    priority: 42,
+    enabled: false,
+    queries: ['"education ai" in:name,description created:>{since}'],
   },
   {
     id: "mlops",
     label: "MLOps",
-    priority: 74,
-    enabled: true,
-    queries: [
-      "topic:mlops created:>{since}",
-      "topic:ml-ops created:>{since}",
-    ],
+    priority: 40,
+    enabled: false,
+    queries: ["topic:mlops created:>{since}"],
   },
   {
-    id: "model-inference",
-    label: "Model Inference",
-    priority: 83,
-    enabled: true,
-    queries: [
-      "topic:inference created:>{since}",
-      "topic:model-inference created:>{since}",
-    ],
-  },
-  {
-    id: "ai-product-ui",
-    label: "AI Product / UI",
-    priority: 81,
-    enabled: true,
-    queries: [
-      '"ai product" in:name,description created:>{since}',
-      '"ai ui" in:name,description created:>{since}',
-    ],
+    id: "quant-finance",
+    label: "Quantitative Finance",
+    priority: 38,
+    enabled: false,
+    queries: ["topic:quantitative-finance created:>{since}"],
   },
 ];
 
