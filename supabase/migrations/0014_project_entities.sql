@@ -105,7 +105,10 @@ begin
     perform public.refresh_project_rollup(previous_project_id);
   end if;
 
-  return coalesce(new, old);
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
 end;
 $$ language plpgsql;
 
