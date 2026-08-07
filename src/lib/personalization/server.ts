@@ -1,6 +1,12 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { INTEREST_PROFILE, type InterestKey } from "@/config/interest-profile";
 import type { FeedResult, FrontierFeedItem } from "@/lib/feed/types";
+import {
+  FEATURE_VECTOR_VERSION,
+  cosineSimilarity,
+  strongestVectorInterests,
+  vectorizeFeedItem,
+} from "./vector";
 
 interface UserEventRow {
   item_id: string;
@@ -18,9 +24,16 @@ interface ProfileItemRow {
   tags: unknown;
 }
 
+interface StoredInterestVectorRow {
+  vector_version: string;
+  interest_vector: unknown;
+  event_count: number;
+}
+
 export interface PersonalizationResult {
   feed: FeedResult;
   applied: boolean;
+  mode: "vector" | "rules" | null;
   signalCount: number;
   strongestInterests: Array<{ key: InterestKey; weight: number }>;
 }
@@ -36,6 +49,20 @@ function stringArray(value: unknown): string[] {
   return Array.isArray(value)
     ? value.filter((x): x is string => typeof x === "string")
     : [];
+}
+
+function numberArray(value: unknown): number[] {
+  if (Array.isArray(value)) {
+    return value.map((entry) => Number(entry)).filter((entry) => Number.isFinite(entry));
+  }
+  if (typeof value === "string" && value.startsWith("{") && value.endsWith("}")) {
+    return value
+      .slice(1, -1)
+      .split(",")
+      .map((entry) => Number(entry))
+      .filter((entry) => Number.isFinite(entry));
+  }
+  return [];
 }
 
 function buildCorpus(parts: Array<string | null | undefined>): string {
@@ -94,95 +121,144 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
+function rankWithInterestVector(
+  feed: FeedResult,
+  vector: number[]
+): FeedResult {
+  const scored = feed.items.map((item, index) => {
+    const similarity = cosineSimilarity(vector, vectorizeFeedItem(item));
+    const base = item.score ?? 35;
+    return {
+      item,
+      index,
+      // 相似度最多提供 ±28 分；公共 Frontier Score 仍保留为基础质量先验。
+      rankScore: base + clamp(similarity, -1, 1) * 28,
+    };
+  });
+
+  scored.sort((a, b) => b.rankScore - a.rankScore || a.index - b.index);
+  return { ...feed, items: scored.map((entry) => entry.item) };
+}
+
+/** 旧规则层：向量表尚未建好或用户画像尚未生成时使用。 */
+async function personalizeWithRules(
+  feed: FeedResult,
+  visitorId: string
+): Promise<PersonalizationResult> {
+  const supabase = createAdminClient();
+  const { data: eventData, error: eventError } = await supabase
+    .from("user_events")
+    .select("item_id, event_type, dwell_ms, created_at")
+    .eq("visitor_id", visitorId)
+    .order("created_at", { ascending: false })
+    .limit(120);
+
+  if (eventError) throw eventError;
+  const events = (eventData ?? []) as UserEventRow[];
+  if (events.length === 0) {
+    return { feed, applied: false, mode: null, signalCount: 0, strongestInterests: [] };
+  }
+
+  const itemIds = [...new Set(events.map((event) => event.item_id))];
+  const { data: profileData, error: profileError } = await supabase
+    .from("frontier_feed_v1")
+    .select("item_id, title, description, source_slug, content_type, tags")
+    .in("item_id", itemIds);
+
+  if (profileError) throw profileError;
+  const rows = (profileData ?? []) as ProfileItemRow[];
+  const rowById = new Map(rows.map((row) => [row.item_id, row]));
+  const categoryWeights = new Map<InterestKey, number>();
+
+  for (const event of events) {
+    const row = rowById.get(event.item_id);
+    if (!row) continue;
+    const strength = eventStrength(event) * recencyMultiplier(event.created_at);
+    if (strength === 0) continue;
+
+    const corpus = buildCorpus([
+      row.title,
+      row.description,
+      row.source_slug,
+      row.content_type,
+      ...stringArray(row.tags),
+    ]);
+    const keys = matchInterestKeys(corpus);
+    for (const key of keys) {
+      categoryWeights.set(key, (categoryWeights.get(key) ?? 0) + strength);
+    }
+  }
+
+  if (categoryWeights.size === 0) {
+    return { feed, applied: false, mode: null, signalCount: events.length, strongestInterests: [] };
+  }
+
+  const scored = feed.items.map((item, index) => {
+    const keys = matchInterestKeys(itemCorpus(item));
+    const categorySignal = keys.reduce((sum, key) => sum + (categoryWeights.get(key) ?? 0), 0);
+    const personalizationBoost = clamp(categorySignal * 2.5, -20, 20);
+    const base = item.score ?? 35;
+    return { item, index, rankScore: base + personalizationBoost };
+  });
+
+  scored.sort((a, b) => b.rankScore - a.rankScore || a.index - b.index);
+
+  const strongestInterests = [...categoryWeights.entries()]
+    .filter(([, weight]) => weight > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([key, weight]) => ({ key, weight: Math.round(weight * 100) / 100 }));
+
+  return {
+    feed: { ...feed, items: scored.map((entry) => entry.item) },
+    applied: true,
+    mode: "rules",
+    signalCount: events.length,
+    strongestInterests,
+  };
+}
+
 /**
- * Personalization v0：从近期反馈实时推导兴趣类别权重，并对当前候选页重排。
- * 这是 ML 冷启动层，不是最终训练模型；后续可被 embedding / learning-to-rank 直接替换。
+ * Personalization v1：优先使用持久化 User Interest Vector + cosine similarity；
+ * 0012 尚未执行或画像不存在时回退到 v0 规则层；任何个性化故障都不影响公共 Feed。
  */
 export async function personalizeFeed(
   feed: FeedResult,
   visitorId: string | null | undefined
 ): Promise<PersonalizationResult> {
   if (!isUuid(visitorId) || feed.items.length === 0) {
-    return { feed, applied: false, signalCount: 0, strongestInterests: [] };
+    return { feed, applied: false, mode: null, signalCount: 0, strongestInterests: [] };
+  }
+
+  const supabase = createAdminClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("user_interest_vectors")
+      .select("vector_version, interest_vector, event_count")
+      .eq("visitor_id", visitorId)
+      .maybeSingle();
+
+    if (!error && data) {
+      const row = data as StoredInterestVectorRow;
+      const vector = numberArray(row.interest_vector);
+      if (row.vector_version === FEATURE_VECTOR_VERSION && vector.some((value) => value !== 0)) {
+        return {
+          feed: rankWithInterestVector(feed, vector),
+          applied: true,
+          mode: "vector",
+          signalCount: row.event_count,
+          strongestInterests: strongestVectorInterests(vector),
+        };
+      }
+    }
+  } catch {
+    // 继续走旧规则层。
   }
 
   try {
-    const supabase = createAdminClient();
-    const { data: eventData, error: eventError } = await supabase
-      .from("user_events")
-      .select("item_id, event_type, dwell_ms, created_at")
-      .eq("visitor_id", visitorId)
-      .order("created_at", { ascending: false })
-      .limit(120);
-
-    if (eventError) throw eventError;
-    const events = (eventData ?? []) as UserEventRow[];
-    if (events.length === 0) {
-      return { feed, applied: false, signalCount: 0, strongestInterests: [] };
-    }
-
-    const itemIds = [...new Set(events.map((event) => event.item_id))];
-    const { data: profileData, error: profileError } = await supabase
-      .from("frontier_feed_v1")
-      .select("item_id, title, description, source_slug, content_type, tags")
-      .in("item_id", itemIds);
-
-    if (profileError) throw profileError;
-    const rows = (profileData ?? []) as ProfileItemRow[];
-    const rowById = new Map(rows.map((row) => [row.item_id, row]));
-    const categoryWeights = new Map<InterestKey, number>();
-
-    for (const event of events) {
-      const row = rowById.get(event.item_id);
-      if (!row) continue;
-      const strength = eventStrength(event) * recencyMultiplier(event.created_at);
-      if (strength === 0) continue;
-
-      const corpus = buildCorpus([
-        row.title,
-        row.description,
-        row.source_slug,
-        row.content_type,
-        ...stringArray(row.tags),
-      ]);
-      const keys = matchInterestKeys(corpus);
-      for (const key of keys) {
-        categoryWeights.set(key, (categoryWeights.get(key) ?? 0) + strength);
-      }
-    }
-
-    if (categoryWeights.size === 0) {
-      return { feed, applied: false, signalCount: events.length, strongestInterests: [] };
-    }
-
-    const scored = feed.items.map((item, index) => {
-      const keys = matchInterestKeys(itemCorpus(item));
-      const categorySignal = keys.reduce((sum, key) => sum + (categoryWeights.get(key) ?? 0), 0);
-      const personalizationBoost = clamp(categorySignal * 2.5, -20, 20);
-      const base = item.score ?? 35;
-      return {
-        item,
-        index,
-        rankScore: base + personalizationBoost,
-      };
-    });
-
-    scored.sort((a, b) => b.rankScore - a.rankScore || a.index - b.index);
-
-    const strongestInterests = [...categoryWeights.entries()]
-      .filter(([, weight]) => weight > 0)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([key, weight]) => ({ key, weight: Math.round(weight * 100) / 100 }));
-
-    return {
-      feed: { ...feed, items: scored.map((entry) => entry.item) },
-      applied: true,
-      signalCount: events.length,
-      strongestInterests,
-    };
+    return await personalizeWithRules(feed, visitorId);
   } catch {
-    // 个性化层故障时必须退回公共排序，不能影响 Today 可用性。
-    return { feed, applied: false, signalCount: 0, strongestInterests: [] };
+    return { feed, applied: false, mode: null, signalCount: 0, strongestInterests: [] };
   }
 }
