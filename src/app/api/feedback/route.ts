@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { VISITOR_COOKIE, VISITOR_MAX_AGE_SECONDS } from "@/lib/personalization/constants";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -55,7 +56,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "feedback_write_failed" }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true });
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set(VISITOR_COOKIE, visitorId, {
+      path: "/",
+      sameSite: "lax",
+      maxAge: VISITOR_MAX_AGE_SECONDS,
+      secure: process.env.NODE_ENV === "production",
+    });
+    return response;
   } catch {
     return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
