@@ -3,6 +3,8 @@ import type { FrontierFeedItem } from "@/lib/feed/types";
 import { SourceBadge } from "./source-badge";
 import { ScoreBadge } from "./score-badge";
 import { MetricRow } from "./metric-row";
+import { FeedbackActions } from "./feedback-actions";
+import { TrackedSourceLink } from "./tracked-source-link";
 
 const TYPE_LABEL: Record<string, string> = {
   repo: "Repository",
@@ -47,14 +49,13 @@ export function ItemCard({ item }: { item: FrontierFeedItem }) {
 
       {/* 标题 + 链接 */}
       <h3 className="text-base font-semibold leading-snug">
-        <a
+        <TrackedSourceLink
+          itemId={item.id}
           href={item.canonicalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
           className="hover:text-primary hover:underline"
         >
           {item.title}
-        </a>
+        </TrackedSourceLink>
       </h3>
 
       {/* 中文说明（无 AI 分析时回退 description 并标注） */}
@@ -97,7 +98,7 @@ export function ItemCard({ item }: { item: FrontierFeedItem }) {
         <MetricRow item={item} />
       </div>
 
-      {/* 标签 + 原始链接 */}
+      {/* 标签 + 推荐反馈 + 原始链接 */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
         <span className="flex flex-wrap gap-1.5">
           {item.tags.slice(0, 4).map((tag) => (
@@ -109,15 +110,17 @@ export function ItemCard({ item }: { item: FrontierFeedItem }) {
             </span>
           ))}
         </span>
-        <a
-          href={item.canonicalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-        >
-          查看原始内容
-          <ArrowUpRight className="h-3 w-3" />
-        </a>
+        <span className="flex flex-wrap items-center gap-2">
+          <FeedbackActions itemId={item.id} />
+          <TrackedSourceLink
+            itemId={item.id}
+            href={item.canonicalUrl}
+            className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+          >
+            查看原始内容
+            <ArrowUpRight className="h-3 w-3" />
+          </TrackedSourceLink>
+        </span>
       </div>
     </article>
   );
