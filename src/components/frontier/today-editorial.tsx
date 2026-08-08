@@ -87,7 +87,7 @@ export function TodayEditorial({
 
   if (signals.length === 0) return null;
 
-  const active = signals[Math.min(activeIndex, signals.length - 1)];
+  const active = signals[Math.min(activeIndex, signals.length - 1)]!;
   const activeRank = String(activeIndex + 1).padStart(2, "0");
   const ticker = topTags.length > 0 ? topTags : ["AI AGENTS", "DEV TOOLS", "CREATIVE AI", "INFRA", "RESEARCH"];
 
