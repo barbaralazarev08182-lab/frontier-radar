@@ -100,7 +100,7 @@ function createDeepLayer(rank: string, detail: SignalDetail) {
 
 export function MotionLabInteractions() {
   const scannerRef = useRef<HTMLDivElement | null>(null);
-  const scannerRankRef = useRef<HTMLStrongElement | null>(null);
+  const scannerRankRef = useRef<HTMLElement | null>(null);
   const scannerModeRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
