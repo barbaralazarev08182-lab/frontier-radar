@@ -103,22 +103,13 @@ export function MotionLabAnalysis() {
   const [hoveredPattern, setHoveredPattern] = useState<PatternId | null>(null);
   const [hoveredSignal, setHoveredSignal] = useState<string | null>(null);
   const [pinnedPattern, setPinnedPattern] = useState<PatternId | null>(null);
-  const [showTake, setShowTake] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const resolveProgressRef = useRef(0);
 
   const hoveredSignalPattern = hoveredSignal
     ? SIGNALS.find((signal) => signal.rank === hoveredSignal)?.pattern ?? null
     : null;
   const activePattern = pinnedPattern ?? hoveredPattern ?? hoveredSignalPattern;
   const activePatternData = activePattern ? PATTERNS.find((pattern) => pattern.id === activePattern) ?? null : null;
-
-  const applyResolveProgress = (node: HTMLElement, value: number) => {
-    const progress = clamp(value);
-    resolveProgressRef.current = progress;
-    node.style.setProperty("--weave-scroll", progress.toFixed(4));
-    setShowTake(progress > 0.58);
-  };
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -152,7 +143,6 @@ export function MotionLabAnalysis() {
       if (ready && stateSpan) stateSpan.textContent = "WEAVE";
 
       if (wasReady && !ready) {
-        applyResolveProgress(section, 0);
         setPinnedPattern(null);
         setHoveredPattern(null);
         setHoveredSignal(null);
@@ -186,23 +176,7 @@ export function MotionLabAnalysis() {
       className="motion-lab-analysis weave-analysis"
       data-active-pattern={activePattern ?? "all"}
       data-active-signal={hoveredSignal ?? "none"}
-      data-take={showTake ? "true" : "false"}
       aria-label="Today's signal weave analysis"
-      onWheel={(event) => {
-        const node = event.currentTarget;
-        if (node.dataset.ready !== "true") return;
-
-        const current = resolveProgressRef.current;
-        const delta = event.deltaY;
-        const movingIntoResolve = delta > 0 && current < 1;
-        const movingBackThroughResolve = delta < 0 && current > 0;
-
-        if (movingIntoResolve || movingBackThroughResolve) {
-          event.preventDefault();
-          const normalizedDelta = clamp(delta / 760, -0.18, 0.18);
-          applyResolveProgress(node, current + normalizedDelta);
-        }
-      }}
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const x = clamp((event.clientX - rect.left) / Math.max(1, rect.width));
@@ -367,14 +341,6 @@ export function MotionLabAnalysis() {
               </div>
             )}
           </aside>
-
-          <div className="weave-take" aria-hidden={!showTake}>
-            <span>TODAY&apos;S TAKE / 001</span>
-            <strong>THE FRONTIER IS MOVING FROM FEATURES TO SYSTEMS.</strong>
-            <i>07 SIGNALS / 03 PATTERNS / 01 DAILY BRIEF</i>
-          </div>
-
-          <div className="weave-scroll-cue" aria-hidden="true"><span>SCROLL TO RESOLVE</span><i /></div>
         </div>
       </div>
     </section>,
