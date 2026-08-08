@@ -94,9 +94,6 @@ const THREADS: Thread[] = [
   { rank: "07", pattern: "interface", d: "M 225 618 C 364 620, 438 598, 520 548 C 674 454, 832 532, 968 514", accent: "orange", delay: "-4.4s" },
 ];
 
-const ANALYSIS_FADE_START = 0.82;
-const ANALYSIS_READY_START = 0.93;
-
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
 }
@@ -108,12 +105,20 @@ export function MotionLabAnalysis() {
   const [pinnedPattern, setPinnedPattern] = useState<PatternId | null>(null);
   const [showTake, setShowTake] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const resolveProgressRef = useRef(0);
 
   const hoveredSignalPattern = hoveredSignal
     ? SIGNALS.find((signal) => signal.rank === hoveredSignal)?.pattern ?? null
     : null;
   const activePattern = pinnedPattern ?? hoveredPattern ?? hoveredSignalPattern;
   const activePatternData = activePattern ? PATTERNS.find((pattern) => pattern.id === activePattern) ?? null : null;
+
+  const applyResolveProgress = (node: HTMLElement, value: number) => {
+    const progress = clamp(value);
+    resolveProgressRef.current = progress;
+    node.style.setProperty("--weave-scroll", progress.toFixed(4));
+    setShowTake(progress > 0.58);
+  };
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -126,9 +131,8 @@ export function MotionLabAnalysis() {
     const section = sectionRef.current;
     const stage = mount;
     const root = stage?.closest<HTMLElement>(".motion-lab-shell");
-    const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
     const stateSpan = root?.querySelector<HTMLElement>(".motion-lab-hud dl > div:first-child dd span");
-    if (!section || !root || !scroller) return;
+    if (!section || !root) return;
 
     let frame = 0;
     let wasReady = false;
@@ -136,32 +140,22 @@ export function MotionLabAnalysis() {
     const sync = () => {
       frame = 0;
       const mode = root.dataset.mode;
-      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
-      const progress = clamp(scroller.scrollTop / travel);
-
-      let alpha = 0;
-      let ready = false;
-
-      if (mode === "topic") {
-        alpha = 1;
-        ready = true;
-      } else if (mode === "run") {
-        alpha = clamp((progress - ANALYSIS_FADE_START) / (ANALYSIS_READY_START - ANALYSIS_FADE_START));
-        ready = progress >= ANALYSIS_READY_START;
-      }
+      const handoffState = root.dataset.directHandoff ?? "off";
+      const ready = mode === "topic" || handoffState === "ready";
+      const entering = mode === "run" && handoffState === "active";
+      const alpha = ready ? 1 : entering ? 0.65 : 0;
 
       section.style.setProperty("--analysis-alpha", alpha.toFixed(4));
       section.dataset.ready = ready ? "true" : "false";
       root.style.setProperty("--analysis-alpha", alpha.toFixed(4));
-      root.dataset.analysis = ready ? "ready" : alpha > 0.002 ? "entering" : "off";
+      root.dataset.analysis = ready ? "ready" : entering ? "entering" : "off";
       if (ready && stateSpan) stateSpan.textContent = "WEAVE";
 
       if (wasReady && !ready) {
-        section.scrollTop = 0;
+        applyResolveProgress(section, 0);
         setPinnedPattern(null);
         setHoveredPattern(null);
         setHoveredSignal(null);
-        setShowTake(false);
       }
       wasReady = ready;
     };
@@ -171,15 +165,13 @@ export function MotionLabAnalysis() {
     };
 
     const observer = new MutationObserver(requestSync);
-    observer.observe(root, { attributes: true, attributeFilter: ["data-mode"] });
-    scroller.addEventListener("scroll", requestSync, { passive: true });
+    observer.observe(root, { attributes: true, attributeFilter: ["data-mode", "data-direct-handoff"] });
     window.addEventListener("resize", requestSync);
     sync();
 
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       observer.disconnect();
-      scroller.removeEventListener("scroll", requestSync);
       window.removeEventListener("resize", requestSync);
       root.style.removeProperty("--analysis-alpha");
       root.removeAttribute("data-analysis");
@@ -196,12 +188,20 @@ export function MotionLabAnalysis() {
       data-active-signal={hoveredSignal ?? "none"}
       data-take={showTake ? "true" : "false"}
       aria-label="Today's signal weave analysis"
-      onScroll={(event) => {
+      onWheel={(event) => {
         const node = event.currentTarget;
-        const travel = Math.max(1, node.scrollHeight - node.clientHeight);
-        const progress = clamp(node.scrollTop / travel);
-        node.style.setProperty("--weave-scroll", progress.toFixed(4));
-        setShowTake(progress > 0.58);
+        if (node.dataset.ready !== "true") return;
+
+        const current = resolveProgressRef.current;
+        const delta = event.deltaY;
+        const movingIntoResolve = delta > 0 && current < 1;
+        const movingBackThroughResolve = delta < 0 && current > 0;
+
+        if (movingIntoResolve || movingBackThroughResolve) {
+          event.preventDefault();
+          const normalizedDelta = clamp(delta / 760, -0.18, 0.18);
+          applyResolveProgress(node, current + normalizedDelta);
+        }
       }}
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
