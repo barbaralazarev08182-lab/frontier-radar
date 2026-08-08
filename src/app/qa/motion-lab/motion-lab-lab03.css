@@ -1,0 +1,220 @@
+.motion-lab-shell {
+  --deckness: 0;
+  --overviewness: 1;
+  --lab-progress: 0;
+}
+
+.motion-lab-track { min-height: 340vh; }
+
+.motion-lab-shell[data-gsap="booting"] .motion-lab-signal,
+.motion-lab-shell[data-gsap="ready"] .motion-lab-signal {
+  transition: none;
+}
+
+.motion-lab-progress span {
+  transform: scaleY(var(--lab-progress));
+}
+
+.motion-lab-deck-readout {
+  position: absolute;
+  z-index: 1;
+  left: 4.5vw;
+  top: 50%;
+  display: grid;
+  gap: .2rem;
+  width: min(17rem, 19vw);
+  transform: translateY(-50%);
+  opacity: var(--deckness);
+  pointer-events: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .56rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.motion-lab-deck-readout strong {
+  display: block;
+  margin: .15rem 0 -.15rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(8rem, 14vw, 15rem);
+  line-height: .72;
+  letter-spacing: -.11em;
+}
+
+.motion-lab-deck-readout::after {
+  content: "DAILY RADAR / COMPRESSION STATE";
+  margin-top: 1rem;
+  padding-top: .6rem;
+  border-top: 1px solid rgba(11,11,11,.42);
+  opacity: .45;
+}
+
+.motion-lab-deck-face {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 1.1rem 1.05rem;
+  overflow: hidden;
+  border: 1px solid rgba(11,11,11,.75);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.32), transparent 42%),
+    var(--paper-deep);
+  color: var(--ink);
+  opacity: var(--deckness);
+  pointer-events: none;
+}
+
+.motion-lab-signal-adjacent .motion-lab-deck-face {
+  background: var(--cobalt);
+  color: white;
+  border-color: rgba(11,11,11,.85);
+}
+
+.motion-lab-signal-wildcard .motion-lab-deck-face {
+  background: var(--orange);
+  color: var(--ink);
+  border-color: rgba(11,11,11,.85);
+}
+
+.motion-lab-deck-face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .16;
+  background-image: radial-gradient(circle, currentColor .65px, transparent .8px);
+  background-size: 14px 14px;
+  mask-image: linear-gradient(135deg, black, transparent 68%);
+}
+
+.motion-lab-deck-face-top,
+.motion-lab-deck-face-bottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .54rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.motion-lab-deck-face > strong {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  margin-left: -.05em;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(6rem, 13vw, 13rem);
+  line-height: .68;
+  letter-spacing: -.12em;
+}
+
+.motion-lab-deck-face-bottom {
+  padding-top: .75rem;
+  border-top: 1px solid currentColor;
+}
+
+.motion-lab-signal > .motion-lab-rank,
+.motion-lab-signal > .motion-lab-signal-copy,
+.motion-lab-signal > .motion-lab-score,
+.motion-lab-signal > .motion-lab-age {
+  opacity: max(.06, var(--overviewness));
+}
+
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal {
+  right: auto;
+  bottom: auto;
+  width: 52vw;
+  height: 42vh;
+  min-height: 42vh;
+  padding: 0;
+  border-top: 0;
+  background: var(--paper-deep);
+  color: var(--ink);
+  transform-origin: 50% 50%;
+}
+
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal::before { display: none; }
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-01 { left: 24vw; top: 19.5vh; transform: rotate(-1.15deg); z-index: 17; }
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-02 { left: 25.1vw; top: 20.7vh; transform: rotate(.85deg); z-index: 16; }
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-03 { left: 23.5vw; top: 21.9vh; transform: rotate(-1.75deg); z-index: 15; }
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-04 { left: 26.2vw; top: 23.1vh; transform: rotate(1.45deg); z-index: 14; }
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-05 { left: 24.8vw; top: 24.25vh; transform: rotate(-.55deg); z-index: 13; }
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-06 {
+  left: 27vw;
+  top: 25.35vh;
+  width: 52vw;
+  height: 42vh;
+  min-height: 42vh;
+  transform: rotate(1.8deg);
+  z-index: 12;
+}
+.motion-lab-shell[data-layout="deck"] .motion-lab-signal-07 {
+  left: 22.7vw;
+  top: 26.5vh;
+  width: 52vw;
+  height: 42vh;
+  min-height: 42vh;
+  transform: rotate(-2.05deg);
+  z-index: 11;
+}
+
+.motion-lab-shell[data-mode="deck"] .motion-lab-hero { opacity: 0 !important; }
+.motion-lab-shell[data-mode="deck"] .motion-lab-signal-stage { opacity: 1 !important; transform: scale(1); }
+
+.motion-lab-shell[data-mode="topic"] .motion-lab-deck-face,
+.motion-lab-shell[data-mode="hero"] .motion-lab-deck-face,
+.motion-lab-shell[data-mode="overview"] .motion-lab-deck-face {
+  pointer-events: none;
+}
+
+.motion-lab-shell[data-mode="topic"] .motion-lab-deck-readout,
+.motion-lab-shell[data-mode="hero"] .motion-lab-deck-readout,
+.motion-lab-shell[data-mode="overview"] .motion-lab-deck-readout {
+  opacity: 0;
+}
+
+@media (max-width: 1100px) {
+  .motion-lab-deck-readout {
+    left: 2.8vw;
+    width: 14vw;
+  }
+  .motion-lab-deck-readout strong { font-size: 12vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal,
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-06,
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-07 {
+    width: 56vw;
+  }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-01 { left: 22vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-02 { left: 23vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-03 { left: 21.4vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-04 { left: 24.3vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-05 { left: 22.6vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-06 { left: 25vw; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal-07 { left: 20.6vw; }
+}
+
+@media (max-width: 760px) {
+  .motion-lab-track { min-height: 250vh; }
+  .motion-lab-deck-readout,
+  .motion-lab-deck-face { display: none; }
+  .motion-lab-shell[data-layout="deck"] .motion-lab-signal {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-deck-readout,
+  .motion-lab-deck-face { display: none; }
+}

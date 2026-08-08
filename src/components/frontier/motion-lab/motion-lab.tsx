@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
 
 interface LabSignal {
@@ -12,7 +13,28 @@ interface LabSignal {
   lane: "core" | "adjacent" | "wildcard";
 }
 
-type LabMode = "run" | "hero" | "overview" | "topic";
+type LabMode = "run" | "hero" | "deck" | "overview" | "topic";
+
+interface GsapTweenLike {
+  progress(value: number): GsapTweenLike;
+  kill(): void;
+}
+
+interface GsapLike {
+  registerPlugin(...plugins: unknown[]): void;
+}
+
+interface FlipLike {
+  getState(targets: Element[]): unknown;
+  from(state: unknown, vars: Record<string, unknown>): GsapTweenLike;
+}
+
+declare global {
+  interface Window {
+    gsap?: GsapLike;
+    Flip?: FlipLike;
+  }
+}
 
 const SIGNALS: LabSignal[] = [
   {
@@ -81,6 +103,23 @@ function lerp(current: number, target: number, amount: number) {
   return current + (target - current) * amount;
 }
 
+function deckMorphForProgress(progress: number) {
+  if (progress < 0.4) return 1;
+  if (progress < 0.52) return 1 - clamp((progress - 0.4) / 0.12);
+  if (progress < 0.58) return 0;
+  if (progress < 0.82) return clamp((progress - 0.58) / 0.24);
+  return 1;
+}
+
+function labelForProgress(progress: number) {
+  if (progress < 0.06) return "LIVE";
+  if (progress < 0.4) return "TEAR";
+  if (progress < 0.52) return "COMPRESSION";
+  if (progress < 0.58) return "DECK";
+  if (progress < 0.82) return "EXPAND";
+  return "OVERVIEW";
+}
+
 export function MotionLab() {
   const [mode, setMode] = useState<LabMode>("run");
   const shellRef = useRef<HTMLDivElement | null>(null);
@@ -88,7 +127,67 @@ export function MotionLab() {
   const progressRef = useRef<HTMLSpanElement | null>(null);
   const velocityRef = useRef<HTMLSpanElement | null>(null);
   const stateRef = useRef<HTMLSpanElement | null>(null);
+  const engineRef = useRef<HTMLSpanElement | null>(null);
   const resetPhysicsRef = useRef<(() => void) | null>(null);
+  const flipTweenRef = useRef<GsapTweenLike | null>(null);
+  const flipProgressRef = useRef(1);
+
+  useEffect(() => {
+    const root = shellRef.current;
+    if (!root) return;
+
+    let attempts = 0;
+    let timer = 0;
+
+    const setupFlip = () => {
+      const gsap = window.gsap;
+      const Flip = window.Flip;
+      if (!gsap || !Flip) return false;
+
+      const signals = Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal"));
+      if (signals.length !== SIGNALS.length) return false;
+
+      flipTweenRef.current?.kill();
+      root.dataset.gsap = "booting";
+      root.dataset.layout = "deck";
+      const deckState = Flip.getState(signals);
+      root.dataset.layout = "overview";
+      gsap.registerPlugin(Flip);
+
+      const tween = Flip.from(deckState, {
+        duration: 1,
+        paused: true,
+        absolute: true,
+        scale: true,
+        simple: true,
+        ease: "power4.inOut",
+        stagger: { each: 0.045, from: "start" },
+      });
+
+      tween.progress(flipProgressRef.current);
+      flipTweenRef.current = tween;
+      root.dataset.gsap = "ready";
+      if (engineRef.current) engineRef.current.textContent = "GSAP / FLIP READY";
+      return true;
+    };
+
+    if (!setupFlip()) {
+      if (engineRef.current) engineRef.current.textContent = "GSAP / FLIP LOADING";
+      timer = window.setInterval(() => {
+        attempts += 1;
+        if (setupFlip() || attempts > 80) {
+          window.clearInterval(timer);
+          if (attempts > 80 && engineRef.current) engineRef.current.textContent = "FLIP FALLBACK";
+        }
+      }, 75);
+    }
+
+    return () => {
+      if (timer) window.clearInterval(timer);
+      flipTweenRef.current?.kill();
+      flipTweenRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     const root = shellRef.current;
@@ -96,6 +195,7 @@ export function MotionLab() {
     if (!root || !scroller) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = window.matchMedia("(max-width: 760px)").matches;
     root.dataset.reduced = reduced ? "true" : "false";
 
     let animationFrame = 0;
@@ -118,6 +218,8 @@ export function MotionLab() {
       hero: 1,
       signals: 0.18,
       signalScale: 0.96,
+      deckness: 0,
+      progress: 0,
     };
 
     const write = () => {
@@ -136,6 +238,19 @@ export function MotionLab() {
       root.style.setProperty("--hero-alpha", current.hero.toFixed(4));
       root.style.setProperty("--signal-alpha", current.signals.toFixed(4));
       root.style.setProperty("--signal-scale", current.signalScale.toFixed(4));
+      root.style.setProperty("--deckness", current.deckness.toFixed(4));
+      root.style.setProperty("--overviewness", (1 - current.deckness).toFixed(4));
+      root.style.setProperty("--lab-progress", current.progress.toFixed(4));
+    };
+
+    const applyFlipProgress = (value: number) => {
+      const next = clamp(value);
+      flipProgressRef.current = next;
+      if (reduced || mobile) {
+        flipTweenRef.current?.progress(1);
+        return;
+      }
+      flipTweenRef.current?.progress(next);
     };
 
     const render = () => {
@@ -144,8 +259,10 @@ export function MotionLab() {
 
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       const progress = clamp(scroller.scrollTop / travel);
-      const tear = clamp((progress - 0.035) / 0.55);
-      const reveal = clamp((progress - 0.24) / 0.42);
+      const tear = clamp((progress - 0.025) / 0.39);
+      const reveal = clamp((progress - 0.15) / 0.28);
+      const flipProgress = reduced || mobile ? 1 : deckMorphForProgress(progress);
+      const deckness = 1 - flipProgress;
       const velocityEnergy = clamp(impulse, -1.6, 1.6);
 
       const target = reduced
@@ -162,9 +279,11 @@ export function MotionLab() {
             s1: 1,
             s2: 1,
             s3: 1,
-            hero: progress < 0.36 ? 1 : 0,
-            signals: progress < 0.3 ? 0.18 : 1,
-            signalScale: progress < 0.3 ? 0.96 : 1,
+            hero: progress < 0.32 ? 1 : 0,
+            signals: progress < 0.24 ? 0.18 : 1,
+            signalScale: progress < 0.24 ? 0.96 : 1,
+            deckness: 0,
+            progress,
           }
         : {
             x1: -tear * 101 - velocityEnergy * 8.5,
@@ -179,9 +298,11 @@ export function MotionLab() {
             s1: 1 + tear * 0.075,
             s2: 1 - tear * 0.055,
             s3: 1 + tear * 0.11,
-            hero: 1 - clamp((progress - 0.34) / 0.38),
+            hero: 1 - clamp((progress - 0.24) / 0.2),
             signals: 0.18 + reveal * 0.82,
             signalScale: 0.96 + reveal * 0.04,
+            deckness,
+            progress,
           };
 
       const smoothing = reduced ? 1 : 0.135;
@@ -200,19 +321,21 @@ export function MotionLab() {
       current.hero = lerp(current.hero, target.hero, 0.16);
       current.signals = lerp(current.signals, target.signals, 0.16);
       current.signalScale = lerp(current.signalScale, target.signalScale, 0.16);
+      current.deckness = lerp(current.deckness, target.deckness, 0.2);
+      current.progress = lerp(current.progress, target.progress, 0.22);
       impulse *= 0.88;
+      applyFlipProgress(flipProgress);
       write();
 
       if (progressRef.current) progressRef.current.textContent = progress.toFixed(3);
       if (velocityRef.current) velocityRef.current.textContent = `${Math.round(velocityEnergy * 1050)} px/s`;
-      if (stateRef.current) {
-        stateRef.current.textContent = progress < 0.08 ? "LIVE" : progress < 0.72 ? "TEAR" : "OVERVIEW";
-      }
+      if (stateRef.current) stateRef.current.textContent = labelForProgress(progress);
 
       const unsettled =
         Math.abs(current.x1 - target.x1) > 0.02 ||
         Math.abs(current.x2 - target.x2) > 0.02 ||
         Math.abs(current.x3 - target.x3) > 0.02 ||
+        Math.abs(current.deckness - target.deckness) > 0.004 ||
         Math.abs(impulse) > 0.008;
 
       if (unsettled) animationFrame = window.requestAnimationFrame(render);
@@ -251,10 +374,13 @@ export function MotionLab() {
         hero: 1,
         signals: 0.18,
         signalScale: 0.96,
+        deckness: 0,
+        progress: 0,
       };
       impulse = 0;
       lastScrollTop = scroller.scrollTop;
       lastTime = performance.now();
+      applyFlipProgress(1);
       write();
       requestRender();
     };
@@ -278,8 +404,19 @@ export function MotionLab() {
     root.dataset.mode = mode;
     scroller.style.overflowY = mode === "run" ? "auto" : "hidden";
 
+    const setFrame = (flipProgress: number, deckness: number, hero: number, signals: number) => {
+      flipProgressRef.current = flipProgress;
+      flipTweenRef.current?.progress(flipProgress);
+      root.style.setProperty("--deckness", deckness.toString());
+      root.style.setProperty("--overviewness", (1 - deckness).toString());
+      root.style.setProperty("--hero-alpha", hero.toString());
+      root.style.setProperty("--signal-alpha", signals.toString());
+      root.style.setProperty("--signal-scale", signals < 1 ? "0.96" : "1");
+    };
+
     if (mode === "run") {
       scroller.scrollTop = 0;
+      root.dataset.layout = "overview";
       resetPhysicsRef.current?.();
       root.style.setProperty("--tear-x-1", "0vw");
       root.style.setProperty("--tear-x-2", "0vw");
@@ -293,13 +430,12 @@ export function MotionLab() {
       root.style.setProperty("--tear-s-1", "1");
       root.style.setProperty("--tear-s-2", "1");
       root.style.setProperty("--tear-s-3", "1");
-      root.style.setProperty("--hero-alpha", "1");
-      root.style.setProperty("--signal-alpha", "0.18");
-      root.style.setProperty("--signal-scale", "0.96");
+      root.style.setProperty("--lab-progress", "0");
       return;
     }
 
     const showHero = mode === "hero";
+    root.dataset.layout = "overview";
     root.style.setProperty("--tear-x-1", showHero ? "0vw" : "-112vw");
     root.style.setProperty("--tear-x-2", showHero ? "0vw" : "116vw");
     root.style.setProperty("--tear-x-3", showHero ? "0vw" : "-102vw");
@@ -312,9 +448,10 @@ export function MotionLab() {
     root.style.setProperty("--tear-s-1", "1");
     root.style.setProperty("--tear-s-2", "1");
     root.style.setProperty("--tear-s-3", "1");
-    root.style.setProperty("--hero-alpha", showHero ? "1" : "0");
-    root.style.setProperty("--signal-alpha", showHero ? "0.18" : "1");
-    root.style.setProperty("--signal-scale", showHero ? "0.96" : "1");
+
+    if (mode === "hero") setFrame(1, 0, 1, 0.18);
+    if (mode === "deck") setFrame(0, 1, 0, 1);
+    if (mode === "overview" || mode === "topic") setFrame(1, 0, 0, 1);
 
     if (progressRef.current) progressRef.current.textContent = "STATIC";
     if (velocityRef.current) velocityRef.current.textContent = "—";
@@ -322,7 +459,10 @@ export function MotionLab() {
   }, [mode]);
 
   return (
-    <div ref={shellRef} data-mode={mode} className="motion-lab-shell">
+    <div ref={shellRef} data-mode={mode} data-layout="overview" className="motion-lab-shell">
+      <Script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js" strategy="afterInteractive" />
+      <Script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/Flip.min.js" strategy="afterInteractive" />
+
       <div ref={scrollerRef} className="motion-lab-scroller">
         <div className="motion-lab-track">
           <section className="motion-lab-stage" aria-label="Frontier Radar Motion Lab">
@@ -332,13 +472,19 @@ export function MotionLab() {
             <header className="motion-lab-meta">
               <div>
                 <strong>FR / MOTION LAB</strong>
-                <span>LAB-01 STATIC COMPOSITION + LAB-02 TYPOGRAPHY PHYSICS</span>
+                <span>LAB-03 SIGNAL DECK → OVERVIEW / GSAP FLIP PHYSICS</span>
               </div>
               <div>
                 <span>PROTOTYPE ONLY</span>
                 <span>NO LIVE DATA</span>
               </div>
             </header>
+
+            <div className="motion-lab-deck-readout" aria-hidden="true">
+              <span>458 SCANNED</span>
+              <strong>07</strong>
+              <span>SELECTED SIGNALS</span>
+            </div>
 
             <div className="motion-lab-signal-stage" aria-label="Seven prototype signals">
               {SIGNALS.map((signal) => (
@@ -356,6 +502,18 @@ export function MotionLab() {
                     <span>FR</span>
                   </div>
                   <span className="motion-lab-age">{signal.age}</span>
+
+                  <div className="motion-lab-deck-face" aria-hidden="true">
+                    <div className="motion-lab-deck-face-top">
+                      <span>INTEL BRIEF</span>
+                      <span>FR / {signal.score}</span>
+                    </div>
+                    <strong>{signal.rank}</strong>
+                    <div className="motion-lab-deck-face-bottom">
+                      <span>{signal.topic}</span>
+                      <span>{signal.age} / SIGNAL</span>
+                    </div>
+                  </div>
                 </article>
               ))}
 
@@ -372,15 +530,15 @@ export function MotionLab() {
             </div>
 
             <div className="motion-lab-hero" aria-labelledby="motion-lab-title">
-              <p>PERSONAL FRONTIER INTELLIGENCE / PROTOTYPE 001</p>
+              <p>PERSONAL FRONTIER INTELLIGENCE / PROTOTYPE 002</p>
               <h1 id="motion-lab-title">
                 <span className="motion-lab-title-line motion-lab-title-line-1"><i>FIND WHAT&apos;S NEXT</i></span>
                 <span className="motion-lab-title-line motion-lab-title-line-2"><i>BEFORE IT HAS</i></span>
                 <span className="motion-lab-title-line motion-lab-title-line-3"><i>A NAME.</i></span>
               </h1>
               <div className="motion-lab-hero-footer">
-                <span>07 SIGNALS / 01 VIEWPORT</span>
-                <span>SCROLL SLOW · THROW FAST · REVERSE</span>
+                <span>458 FOUND → 07 SELECTED → 01 VIEWPORT</span>
+                <span>TEAR · COMPRESS · HOLD · RELEASE</span>
               </div>
             </div>
 
@@ -393,6 +551,7 @@ export function MotionLab() {
                 <div><dt>STATE</dt><dd><span ref={stateRef}>LIVE</span></dd></div>
                 <div><dt>PROGRESS</dt><dd><span ref={progressRef}>0.000</span></dd></div>
                 <div><dt>VELOCITY</dt><dd><span ref={velocityRef}>0 px/s</span></dd></div>
+                <div><dt>ENGINE</dt><dd><span ref={engineRef}>GSAP / FLIP LOADING</span></dd></div>
               </dl>
               <div className="motion-lab-control-group">
                 <span>PLAY</span>
@@ -401,6 +560,7 @@ export function MotionLab() {
               <div className="motion-lab-control-group">
                 <span>STATIC FRAMES</span>
                 <button type="button" data-active={mode === "hero"} onClick={() => setMode("hero")}>HERO</button>
+                <button type="button" data-active={mode === "deck"} onClick={() => setMode("deck")}>DECK</button>
                 <button type="button" data-active={mode === "overview"} onClick={() => setMode("overview")}>OVERVIEW</button>
                 <button type="button" data-active={mode === "topic"} onClick={() => setMode("topic")}>TOPIC</button>
               </div>
