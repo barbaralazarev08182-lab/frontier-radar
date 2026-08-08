@@ -1,5 +1,5 @@
 .motion-lab-shell[data-pointer-lab="ready"] .motion-lab-signal {
-  cursor: crosshair;
+  cursor: none;
   translate: var(--gravity-x, 0px) var(--gravity-y, 0px);
   scale: var(--gravity-scale, 1);
   transition:
@@ -32,33 +32,39 @@
   border: 0;
   background:
     radial-gradient(
-      circle 8.4rem at var(--scan-local-x) var(--scan-local-y),
-      rgba(11,11,11,.78) 0 24%,
-      rgba(11,11,11,.66) 39%,
-      rgba(11,11,11,.42) 57%,
-      rgba(11,11,11,.18) 72%,
-      rgba(11,11,11,.05) 84%,
+      ellipse 11.8rem 7.4rem at var(--scan-local-x) var(--scan-local-y),
+      rgba(241,238,229,.99) 0 30%,
+      rgba(241,238,229,.96) 43%,
+      rgba(241,238,229,.82) 58%,
+      rgba(241,238,229,.52) 72%,
+      rgba(241,238,229,.18) 86%,
       transparent 100%
+    ),
+    radial-gradient(
+      ellipse 9.2rem 5.6rem at var(--scan-local-x) var(--scan-local-y),
+      rgba(49,80,255,.075),
+      rgba(49,80,255,.025) 46%,
+      transparent 78%
     );
-  color: var(--paper);
+  color: #2039b9;
   opacity: 0;
   pointer-events: none;
   -webkit-mask-image: radial-gradient(
-    circle 8.6rem at var(--scan-local-x) var(--scan-local-y),
-    #000 0 28%,
-    rgba(0,0,0,.94) 43%,
-    rgba(0,0,0,.72) 58%,
-    rgba(0,0,0,.38) 73%,
-    rgba(0,0,0,.12) 86%,
+    ellipse 12rem 7.6rem at var(--scan-local-x) var(--scan-local-y),
+    #000 0 31%,
+    rgba(0,0,0,.96) 45%,
+    rgba(0,0,0,.78) 59%,
+    rgba(0,0,0,.48) 73%,
+    rgba(0,0,0,.18) 87%,
     transparent 100%
   );
   mask-image: radial-gradient(
-    circle 8.6rem at var(--scan-local-x) var(--scan-local-y),
-    #000 0 28%,
-    rgba(0,0,0,.94) 43%,
-    rgba(0,0,0,.72) 58%,
-    rgba(0,0,0,.38) 73%,
-    rgba(0,0,0,.12) 86%,
+    ellipse 12rem 7.6rem at var(--scan-local-x) var(--scan-local-y),
+    #000 0 31%,
+    rgba(0,0,0,.96) 45%,
+    rgba(0,0,0,.78) 59%,
+    rgba(0,0,0,.48) 73%,
+    rgba(0,0,0,.18) 87%,
     transparent 100%
   );
   transition: opacity 150ms ease-out;
@@ -68,7 +74,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  opacity: .17;
+  opacity: .12;
   background-image: radial-gradient(circle, currentColor .55px, transparent .72px);
   background-size: 12px 12px;
   pointer-events: none;
@@ -83,7 +89,7 @@
 .motion-lab-deep-why {
   position: relative;
   z-index: 1;
-  text-shadow: 0 1px 8px rgba(11,11,11,.18);
+  text-shadow: none;
 }
 
 .motion-lab-deep-kicker {
@@ -91,7 +97,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: .42rem;
-  border-bottom: 1px solid rgba(241,238,229,.28);
+  border-bottom: 1px solid rgba(32,57,185,.28);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: .49rem;
   font-weight: 900;
@@ -99,7 +105,7 @@
   text-transform: uppercase;
 }
 
-.motion-lab-deep-kicker span:last-child { opacity: .48; }
+.motion-lab-deep-kicker span:last-child { opacity: .5; }
 
 .motion-lab-deep-metrics {
   display: grid;
@@ -111,7 +117,7 @@
 .motion-lab-deep-metrics div {
   min-width: 0;
   padding-top: .36rem;
-  border-top: 1px solid rgba(241,238,229,.18);
+  border-top: 1px solid rgba(32,57,185,.2);
 }
 
 .motion-lab-deep-metrics span,
@@ -138,12 +144,13 @@
 
 .motion-lab-deep-why {
   padding-top: .42rem;
-  border-top: 1px solid rgba(241,238,229,.28);
+  border-top: 1px solid rgba(32,57,185,.28);
 }
 
 .motion-lab-deep-why p {
   margin: 0;
   max-width: 38ch;
+  color: rgba(11,11,11,.84);
   font-size: clamp(.57rem, .67vw, .72rem);
   font-weight: 800;
   line-height: 1.08;
@@ -153,28 +160,44 @@
 .motion-lab-signal-06 .motion-lab-deep-layer {
   background:
     radial-gradient(
-      circle 8.4rem at var(--scan-local-x) var(--scan-local-y),
-      rgba(10,20,74,.82) 0 26%,
-      rgba(16,35,118,.66) 44%,
-      rgba(49,80,255,.32) 64%,
-      rgba(49,80,255,.1) 80%,
+      ellipse 10rem 7.6rem at var(--scan-local-x) var(--scan-local-y),
+      rgba(109,128,255,.98) 0 30%,
+      rgba(91,112,255,.94) 46%,
+      rgba(73,96,255,.76) 62%,
+      rgba(49,80,255,.42) 78%,
       transparent 100%
     );
   color: white;
 }
 
+.motion-lab-signal-06 .motion-lab-deep-kicker,
+.motion-lab-signal-06 .motion-lab-deep-metrics div,
+.motion-lab-signal-06 .motion-lab-deep-why {
+  border-color: rgba(255,255,255,.28);
+}
+
+.motion-lab-signal-06 .motion-lab-deep-why p { color: rgba(255,255,255,.9); }
+
 .motion-lab-signal-07 .motion-lab-deep-layer {
   background:
     radial-gradient(
-      circle 8.4rem at var(--scan-local-x) var(--scan-local-y),
-      rgba(38,18,7,.82) 0 26%,
-      rgba(88,36,9,.62) 45%,
-      rgba(255,75,0,.28) 65%,
-      rgba(255,75,0,.08) 81%,
+      ellipse 10.4rem 6.9rem at var(--scan-local-x) var(--scan-local-y),
+      rgba(255,171,111,.98) 0 30%,
+      rgba(255,144,79,.94) 47%,
+      rgba(255,112,47,.76) 63%,
+      rgba(255,75,0,.38) 79%,
       transparent 100%
     );
-  color: var(--paper);
+  color: #17110d;
 }
+
+.motion-lab-signal-07 .motion-lab-deep-kicker,
+.motion-lab-signal-07 .motion-lab-deep-metrics div,
+.motion-lab-signal-07 .motion-lab-deep-why {
+  border-color: rgba(23,17,13,.24);
+}
+
+.motion-lab-signal-07 .motion-lab-deep-why p { color: rgba(23,17,13,.88); }
 
 .motion-lab-scanner {
   --scanner-x: 50vw;
@@ -183,26 +206,22 @@
   z-index: 96;
   left: var(--scanner-x);
   top: var(--scanner-y);
-  width: 10.8rem;
-  height: 10.8rem;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  padding: .58rem;
-  border: 1px solid rgba(49,80,255,.48);
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 1px solid rgba(49,80,255,.58);
   border-radius: 50%;
-  color: var(--ink, #0b0b0b);
+  background: rgba(241,238,229,.78);
   opacity: 0;
-  transform: translate(-50%, -50%) scale(.84);
+  transform: translate(-50%, -50%) scale(.65);
   transform-origin: center;
   pointer-events: none;
-  box-shadow:
-    0 0 0 1px rgba(241,238,229,.35) inset,
-    0 0 2.2rem rgba(49,80,255,.055);
+  box-shadow: 0 0 0 2px rgba(241,238,229,.46);
   transition:
-    opacity 150ms ease-out,
-    transform 360ms cubic-bezier(.16,1,.3,1),
-    border-color 220ms ease,
-    box-shadow 220ms ease;
+    opacity 120ms ease-out,
+    transform 260ms cubic-bezier(.16,1,.3,1),
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
 
 .motion-lab-scanner::before,
@@ -211,82 +230,48 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  background: currentColor;
-  opacity: .14;
+  background: rgba(49,80,255,.66);
   transform: translate(-50%, -50%);
 }
 
-.motion-lab-scanner::before { width: calc(100% + 1.35rem); height: 1px; }
-.motion-lab-scanner::after { width: 1px; height: calc(100% + 1.35rem); }
+.motion-lab-scanner::before { width: 5px; height: 1px; }
+.motion-lab-scanner::after { width: 1px; height: 5px; }
 
 .motion-lab-scanner[data-active="true"] {
-  opacity: .82;
+  opacity: .78;
   transform: translate(-50%, -50%) scale(1);
 }
 
 .motion-lab-scanner[data-mode="focus"] {
-  border-color: rgba(49,80,255,.78);
-  box-shadow:
-    0 0 0 1px rgba(241,238,229,.42) inset,
-    0 0 2.8rem rgba(49,80,255,.1);
-  transform: translate(-50%, -50%) scale(1.06);
+  border-color: rgba(49,80,255,.86);
+  background: rgba(217,255,67,.78);
+  transform: translate(-50%, -50%) scale(1.22);
 }
 
 .motion-lab-scanner > span,
+.motion-lab-scanner > strong,
 .motion-lab-scanner > small {
-  position: relative;
-  z-index: 1;
-  justify-self: center;
-  padding: .12rem .26rem;
-  background: rgba(241,238,229,.68);
-  backdrop-filter: blur(4px);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: .44rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-
-.motion-lab-scanner > strong {
-  position: relative;
-  z-index: 1;
-  align-self: center;
-  justify-self: center;
-  padding: 0 .2rem;
-  background: rgba(241,238,229,.64);
-  backdrop-filter: blur(4px);
-  font-size: 2.55rem;
-  line-height: .78;
-  letter-spacing: -.1em;
-}
-
-.motion-lab-scanner > small {
-  max-width: 8.2rem;
-  text-align: center;
-  line-height: 1.25;
-  letter-spacing: .08em;
+  display: none !important;
 }
 
 .motion-lab-shell[data-focus] .motion-lab-scanline {
-  opacity: .28;
+  opacity: .22;
 }
 
 @media (max-width: 1100px) {
-  .motion-lab-scanner { width: 9.4rem; height: 9.4rem; }
   .motion-lab-deep-layer {
     -webkit-mask-image: radial-gradient(
-      circle 7.2rem at var(--scan-local-x) var(--scan-local-y),
-      #000 0 28%,
-      rgba(0,0,0,.86) 48%,
-      rgba(0,0,0,.42) 70%,
+      ellipse 9rem 6.2rem at var(--scan-local-x) var(--scan-local-y),
+      #000 0 30%,
+      rgba(0,0,0,.9) 48%,
+      rgba(0,0,0,.48) 72%,
       transparent 100%
     );
     mask-image: radial-gradient(
-      circle 7.2rem at var(--scan-local-x) var(--scan-local-y),
-      #000 0 28%,
-      rgba(0,0,0,.86) 48%,
-      rgba(0,0,0,.42) 70%,
+      ellipse 9rem 6.2rem at var(--scan-local-x) var(--scan-local-y),
+      #000 0 30%,
+      rgba(0,0,0,.9) 48%,
+      rgba(0,0,0,.48) 72%,
       transparent 100%
     );
   }
@@ -297,6 +282,7 @@
   .motion-lab-scanner,
   .motion-lab-deep-layer { display: none !important; }
   .motion-lab-shell .motion-lab-signal {
+    cursor: auto !important;
     translate: 0 0 !important;
     scale: 1 !important;
   }
@@ -306,6 +292,7 @@
   .motion-lab-scanner,
   .motion-lab-deep-layer { display: none !important; }
   .motion-lab-shell .motion-lab-signal {
+    cursor: auto !important;
     translate: 0 0 !important;
     scale: 1 !important;
   }
