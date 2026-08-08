@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------------------- */
 /* SIGNAL WEAVE / STABILITY                                                   */
-/* Keep the analysis instrument viewport-locked; wheel only drives resolve.   */
+/* Keep the analysis instrument viewport-locked and terminal.                 */
 /* -------------------------------------------------------------------------- */
 
 .weave-analysis {
@@ -40,30 +40,22 @@
   transition: opacity 220ms ease, visibility 0s linear 220ms !important;
 }
 
-/* Resolve is a state change inside one stable composition, never a page scroll. */
-.weave-readout,
+/* Signal Weave is the final scene. There is no secondary scroll-to-resolve beat. */
 .weave-take,
-.weave-canvas,
-.weave-header,
 .weave-scroll-cue {
-  will-change: opacity, transform;
+  display: none !important;
 }
 
-.weave-analysis[data-take="true"] .weave-canvas {
-  transform: scale(.992);
-  transform-origin: 55% 48%;
-  transition: transform 760ms cubic-bezier(.16,1,.3,1), opacity 480ms ease;
+.weave-canvas {
+  transform: none !important;
 }
 
-.weave-analysis:not([data-take="true"]) .weave-canvas {
-  transform: scale(1);
-  transition: transform 620ms cubic-bezier(.16,1,.3,1), opacity 420ms ease;
-}
-
-.weave-analysis[data-take="true"] .weave-scroll-cue {
-  opacity: 0;
-  transform: translateY(.35rem);
-  transition: opacity 220ms ease, transform 320ms ease;
+/* Safety: even if stale state briefly reports data-take=true during hot reload,
+   keep the visible composition identical to the normal weave state. */
+.weave-analysis[data-take="true"] .weave-readout {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
 }
 
 @media (max-width: 760px), (pointer: coarse) {
@@ -79,8 +71,7 @@
   .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-deck-readout,
   .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-scanline,
   .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-field,
-  .weave-canvas,
-  .weave-scroll-cue {
+  .weave-canvas {
     transition: none !important;
   }
 }
