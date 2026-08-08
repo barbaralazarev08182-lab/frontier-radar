@@ -14,6 +14,7 @@ import "./motion-lab-direct-handoff.css";
 import "./motion-lab-signal-weave.css";
 import "./motion-lab-signal-weave-polish.css";
 import "./motion-lab-signal-weave-motion.css";
+import "./motion-lab-signal-weave-stability.css";
 
 export const metadata: Metadata = {
   title: "Motion Lab · Frontier Radar",
