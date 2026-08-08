@@ -129,6 +129,7 @@ export function MotionLab() {
   const stateRef = useRef<HTMLSpanElement | null>(null);
   const engineRef = useRef<HTMLSpanElement | null>(null);
   const resetPhysicsRef = useRef<(() => void) | null>(null);
+  const rebuildFlipRef = useRef<(() => boolean) | null>(null);
   const flipTweenRef = useRef<GsapTweenLike | null>(null);
   const flipProgressRef = useRef(1);
 
@@ -138,6 +139,7 @@ export function MotionLab() {
 
     let attempts = 0;
     let timer = 0;
+    let resizeTimer = 0;
 
     const setupFlip = () => {
       const gsap = window.gsap;
@@ -148,28 +150,43 @@ export function MotionLab() {
       if (signals.length !== SIGNALS.length) return false;
 
       flipTweenRef.current?.kill();
-      root.dataset.gsap = "booting";
-      root.dataset.layout = "deck";
-      const deckState = Flip.getState(signals);
-      root.dataset.layout = "overview";
       gsap.registerPlugin(Flip);
+      root.dataset.gsap = "booting";
+
+      // Capture two real CSS layouts. These elements are already absolutely positioned,
+      // so forcing Flip's `absolute` mode creates a second positioning system and breaks
+      // right/bottom anchored cards. Keep Flip transform-only here.
+      root.dataset.layout = "deck";
+      void signals[0]?.offsetWidth;
+      const deckState = Flip.getState(signals);
+
+      root.dataset.layout = "overview";
+      void signals[0]?.offsetWidth;
 
       const tween = Flip.from(deckState, {
         duration: 1,
         paused: true,
-        absolute: true,
         scale: true,
-        simple: true,
         ease: "power4.inOut",
         stagger: { each: 0.045, from: "start" },
       });
 
-      tween.progress(flipProgressRef.current);
+      const desiredProgress = root.dataset.mode === "deck" ? 1 : flipProgressRef.current;
+      tween.progress(desiredProgress);
       flipTweenRef.current = tween;
+
+      if (root.dataset.mode === "deck") {
+        root.dataset.layout = "deck";
+        // At a static endpoint, use the actual deck layout rather than a cached inverse transform.
+        signals.forEach((signal) => signal.style.removeProperty("transform"));
+      }
+
       root.dataset.gsap = "ready";
       if (engineRef.current) engineRef.current.textContent = "GSAP / FLIP READY";
       return true;
     };
+
+    rebuildFlipRef.current = setupFlip;
 
     if (!setupFlip()) {
       if (engineRef.current) engineRef.current.textContent = "GSAP / FLIP LOADING";
@@ -182,8 +199,22 @@ export function MotionLab() {
       }, 75);
     }
 
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        if (root.dataset.mode === "run" || root.dataset.mode === "overview" || root.dataset.mode === "topic") {
+          setupFlip();
+        }
+      }, 140);
+    };
+
+    window.addEventListener("resize", onResize);
+
     return () => {
       if (timer) window.clearInterval(timer);
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      window.removeEventListener("resize", onResize);
+      rebuildFlipRef.current = null;
       flipTweenRef.current?.kill();
       flipTweenRef.current = null;
     };
@@ -417,6 +448,7 @@ export function MotionLab() {
     if (mode === "run") {
       scroller.scrollTop = 0;
       root.dataset.layout = "overview";
+      rebuildFlipRef.current?.();
       resetPhysicsRef.current?.();
       root.style.setProperty("--tear-x-1", "0vw");
       root.style.setProperty("--tear-x-2", "0vw");
@@ -435,7 +467,6 @@ export function MotionLab() {
     }
 
     const showHero = mode === "hero";
-    root.dataset.layout = "overview";
     root.style.setProperty("--tear-x-1", showHero ? "0vw" : "-112vw");
     root.style.setProperty("--tear-x-2", showHero ? "0vw" : "116vw");
     root.style.setProperty("--tear-x-3", showHero ? "0vw" : "-102vw");
@@ -449,9 +480,21 @@ export function MotionLab() {
     root.style.setProperty("--tear-s-2", "1");
     root.style.setProperty("--tear-s-3", "1");
 
-    if (mode === "hero") setFrame(1, 0, 1, 0.18);
-    if (mode === "deck") setFrame(0, 1, 0, 1);
-    if (mode === "overview" || mode === "topic") setFrame(1, 0, 0, 1);
+    if (mode === "deck") {
+      // Static DECK must use the actual CSS deck endpoint, not Flip progress(0).
+      // The latter is an inverse transform based on the overview layout and was the
+      // source of the giant cards escaping to the right/bottom in the QA screenshot.
+      flipTweenRef.current?.progress(1);
+      root.dataset.layout = "deck";
+      Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal")).forEach((signal) => {
+        signal.style.removeProperty("transform");
+      });
+      setFrame(1, 1, 0, 1);
+    } else {
+      root.dataset.layout = "overview";
+      if (mode === "hero") setFrame(1, 0, 1, 0.18);
+      if (mode === "overview" || mode === "topic") setFrame(1, 0, 0, 1);
+    }
 
     if (progressRef.current) progressRef.current.textContent = "STATIC";
     if (velocityRef.current) velocityRef.current.textContent = "—";
