@@ -93,6 +93,7 @@ export function MotionLabAnalysis() {
     const stage = mount;
     const root = stage?.closest<HTMLElement>(".motion-lab-shell");
     const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
+    const stateSpan = root?.querySelector<HTMLElement>(".motion-lab-hud dl > div:first-child dd span");
     if (!section || !root || !scroller) return;
 
     let frame = 0;
@@ -116,10 +117,11 @@ export function MotionLabAnalysis() {
       }
 
       section.style.setProperty("--analysis-alpha", alpha.toFixed(4));
-      section.style.setProperty("--analysis-shift", `${((1 - alpha) * 22).toFixed(2)}px`);
+      section.style.transform = `translate3d(0, ${((1 - alpha) * 22).toFixed(2)}px, 0)`;
       section.dataset.ready = ready ? "true" : "false";
       root.style.setProperty("--analysis-alpha", alpha.toFixed(4));
       root.dataset.analysis = ready ? "ready" : alpha > 0.002 ? "entering" : "off";
+      if (ready && stateSpan) stateSpan.textContent = "ANALYSIS";
 
       if (wasReady && !ready) {
         setHovered(null);
