@@ -30,6 +30,7 @@
   font-weight: 950;
   line-height: .88;
   letter-spacing: -.07em;
+  text-wrap: balance;
 }
 
 .closure a {
