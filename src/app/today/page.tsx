@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { Activity, ArrowRight, Compass, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, Orbit } from "lucide-react";
 import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
 import {
@@ -22,6 +22,7 @@ import { ItemCard } from "@/components/frontier/item-card";
 import { DataModeBadge } from "@/components/frontier/data-mode-badge";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
+import { SignalHero } from "@/components/frontier/signal-hero";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { personalizeFeed } from "@/lib/personalization/server";
 
@@ -41,6 +42,32 @@ function computeTopTags(feed: FeedResult, limit: number): Array<{ tag: string; c
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, limit)
     .map(([tag, count]) => ({ tag, count }));
+}
+
+function bentoClass(index: number, lane: DiscoveryLane): string {
+  const span =
+    index === 0
+      ? "md:col-span-12"
+      : index === 1
+        ? "md:col-span-7"
+        : index === 2
+          ? "md:col-span-5"
+          : index === 3
+            ? "md:col-span-5"
+            : index === 4
+              ? "md:col-span-7"
+              : index === 5
+                ? "md:col-span-7"
+                : "md:col-span-5";
+
+  const offset =
+    lane === "wildcard"
+      ? "md:translate-y-5 md:rotate-[0.75deg]"
+      : lane === "adjacent"
+        ? "md:-translate-y-2 md:-rotate-[0.35deg]"
+        : "";
+
+  return `${span} ${offset}`;
 }
 
 export default async function TodayPage() {
@@ -72,8 +99,8 @@ export default async function TodayPage() {
         try {
           clustered = (await tryLoadPersistentProjectFeed(personalized.feed)) ?? clustered;
         } catch {
-          // Project persistence is an incremental rollout. Runtime clustering remains
-          // the safety net if the migration is not applied or materialization fails.
+          // Persistent Project Entity is incremental. Runtime clustering remains
+          // the safety net if materialization is unavailable.
         }
       }
       const confirmed = promoteCrossSourceEvidence(clustered);
@@ -102,71 +129,35 @@ export default async function TodayPage() {
     day: "numeric",
     weekday: "long",
   });
-
-  const topTags = feed ? computeTopTags(feed, 5) : [];
+  const compactDate = new Date().toLocaleDateString("en-CA", { month: "2-digit", day: "2-digit", year: "2-digit" });
+  const topTags = feed ? computeTopTags(feed, 6) : [];
+  const heroSignals = feed
+    ? feed.items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        source: item.source,
+        score: item.score,
+        lane: discoveryLanes.get(item.id) ?? "core",
+      }))
+    : [];
 
   return (
-    <div className="space-y-7 md:space-y-9">
-      <header className="radar-panel-strong radar-grid relative overflow-hidden rounded-[1.75rem] px-5 py-6 sm:px-7 md:px-8 md:py-8">
-        <div aria-hidden className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-cyan-400/[0.055] blur-3xl" />
-        <div aria-hidden className="absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-violet-500/[0.045] blur-3xl" />
-
-        <div className="relative space-y-7">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="radar-kicker">Daily intelligence · 01</span>
-              <DataModeBadge mode={mode} />
-            </div>
-            <p className="font-mono text-[11px] tracking-wide text-muted-foreground">{today}</p>
-          </div>
-
-          <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_18rem] md:items-end">
-            <div className="max-w-3xl space-y-4">
-              <h1 className="text-balance text-3xl font-semibold leading-[1.04] tracking-[-0.035em] text-foreground sm:text-4xl md:text-5xl">
-                Your daily frontier brief.
-              </h1>
-              <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-[15px]">
-                从正在被构建的 AI、开发工具和新产品里，只留下今天真正值得你花注意力的 7 个信号。
-                核心兴趣优先，同时保留相邻探索与意外发现。
-              </p>
-            </div>
-
-            {feed && !error ? (
-              <div className="grid grid-cols-3 gap-2 md:grid-cols-1">
-                <div className="rounded-xl border border-white/[0.065] bg-black/10 px-3 py-3 md:flex md:items-center md:justify-between">
-                  <span className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Picks</span>
-                  <span className="mt-1 block font-mono text-lg font-semibold tabular-nums text-foreground md:mt-0">{String(feed.items.length).padStart(2, "0")}</span>
-                </div>
-                <div className="rounded-xl border border-white/[0.065] bg-black/10 px-3 py-3 md:flex md:items-center md:justify-between">
-                  <span className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Mix</span>
-                  <span className="mt-1 block font-mono text-sm font-semibold text-cyan-200 md:mt-0">5 / 1 / 1</span>
-                </div>
-                <div className="rounded-xl border border-white/[0.065] bg-black/10 px-3 py-3 md:flex md:items-center md:justify-between">
-                  <span className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Profile</span>
-                  <span className="mt-1 block font-mono text-xs font-semibold text-violet-200 md:mt-0">
-                    {personalizationApplied ? `${personalizationSignals} signals` : "learning"}
-                  </span>
-                </div>
-              </div>
-            ) : null}
-          </div>
-
-          {feed && !error ? (
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/[0.065] pt-4 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <Activity className="h-3.5 w-3.5 text-cyan-300" />
-                5 Core · 1 Adjacent · 1 Wildcard
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-violet-300" />
-                {personalizationApplied
-                  ? `${personalizationMode === "vector" ? "兴趣向量" : "规则个性化"} · ${personalizationSignals} 条近期反馈`
-                  : "你的反馈会逐渐改变 Core，但不会消灭探索位"}
-              </span>
-            </div>
-          ) : null}
-        </div>
-      </header>
+    <div className="space-y-8 md:space-y-12">
+      {!error && feed && feed.items.length > 0 ? (
+        <SignalHero
+          date={compactDate}
+          signals={heroSignals}
+          personalizationApplied={personalizationApplied}
+          personalizationSignals={personalizationSignals}
+          personalizationMode={personalizationMode}
+        />
+      ) : (
+        <header className="radar-panel-strong radar-grid rounded-[1.75rem] p-7">
+          <p className="radar-kicker">Frontier Radar · Today</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight">Daily signal field</h1>
+          <p className="mt-3 text-sm text-muted-foreground">{today}</p>
+        </header>
+      )}
 
       {error ? (
         <FeedErrorState kind={error.kind} message={error.message} showDetails={showDetails} />
@@ -182,45 +173,59 @@ export default async function TodayPage() {
         />
       ) : (
         <>
-          {topTags.length > 0 ? (
-            <nav className="radar-panel flex flex-wrap items-center gap-2 rounded-2xl px-4 py-3.5">
-              <span className="mr-1 inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                <Compass className="h-3.5 w-3.5 text-cyan-300" /> Today signals
-              </span>
-              {topTags.map(({ tag, count }) => (
-                <Link
-                  key={tag}
-                  href={`/explore?tag=${encodeURIComponent(tag)}`}
-                  className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[11px] text-muted-foreground transition-all hover:border-cyan-400/20 hover:bg-cyan-400/[0.04] hover:text-foreground"
-                >
-                  {tag}
-                  <span className="ml-1 font-mono tabular-nums text-muted-foreground/60">{count}</span>
-                </Link>
-              ))}
-            </nav>
-          ) : null}
-
-          <section className="space-y-4">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="radar-kicker">Ranked brief</p>
-                <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-foreground md:text-2xl">Today&apos;s intelligence</h2>
+          <div id="today-signals" className="scroll-mt-24 space-y-5">
+            <div className="signal-command-bar flex flex-wrap items-center gap-3 rounded-2xl px-4 py-3.5 sm:px-5">
+              <div className="flex items-center gap-2 border-r border-white/[0.08] pr-3">
+                <Orbit className="h-4 w-4 text-cyan-200" />
+                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-white/70">Signal map</span>
               </div>
-              <p className="max-w-md text-right text-[11px] leading-relaxed text-muted-foreground">
-                公开 Discovery Score 决定基础质量；Personal Match 先于项目聚合，跨来源只做温和确认。
+              <DataModeBadge mode={mode} />
+              <span className="font-mono text-[9px] uppercase tracking-[0.13em] text-white/34">{today}</span>
+              <span className="ml-auto font-mono text-[9px] uppercase tracking-[0.13em] text-white/34">Ranked / personalized / cross-source confirmed</span>
+            </div>
+
+            {topTags.length > 0 ? (
+              <nav className="flex flex-wrap items-center gap-2">
+                <span className="mr-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/35">
+                  <Compass className="h-3.5 w-3.5 text-cyan-300" /> Active frequencies
+                </span>
+                {topTags.map(({ tag, count }, index) => (
+                  <Link
+                    key={tag}
+                    href={`/explore?tag=${encodeURIComponent(tag)}`}
+                    className="signal-frequency group rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-[10px] text-white/50 transition hover:border-cyan-200/25 hover:bg-cyan-200/[0.06] hover:text-cyan-50"
+                  >
+                    <span className="mr-1.5 font-mono text-[8px] text-white/25">0{index + 1}</span>
+                    {tag}
+                    <span className="ml-1.5 font-mono tabular-nums text-white/28 group-hover:text-cyan-100/50">{count}</span>
+                  </Link>
+                ))}
+              </nav>
+            ) : null}
+          </div>
+
+          <section className="space-y-5">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="radar-kicker">Detected objects · 07</p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white md:text-3xl">Today&apos;s signal constellation</h2>
+              </div>
+              <p className="max-w-md text-right text-[10px] leading-5 text-white/34">
+                卡片尺寸表达今日注意力权重；Adjacent 与 Wildcard 故意偏离栅格，让推荐算法本身成为视觉语言。
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="signal-bento-grid grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
               {feed.items.map((item, index) => {
                 const explanation = explanations.get(item.id);
+                const lane = discoveryLanes.get(item.id) ?? "core";
                 return (
-                  <div key={item.id} className={index === 0 ? "md:col-span-2" : undefined}>
+                  <div key={item.id} className={bentoClass(index, lane)}>
                     <ItemCard
                       item={item}
                       featured={index === 0}
                       rank={index + 1}
-                      discoveryLane={discoveryLanes.get(item.id) ?? "core"}
+                      discoveryLane={lane}
                       projectEntity={projectEntities.get(item.id) ?? null}
                       whyNow={explanation?.whyNow ?? null}
                       whyYou={explanation?.whyYou ?? null}
@@ -231,12 +236,12 @@ export default async function TodayPage() {
             </div>
           </section>
 
-          <div className="flex justify-end border-t border-white/[0.06] pt-5">
+          <div className="flex justify-end border-t border-white/[0.07] pt-6">
             <Link
               href="/explore"
-              className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-cyan-200"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/[0.09] bg-white/[0.035] px-4 py-2 text-xs font-medium text-white/55 transition hover:border-cyan-200/25 hover:bg-cyan-200/[0.06] hover:text-cyan-50"
             >
-              Explore all discoveries
+              Open full spectrum
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>

@@ -52,14 +52,16 @@
 
   html {
     background: hsl(var(--background));
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     min-height: 100vh;
     background-image:
-      radial-gradient(circle at 12% -8%, rgba(34, 211, 238, 0.11), transparent 27rem),
-      radial-gradient(circle at 92% 2%, rgba(139, 92, 246, 0.08), transparent 24rem),
+      radial-gradient(circle at 10% -5%, rgba(34, 211, 238, 0.13), transparent 29rem),
+      radial-gradient(circle at 90% 0%, rgba(124, 58, 237, 0.11), transparent 28rem),
+      radial-gradient(circle at 50% 110%, rgba(236, 72, 153, 0.055), transparent 32rem),
       linear-gradient(to bottom, rgba(255, 255, 255, 0.015), transparent 18rem);
     background-attachment: fixed;
   }
@@ -85,8 +87,7 @@
 
   .radar-panel-strong {
     border: 1px solid rgba(255, 255, 255, 0.09);
-    background:
-      linear-gradient(145deg, rgba(16, 27, 45, 0.92), rgba(8, 14, 25, 0.94));
+    background: linear-gradient(145deg, rgba(16, 27, 45, 0.92), rgba(8, 14, 25, 0.94));
     box-shadow:
       0 28px 90px -52px rgba(0, 0, 0, 1),
       inset 0 1px 0 rgba(255, 255, 255, 0.025);
@@ -111,5 +112,266 @@
   .radar-rule {
     height: 1px;
     background: linear-gradient(90deg, rgba(34, 211, 238, 0.3), rgba(139, 92, 246, 0.12), transparent 80%);
+  }
+
+  .signal-hero {
+    background: #03050d;
+    box-shadow:
+      0 50px 140px -62px rgba(0, 0, 0, 1),
+      0 0 90px -55px rgba(34, 211, 238, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.055);
+    isolation: isolate;
+    animation: signal-enter 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .signal-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 50% 46%, transparent 0, transparent 26%, rgba(2, 6, 23, 0.14) 58%, rgba(2, 6, 23, 0.72) 100%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent 18%, transparent 80%, rgba(0, 0, 0, 0.24));
+    z-index: 2;
+  }
+
+  .signal-hero-noise {
+    opacity: 0.16;
+    z-index: 1;
+    background-image:
+      radial-gradient(circle at 18% 27%, rgba(255, 255, 255, 0.26) 0 0.55px, transparent 0.8px),
+      radial-gradient(circle at 72% 61%, rgba(255, 255, 255, 0.17) 0 0.5px, transparent 0.75px);
+    background-size: 6px 6px, 9px 9px;
+    mix-blend-mode: soft-light;
+  }
+
+  .signal-hero-grid {
+    z-index: 1;
+    opacity: 0.42;
+    background-image:
+      linear-gradient(rgba(103, 232, 249, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(103, 232, 249, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(circle at center, black 8%, transparent 74%);
+  }
+
+  .signal-radar-rings {
+    z-index: 1;
+    border: 1px solid rgba(103, 232, 249, 0.08);
+    background: repeating-radial-gradient(circle at center, transparent 0 72px, rgba(103, 232, 249, 0.055) 73px 74px, transparent 75px 144px);
+    opacity: 0.58;
+  }
+
+  .signal-sweep {
+    z-index: 1;
+    opacity: 0.52;
+    background: conic-gradient(from 0deg, transparent 0deg 316deg, rgba(34, 211, 238, 0.0) 317deg, rgba(34, 211, 238, 0.2) 345deg, rgba(255, 255, 255, 0.42) 359deg, transparent 360deg);
+    mask-image: radial-gradient(circle, transparent 0 5%, black 8% 67%, transparent 72%);
+    animation: radar-sweep 10s linear infinite;
+    transform-origin: center;
+  }
+
+  .signal-wordmark {
+    text-shadow:
+      0 0 28px rgba(255, 255, 255, 0.08),
+      0 0 72px rgba(34, 211, 238, 0.08);
+    animation: wordmark-rise 820ms 140ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .signal-wordmark-accent {
+    color: transparent;
+    background-image: linear-gradient(100deg, #ecfeff 0%, #67e8f9 23%, #818cf8 50%, #e879f9 73%, #fb7185 100%);
+    background-size: 180% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 0 32px rgba(103, 232, 249, 0.16));
+    animation:
+      wordmark-rise 900ms 210ms cubic-bezier(0.16, 1, 0.3, 1) both,
+      spectral-shift 7s ease-in-out 1.2s infinite alternate;
+  }
+
+  .signal-node {
+    transform: translate3d(0, 0, 0);
+    transition:
+      transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 260ms ease,
+      background-color 260ms ease;
+    animation: signal-float 5.5s ease-in-out infinite;
+    z-index: 4;
+  }
+
+  .signal-node:nth-child(2n) {
+    animation-duration: 6.8s;
+    animation-delay: -1.8s;
+  }
+
+  .signal-node:nth-child(3n) {
+    animation-duration: 7.4s;
+    animation-delay: -3.2s;
+  }
+
+  .signal-node:hover {
+    transform: translate3d(0, -5px, 0) scale(1.035);
+    border-color: rgba(255, 255, 255, 0.34);
+    background-color: rgba(15, 23, 42, 0.56);
+    z-index: 10;
+  }
+
+  .signal-command-bar {
+    border: 1px solid rgba(255, 255, 255, 0.085);
+    background:
+      linear-gradient(90deg, rgba(34, 211, 238, 0.055), transparent 28%, transparent 72%, rgba(139, 92, 246, 0.055)),
+      rgba(6, 11, 22, 0.72);
+    box-shadow:
+      0 20px 70px -50px rgba(0, 0, 0, 1),
+      inset 0 1px rgba(255, 255, 255, 0.025);
+    backdrop-filter: blur(20px);
+  }
+
+  .signal-frequency {
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.018);
+  }
+
+  .signal-bento-grid > div {
+    animation: bento-rise 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .signal-bento-grid > div:nth-child(2) { animation-delay: 60ms; }
+  .signal-bento-grid > div:nth-child(3) { animation-delay: 110ms; }
+  .signal-bento-grid > div:nth-child(4) { animation-delay: 160ms; }
+  .signal-bento-grid > div:nth-child(5) { animation-delay: 210ms; }
+  .signal-bento-grid > div:nth-child(6) { animation-delay: 260ms; }
+  .signal-bento-grid > div:nth-child(7) { animation-delay: 310ms; }
+
+  .signal-bento-grid > div > article {
+    position: relative;
+    background:
+      radial-gradient(circle at 86% 8%, rgba(34, 211, 238, 0.055), transparent 34%),
+      linear-gradient(145deg, rgba(13, 21, 37, 0.92), rgba(6, 10, 20, 0.94));
+    border-color: rgba(255, 255, 255, 0.09);
+    box-shadow:
+      0 28px 80px -58px rgba(0, 0, 0, 1),
+      inset 0 1px rgba(255, 255, 255, 0.035);
+    transition:
+      transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 320ms ease,
+      box-shadow 320ms ease,
+      background-color 320ms ease;
+  }
+
+  .signal-bento-grid > div > article::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle at 18% 0%, rgba(103, 232, 249, 0.13), transparent 38%);
+    transition: opacity 300ms ease;
+    mix-blend-mode: screen;
+  }
+
+  .signal-bento-grid > div > article:hover {
+    transform: translateY(-5px) scale(1.006);
+    border-color: rgba(103, 232, 249, 0.22);
+    box-shadow:
+      0 38px 110px -60px rgba(0, 0, 0, 1),
+      0 0 55px -36px rgba(34, 211, 238, 0.5),
+      inset 0 1px rgba(255, 255, 255, 0.06);
+  }
+
+  .signal-bento-grid > div > article:hover::after {
+    opacity: 1;
+  }
+
+  .signal-bento-grid > div:first-child > article {
+    min-height: 27rem;
+    background:
+      radial-gradient(circle at 82% 4%, rgba(34, 211, 238, 0.16), transparent 32%),
+      radial-gradient(circle at 65% 100%, rgba(139, 92, 246, 0.13), transparent 37%),
+      linear-gradient(128deg, rgba(16, 29, 50, 0.98), rgba(5, 9, 20, 0.98));
+    border-color: rgba(103, 232, 249, 0.16);
+    box-shadow:
+      0 45px 130px -68px rgba(0, 0, 0, 1),
+      0 0 80px -55px rgba(34, 211, 238, 0.6),
+      inset 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .signal-bento-grid > div:first-child > article::before {
+    content: "TOP SIGNAL";
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.25rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: rgba(103, 232, 249, 0.22);
+    writing-mode: vertical-rl;
+    pointer-events: none;
+  }
+
+  .signal-bento-grid > div:nth-child(6) > article {
+    border-color: rgba(251, 191, 36, 0.14);
+    background:
+      radial-gradient(circle at 84% 5%, rgba(251, 191, 36, 0.085), transparent 34%),
+      linear-gradient(145deg, rgba(19, 20, 30, 0.94), rgba(8, 10, 18, 0.96));
+  }
+
+  .signal-bento-grid > div:nth-child(7) > article {
+    border-color: rgba(232, 121, 249, 0.19);
+    background:
+      radial-gradient(circle at 82% 4%, rgba(232, 121, 249, 0.14), transparent 34%),
+      radial-gradient(circle at 5% 96%, rgba(99, 102, 241, 0.09), transparent 40%),
+      linear-gradient(145deg, rgba(22, 14, 34, 0.96), rgba(8, 8, 18, 0.96));
+    box-shadow:
+      0 35px 90px -60px rgba(0, 0, 0, 1),
+      0 0 55px -42px rgba(217, 70, 239, 0.65);
+  }
+}
+
+@keyframes radar-sweep {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes signal-float {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -8px; }
+}
+
+@keyframes spectral-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes wordmark-rise {
+  from { opacity: 0; transform: translateY(28px) scale(0.985); filter: blur(7px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes signal-enter {
+  from { opacity: 0; transform: translateY(18px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bento-rise {
+  from { opacity: 0; transform: translateY(22px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .signal-hero,
+  .signal-wordmark,
+  .signal-wordmark-accent,
+  .signal-node,
+  .signal-sweep,
+  .signal-bento-grid > div {
+    animation: none !important;
+  }
+
+  .signal-bento-grid > div > article,
+  .signal-node {
+    transition-duration: 0.01ms !important;
   }
 }
