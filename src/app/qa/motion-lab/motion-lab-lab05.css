@@ -13,52 +13,201 @@
 }
 
 .motion-lab-shell[data-mode="run"] .motion-lab-topic-map {
+  z-index: 0;
   opacity: var(--topicness, 0);
   transition: none;
 }
 
-.motion-lab-shell[data-mode="run"] .motion-lab-topic-map::before {
-  content: "RANK VIEW  →  FRONTIER MAP";
+.motion-lab-shell[data-mode="run"] .motion-lab-signal { z-index: 1; }
+
+/* LAB-05 is pattern extraction, not a decorative radar. */
+.motion-lab-orbit,
+.motion-lab-axis { display: none !important; }
+
+.motion-lab-shell[data-mode="run"] .motion-lab-topic-map::before,
+.motion-lab-shell[data-mode="topic"] .motion-lab-topic-map::before {
+  content: "TODAY'S PATTERN  /  07 SIGNALS → 03 SHAPES";
   position: absolute;
-  left: 50%;
-  top: 9.5vh;
-  translate: -50% 0;
-  padding: .3rem .55rem;
-  background: rgba(241, 238, 229, .9);
-  border: 1px solid rgba(11, 11, 11, .16);
+  left: 5.4vw;
+  top: 8.5vh;
+  padding: 0;
+  background: transparent;
+  border: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: .52rem;
+  font-size: .58rem;
   font-weight: 900;
-  letter-spacing: .15em;
+  letter-spacing: .16em;
   white-space: nowrap;
 }
 
-.motion-lab-shell[data-mode="run"] .motion-lab-topic-map::after {
-  content: "FRONTIER / MAP";
+.motion-lab-shell[data-mode="run"] .motion-lab-topic-map::after,
+.motion-lab-shell[data-mode="topic"] .motion-lab-topic-map::after {
+  content: "THE FRONTIER IS MOVING\A FROM FEATURES TO SYSTEMS.";
   position: absolute;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  color: rgba(11, 11, 11, .035);
-  font-size: clamp(6rem, 15vw, 17rem);
+  left: 5vw;
+  right: 4vw;
+  top: 12vh;
+  translate: 0 0;
+  color: rgba(11,11,11,.94);
+  font-size: clamp(3.1rem, 6.4vw, 7.3rem);
   font-weight: 950;
-  line-height: .72;
-  letter-spacing: -.09em;
-  white-space: nowrap;
+  line-height: .78;
+  letter-spacing: -.075em;
+  white-space: pre-line;
+  text-wrap: balance;
 }
 
-.motion-lab-shell[data-mode="run"] .motion-lab-cluster { box-shadow: 0 0 0 1px rgba(11, 11, 11, .06); }
-.motion-lab-shell[data-mode="run"][data-recompose="true"] .motion-lab-signal-01::before { opacity: .018; }
+.motion-lab-shell[data-mode="run"] .motion-lab-cluster,
+.motion-lab-shell[data-mode="topic"] .motion-lab-cluster {
+  z-index: 3;
+  padding: .38rem .5rem .34rem;
+  background: rgba(241,238,229,.94);
+  border-top: 1px solid rgba(11,11,11,.62);
+  box-shadow: none;
+  font-size: 0;
+  line-height: 1.2;
+  letter-spacing: 0;
+  white-space: normal;
+}
+
+.motion-lab-cluster::before,
+.motion-lab-cluster::after {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.motion-lab-cluster::before {
+  margin-bottom: .22rem;
+  font-size: .48rem;
+  letter-spacing: .15em;
+  opacity: .48;
+}
+
+.motion-lab-cluster::after {
+  font-size: .62rem;
+  letter-spacing: .1em;
+}
+
+.motion-lab-cluster-agents {
+  left: 5.2vw;
+  top: 34vh;
+  width: 29vw;
+}
+.motion-lab-cluster-agents::before { content: "01 · 02 · 05  /  3 OF 7"; }
+.motion-lab-cluster-agents::after { content: "AGENT STACK → INFRASTRUCTURE"; }
+
+.motion-lab-cluster-infra {
+  left: 41.5vw;
+  top: 47vh;
+  width: 20vw;
+}
+.motion-lab-cluster-infra::before { content: "03  /  1 OF 7  /  EMERGING"; }
+.motion-lab-cluster-infra::after { content: "LOCAL → NATIVE"; }
+
+.motion-lab-cluster-creative {
+  right: 5vw;
+  top: 34vh;
+  width: 29vw;
+}
+.motion-lab-cluster-creative::before { content: "04 · 06 · 07  /  3 OF 7"; }
+.motion-lab-cluster-creative::after { content: "INTERFACE → INSTRUMENT"; }
+
+.motion-lab-cluster-edge {
+  left: 50%;
+  top: 32.5vh;
+  width: min(34rem, 42vw);
+  translate: -50% 0;
+  border-top: 0 !important;
+  background: transparent !important;
+  text-align: center;
+}
+.motion-lab-cluster-edge::before { content: "PATTERN SYNTHESIS"; }
+.motion-lab-cluster-edge::after {
+  content: "3 push agents down-stack · 3 turn interfaces into instruments · 1 makes local AI feel native";
+  font-size: .5rem;
+  line-height: 1.45;
+  letter-spacing: .08em;
+  opacity: .62;
+}
+
+/* These positions are the semantic target measured by the recompose system. */
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-01 {
+  left: 5.5vw;
+  top: 42vh;
+  width: 26vw;
+  min-height: 0;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-02 {
+  left: 7vw;
+  top: 68vh;
+  right: auto;
+  width: 18vw;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-05 {
+  left: 25vw;
+  top: 70vh;
+  bottom: auto;
+  width: 15vw;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-03 {
+  left: 42vw;
+  top: 56vh;
+  right: auto;
+  width: 18vw;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-04 {
+  left: auto;
+  right: 7vw;
+  top: 42vh;
+  bottom: auto;
+  width: 19vw;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-06 {
+  right: 4vw;
+  top: 58vh;
+  width: 11vw;
+  min-height: 0;
+  grid-template-columns: auto 1fr auto;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-06 .motion-lab-rank {
+  grid-column: auto;
+  font-size: 1rem;
+}
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-06 .motion-lab-signal-copy { align-self: auto; }
+.motion-lab-shell[data-mode="topic"] .motion-lab-signal-07 {
+  right: 17vw;
+  bottom: 7vh;
+  width: 13vw;
+  min-height: 0;
+  transform: rotate(-2.2deg);
+}
+
+.motion-lab-shell[data-mode="run"][data-recompose="true"] .motion-lab-signal-01::before { opacity: .012; }
+
+/* The QA HUD should describe the user-facing meaning, not the old radar metaphor. */
+.motion-lab-shell[data-recompose="true"] .motion-lab-hud dl > div:first-child dd span {
+  font-size: 0;
+}
+.motion-lab-shell[data-recompose="true"] .motion-lab-hud dl > div:first-child dd span::after {
+  content: "PATTERN EXTRACTION";
+  font-size: .62rem;
+}
 
 .motion-lab-meta > div:first-child > span { font-size: 0; }
 .motion-lab-meta > div:first-child > span::after {
-  content: "LAB-05 OVERVIEW → FRONTIER MAP / LAB-04 INVISIBLE LENS PRESERVED";
+  content: "LAB-05 OVERVIEW → PATTERN EXTRACTION / LAB-04 INVISIBLE LENS PRESERVED";
   font-size: .62rem;
 }
 
 @media (max-width: 1100px) {
   .motion-lab-track { min-height: 320vh; }
-  .motion-lab-shell[data-mode="run"] .motion-lab-topic-map::after { font-size: 12vw; }
+  .motion-lab-shell[data-mode="run"] .motion-lab-topic-map::after,
+  .motion-lab-shell[data-mode="topic"] .motion-lab-topic-map::after {
+    font-size: clamp(2.6rem, 6vw, 5.2rem);
+  }
+  .motion-lab-cluster-edge { width: 38vw; }
 }
 
 @media (max-width: 760px), (pointer: coarse) {
