@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { ArrowRight } from "lucide-react";
+import { Activity, ArrowRight, Compass, Sparkles } from "lucide-react";
 import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
 import type { FeedQuery, FeedResult } from "@/lib/feed/types";
 import {
@@ -106,39 +106,66 @@ export default async function TodayPage() {
   const topTags = feed ? computeTopTags(feed, 5) : [];
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-5 border-b border-border/70 pb-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Frontier Radar</h1>
-            <DataModeBadge mode={mode} />
+    <div className="space-y-7 md:space-y-9">
+      <header className="radar-panel-strong radar-grid relative overflow-hidden rounded-[1.75rem] px-5 py-6 sm:px-7 md:px-8 md:py-8">
+        <div aria-hidden className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-cyan-400/[0.055] blur-3xl" />
+        <div aria-hidden className="absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-violet-500/[0.045] blur-3xl" />
+
+        <div className="relative space-y-7">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="radar-kicker">Daily intelligence · 01</span>
+              <DataModeBadge mode={mode} />
+            </div>
+            <p className="font-mono text-[11px] tracking-wide text-muted-foreground">{today}</p>
           </div>
-          <p className="font-mono text-xs text-muted-foreground">{today}</p>
-        </div>
 
-        <div className="max-w-2xl space-y-2">
-          <p className="text-lg font-medium tracking-tight md:text-xl">
-            7 things worth your attention today.
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            5 个核心兴趣 + 1 个相邻探索 + 1 个高质量随机发现。跨平台同时出现会作为温和确认信号，但不会压过真正的兴趣匹配与 Idea Spark。
-          </p>
-        </div>
+          <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_18rem] md:items-end">
+            <div className="max-w-3xl space-y-4">
+              <h1 className="text-balance text-3xl font-semibold leading-[1.04] tracking-[-0.035em] text-foreground sm:text-4xl md:text-5xl">
+                Your daily frontier brief.
+              </h1>
+              <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-[15px]">
+                从正在被构建的 AI、开发工具和新产品里，只留下今天真正值得你花注意力的 7 个信号。
+                核心兴趣优先，同时保留相邻探索与意外发现。
+              </p>
+            </div>
 
-        {feed && !error ? (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-            <span>Daily Radar · {feed.items.length} picks</span>
-            <span>5 Core · 1 Adjacent · 1 Wildcard</span>
-            {personalizationApplied ? (
-              <span>
-                {personalizationMode === "vector" ? "兴趣向量推荐" : "规则个性化"}
-                · 已学习 {personalizationSignals} 条近期反馈
+            {feed && !error ? (
+              <div className="grid grid-cols-3 gap-2 md:grid-cols-1">
+                <div className="rounded-xl border border-white/[0.065] bg-black/10 px-3 py-3 md:flex md:items-center md:justify-between">
+                  <span className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Picks</span>
+                  <span className="mt-1 block font-mono text-lg font-semibold tabular-nums text-foreground md:mt-0">{String(feed.items.length).padStart(2, "0")}</span>
+                </div>
+                <div className="rounded-xl border border-white/[0.065] bg-black/10 px-3 py-3 md:flex md:items-center md:justify-between">
+                  <span className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Mix</span>
+                  <span className="mt-1 block font-mono text-sm font-semibold text-cyan-200 md:mt-0">5 / 1 / 1</span>
+                </div>
+                <div className="rounded-xl border border-white/[0.065] bg-black/10 px-3 py-3 md:flex md:items-center md:justify-between">
+                  <span className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Profile</span>
+                  <span className="mt-1 block font-mono text-xs font-semibold text-violet-200 md:mt-0">
+                    {personalizationApplied ? `${personalizationSignals} signals` : "learning"}
+                  </span>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          {feed && !error ? (
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/[0.065] pt-4 text-[11px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <Activity className="h-3.5 w-3.5 text-cyan-300" />
+                5 Core · 1 Adjacent · 1 Wildcard
               </span>
-            ) : (
-              <span>你的反馈会逐渐改变 Core，同时保留探索位</span>
-            )}
-          </div>
-        ) : null}
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-violet-300" />
+                {personalizationApplied
+                  ? `${personalizationMode === "vector" ? "兴趣向量" : "规则个性化"} · ${personalizationSignals} 条近期反馈`
+                  : "你的反馈会逐渐改变 Core，但不会消灭探索位"}
+              </span>
+            </div>
+          ) : null}
+        </div>
       </header>
 
       {error ? (
@@ -156,47 +183,61 @@ export default async function TodayPage() {
       ) : (
         <>
           {topTags.length > 0 ? (
-            <nav className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground">Today signals</span>
+            <nav className="radar-panel flex flex-wrap items-center gap-2 rounded-2xl px-4 py-3.5">
+              <span className="mr-1 inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+                <Compass className="h-3.5 w-3.5 text-cyan-300" /> Today signals
+              </span>
               {topTags.map(({ tag, count }) => (
                 <Link
                   key={tag}
                   href={`/explore?tag=${encodeURIComponent(tag)}`}
-                  className="rounded-full border border-border/80 bg-muted/30 px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                  className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2.5 py-1 text-[11px] text-muted-foreground transition-all hover:border-cyan-400/20 hover:bg-cyan-400/[0.04] hover:text-foreground"
                 >
                   {tag}
-                  <span className="ml-1 font-mono tabular-nums text-muted-foreground/70">{count}</span>
+                  <span className="ml-1 font-mono tabular-nums text-muted-foreground/60">{count}</span>
                 </Link>
               ))}
             </nav>
           ) : null}
 
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {feed.items.map((item, index) => {
-              const explanation = explanations.get(item.id);
-              return (
-                <div key={item.id} className={index === 0 ? "md:col-span-2" : undefined}>
-                  <ItemCard
-                    item={item}
-                    featured={index === 0}
-                    rank={index + 1}
-                    discoveryLane={discoveryLanes.get(item.id) ?? "core"}
-                    projectEntity={projectEntities.get(item.id) ?? null}
-                    whyNow={explanation?.whyNow ?? null}
-                    whyYou={explanation?.whyYou ?? null}
-                  />
-                </div>
-              );
-            })}
+          <section className="space-y-4">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="radar-kicker">Ranked brief</p>
+                <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-foreground md:text-2xl">Today&apos;s intelligence</h2>
+              </div>
+              <p className="max-w-md text-right text-[11px] leading-relaxed text-muted-foreground">
+                公开 Discovery Score 决定基础质量；Personal Match 先于项目聚合，跨来源只做温和确认。
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {feed.items.map((item, index) => {
+                const explanation = explanations.get(item.id);
+                return (
+                  <div key={item.id} className={index === 0 ? "md:col-span-2" : undefined}>
+                    <ItemCard
+                      item={item}
+                      featured={index === 0}
+                      rank={index + 1}
+                      discoveryLane={discoveryLanes.get(item.id) ?? "core"}
+                      projectEntity={projectEntities.get(item.id) ?? null}
+                      whyNow={explanation?.whyNow ?? null}
+                      whyYou={explanation?.whyYou ?? null}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </section>
 
-          <div className="flex justify-end border-t border-border/70 pt-4">
+          <div className="flex justify-end border-t border-white/[0.06] pt-5">
             <Link
               href="/explore"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-cyan-200"
             >
               Explore all discoveries
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         </>

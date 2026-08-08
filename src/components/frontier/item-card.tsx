@@ -50,16 +50,16 @@ function formatDate(iso: string | null): string | null {
 }
 
 function signalClass(signal: string): string {
-  if (signal === "IDEA SPARK") return "border-violet-500/30 bg-violet-500/10 text-violet-300";
-  if (signal === "RISING") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
-  if (signal === "NEW") return "border-sky-500/30 bg-sky-500/10 text-sky-300";
-  return "border-border bg-muted/50 text-muted-foreground";
+  if (signal === "IDEA SPARK") return "border-violet-400/20 bg-violet-400/[0.07] text-violet-200";
+  if (signal === "RISING") return "border-emerald-400/20 bg-emerald-400/[0.07] text-emerald-200";
+  if (signal === "NEW") return "border-cyan-400/20 bg-cyan-400/[0.06] text-cyan-200";
+  return "border-white/[0.06] bg-white/[0.025] text-muted-foreground";
 }
 
 function laneClass(lane: DiscoveryLane): string {
-  if (lane === "adjacent") return "border-amber-500/30 bg-amber-500/10 text-amber-300";
-  if (lane === "wildcard") return "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-300";
-  return "border-border/80 bg-muted/35 text-muted-foreground";
+  if (lane === "adjacent") return "border-amber-400/20 bg-amber-400/[0.055] text-amber-200";
+  if (lane === "wildcard") return "border-fuchsia-400/20 bg-fuchsia-400/[0.055] text-fuchsia-200";
+  return "border-cyan-400/15 bg-cyan-400/[0.045] text-cyan-200/85";
 }
 
 interface ItemCardProps {
@@ -102,27 +102,41 @@ export function ItemCard({
   return (
     <article
       className={[
-        "group relative flex flex-col gap-3 rounded-xl border border-border/80 bg-card transition-transform duration-200 hover:-translate-y-0.5",
-        featured ? "p-6 md:min-h-72" : "p-4",
+        "group relative isolate flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-white/[0.075] bg-card/70 shadow-[0_22px_70px_-48px_rgba(0,0,0,1)] backdrop-blur-sm transition-all duration-300",
+        "hover:-translate-y-0.5 hover:border-cyan-300/15 hover:bg-card/90 hover:shadow-[0_28px_85px_-48px_rgba(8,145,178,0.24)]",
+        featured ? "p-5 sm:p-6 md:min-h-[22rem] md:p-7" : "p-4 sm:p-5",
       ].join(" ")}
     >
+      <div
+        aria-hidden
+        className={[
+          "absolute inset-x-0 top-0 h-px",
+          featured
+            ? "bg-gradient-to-r from-cyan-300/50 via-violet-300/20 to-transparent"
+            : "bg-gradient-to-r from-white/10 via-white/[0.03] to-transparent",
+        ].join(" ")}
+      />
+      {featured ? (
+        <div aria-hidden className="absolute -right-20 -top-24 -z-10 h-72 w-72 rounded-full bg-cyan-400/[0.04] blur-3xl" />
+      ) : null}
+
       {discoveryLane && typeof rank === "number" ? (
         <RecommendationObserver itemId={item.id} metadata={trackingMetadata} />
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
         {typeof rank === "number" ? (
-          <span className="font-mono text-xs tabular-nums text-muted-foreground">
+          <span className={featured ? "font-mono text-base font-semibold tabular-nums text-foreground/75" : "font-mono text-xs font-semibold tabular-nums text-muted-foreground"}>
             {String(rank).padStart(2, "0")}
           </span>
         ) : null}
         {discoveryLane ? (
-          <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold tracking-wider ${laneClass(discoveryLane)}`}>
+          <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold tracking-[0.12em] ${laneClass(discoveryLane)}`}>
             {LANE_LABEL[discoveryLane]}
           </span>
         ) : null}
         <SourceBadge source={item.source} />
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
           {TYPE_LABEL[item.contentType] ?? item.contentType}
         </span>
         <span className="ml-auto">
@@ -135,7 +149,7 @@ export function ItemCard({
           {radarSignals.map((signal) => (
             <span
               key={signal}
-              className={`rounded-full border px-2 py-0.5 text-[10px] font-medium tracking-wide ${signalClass(signal)}`}
+              className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold tracking-[0.08em] ${signalClass(signal)}`}
             >
               {signal}
             </span>
@@ -143,50 +157,54 @@ export function ItemCard({
         </div>
       ) : null}
 
-      <h3 className={featured ? "text-xl font-semibold leading-tight tracking-tight md:text-2xl" : "text-base font-semibold leading-snug"}>
-        <TrackedDetailLink
-          itemId={item.id}
-          href={`/project/${item.id}`}
-          className="hover:text-primary hover:underline"
-          metadata={trackingMetadata}
-        >
-          {item.title}
-        </TrackedDetailLink>
-      </h3>
+      <div className={featured ? "max-w-4xl space-y-3" : "space-y-2.5"}>
+        <h3 className={featured ? "text-balance text-2xl font-semibold leading-[1.12] tracking-[-0.025em] md:text-3xl" : "text-balance text-lg font-semibold leading-snug tracking-tight"}>
+          <TrackedDetailLink
+            itemId={item.id}
+            href={`/project/${item.id}`}
+            className="transition-colors hover:text-cyan-200"
+            metadata={trackingMetadata}
+          >
+            {item.title}
+          </TrackedDetailLink>
+        </h3>
 
-      {noAnalysis ? (
-        <>
-          {item.description ? (
-            <p className={`${featured ? "line-clamp-4 text-base" : "line-clamp-3 text-sm"} text-muted-foreground`}>
-              {item.description}
-            </p>
-          ) : (
-            <p className="text-xs text-muted-foreground">（无描述）</p>
-          )}
-          <p className="text-[11px] text-muted-foreground">等待结构化分析 · 当前按项目与增长信号排序</p>
-        </>
-      ) : (
-        <>
-          <p className={`${featured ? "line-clamp-3 text-base" : "line-clamp-2 text-sm"} text-foreground`}>
-            {displayText}
-          </p>
-          {item.whyItMatters ? (
-            <div className="flex gap-2 rounded-lg bg-muted/35 p-2.5 text-xs text-muted-foreground">
-              <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <p className={featured ? "line-clamp-3" : "line-clamp-2"}>
-                <span className="font-medium text-foreground/80">为什么值得看：</span>
-                {item.whyItMatters}
+        {noAnalysis ? (
+          <>
+            {item.description ? (
+              <p className={`${featured ? "line-clamp-4 text-[15px] leading-7" : "line-clamp-3 text-sm leading-6"} text-muted-foreground`}>
+                {item.description}
               </p>
-            </div>
-          ) : null}
-        </>
-      )}
+            ) : (
+              <p className="text-xs text-muted-foreground">（无描述）</p>
+            )}
+            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground/55">
+              Structured analysis pending · ranked by project and growth signals
+            </p>
+          </>
+        ) : (
+          <>
+            <p className={`${featured ? "line-clamp-3 text-[15px] leading-7 md:text-base" : "line-clamp-2 text-sm leading-6"} text-foreground/88`}>
+              {displayText}
+            </p>
+            {item.whyItMatters ? (
+              <div className="flex gap-2.5 border-l border-violet-300/20 pl-3 text-xs leading-relaxed text-muted-foreground">
+                <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-300" />
+                <p className={featured ? "line-clamp-3" : "line-clamp-2"}>
+                  <span className="font-medium text-foreground/80">为什么值得看：</span>
+                  {item.whyItMatters}
+                </p>
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
 
       {crossSourceEntity ? (
-        <div className="rounded-lg border border-cyan-500/15 bg-cyan-500/[0.035] p-3">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
+        <div className="rounded-xl border border-cyan-400/15 bg-cyan-400/[0.035] p-3.5">
+          <div className="mb-2.5 flex flex-wrap items-center gap-2">
             <Radar className="h-3.5 w-3.5 text-cyan-300" />
-            <span className="font-mono text-[10px] font-semibold tracking-wider text-cyan-300">
+            <span className="font-mono text-[9px] font-semibold tracking-[0.14em] text-cyan-200">
               PROJECT INTELLIGENCE
             </span>
             <span className="text-[10px] text-muted-foreground">
@@ -205,7 +223,7 @@ export function ItemCard({
                   source: evidence.source,
                   content_type: evidence.contentType,
                 }}
-                className="rounded-full border border-border/80 bg-background/55 px-2.5 py-1 text-[10px] font-medium text-muted-foreground transition-colors hover:border-cyan-500/30 hover:text-foreground"
+                className="rounded-full border border-white/[0.07] bg-black/10 px-2.5 py-1 text-[10px] font-medium text-muted-foreground transition-colors hover:border-cyan-300/20 hover:text-foreground"
               >
                 {SOURCE_LABEL[evidence.source] ?? evidence.source}
                 {evidence.contentType === "repo" ? " · Code" : evidence.contentType === "space" ? " · Demo" : ""}
@@ -213,31 +231,31 @@ export function ItemCard({
             ))}
           </div>
           {crossSourceEntity.matchConfidence === "title" ? (
-            <p className="mt-2 text-[10px] text-muted-foreground/70">跨来源关联依据：项目名称高度匹配</p>
+            <p className="mt-2 text-[9px] text-muted-foreground/55">跨来源关联依据：项目名称高度匹配</p>
           ) : null}
         </div>
       ) : null}
 
       {whyNow || whyYou ? (
-        <div className="grid gap-2 rounded-lg border border-border/60 bg-background/35 p-3 text-xs leading-relaxed md:grid-cols-2">
+        <div className="grid gap-2 md:grid-cols-2">
           {whyNow ? (
-            <p className="text-muted-foreground">
-              <span className="mr-1.5 font-mono text-[10px] font-semibold tracking-wider text-emerald-300">WHY NOW</span>
-              {whyNow}
-            </p>
+            <div className="rounded-xl border border-emerald-400/10 bg-emerald-400/[0.025] p-3">
+              <p className="mb-1.5 font-mono text-[9px] font-semibold tracking-[0.14em] text-emerald-300">WHY NOW</p>
+              <p className="text-xs leading-relaxed text-muted-foreground">{whyNow}</p>
+            </div>
           ) : null}
           {whyYou ? (
-            <p className="text-muted-foreground">
-              <span className="mr-1.5 font-mono text-[10px] font-semibold tracking-wider text-violet-300">WHY YOU</span>
-              {whyYou}
-            </p>
+            <div className="rounded-xl border border-violet-400/10 bg-violet-400/[0.025] p-3">
+              <p className="mb-1.5 font-mono text-[9px] font-semibold tracking-[0.14em] text-violet-300">WHY YOU</p>
+              <p className="text-xs leading-relaxed text-muted-foreground">{whyYou}</p>
+            </div>
           ) : null}
         </div>
       ) : null}
 
       {buildIdeas.length > 0 ? (
-        <div className="rounded-lg border border-violet-500/15 bg-violet-500/[0.04] p-3">
-          <p className="mb-1.5 font-mono text-[10px] font-semibold tracking-wider text-violet-300">
+        <div className="rounded-xl border border-violet-400/10 bg-violet-400/[0.025] p-3.5">
+          <p className="mb-1.5 font-mono text-[9px] font-semibold tracking-[0.14em] text-violet-300">
             BUILD ON THIS
           </p>
           <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
@@ -248,29 +266,29 @@ export function ItemCard({
         </div>
       ) : null}
 
-      <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground">
-        {item.author ? <span>{item.author}</span> : null}
+      <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] text-muted-foreground">
+        {item.author ? <span className="text-foreground/65">{item.author}</span> : null}
         {date ? <span>{date}</span> : null}
         {hasCode ? (
           <span className="inline-flex items-center gap-1">
-            <Code className="h-3 w-3" /> 有代码
+            <Code className="h-3 w-3 text-cyan-300/75" /> 有代码
           </span>
         ) : null}
         {hasDemo ? (
           <span className="inline-flex items-center gap-1">
-            <Play className="h-3 w-3" /> 有 Demo
+            <Play className="h-3 w-3 text-violet-300/80" /> 有 Demo
           </span>
         ) : null}
         {!featured ? <span>{DIFFICULTY_LABEL[item.reproductionDifficulty]}</span> : null}
         <MetricRow item={item} />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/70 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] pt-3.5">
         <span className="flex flex-wrap gap-1.5">
           {item.tags.slice(0, featured ? 5 : 4).map((tag) => (
             <span
               key={tag}
-              className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground"
+              className="rounded-md border border-white/[0.045] bg-white/[0.025] px-1.5 py-0.5 text-[10px] text-muted-foreground/80"
             >
               {tag}
             </span>
@@ -281,7 +299,7 @@ export function ItemCard({
           <TrackedDetailLink
             itemId={item.id}
             href={`/project/${item.id}`}
-            className="text-xs font-medium text-muted-foreground hover:text-foreground"
+            className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
             metadata={trackingMetadata}
           >
             查看情报
@@ -289,7 +307,7 @@ export function ItemCard({
           <TrackedSourceLink
             itemId={item.id}
             href={item.canonicalUrl}
-            className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+            className="inline-flex items-center gap-1 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.06] px-2.5 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/[0.09]"
             metadata={trackingMetadata}
           >
             打开项目

@@ -4,44 +4,44 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: 216 33% 97%;
+    --foreground: 222 47% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --card-foreground: 222 47% 8%;
+    --primary: 190 94% 38%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 214 32% 94%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 214 32% 94%;
+    --muted-foreground: 215 16% 42%;
+    --accent: 214 32% 94%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 24% 88%;
+    --input: 214 24% 88%;
+    --ring: 190 94% 38%;
+    --radius: 0.9rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --background: 222 52% 4.5%;
+    --foreground: 210 40% 96%;
+    --card: 221 39% 7%;
+    --card-foreground: 210 40% 96%;
+    --primary: 188 86% 53%;
+    --primary-foreground: 222 52% 5%;
+    --secondary: 218 28% 12%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 218 25% 12%;
+    --muted-foreground: 215 16% 63%;
+    --accent: 218 28% 13%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 0 63% 35%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 24% 16%;
+    --input: 217 24% 16%;
+    --ring: 188 86% 53%;
   }
 }
 
@@ -49,7 +49,67 @@
   * {
     @apply border-border;
   }
+
+  html {
+    background: hsl(var(--background));
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 12% -8%, rgba(34, 211, 238, 0.11), transparent 27rem),
+      radial-gradient(circle at 92% 2%, rgba(139, 92, 246, 0.08), transparent 24rem),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.015), transparent 18rem);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgba(34, 211, 238, 0.22);
+    color: hsl(var(--foreground));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(34, 211, 238, 0.72);
+    outline-offset: 3px;
+  }
+}
+
+@layer components {
+  .radar-panel {
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    background: rgba(10, 17, 30, 0.72);
+    box-shadow: 0 24px 80px -48px rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(18px);
+  }
+
+  .radar-panel-strong {
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background:
+      linear-gradient(145deg, rgba(16, 27, 45, 0.92), rgba(8, 14, 25, 0.94));
+    box-shadow:
+      0 28px 90px -52px rgba(0, 0, 0, 1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  }
+
+  .radar-grid {
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .radar-kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(103, 232, 249, 0.82);
+  }
+
+  .radar-rule {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.3), rgba(139, 92, 246, 0.12), transparent 80%);
   }
 }

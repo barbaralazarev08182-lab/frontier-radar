@@ -2,25 +2,26 @@
 export function ScoreBadge({ score }: { score: number | null }) {
   if (score === null) {
     return (
-      <span className="inline-flex items-center rounded border border-border bg-muted/40 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
-        未评分
+      <span className="inline-flex items-center rounded-full border border-white/[0.07] bg-white/[0.025] px-2 py-1 font-mono text-[10px] font-medium text-muted-foreground">
+        --
       </span>
     );
   }
 
   const tone =
     score >= 75
-      ? "border-emerald-800/60 bg-emerald-950/50 text-emerald-200"
+      ? "border-emerald-300/20 bg-emerald-300/[0.065] text-emerald-200"
       : score >= 50
-        ? "border-zinc-700 bg-zinc-800/70 text-zinc-200"
-        : "border-zinc-800 bg-zinc-900 text-zinc-400";
+        ? "border-cyan-300/15 bg-cyan-300/[0.045] text-cyan-100"
+        : "border-white/[0.07] bg-white/[0.025] text-muted-foreground";
 
   return (
     <span
-      className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${tone}`}
+      className={`inline-flex items-baseline gap-1 rounded-full border px-2 py-1 font-mono text-[10px] font-semibold tabular-nums ${tone}`}
       title="基础 Frontier Score（basic-frontier-v1）"
     >
-      {score}
+      <span className="text-[8px] font-medium uppercase tracking-[0.12em] opacity-60">FR</span>
+      {Math.round(score)}
     </span>
   );
 }

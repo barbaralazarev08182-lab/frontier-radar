@@ -52,34 +52,39 @@ export function ProjectTrajectory({ evidence }: { evidence: ProjectEvidenceDetai
   if (events.length === 0) return null;
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Activity className="h-4 w-4 text-amber-300" />
-        <h2 className="text-lg font-semibold">Project Trajectory</h2>
-        <span className="text-xs text-muted-foreground">从第一次出现到跨平台扩散</span>
+    <section className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="radar-kicker">Trajectory</p>
+          <div className="mt-1.5 flex items-center gap-2">
+            <Activity className="h-4 w-4 text-amber-300" />
+            <h2 className="text-lg font-semibold tracking-tight">Project trajectory</h2>
+          </div>
+        </div>
+        <span className="text-[11px] text-muted-foreground">从第一次出现到跨平台扩散</span>
       </div>
 
-      <div className="relative space-y-0 pl-5 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-border">
+      <div className="relative space-y-0 pl-6 before:absolute before:bottom-4 before:left-[5px] before:top-4 before:w-px before:bg-gradient-to-b before:from-cyan-300/35 before:via-violet-300/15 before:to-white/[0.05]">
         {events.map((entry, index) => {
           const at = entry.publishedAt ?? entry.updatedAt;
           const momentum = latestMomentum(entry);
           return (
-            <div key={entry.itemId} className="relative pb-5 last:pb-0">
-              <span className="absolute -left-5 top-2 h-2.5 w-2.5 rounded-full border-2 border-background bg-muted-foreground" />
-              <div className="rounded-lg border border-border/70 bg-card/60 p-3">
+            <div key={entry.itemId} className="relative pb-4 last:pb-0">
+              <span className="absolute -left-6 top-5 h-2.5 w-2.5 rounded-full border-2 border-background bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.35)]" />
+              <div className="radar-panel rounded-xl p-3.5 transition-colors hover:border-cyan-300/15">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="font-mono text-[10px] text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="text-xs font-medium">{SOURCE_LABEL[entry.source] ?? entry.source}</span>
-                  <span className="text-[11px] text-muted-foreground">{formatDate(at)}</span>
-                  {momentum ? <span className="text-[11px] text-emerald-300">{momentum}</span> : null}
+                  <span className="font-mono text-[9px] font-semibold tracking-[0.12em] text-cyan-300/70">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="text-xs font-medium text-foreground/90">{SOURCE_LABEL[entry.source] ?? entry.source}</span>
+                  <span className="text-[10px] text-muted-foreground">{formatDate(at)}</span>
+                  {momentum ? <span className="text-[10px] text-emerald-300/90">{momentum}</span> : null}
                 </div>
-                <p className="mt-1 text-sm text-foreground/85">{eventLabel(entry)}</p>
+                <p className="mt-2 text-sm font-medium text-foreground/90">{eventLabel(entry)}</p>
                 <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{entry.title}</p>
                 <TrackedSourceLink
                   itemId={entry.itemId}
                   href={entry.url}
                   metadata={{ surface: "project_detail", source: entry.source, content_type: entry.contentType }}
-                  className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-medium text-cyan-200 transition-colors hover:text-cyan-100"
                 >
                   打开这一节点 <ArrowUpRight className="h-3 w-3" />
                 </TrackedSourceLink>
