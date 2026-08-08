@@ -116,6 +116,7 @@ export function MotionLabAnalysis() {
       }
 
       section.style.setProperty("--analysis-alpha", alpha.toFixed(4));
+      section.style.setProperty("--analysis-shift", `${((1 - alpha) * 22).toFixed(2)}px`);
       section.dataset.ready = ready ? "true" : "false";
       root.style.setProperty("--analysis-alpha", alpha.toFixed(4));
       root.dataset.analysis = ready ? "ready" : alpha > 0.002 ? "entering" : "off";
