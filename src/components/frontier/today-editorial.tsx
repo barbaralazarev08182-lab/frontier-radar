@@ -7,6 +7,7 @@ import type { FeedbackMetadata } from "@/lib/personalization/browser";
 import { trackFeedback } from "@/lib/personalization/browser";
 import { RecommendationObserver } from "./recommendation-observer";
 import styles from "./today-editorial.module.css";
+import scrollStyles from "./today-scroll-effects.module.css";
 
 export type EditorialLane = "core" | "adjacent" | "wildcard";
 
@@ -55,6 +56,16 @@ const LANE_LABEL: Record<EditorialLane, string> = {
   wildcard: "WILDCARD",
 };
 
+const LANE_BACKGROUND: Record<EditorialLane, string> = {
+  core: "#f1eee5",
+  adjacent: "#e3e7ff",
+  wildcard: "#ffe0d1",
+};
+
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function TodayEditorial({
   dateLabel,
   dataLabel,
@@ -64,7 +75,11 @@ export function TodayEditorial({
   signals,
 }: TodayEditorialProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [feedVisible, setFeedVisible] = useState(false);
   const [choices, setChoices] = useState<Record<string, "interested" | "not_interested">>({});
+  const experienceRef = useRef<HTMLDivElement | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
+  const feedRef = useRef<HTMLElement | null>(null);
   const rowRefs = useRef<Array<HTMLElement | null>>([]);
 
   useEffect(() => {
@@ -85,11 +100,58 @@ export function TodayEditorial({
     return () => observer.disconnect();
   }, [signals.length]);
 
+  useEffect(() => {
+    const feed = feedRef.current;
+    if (!feed || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setFeedVisible(Boolean(entry?.isIntersecting)),
+      { rootMargin: "-12% 0px -12% 0px", threshold: 0.01 }
+    );
+    observer.observe(feed);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const root = experienceRef.current;
+    const hero = heroRef.current;
+    if (!root || !hero) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rootRect = root.getBoundingClientRect();
+      const heroRect = hero.getBoundingClientRect();
+      const pageStart = window.scrollY + rootRect.top;
+      const scrollable = Math.max(1, root.offsetHeight - window.innerHeight);
+      const pageProgress = clamp((window.scrollY - pageStart) / scrollable);
+      const heroProgress = clamp(-heroRect.top / Math.max(1, hero.offsetHeight * 0.76));
+
+      root.style.setProperty("--page-progress", pageProgress.toFixed(4));
+      root.style.setProperty("--hero-progress", heroProgress.toFixed(4));
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   if (signals.length === 0) return null;
 
   const active = signals[Math.min(activeIndex, signals.length - 1)]!;
   const activeRank = String(activeIndex + 1).padStart(2, "0");
   const ticker = topTags.length > 0 ? topTags : ["AI AGENTS", "DEV TOOLS", "CREATIVE AI", "INFRA", "RESEARCH"];
+  const progress = (activeIndex + 1) / signals.length;
 
   function choose(signal: EditorialSignal, choice: "interested" | "not_interested") {
     setChoices((current) => ({ ...current, [signal.id]: choice }));
@@ -97,26 +159,39 @@ export function TodayEditorial({
   }
 
   return (
-    <div className={styles.experience}>
-      <section className={styles.hero} aria-labelledby="today-editorial-title">
-        <div className={styles.field} aria-hidden="true" />
-        <div className={styles.fieldCut} aria-hidden="true" />
+    <div ref={experienceRef} className={`${styles.experience} ${scrollStyles.experience}`}>
+      <div className={scrollStyles.pageProgress} aria-hidden="true">
+        <span />
+      </div>
+
+      <div className={scrollStyles.scrollHud} data-visible={feedVisible ? "true" : "false"} aria-hidden="true">
+        <span className={scrollStyles.hudLabel}>SIGNAL</span>
+        <strong>{activeRank}</strong>
+        <div className={scrollStyles.hudTrack}>
+          <span style={{ transform: `scaleY(${progress})` }} />
+        </div>
+        <span className={scrollStyles.hudTotal}>{String(signals.length).padStart(2, "0")}</span>
+      </div>
+
+      <section ref={heroRef} className={`${styles.hero} ${scrollStyles.hero}`} aria-labelledby="today-editorial-title">
+        <div className={`${styles.field} ${scrollStyles.field}`} aria-hidden="true" />
+        <div className={`${styles.fieldCut} ${scrollStyles.fieldCut}`} aria-hidden="true" />
         <div className={styles.grain} aria-hidden="true" />
 
-        <div className={styles.heroMeta}>
+        <div className={`${styles.heroMeta} ${scrollStyles.heroMeta}`}>
           <span>FR / DAILY EDITION</span>
           <span>{dateLabel}</span>
           <span>{dataLabel}</span>
         </div>
 
-        <div className={styles.heroCopy}>
+        <div className={`${styles.heroCopy} ${scrollStyles.heroCopy}`}>
           <p className={styles.eyebrow}>PERSONAL FRONTIER INTELLIGENCE</p>
-          <h1 id="today-editorial-title" className={styles.heroTitle}>
+          <h1 id="today-editorial-title" className={`${styles.heroTitle} ${scrollStyles.heroTitle}`}>
             <span className={styles.titleMask}><span>FIND WHAT&apos;S NEXT</span></span>
             <span className={styles.titleMask}><span>BEFORE IT HAS</span></span>
             <span className={`${styles.titleMask} ${styles.titleAccent}`}><span>A NAME.</span></span>
           </h1>
-          <div className={styles.heroLeadRow}>
+          <div className={`${styles.heroLeadRow} ${scrollStyles.heroLeadRow}`}>
             <p className={styles.heroLead}>
               {signals.length} signals distilled from {totalDiscoveries} frontier discoveries. Not more news — only projects with enough shape, momentum and weirdness to deserve your attention.
             </p>
@@ -124,12 +199,12 @@ export function TodayEditorial({
           </div>
         </div>
 
-        <div className={styles.heroBottom}>
+        <div className={`${styles.heroBottom} ${scrollStyles.heroBottom}`}>
           <a className={styles.scrollCue} href="#signals">
             <span>SCROLL TO THE SIGNALS</span>
             <ArrowDown className="h-4 w-4" />
           </a>
-          <div className={styles.heroCount} aria-hidden="true">{String(signals.length).padStart(2, "0")}</div>
+          <div className={`${styles.heroCount} ${scrollStyles.heroCount}`} aria-hidden="true">{String(signals.length).padStart(2, "0")}</div>
           <div className={styles.heroMix}>
             <span>05 CORE</span>
             <span>01 ADJACENT</span>
@@ -138,7 +213,7 @@ export function TodayEditorial({
         </div>
       </section>
 
-      <div className={styles.ticker} aria-label="Today topic signals">
+      <div className={`${styles.ticker} ${scrollStyles.ticker}`} aria-label="Today topic signals">
         <div className={styles.tickerTrack}>
           {[...ticker, ...ticker].map((tag, index) => (
             <span key={`${tag}-${index}`}>
@@ -148,8 +223,14 @@ export function TodayEditorial({
         </div>
       </div>
 
-      <section id="signals" className={styles.feed}>
-        <div className={styles.feedIntro}>
+      <section
+        ref={feedRef}
+        id="signals"
+        className={`${styles.feed} ${scrollStyles.feed}`}
+        data-active-lane={active.lane}
+        style={{ backgroundColor: LANE_BACKGROUND[active.lane] }}
+      >
+        <div className={`${styles.feedIntro} ${scrollStyles.feedIntro}`}>
           <div>
             <p className={styles.sectionIndex}>01 — 07 / TODAY</p>
             <h2>SEVEN SIGNALS.<br />TEN MINUTES.</h2>
@@ -168,10 +249,11 @@ export function TodayEditorial({
                 data-index={index}
                 data-lane={signal.lane}
                 data-active={activeIndex === index ? "true" : "false"}
-                className={styles.rankRow}
+                className={`${styles.rankRow} ${scrollStyles.rankRow}`}
                 onMouseEnter={() => setActiveIndex(index)}
                 onFocus={() => setActiveIndex(index)}
               >
+                <span className={scrollStyles.rowProgress} aria-hidden="true" />
                 <RecommendationObserver itemId={signal.id} metadata={signal.metadata} />
                 <span className={styles.rankNumber}>{String(index + 1).padStart(2, "0")}</span>
                 <div className={styles.rankBody}>
@@ -198,8 +280,8 @@ export function TodayEditorial({
             ))}
           </div>
 
-          <aside className={styles.previewRail} aria-live="polite">
-            <div key={active.id} className={styles.previewVisual} data-theme={activeIndex % 7}>
+          <aside className={`${styles.previewRail} ${scrollStyles.previewRail}`} aria-live="polite">
+            <div key={active.id} className={`${styles.previewVisual} ${scrollStyles.previewVisual}`} data-theme={activeIndex % 7}>
               <div className={styles.previewNoise} aria-hidden="true" />
               <div className={styles.previewTopline}>
                 <span>{activeRank}</span>
@@ -268,7 +350,7 @@ export function TodayEditorial({
         </div>
       </section>
 
-      <section className={styles.outro}>
+      <section className={`${styles.outro} ${scrollStyles.outro}`}>
         <p>THE FEED IS THE FILTER.</p>
         <Link href="/explore">
           SEE THE REST <ArrowUpRight className="h-[0.9em] w-[0.9em]" />

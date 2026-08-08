@@ -1,0 +1,331 @@
+.experience {
+  --hero-progress: 0;
+  --page-progress: 0;
+}
+
+.pageProgress {
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  pointer-events: none;
+  background: transparent;
+}
+
+.pageProgress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #3150ff;
+  transform: scaleX(var(--page-progress));
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.hero {
+  perspective: 1200px;
+}
+
+.field {
+  translate: calc(var(--hero-progress) * 7vw) calc(var(--hero-progress) * -5vh);
+  scale: calc(1 + var(--hero-progress) * 0.09);
+  will-change: translate, scale;
+}
+
+.fieldCut {
+  translate: calc(var(--hero-progress) * -5vw) calc(var(--hero-progress) * 9vh);
+  scale: calc(1 + var(--hero-progress) * 0.13);
+  opacity: calc(1 - var(--hero-progress) * 0.72);
+  will-change: translate, scale, opacity;
+}
+
+.heroMeta {
+  translate: 0 calc(var(--hero-progress) * -3rem);
+  opacity: calc(1 - var(--hero-progress) * 1.15);
+  will-change: translate, opacity;
+}
+
+.heroCopy {
+  translate: 0 calc(var(--hero-progress) * -11vh);
+  scale: calc(1 - var(--hero-progress) * 0.035);
+  transform-origin: left top;
+  opacity: calc(1 - var(--hero-progress) * 0.64);
+  will-change: translate, scale, opacity;
+}
+
+.heroTitle {
+  filter: blur(calc(var(--hero-progress) * 0.65px));
+}
+
+.heroLeadRow {
+  translate: calc(var(--hero-progress) * 4vw) calc(var(--hero-progress) * -2.5rem);
+  opacity: calc(1 - var(--hero-progress) * 1.05);
+  will-change: translate, opacity;
+}
+
+.heroBottom {
+  translate: 0 calc(var(--hero-progress) * 5rem);
+  opacity: calc(1 - var(--hero-progress) * 0.92);
+  will-change: translate, opacity;
+}
+
+.heroCount {
+  translate: calc(var(--hero-progress) * 7vw) calc(var(--hero-progress) * 2rem);
+  opacity: calc(1 - var(--hero-progress) * 0.42);
+  will-change: translate, opacity;
+}
+
+.ticker {
+  box-shadow: 0 -1px 0 rgba(11, 11, 11, 0.08);
+}
+
+.feed {
+  transition: background-color 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feed::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 78% 54%, rgba(49, 80, 255, 0.14), transparent 31rem);
+  transition: opacity 650ms ease, background 650ms ease;
+}
+
+.feed[data-active-lane="adjacent"]::after {
+  opacity: 1;
+}
+
+.feed[data-active-lane="wildcard"]::after {
+  opacity: 1;
+  background: radial-gradient(circle at 78% 58%, rgba(255, 75, 0, 0.18), transparent 34rem);
+}
+
+.feed > * {
+  position: relative;
+  z-index: 1;
+}
+
+.feedIntro h2 {
+  transform-origin: left bottom;
+}
+
+.rankRow {
+  isolation: isolate;
+}
+
+.rowProgress {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: #0b0b0b;
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1), background-color 320ms ease;
+}
+
+.rankRow[data-active="true"] .rowProgress {
+  transform: scaleY(1);
+}
+
+.rankRow[data-lane="adjacent"] .rowProgress {
+  background: #d9ff43;
+}
+
+.rankRow[data-lane="wildcard"] .rowProgress {
+  background: #0b0b0b;
+}
+
+.previewRail {
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.previewRail::before {
+  content: "CURRENT / SCROLL-LOCKED";
+  display: block;
+  margin-bottom: 0.55rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  opacity: 0.55;
+}
+
+.previewVisual {
+  transform-origin: 50% 70%;
+  box-shadow: 0 24px 65px rgba(11, 11, 11, 0.12);
+}
+
+.scrollHud {
+  position: fixed;
+  z-index: 55;
+  top: 50%;
+  right: clamp(0.6rem, 1.2vw, 1.25rem);
+  display: grid;
+  grid-template-rows: auto auto 7.5rem auto;
+  justify-items: center;
+  gap: 0.55rem;
+  color: #0b0b0b;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(1rem, -50%, 0);
+  transition: opacity 260ms ease, transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  mix-blend-mode: multiply;
+}
+
+.scrollHud[data-visible="true"] {
+  opacity: 0.72;
+  transform: translate3d(0, -50%, 0);
+}
+
+.hudLabel,
+.hudTotal {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.48rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  writing-mode: vertical-rl;
+}
+
+.scrollHud strong {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.hudTrack {
+  position: relative;
+  width: 1px;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(11, 11, 11, 0.2);
+}
+
+.hudTrack span {
+  position: absolute;
+  inset: 0;
+  background: #0b0b0b;
+  transform-origin: top center;
+  transition: transform 460ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.outro {
+  position: relative;
+  overflow: hidden;
+}
+
+.outro::before {
+  content: "07 / END OF EDITION";
+  position: absolute;
+  right: clamp(1rem, 3vw, 4rem);
+  top: clamp(2rem, 5vw, 5rem);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  opacity: 0.45;
+}
+
+@keyframes editorialSectionRise {
+  from {
+    opacity: 0.2;
+    transform: translate3d(0, 4.5rem, 0) scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes editorialOutroSweep {
+  from {
+    letter-spacing: -0.09em;
+    transform: translateX(-5vw);
+  }
+  to {
+    letter-spacing: -0.075em;
+    transform: translateX(0);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .feedIntro h2 {
+    animation: editorialSectionRise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 32%;
+  }
+
+  .outro a {
+    animation: editorialOutroSweep linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 35%;
+  }
+}
+
+@media (max-width: 1160px) {
+  .scrollHud {
+    right: 0.35rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .scrollHud {
+    display: none;
+  }
+
+  .heroCopy,
+  .heroLeadRow,
+  .heroBottom,
+  .heroMeta,
+  .heroCount,
+  .field,
+  .fieldCut {
+    translate: none;
+    scale: 1;
+    opacity: 1;
+  }
+
+  .heroTitle {
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageProgress span,
+  .field,
+  .fieldCut,
+  .heroMeta,
+  .heroCopy,
+  .heroLeadRow,
+  .heroBottom,
+  .heroCount,
+  .rowProgress,
+  .scrollHud,
+  .hudTrack span,
+  .feed,
+  .feed::after,
+  .feedIntro h2,
+  .outro a {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    filter: none !important;
+  }
+
+  .heroMeta,
+  .heroCopy,
+  .heroLeadRow,
+  .heroBottom,
+  .heroCount,
+  .fieldCut {
+    opacity: 1 !important;
+  }
+}
