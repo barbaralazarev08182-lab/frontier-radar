@@ -159,6 +159,22 @@ export function MotionLabAnalysis() {
       className="motion-lab-analysis"
       data-hovered={hovered ?? "none"}
       aria-label="Today's analysis brief"
+      onPointerMove={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = clamp((event.clientX - rect.left) / Math.max(1, rect.width));
+        const y = clamp((event.clientY - rect.top) / Math.max(1, rect.height));
+        event.currentTarget.style.setProperty("--analysis-pointer-x", `${(x * 100).toFixed(2)}%`);
+        event.currentTarget.style.setProperty("--analysis-pointer-y", `${(y * 100).toFixed(2)}%`);
+        event.currentTarget.style.setProperty("--analysis-foil-shift", `${((x - 0.5) * 4).toFixed(2)}px`);
+        event.currentTarget.style.setProperty("--analysis-foil-skew", `${((y - 0.5) * 1.4).toFixed(2)}deg`);
+      }}
+      onPointerLeave={(event) => {
+        setHovered(null);
+        event.currentTarget.style.setProperty("--analysis-pointer-x", "72%");
+        event.currentTarget.style.setProperty("--analysis-pointer-y", "18%");
+        event.currentTarget.style.setProperty("--analysis-foil-shift", "0px");
+        event.currentTarget.style.setProperty("--analysis-foil-skew", "0deg");
+      }}
     >
       <div className="motion-lab-analysis-surface">
         <div className="motion-lab-analysis-foil" aria-hidden="true" />
