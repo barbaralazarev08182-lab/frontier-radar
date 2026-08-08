@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowUpRight, Heart, ThumbsDown } from "lucide-react";
 import type { FeedbackMetadata } from "@/lib/personalization/browser";
 import { trackFeedback } from "@/lib/personalization/browser";
@@ -10,6 +10,7 @@ import { RecommendationObserver } from "./recommendation-observer";
 import styles from "./today-editorial.module.css";
 import scrollStyles from "./today-scroll-effects.module.css";
 import kineticStyles from "./today-kinetic-effects.module.css";
+import boardStyles from "./today-signal-board.module.css";
 
 export type EditorialLane = "core" | "adjacent" | "wildcard";
 
@@ -68,11 +69,15 @@ const LANE_LABEL: Record<EditorialLane, string> = {
   wildcard: "WILDCARD",
 };
 
-const LANE_BACKGROUND: Record<EditorialLane, string> = {
-  core: "#f1eee5",
-  adjacent: "#e3e7ff",
-  wildcard: "#ffe0d1",
-};
+const TILE_CLASSES = [
+  boardStyles.tile01,
+  boardStyles.tile02,
+  boardStyles.tile03,
+  boardStyles.tile04,
+  boardStyles.tile05,
+  boardStyles.tile06,
+  boardStyles.tile07,
+];
 
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
@@ -107,13 +112,13 @@ function SignalDust() {
     let scrollImpulse = 0;
 
     const seedParticles = () => {
-      const count = Math.round(Math.min(92, Math.max(42, width / 23)));
+      const count = Math.round(Math.min(110, Math.max(54, width / 18)));
       particles = Array.from({ length: count }, (_, index) => ({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.16,
-        vy: (Math.random() - 0.5) * 0.13,
-        size: index % 11 === 0 ? 2.2 : Math.random() * 1.15 + 0.45,
+        vx: (Math.random() - 0.5) * 0.19,
+        vy: (Math.random() - 0.5) * 0.16,
+        size: index % 13 === 0 ? 2.35 : Math.random() * 1.2 + 0.5,
         phase: Math.random() * Math.PI * 2,
         tone: palette[index % palette.length]!,
       }));
@@ -134,7 +139,11 @@ function SignalDust() {
 
     const onPointerMove = (event: PointerEvent) => {
       const rect = host.getBoundingClientRect();
-      const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
       pointer.active = inside;
       if (inside) {
         pointer.x = event.clientX - rect.left;
@@ -145,7 +154,7 @@ function SignalDust() {
     const onScroll = () => {
       const delta = window.scrollY - lastScrollY;
       lastScrollY = window.scrollY;
-      scrollImpulse = clamp(scrollImpulse + delta * 0.07, -18, 18);
+      scrollImpulse = clamp(scrollImpulse + delta * 0.08, -22, 22);
     };
 
     const draw = (time: number) => {
@@ -160,23 +169,23 @@ function SignalDust() {
         const dy = pointer.y - particle.y;
         const distance = Math.hypot(dx, dy);
 
-        if (pointer.active && distance > 0 && distance < 210) {
-          const force = (1 - distance / 210) * 0.018;
+        if (pointer.active && distance > 0 && distance < 240) {
+          const force = (1 - distance / 240) * 0.024;
           particle.vx += (dx / distance) * force;
           particle.vy += (dy / distance) * force;
 
           context.beginPath();
           context.moveTo(particle.x, particle.y);
           context.lineTo(pointer.x, pointer.y);
-          context.strokeStyle = `rgba(49, 80, 255, ${0.055 * (1 - distance / 210)})`;
-          context.lineWidth = 0.6;
+          context.strokeStyle = `rgba(49, 80, 255, ${0.08 * (1 - distance / 240)})`;
+          context.lineWidth = 0.65;
           context.stroke();
         }
 
-        particle.vx *= 0.986;
-        particle.vy *= 0.986;
-        particle.x += particle.vx + Math.sin(time * 0.00035 + particle.phase) * 0.045;
-        particle.y += particle.vy - scrollImpulse * 0.026 + Math.cos(time * 0.00028 + particle.phase) * 0.035;
+        particle.vx *= 0.985;
+        particle.vy *= 0.985;
+        particle.x += particle.vx + Math.sin(time * 0.00036 + particle.phase) * 0.055;
+        particle.y += particle.vy - scrollImpulse * 0.03 + Math.cos(time * 0.0003 + particle.phase) * 0.04;
 
         if (particle.x < -8) particle.x = width + 8;
         if (particle.x > width + 8) particle.x = -8;
@@ -224,61 +233,77 @@ export function TodayEditorial({
   signals,
 }: TodayEditorialProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [feedVisible, setFeedVisible] = useState(false);
   const [choices, setChoices] = useState<Record<string, "interested" | "not_interested">>({});
   const experienceRef = useRef<HTMLDivElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
-  const feedRef = useRef<HTMLElement | null>(null);
+  const boardRef = useRef<HTMLElement | null>(null);
   const cursorRef = useRef<HTMLDivElement | null>(null);
-  const rowRefs = useRef<Array<HTMLElement | null>>([]);
-
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        const index = Number((visible.target as HTMLElement).dataset.index);
-        if (Number.isFinite(index)) setActiveIndex(index);
-      },
-      { rootMargin: "-28% 0px -48% 0px", threshold: [0.01, 0.25, 0.5, 0.75] }
-    );
-
-    rowRefs.current.forEach((node) => node && observer.observe(node));
-    return () => observer.disconnect();
-  }, [signals.length]);
-
-  useEffect(() => {
-    const feed = feedRef.current;
-    if (!feed || typeof IntersectionObserver === "undefined") return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setFeedVisible(Boolean(entry?.isIntersecting)),
-      { rootMargin: "-12% 0px -12% 0px", threshold: 0.01 }
-    );
-    observer.observe(feed);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     const root = experienceRef.current;
     const hero = heroRef.current;
-    if (!root || !hero) return;
+    const board = boardRef.current;
+    if (!root || !hero || !board) return;
 
     let frame = 0;
+    let lastY = window.scrollY;
+
     const update = () => {
       frame = 0;
       const rootRect = root.getBoundingClientRect();
       const heroRect = hero.getBoundingClientRect();
-      const pageStart = window.scrollY + rootRect.top;
+      const boardRect = board.getBoundingClientRect();
+      const scrollY = window.scrollY;
+      const delta = scrollY - lastY;
+      lastY = scrollY;
+
+      const pageStart = scrollY + rootRect.top;
       const scrollable = Math.max(1, root.offsetHeight - window.innerHeight);
-      const pageProgress = clamp((window.scrollY - pageStart) / scrollable);
-      const heroProgress = clamp(-heroRect.top / Math.max(1, hero.offsetHeight * 0.76));
+      const pageProgress = clamp((scrollY - pageStart) / scrollable);
+      const heroProgress = clamp(-heroRect.top / Math.max(1, hero.offsetHeight * 0.8));
+      const boardEntrance = clamp(
+        (window.innerHeight - boardRect.top) / Math.max(1, window.innerHeight * 0.86)
+      );
+      const boardTravel = Math.max(1, board.offsetHeight - window.innerHeight);
+      const boardProgress = clamp(-boardRect.top / boardTravel);
+      const velocity = clamp(delta / 70, -1, 1);
 
       root.style.setProperty("--page-progress", pageProgress.toFixed(4));
-      root.style.setProperty("--hero-progress", heroProgress.toFixed(4));
+
+      root.style.setProperty("--hero-x-1", `${(-heroProgress * 82 - velocity * 5).toFixed(2)}vw`);
+      root.style.setProperty("--hero-x-2", `${(heroProgress * 88 + velocity * 6).toFixed(2)}vw`);
+      root.style.setProperty("--hero-x-3", `${(-heroProgress * 68 - velocity * 4).toFixed(2)}vw`);
+      root.style.setProperty("--hero-y-1", `${(-heroProgress * 3.5).toFixed(2)}vh`);
+      root.style.setProperty("--hero-y-2", `${(heroProgress * 2.5).toFixed(2)}vh`);
+      root.style.setProperty("--hero-y-3", `${(-heroProgress * 1.5).toFixed(2)}vh`);
+      root.style.setProperty("--hero-r-1", `${(-heroProgress * 2.2).toFixed(2)}deg`);
+      root.style.setProperty("--hero-r-2", `${(heroProgress * 2.6).toFixed(2)}deg`);
+      root.style.setProperty("--hero-r-3", `${(-heroProgress * 3.1).toFixed(2)}deg`);
+      root.style.setProperty("--hero-s-1", `${(1 + heroProgress * 0.08).toFixed(3)}`);
+      root.style.setProperty("--hero-s-2", `${(1 - heroProgress * 0.06).toFixed(3)}`);
+      root.style.setProperty("--hero-s-3", `${(1 + heroProgress * 0.12).toFixed(3)}`);
+      root.style.setProperty("--hero-ls-1", `${(-0.075 + heroProgress * 0.055).toFixed(4)}em`);
+      root.style.setProperty("--hero-ls-2", `${(-0.075 + heroProgress * 0.08).toFixed(4)}em`);
+      root.style.setProperty("--hero-ls-3", `${(-0.075 + heroProgress * 0.11).toFixed(4)}em`);
+
+      root.style.setProperty("--board-scale", `${(0.84 + boardEntrance * 0.16).toFixed(3)}`);
+      root.style.setProperty("--board-y", `${((1 - boardEntrance) * 14).toFixed(2)}vh`);
+      root.style.setProperty("--board-rotation", `${((1 - boardEntrance) * 3.5).toFixed(2)}deg`);
+      root.style.setProperty("--board-opacity", `${(0.18 + boardEntrance * 0.82).toFixed(3)}`);
+
+      const spread = boardProgress * 2.4;
+      root.style.setProperty("--board-shift-pos", `${spread.toFixed(2)}vw`);
+      root.style.setProperty("--board-shift-neg", `${(-spread).toFixed(2)}vw`);
+      root.style.setProperty("--board-shift-up", `${(-boardProgress * 1.6).toFixed(2)}vh`);
+      root.style.setProperty("--board-shift-down", `${(boardProgress * 1.4).toFixed(2)}vh`);
+      root.style.setProperty(
+        "--board-marquee-a",
+        `${(-boardProgress * 24 - velocity * 7).toFixed(2)}vw`
+      );
+      root.style.setProperty(
+        "--board-marquee-b",
+        `${(boardProgress * 20 + velocity * 7).toFixed(2)}vw`
+      );
     };
 
     const requestUpdate = () => {
@@ -321,17 +346,12 @@ export function TodayEditorial({
       cursor.dataset.visible = "true";
 
       const target = event.target instanceof Element ? event.target : null;
-      cursor.dataset.mode = target?.closest("[data-signal-row]")
+      cursor.dataset.mode = target?.closest("[data-signal-tile]")
         ? "signal"
         : target?.closest("a, button")
           ? "action"
           : "default";
 
-      const pointerX = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 18;
-      const pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 7;
-      root.style.setProperty("--pointer-x", `${pointerX.toFixed(2)}px`);
-      root.style.setProperty("--pointer-x-reverse", `${(-pointerX).toFixed(2)}px`);
-      root.style.setProperty("--pointer-y", `${pointerY.toFixed(2)}px`);
       schedule();
     };
 
@@ -350,32 +370,47 @@ export function TodayEditorial({
 
   if (signals.length === 0) return null;
 
-  const active = signals[Math.min(activeIndex, signals.length - 1)]!;
+  const visibleSignals = signals.slice(0, 7);
+  const active = visibleSignals[Math.min(activeIndex, visibleSignals.length - 1)]!;
   const activeRank = String(activeIndex + 1).padStart(2, "0");
-  const ticker = topTags.length > 0 ? topTags : ["AI AGENTS", "DEV TOOLS", "CREATIVE AI", "INFRA", "RESEARCH"];
-  const progress = (activeIndex + 1) / signals.length;
+  const ticker =
+    topTags.length > 0
+      ? topTags
+      : ["AI AGENTS", "DEV TOOLS", "CREATIVE AI", "INFRA", "RESEARCH"];
 
   function choose(signal: EditorialSignal, choice: "interested" | "not_interested") {
     setChoices((current) => ({ ...current, [signal.id]: choice }));
     trackFeedback(signal.id, choice, undefined, signal.metadata);
   }
 
-  function tiltRow(event: ReactPointerEvent<HTMLElement>) {
+  function tiltTile(event: ReactPointerEvent<HTMLElement>) {
     if (event.pointerType === "touch") return;
     const rect = event.currentTarget.getBoundingClientRect();
-    const horizontal = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1) - 0.5;
-    const vertical = clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1) - 0.5;
-    const tilt = horizontal * 3.4 - vertical * 0.6;
-    event.currentTarget.style.setProperty("--row-tilt", `${tilt.toFixed(2)}deg`);
+    const x = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1) - 0.5;
+    const y = clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1) - 0.5;
+    event.currentTarget.style.setProperty("--tile-ry", `${(x * 7.5).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--tile-rx", `${(-y * 5.4).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--tile-cx", `${((x + 0.5) * 100).toFixed(1)}%`);
+    event.currentTarget.style.setProperty("--tile-cy", `${((y + 0.5) * 100).toFixed(1)}%`);
   }
 
-  function releaseRow(event: ReactPointerEvent<HTMLElement>) {
-    event.currentTarget.style.setProperty("--row-tilt", "0deg");
+  function releaseTile(event: ReactPointerEvent<HTMLElement>) {
+    event.currentTarget.style.setProperty("--tile-ry", "0deg");
+    event.currentTarget.style.setProperty("--tile-rx", "0deg");
   }
 
   return (
-    <div ref={experienceRef} className={`${styles.experience} ${scrollStyles.experience} ${kineticStyles.kineticRoot}`}>
-      <div ref={cursorRef} className={kineticStyles.cursorLens} data-visible="false" data-mode="default" aria-hidden="true">
+    <div
+      ref={experienceRef}
+      className={`${styles.experience} ${scrollStyles.experience} ${kineticStyles.kineticRoot}`}
+    >
+      <div
+        ref={cursorRef}
+        className={kineticStyles.cursorLens}
+        data-visible="false"
+        data-mode="default"
+        aria-hidden="true"
+      >
         <span />
         <em>SCAN</em>
       </div>
@@ -384,16 +419,11 @@ export function TodayEditorial({
         <span />
       </div>
 
-      <div className={scrollStyles.scrollHud} data-visible={feedVisible ? "true" : "false"} aria-hidden="true">
-        <span className={scrollStyles.hudLabel}>SIGNAL</span>
-        <strong>{activeRank}</strong>
-        <div className={scrollStyles.hudTrack}>
-          <span style={{ transform: `scaleY(${progress})` }} />
-        </div>
-        <span className={scrollStyles.hudTotal}>{String(signals.length).padStart(2, "0")}</span>
-      </div>
-
-      <section ref={heroRef} className={`${styles.hero} ${scrollStyles.hero}`} aria-labelledby="today-editorial-title">
+      <section
+        ref={heroRef}
+        className={`${styles.hero} ${scrollStyles.hero}`}
+        aria-labelledby="today-editorial-title"
+      >
         <div className={`${styles.field} ${scrollStyles.field}`} aria-hidden="true" />
         <div className={`${styles.fieldCut} ${scrollStyles.fieldCut}`} aria-hidden="true" />
         <div className={styles.grain} aria-hidden="true" />
@@ -407,14 +437,25 @@ export function TodayEditorial({
 
         <div className={`${styles.heroCopy} ${scrollStyles.heroCopy}`}>
           <p className={styles.eyebrow}>PERSONAL FRONTIER INTELLIGENCE</p>
-          <h1 id="today-editorial-title" className={`${styles.heroTitle} ${scrollStyles.heroTitle} ${kineticStyles.heroTitle}`}>
-            <span className={styles.titleMask}><span>FIND WHAT&apos;S NEXT</span></span>
-            <span className={styles.titleMask}><span>BEFORE IT HAS</span></span>
-            <span className={`${styles.titleMask} ${styles.titleAccent}`}><span>A NAME.</span></span>
+          <h1
+            id="today-editorial-title"
+            className={`${styles.heroTitle} ${scrollStyles.heroTitle} ${kineticStyles.heroTitle}`}
+          >
+            <span className={styles.titleMask}>
+              <span>FIND WHAT&apos;S NEXT</span>
+            </span>
+            <span className={styles.titleMask}>
+              <span>BEFORE IT HAS</span>
+            </span>
+            <span className={`${styles.titleMask} ${styles.titleAccent}`}>
+              <span>A NAME.</span>
+            </span>
           </h1>
           <div className={`${styles.heroLeadRow} ${scrollStyles.heroLeadRow}`}>
             <p className={styles.heroLead}>
-              {signals.length} signals distilled from {totalDiscoveries} frontier discoveries. Not more news — only projects with enough shape, momentum and weirdness to deserve your attention.
+              {visibleSignals.length} signals distilled from {totalDiscoveries} frontier
+              discoveries. Not more news — a compressed view of what is gaining shape before it
+              becomes obvious.
             </p>
             <p className={styles.heroProfile}>{personalizationLabel}</p>
           </div>
@@ -422,10 +463,15 @@ export function TodayEditorial({
 
         <div className={`${styles.heroBottom} ${scrollStyles.heroBottom}`}>
           <a className={styles.scrollCue} href="#signals">
-            <span>SCROLL TO THE SIGNALS</span>
+            <span>OPEN TODAY&apos;S BOARD</span>
             <ArrowDown className="h-4 w-4" />
           </a>
-          <div className={`${styles.heroCount} ${scrollStyles.heroCount}`} aria-hidden="true">{String(signals.length).padStart(2, "0")}</div>
+          <div
+            className={`${styles.heroCount} ${scrollStyles.heroCount}`}
+            aria-hidden="true"
+          >
+            {String(visibleSignals.length).padStart(2, "0")}
+          </div>
           <div className={styles.heroMix}>
             <span>05 CORE</span>
             <span>01 ADJACENT</span>
@@ -434,118 +480,144 @@ export function TodayEditorial({
         </div>
       </section>
 
-      <div className={`${styles.ticker} ${scrollStyles.ticker}`} aria-label="Today topic signals">
+      <div
+        className={`${styles.ticker} ${scrollStyles.ticker}`}
+        aria-label="Today topic signals"
+      >
         <div className={styles.tickerTrack}>
           {[...ticker, ...ticker].map((tag, index) => (
             <span key={`${tag}-${index}`}>
-              {tag}<i aria-hidden="true">✦</i>
+              {tag}
+              <i aria-hidden="true">✦</i>
             </span>
           ))}
         </div>
       </div>
 
-      <section
-        ref={feedRef}
-        id="signals"
-        className={`${styles.feed} ${scrollStyles.feed}`}
-        data-active-lane={active.lane}
-        style={{ backgroundColor: LANE_BACKGROUND[active.lane] }}
-      >
-        <div className={`${styles.feedIntro} ${scrollStyles.feedIntro}`}>
-          <div>
-            <p className={styles.sectionIndex}>01 — 07 / TODAY</p>
-            <h2>SEVEN SIGNALS.<br />TEN MINUTES.</h2>
-          </div>
-          <p>
-            Scan the titles first. Hover or keep scrolling for context. The interface stays quiet until a project earns your attention.
-          </p>
-        </div>
-
-        <div className={styles.feedGrid}>
-          <div className={styles.rankList}>
-            {signals.map((signal, index) => (
-              <article
-                key={signal.id}
-                ref={(node) => { rowRefs.current[index] = node; }}
-                data-index={index}
-                data-signal-row="true"
-                data-lane={signal.lane}
-                data-active={activeIndex === index ? "true" : "false"}
-                className={`${styles.rankRow} ${scrollStyles.rankRow} ${kineticStyles.interactiveRow}`}
-                onMouseEnter={() => setActiveIndex(index)}
-                onFocus={() => setActiveIndex(index)}
-                onPointerMove={tiltRow}
-                onPointerLeave={releaseRow}
-              >
-                <span className={scrollStyles.rowProgress} aria-hidden="true" />
-                <RecommendationObserver itemId={signal.id} metadata={signal.metadata} />
-                <span className={styles.rankNumber}>{String(index + 1).padStart(2, "0")}</span>
-                <div className={styles.rankBody}>
-                  <div className={styles.rankMeta}>
-                    <span>{SOURCE_LABEL[signal.source] ?? signal.source}</span>
-                    <span>{LANE_LABEL[signal.lane]}</span>
-                    {signal.metricsLabel ? <span>{signal.metricsLabel}</span> : null}
-                  </div>
-                  <Link
-                    href={`/project/${signal.id}`}
-                    className={`${styles.rankTitle} ${kineticStyles.rankTitle}`}
-                    onClick={() => trackFeedback(signal.id, "open_detail", undefined, signal.metadata)}
-                  >
-                    {signal.title}
-                  </Link>
-                  <p className={styles.rankSummary}>{signal.summary}</p>
-                </div>
-                <div className={styles.rankScore}>
-                  <span>{signal.score == null ? "—" : Math.round(signal.score)}</span>
-                  <small>FR</small>
-                </div>
-                <ArrowUpRight className={styles.rankArrow} aria-hidden="true" />
-              </article>
-            ))}
+      <section ref={boardRef} id="signals" className={boardStyles.stage}>
+        <div className={boardStyles.pin}>
+          <div className={boardStyles.marqueeField} aria-hidden="true">
+            <div className={boardStyles.marqueeA}>
+              TODAY&apos;S FRONTIER — TODAY&apos;S FRONTIER — TODAY&apos;S FRONTIER —
+            </div>
+            <div className={boardStyles.marqueeB}>
+              SIGNALS / BUILD / DISCOVER / SIGNALS / BUILD / DISCOVER /
+            </div>
           </div>
 
-          <aside className={`${styles.previewRail} ${scrollStyles.previewRail} ${kineticStyles.previewRail}`} aria-live="polite">
-            <div key={active.id} className={`${styles.previewVisual} ${scrollStyles.previewVisual} ${kineticStyles.previewVisual}`} data-theme={activeIndex % 7}>
-              <div className={styles.previewNoise} aria-hidden="true" />
-              <div className={styles.previewTopline}>
-                <span>{activeRank}</span>
-                <span>{LANE_LABEL[active.lane]}</span>
+          <div className={boardStyles.chrome}>
+            <span>FR / SIGNAL BOARD</span>
+            <span>{dateLabel}</span>
+            <span>HOVER TO FOCUS · CLICK TO OPEN</span>
+          </div>
+
+          <header className={boardStyles.boardHeader}>
+            <div>
+              <p>OVERVIEW FIRST</p>
+              <h2>
+                YOUR FRONTIER,
+                <br />
+                ALL AT ONCE.
+              </h2>
+            </div>
+            <p className={boardStyles.boardLead}>
+              Seven recommendations on one surface. Read the hierarchy in seconds, then interrogate
+              the one that catches you.
+            </p>
+            <div className={boardStyles.boardStats}>
+              <div>
+                <strong>{String(visibleSignals.length).padStart(2, "0")}</strong>
+                <span>SIGNALS</span>
               </div>
-              <div className={styles.previewTitle}>{active.title}</div>
-              <div className={styles.previewScore}>
-                <strong>{active.score == null ? "—" : Math.round(active.score)}</strong>
-                <span>FRONTIER SCORE</span>
+              <div>
+                <strong>{totalDiscoveries}</strong>
+                <span>SCANNED</span>
+              </div>
+              <div>
+                <strong>{activeRank}</strong>
+                <span>IN FOCUS</span>
               </div>
             </div>
+          </header>
 
-            <div className={styles.previewDetails}>
-              <div className={styles.previewFacts}>
-                <span>{SOURCE_LABEL[active.source] ?? active.source}</span>
-                {active.crossSource ? <span>{active.sourceCount} SOURCES</span> : null}
-                {active.hasCode ? <span>CODE</span> : null}
-                {active.hasDemo ? <span>DEMO</span> : null}
+          <div className={boardStyles.matrix}>
+            {visibleSignals.map((signal, index) => {
+              const rank = String(index + 1).padStart(2, "0");
+              const tileStyle = {
+                "--tile-order": index,
+              } as CSSProperties;
+
+              return (
+                <article
+                  key={signal.id}
+                  data-signal-tile="true"
+                  data-lane={signal.lane}
+                  data-active={activeIndex === index ? "true" : "false"}
+                  className={`${boardStyles.tile} ${TILE_CLASSES[index] ?? ""}`}
+                  style={tileStyle}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onFocus={() => setActiveIndex(index)}
+                  onPointerMove={tiltTile}
+                  onPointerLeave={releaseTile}
+                >
+                  {activeIndex === index ? (
+                    <RecommendationObserver itemId={signal.id} metadata={signal.metadata} />
+                  ) : null}
+                  <Link
+                    href={`/project/${signal.id}`}
+                    className={boardStyles.tileLink}
+                    onClick={() =>
+                      trackFeedback(signal.id, "open_detail", undefined, signal.metadata)
+                    }
+                  >
+                    <div className={boardStyles.tileTop}>
+                      <span className={boardStyles.tileRank}>{rank}</span>
+                      <span className={boardStyles.tileLane}>{LANE_LABEL[signal.lane]}</span>
+                      <span className={boardStyles.tileScore}>
+                        {signal.score == null ? "—" : Math.round(signal.score)}
+                        <small>FR</small>
+                      </span>
+                    </div>
+
+                    <div className={boardStyles.tileBody}>
+                      <h3>{signal.title}</h3>
+                      <p>{signal.summary}</p>
+                    </div>
+
+                    <div className={boardStyles.tileBottom}>
+                      <span>{SOURCE_LABEL[signal.source] ?? signal.source}</span>
+                      {signal.metricsLabel ? <span>{signal.metricsLabel}</span> : null}
+                      {signal.hasCode ? <span>CODE</span> : null}
+                      {signal.hasDemo ? <span>DEMO</span> : null}
+                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
+
+            <aside
+              key={active.id}
+              className={boardStyles.activePanel}
+              data-lane={active.lane}
+              aria-live="polite"
+            >
+              <div className={boardStyles.activeTop}>
+                <span>IN FOCUS / {activeRank}</span>
+                <strong>{active.score == null ? "—" : Math.round(active.score)} FR</strong>
               </div>
-
-              {active.whyNow ? (
-                <div className={styles.detailBlock}>
+              <h3>{active.title}</h3>
+              <div className={boardStyles.activeCopy}>
+                <div>
                   <span>WHY NOW</span>
-                  <p>{active.whyNow}</p>
+                  <p>{active.whyNow ?? active.summary}</p>
                 </div>
-              ) : null}
-              {active.whyYou ? (
-                <div className={styles.detailBlock}>
+                <div>
                   <span>WHY YOU</span>
-                  <p>{active.whyYou}</p>
+                  <p>{active.whyYou ?? "A deliberate stretch beyond your default feed."}</p>
                 </div>
-              ) : null}
-              {active.buildIdea ? (
-                <div className={styles.detailBlock}>
-                  <span>BUILD ON THIS</span>
-                  <p>{active.buildIdea}</p>
-                </div>
-              ) : null}
-
-              <div className={styles.previewActions}>
+              </div>
+              <div className={boardStyles.activeActions}>
                 <button
                   type="button"
                   data-selected={choices[active.id] === "interested" ? "true" : "false"}
@@ -564,13 +636,20 @@ export function TodayEditorial({
                   href={active.canonicalUrl}
                   target="_blank"
                   rel="noreferrer"
-                  onClick={() => trackFeedback(active.id, "open_source", undefined, active.metadata)}
+                  onClick={() =>
+                    trackFeedback(active.id, "open_source", undefined, active.metadata)
+                  }
                 >
                   SOURCE <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </div>
-            </div>
-          </aside>
+            </aside>
+          </div>
+
+          <div className={boardStyles.boardFooter}>
+            <span>01–05 CORE / 06 ADJACENT / 07 WILDCARD</span>
+            <span>SCROLL — THE BOARD WILL OPEN UP</span>
+          </div>
         </div>
       </section>
 
