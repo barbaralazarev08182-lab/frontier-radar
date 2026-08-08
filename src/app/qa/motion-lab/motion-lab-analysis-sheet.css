@@ -1,0 +1,462 @@
+/* -------------------------------------------------------------------------- */
+/* TODAY'S ANALYSIS SHEET V1                                                  */
+/* A readable brief first; material and motion can layer on after composition. */
+/* -------------------------------------------------------------------------- */
+
+.motion-lab-analysis {
+  height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0;
+  background: #e7e8e4;
+  scrollbar-width: none;
+}
+
+.motion-lab-analysis::-webkit-scrollbar { width: 0; height: 0; }
+
+.motion-lab-analysis-surface {
+  position: relative;
+  min-height: 168svh;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 4.2vh 17rem 7vh 5.2vw;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.08) 32%, rgba(210,214,210,.12) 100%),
+    #e7e8e4;
+}
+
+.motion-lab-analysis-surface::before,
+.motion-lab-analysis-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.motion-lab-analysis-surface::before {
+  opacity: .24;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(11,11,11,.22) .55px, transparent .72px),
+    linear-gradient(90deg, transparent 0 24.96%, rgba(11,11,11,.035) 25%, transparent 25.04% 74.96%, rgba(11,11,11,.035) 75%, transparent 75.04%);
+  background-size: 18px 18px, 100% 100%;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.52), rgba(0,0,0,.18) 72%, transparent 98%);
+}
+
+.motion-lab-analysis-surface::after {
+  inset: 0 14rem auto 38%;
+  height: 38svh;
+  opacity: .13;
+  background:
+    radial-gradient(circle at 52% 18%, rgba(116,224,255,.7), transparent 26%),
+    radial-gradient(circle at 77% 35%, rgba(190,134,255,.62), transparent 22%),
+    radial-gradient(circle at 44% 62%, rgba(255,213,128,.45), transparent 26%);
+  filter: blur(34px) saturate(.82);
+  mix-blend-mode: multiply;
+}
+
+.motion-lab-analysis-surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.motion-lab-analysis-foil {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 15.15rem;
+  bottom: 0;
+  width: 5px;
+  opacity: .58;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(100,214,255,.2) 0%,
+    rgba(172,119,255,.72) 18%,
+    rgba(255,220,142,.52) 39%,
+    rgba(106,217,206,.62) 61%,
+    rgba(255,151,210,.46) 79%,
+    rgba(130,180,255,.18) 100%
+  );
+  box-shadow: -1px 0 rgba(255,255,255,.7), 1px 0 rgba(11,11,11,.08);
+}
+
+.motion-lab-analysis-registration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: .9rem;
+  border-bottom: 1px solid rgba(11,11,11,.44);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.motion-lab-analysis-registration span:last-child { opacity: .48; }
+
+.motion-lab-analysis-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(20rem, .72fr);
+  column-gap: 4.2vw;
+  align-items: end;
+  min-height: 34svh;
+  padding: 5.2vh 0 4.6vh;
+}
+
+.motion-lab-analysis-kicker {
+  grid-column: 1 / -1;
+  margin: 0 0 1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .62rem;
+  font-weight: 950;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.motion-lab-analysis-header h2 {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  max-width: none;
+  font-size: clamp(4.4rem, 7vw, 8.2rem);
+  font-weight: 950;
+  line-height: .74;
+  letter-spacing: -.082em;
+  text-transform: uppercase;
+}
+
+.motion-lab-analysis-header h2 span:last-child { margin-left: 7.5vw; }
+
+.motion-lab-analysis-intro {
+  padding: 1rem 0 .35rem;
+  border-top: 2px solid rgba(11,11,11,.82);
+}
+
+.motion-lab-analysis-intro strong,
+.motion-lab-analysis-intro p { display: block; margin: 0; }
+
+.motion-lab-analysis-intro strong {
+  max-width: 32rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .68rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+  line-height: 1.5;
+}
+
+.motion-lab-analysis-intro p {
+  max-width: 34ch;
+  margin-top: 1rem;
+  color: rgba(11,11,11,.64);
+  font-size: clamp(.95rem, 1.08vw, 1.08rem);
+  font-weight: 680;
+  line-height: 1.42;
+}
+
+.motion-lab-analysis-grid {
+  display: block;
+  margin: 0;
+}
+
+.motion-lab-pattern {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1.08fr) minmax(22rem, .92fr);
+  column-gap: clamp(1.6rem, 3vw, 3.6rem);
+  align-items: start;
+  min-width: 0;
+  padding: 4.4vh 0 4.8vh;
+  border-top: 2px solid rgba(11,11,11,.84);
+  transition: background 220ms ease, border-color 220ms ease;
+}
+
+.motion-lab-pattern:last-child { border-bottom: 1px solid rgba(11,11,11,.34); }
+.motion-lab-pattern-local { padding-top: 6vh; padding-bottom: 6vh; }
+
+.motion-lab-pattern:hover,
+.motion-lab-pattern:focus-within {
+  background: linear-gradient(90deg, rgba(255,255,255,.2), rgba(255,255,255,0) 78%);
+}
+
+.motion-lab-pattern-number {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(2.25rem, 3vw, 3.5rem);
+  font-weight: 950;
+  line-height: .8;
+  letter-spacing: -.09em;
+}
+
+.motion-lab-pattern-body { min-width: 0; }
+
+.motion-lab-pattern-meta {
+  display: block;
+  margin: 0 0 1.15rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .58rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  opacity: .52;
+}
+
+.motion-lab-pattern h3 {
+  margin: 0;
+  max-width: 19ch;
+  font-size: clamp(2.25rem, 3.35vw, 4.15rem);
+  font-weight: 950;
+  line-height: .84;
+  letter-spacing: -.067em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.motion-lab-pattern-local h3 { max-width: 10ch; }
+.motion-lab-pattern-interface h3 { max-width: 18ch; }
+
+.motion-lab-pattern-summary {
+  min-height: 0;
+  margin: 1.35rem 0 0;
+  max-width: 46ch;
+  color: rgba(11,11,11,.68);
+  font-size: clamp(.98rem, 1.12vw, 1.12rem);
+  font-weight: 670;
+  line-height: 1.43;
+}
+
+.motion-lab-pattern-why {
+  max-width: 48ch;
+  margin-top: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(11,11,11,.28);
+}
+
+.motion-lab-pattern-why span,
+.motion-lab-pattern-evidence-label,
+.motion-lab-pattern-signal {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 950;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.motion-lab-pattern-why span,
+.motion-lab-pattern-evidence-label {
+  display: block;
+  font-size: .55rem;
+  opacity: .48;
+}
+
+.motion-lab-pattern-why p {
+  margin: .52rem 0 0;
+  color: rgba(11,11,11,.76);
+  font-size: .9rem;
+  font-weight: 690;
+  line-height: 1.44;
+}
+
+.motion-lab-pattern-evidence-panel {
+  min-width: 0;
+  padding-top: .15rem;
+}
+
+.motion-lab-pattern-evidence-label { margin-bottom: .8rem; }
+
+.motion-lab-pattern-evidence {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid rgba(11,11,11,.3);
+}
+
+.motion-lab-pattern-evidence li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: .72rem;
+  min-height: 3.35rem;
+  padding: .15rem .15rem;
+  border-top: 1px solid rgba(11,11,11,.28);
+  transition: transform 220ms cubic-bezier(.16,1,.3,1), background 180ms ease;
+}
+
+.motion-lab-pattern-evidence li:hover { background: rgba(255,255,255,.28); }
+
+.motion-lab-pattern-evidence strong,
+.motion-lab-pattern-evidence b,
+.motion-lab-pattern-evidence em {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.motion-lab-pattern-evidence strong {
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+
+.motion-lab-pattern-evidence li > span {
+  overflow: visible;
+  font-size: clamp(.9rem, 1vw, 1.04rem);
+  font-weight: 790;
+  line-height: 1.18;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.motion-lab-pattern-evidence b {
+  font-size: .64rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+
+.motion-lab-pattern-evidence em {
+  padding: .2rem .34rem;
+  border: 1px solid currentColor;
+  font-size: .46rem;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: .1em;
+}
+
+.motion-lab-pattern-evidence li[data-marker="adjacent"] em { color: #3150ff; border-bottom-width: 1px; }
+.motion-lab-pattern-evidence li[data-marker="wildcard"] em { color: #c53d00; border-bottom-width: 1px; }
+
+.motion-lab-pattern-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.15rem;
+}
+
+.motion-lab-pattern-signal {
+  color: rgba(11,11,11,.6);
+  font-size: .52rem;
+  line-height: 1.4;
+}
+
+.motion-lab-pattern-explore {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  min-width: 12.6rem;
+  margin: 0;
+  padding: .78rem .92rem .72rem;
+  border: 1px solid rgba(11,11,11,.72);
+  background: rgba(255,255,255,.24);
+  color: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .68rem;
+  font-weight: 950;
+  letter-spacing: .11em;
+  line-height: 1;
+  text-decoration: none;
+  transition: background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.motion-lab-pattern-explore > span {
+  font-size: .92rem;
+  transition: transform 180ms ease;
+}
+
+.motion-lab-pattern-explore:hover,
+.motion-lab-pattern-explore:focus-visible {
+  background: rgba(255,255,255,.7);
+  box-shadow: 0 5px 0 rgba(11,11,11,.08);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.motion-lab-pattern-explore:hover > span,
+.motion-lab-pattern-explore:focus-visible > span { transform: translate(3px, -3px); }
+
+.motion-lab-analysis-take {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  display: block;
+  min-height: 37svh;
+  margin: 0;
+  padding: 7vh 0 3vh;
+  border-top: 0;
+}
+
+.motion-lab-analysis-take > span {
+  display: block;
+  margin-bottom: 2.1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .62rem;
+  font-weight: 950;
+  letter-spacing: .15em;
+  opacity: .52;
+}
+
+.motion-lab-analysis-take > strong {
+  display: block;
+  max-width: 18ch;
+  font-size: clamp(3.2rem, 5.2vw, 6.1rem);
+  font-weight: 950;
+  line-height: .82;
+  letter-spacing: -.072em;
+  text-transform: uppercase;
+}
+
+.motion-lab-analysis-take-meta {
+  display: flex;
+  gap: 1.8rem;
+  margin-top: 3.4rem;
+  padding-top: .85rem;
+  border-top: 1px solid rgba(11,11,11,.38);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .54rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+}
+
+/* QA label: this pass validates hierarchy and document identity, not effect density. */
+.motion-lab-meta > div:first-child > span::after {
+  content: "LAB-05 ANALYSIS SHEET V1 / STATIC HIERARCHY";
+}
+
+@media (max-width: 1180px) {
+  .motion-lab-analysis-surface { padding-right: 14rem; }
+  .motion-lab-analysis-foil { right: 12.45rem; }
+  .motion-lab-analysis-header { grid-template-columns: minmax(0, 1.18fr) minmax(18rem, .82fr); }
+  .motion-lab-pattern { grid-template-columns: 3.8rem minmax(0,1fr) minmax(19rem,.85fr); column-gap: 2rem; }
+  .motion-lab-pattern h3 { font-size: clamp(2rem, 3vw, 3.4rem); }
+  .motion-lab-pattern-actions { align-items: flex-end; flex-direction: column; }
+  .motion-lab-pattern-explore { min-width: 100%; }
+}
+
+@media (max-width: 900px) {
+  .motion-lab-analysis-surface { padding: 2rem 1.4rem 4rem; }
+  .motion-lab-analysis-foil { display: none; }
+  .motion-lab-analysis-registration { align-items: flex-start; flex-direction: column; gap: .35rem; }
+  .motion-lab-analysis-header { grid-template-columns: 1fr; min-height: auto; padding: 4rem 0 3rem; }
+  .motion-lab-analysis-kicker { grid-column: 1; }
+  .motion-lab-analysis-header h2 { font-size: clamp(3.6rem, 10vw, 6.6rem); }
+  .motion-lab-analysis-header h2 span:last-child { margin-left: 0; }
+  .motion-lab-analysis-intro { margin-top: 2.5rem; }
+  .motion-lab-pattern { grid-template-columns: 3.2rem minmax(0,1fr); row-gap: 2rem; padding: 3rem 0; }
+  .motion-lab-pattern-number { grid-column: 1; grid-row: 1 / span 2; }
+  .motion-lab-pattern-body { grid-column: 2; }
+  .motion-lab-pattern-evidence-panel { grid-column: 2; }
+  .motion-lab-pattern h3 { font-size: clamp(2.2rem, 6.8vw, 4.2rem); }
+  .motion-lab-pattern-actions { align-items: stretch; }
+  .motion-lab-analysis-take { min-height: auto; padding: 4rem 0 2rem; }
+  .motion-lab-analysis-take > strong { font-size: clamp(3rem, 8vw, 5.4rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-pattern,
+  .motion-lab-pattern-evidence li,
+  .motion-lab-pattern-explore,
+  .motion-lab-pattern-explore > span { transition: none !important; }
+}
