@@ -4,6 +4,7 @@ import { MotionLabInteractions } from "@/components/frontier/motion-lab/motion-l
 import "./motion-lab.css";
 import "./motion-lab-lab03.css";
 import "./motion-lab-lab04.css";
+import "./motion-lab-lab05.css";
 
 export const metadata: Metadata = {
   title: "Motion Lab · Frontier Radar",

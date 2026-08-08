@@ -15,6 +15,14 @@ interface LabSignal {
 
 type LabMode = "run" | "hero" | "deck" | "overview" | "topic";
 
+type MorphTarget = {
+  dx: number;
+  dy: number;
+  scale: number;
+  arcX: number;
+  arcY: number;
+};
+
 interface GsapTweenLike {
   progress(value: number): GsapTweenLike;
   kill(): void;
@@ -37,62 +45,26 @@ declare global {
 }
 
 const SIGNALS: LabSignal[] = [
-  {
-    rank: "01",
-    title: "A memory layer for agents that refuses to become another database",
-    topic: "AGENT SYSTEMS",
-    score: 96,
-    age: "2H",
-    lane: "core",
-  },
-  {
-    rank: "02",
-    title: "Browser-native tool orchestration",
-    topic: "DEV TOOLS",
-    score: 92,
-    age: "4H",
-    lane: "core",
-  },
-  {
-    rank: "03",
-    title: "Local multimodal models finally get fast enough to feel native",
-    topic: "LOCAL AI",
-    score: 89,
-    age: "6H",
-    lane: "core",
-  },
-  {
-    rank: "04",
-    title: "Interfaces generated as motion, not screens",
-    topic: "CREATIVE AI",
-    score: 86,
-    age: "8H",
-    lane: "core",
-  },
-  {
-    rank: "05",
-    title: "Tiny inference runtimes move closer to the edge",
-    topic: "INFRA",
-    score: 83,
-    age: "11H",
-    lane: "core",
-  },
-  {
-    rank: "06",
-    title: "A research tool that behaves more like a playable instrument",
-    topic: "OUTSIDE YOUR BUBBLE",
-    score: 79,
-    age: "1D",
-    lane: "adjacent",
-  },
-  {
-    rank: "07",
-    title: "An absurdly specific interface primitive that might become a category",
-    topic: "WILDCARD",
-    score: 77,
-    age: "1D",
-    lane: "wildcard",
-  },
+  { rank: "01", title: "A memory layer for agents that refuses to become another database", topic: "AGENT SYSTEMS", score: 96, age: "2H", lane: "core" },
+  { rank: "02", title: "Browser-native tool orchestration", topic: "DEV TOOLS", score: 92, age: "4H", lane: "core" },
+  { rank: "03", title: "Local multimodal models finally get fast enough to feel native", topic: "LOCAL AI", score: 89, age: "6H", lane: "core" },
+  { rank: "04", title: "Interfaces generated as motion, not screens", topic: "CREATIVE AI", score: 86, age: "8H", lane: "core" },
+  { rank: "05", title: "Tiny inference runtimes move closer to the edge", topic: "INFRA", score: 83, age: "11H", lane: "core" },
+  { rank: "06", title: "A research tool that behaves more like a playable instrument", topic: "OUTSIDE YOUR BUBBLE", score: 79, age: "1D", lane: "adjacent" },
+  { rank: "07", title: "An absurdly specific interface primitive that might become a category", topic: "WILDCARD", score: 77, age: "1D", lane: "wildcard" },
+];
+
+const SCAN_PHASE_END = 0.62;
+const RECOMPOSE_START = 0.66;
+const RECOMPOSE_END = 0.92;
+const MORPH_ARCS = [
+  { x: -18, y: 14 },
+  { x: 16, y: -18 },
+  { x: -12, y: 22 },
+  { x: 18, y: 16 },
+  { x: -14, y: -20 },
+  { x: 12, y: 22 },
+  { x: -20, y: -16 },
 ];
 
 function clamp(value: number, min = 0, max = 1) {
@@ -103,6 +75,11 @@ function lerp(current: number, target: number, amount: number) {
   return current + (target - current) * amount;
 }
 
+function smoothstep(value: number) {
+  const t = clamp(value);
+  return t * t * (3 - 2 * t);
+}
+
 function deckMorphForProgress(progress: number) {
   if (progress < 0.34) return 1;
   if (progress < 0.52) return 1 - clamp((progress - 0.34) / 0.18);
@@ -111,13 +88,20 @@ function deckMorphForProgress(progress: number) {
   return 1;
 }
 
-function labelForProgress(progress: number) {
+function scanLabel(progress: number) {
   if (progress < 0.06) return "LIVE";
   if (progress < 0.34) return "TEAR";
   if (progress < 0.52) return "COMPRESSION";
   if (progress < 0.62) return "DECK";
   if (progress < 0.9) return "EXPAND";
   return "OVERVIEW";
+}
+
+function storyLabel(rawProgress: number, scanProgress: number) {
+  if (rawProgress < SCAN_PHASE_END) return scanLabel(scanProgress);
+  if (rawProgress < RECOMPOSE_START) return "OVERVIEW";
+  if (rawProgress < RECOMPOSE_END) return "RECOMPOSE";
+  return "FRONTIER MAP";
 }
 
 export function MotionLab() {
@@ -132,6 +116,7 @@ export function MotionLab() {
   const rebuildFlipRef = useRef<(() => boolean) | null>(null);
   const flipTweenRef = useRef<GsapTweenLike | null>(null);
   const flipProgressRef = useRef(1);
+  const morphTargetsRef = useRef(new Map<HTMLElement, MorphTarget>());
 
   useEffect(() => {
     const root = shellRef.current;
@@ -140,6 +125,58 @@ export function MotionLab() {
     let attempts = 0;
     let timer = 0;
     let resizeTimer = 0;
+
+    const captureMorphTargets = () => {
+      if (root.dataset.mode !== "run") return;
+      const signals = Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal"));
+      if (signals.length !== SIGNALS.length) return;
+
+      const previousMode = root.dataset.mode ?? "run";
+      const previousLayout = root.dataset.layout ?? "overview";
+      const deckProgress = flipProgressRef.current;
+      flipTweenRef.current?.progress(1);
+
+      signals.forEach((signal) => {
+        signal.style.setProperty("--morph-x", "0px");
+        signal.style.setProperty("--morph-y", "0px");
+        signal.style.setProperty("--morph-scale-delta", "0");
+      });
+
+      root.dataset.layout = "overview";
+      root.dataset.mode = "overview";
+      void signals[0]?.offsetWidth;
+      const overviewRects = signals.map((signal) => signal.getBoundingClientRect());
+
+      root.dataset.mode = "topic";
+      void signals[0]?.offsetWidth;
+      const topicRects = signals.map((signal) => signal.getBoundingClientRect());
+
+      root.dataset.mode = previousMode;
+      root.dataset.layout = previousLayout;
+      void signals[0]?.offsetWidth;
+
+      const targets = new Map<HTMLElement, MorphTarget>();
+      signals.forEach((signal, index) => {
+        const from = overviewRects[index];
+        const to = topicRects[index];
+        if (!from || !to) return;
+        const fromCx = from.left + from.width / 2;
+        const fromCy = from.top + from.height / 2;
+        const toCx = to.left + to.width / 2;
+        const toCy = to.top + to.height / 2;
+        const widthScale = from.width > 0 ? to.width / from.width : 1;
+        const arc = MORPH_ARCS[index] ?? { x: 0, y: 0 };
+        targets.set(signal, {
+          dx: toCx - fromCx,
+          dy: toCy - fromCy,
+          scale: clamp(widthScale, 0.42, 1.04),
+          arcX: arc.x,
+          arcY: arc.y,
+        });
+      });
+      morphTargetsRef.current = targets;
+      flipTweenRef.current?.progress(deckProgress);
+    };
 
     const setupFlip = () => {
       const gsap = window.gsap;
@@ -179,6 +216,7 @@ export function MotionLab() {
 
       root.dataset.gsap = "ready";
       if (engineRef.current) engineRef.current.textContent = "GSAP / FLIP READY";
+      window.requestAnimationFrame(captureMorphTargets);
       return true;
     };
 
@@ -198,14 +236,11 @@ export function MotionLab() {
     const onResize = () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
-        if (root.dataset.mode === "run" || root.dataset.mode === "overview" || root.dataset.mode === "topic") {
-          setupFlip();
-        }
+        if (root.dataset.mode === "run" || root.dataset.mode === "overview" || root.dataset.mode === "topic") setupFlip();
       }, 140);
     };
 
     window.addEventListener("resize", onResize);
-
     return () => {
       if (timer) window.clearInterval(timer);
       if (resizeTimer) window.clearTimeout(resizeTimer);
@@ -230,24 +265,29 @@ export function MotionLab() {
     let lastTime = performance.now();
     let impulse = 0;
     let current = {
-      x1: 0,
-      x2: 0,
-      x3: 0,
-      y1: 0,
-      y2: 0,
-      y3: 0,
-      r1: 0,
-      r2: 0,
-      r3: 0,
-      s1: 1,
-      s2: 1,
-      s3: 1,
+      x1: 0, x2: 0, x3: 0,
+      y1: 0, y2: 0, y3: 0,
+      r1: 0, r2: 0, r3: 0,
+      s1: 1, s2: 1, s3: 1,
       hero: 1,
       signals: 0.18,
       signalScale: 0.96,
       deckness: 0,
       progress: 0,
       flipProgress: 1,
+      topicness: 0,
+    };
+
+    const applyMorph = (value: number) => {
+      const t = smoothstep(value);
+      const arc = Math.sin(t * Math.PI);
+      root.style.setProperty("--topicness", t.toFixed(4));
+      root.dataset.recompose = t > 0.002 ? "true" : "false";
+      morphTargetsRef.current.forEach((target, signal) => {
+        signal.style.setProperty("--morph-x", `${(target.dx * t + target.arcX * arc).toFixed(2)}px`);
+        signal.style.setProperty("--morph-y", `${(target.dy * t + target.arcY * arc).toFixed(2)}px`);
+        signal.style.setProperty("--morph-scale-delta", `${((target.scale - 1) * t).toFixed(5)}`);
+      });
     };
 
     const write = () => {
@@ -269,6 +309,7 @@ export function MotionLab() {
       root.style.setProperty("--deckness", current.deckness.toFixed(4));
       root.style.setProperty("--overviewness", (1 - current.deckness).toFixed(4));
       root.style.setProperty("--lab-progress", current.progress.toFixed(4));
+      applyMorph(current.topicness);
     };
 
     const applyFlipProgress = (value: number) => {
@@ -286,30 +327,27 @@ export function MotionLab() {
       if (root.dataset.mode !== "run") return;
 
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
-      const progress = clamp(scroller.scrollTop / travel);
-      const tear = clamp((progress - 0.025) / 0.36);
-      const reveal = clamp((progress - 0.13) / 0.3);
-      const targetFlipProgress = reduced || mobile ? 1 : deckMorphForProgress(progress);
+      const rawProgress = clamp(scroller.scrollTop / travel);
+      const scanProgress = clamp(rawProgress / SCAN_PHASE_END);
+      const tear = clamp((scanProgress - 0.025) / 0.36);
+      const reveal = clamp((scanProgress - 0.13) / 0.3);
+      const targetFlipProgress = reduced || mobile ? 1 : deckMorphForProgress(scanProgress);
+      const targetTopicness = reduced || mobile
+        ? (rawProgress >= RECOMPOSE_START ? 1 : 0)
+        : clamp((rawProgress - RECOMPOSE_START) / (RECOMPOSE_END - RECOMPOSE_START));
       const velocityEnergy = clamp(impulse, -1.6, 1.6);
 
       const target = reduced
         ? {
-            x1: 0,
-            x2: 0,
-            x3: 0,
-            y1: 0,
-            y2: 0,
-            y3: 0,
-            r1: 0,
-            r2: 0,
-            r3: 0,
-            s1: 1,
-            s2: 1,
-            s3: 1,
-            hero: progress < 0.32 ? 1 : 0,
-            signals: progress < 0.24 ? 0.18 : 1,
-            signalScale: progress < 0.24 ? 0.96 : 1,
-            progress,
+            x1: 0, x2: 0, x3: 0,
+            y1: 0, y2: 0, y3: 0,
+            r1: 0, r2: 0, r3: 0,
+            s1: 1, s2: 1, s3: 1,
+            hero: scanProgress < 0.32 ? 1 : 0,
+            signals: scanProgress < 0.24 ? 0.18 : 1,
+            signalScale: scanProgress < 0.24 ? 0.96 : 1,
+            progress: rawProgress,
+            topicness: targetTopicness,
           }
         : {
             x1: -tear * 101 - velocityEnergy * 8.5,
@@ -324,10 +362,11 @@ export function MotionLab() {
             s1: 1 + tear * 0.075,
             s2: 1 - tear * 0.055,
             s3: 1 + tear * 0.11,
-            hero: 1 - clamp((progress - 0.22) / 0.22),
+            hero: 1 - clamp((scanProgress - 0.22) / 0.22),
             signals: 0.18 + reveal * 0.82,
             signalScale: 0.96 + reveal * 0.04,
-            progress,
+            progress: rawProgress,
+            topicness: targetTopicness,
           };
 
       const smoothing = reduced ? 1 : 0.125;
@@ -348,14 +387,15 @@ export function MotionLab() {
       current.signalScale = lerp(current.signalScale, target.signalScale, 0.145);
       current.flipProgress = lerp(current.flipProgress, targetFlipProgress, reduced ? 1 : 0.085);
       current.deckness = lerp(current.deckness, 1 - current.flipProgress, reduced ? 1 : 0.14);
+      current.topicness = lerp(current.topicness, target.topicness, reduced ? 1 : 0.075);
       current.progress = lerp(current.progress, target.progress, 0.18);
       impulse *= 0.9;
       applyFlipProgress(current.flipProgress);
       write();
 
-      if (progressRef.current) progressRef.current.textContent = progress.toFixed(3);
+      if (progressRef.current) progressRef.current.textContent = rawProgress.toFixed(3);
       if (velocityRef.current) velocityRef.current.textContent = `${Math.round(velocityEnergy * 1050)} px/s`;
-      if (stateRef.current) stateRef.current.textContent = labelForProgress(progress);
+      if (stateRef.current) stateRef.current.textContent = storyLabel(rawProgress, scanProgress);
 
       const unsettled =
         Math.abs(current.x1 - target.x1) > 0.02 ||
@@ -363,6 +403,7 @@ export function MotionLab() {
         Math.abs(current.x3 - target.x3) > 0.02 ||
         Math.abs(current.flipProgress - targetFlipProgress) > 0.001 ||
         Math.abs(current.deckness - (1 - current.flipProgress)) > 0.003 ||
+        Math.abs(current.topicness - target.topicness) > 0.001 ||
         Math.abs(impulse) > 0.008;
 
       if (unsettled) animationFrame = window.requestAnimationFrame(render);
@@ -386,24 +427,17 @@ export function MotionLab() {
 
     resetPhysicsRef.current = () => {
       current = {
-        x1: 0,
-        x2: 0,
-        x3: 0,
-        y1: 0,
-        y2: 0,
-        y3: 0,
-        r1: 0,
-        r2: 0,
-        r3: 0,
-        s1: 1,
-        s2: 1,
-        s3: 1,
+        x1: 0, x2: 0, x3: 0,
+        y1: 0, y2: 0, y3: 0,
+        r1: 0, r2: 0, r3: 0,
+        s1: 1, s2: 1, s3: 1,
         hero: 1,
         signals: 0.18,
         signalScale: 0.96,
         deckness: 0,
         progress: 0,
         flipProgress: 1,
+        topicness: 0,
       };
       impulse = 0;
       lastScrollTop = scroller.scrollTop;
@@ -431,6 +465,13 @@ export function MotionLab() {
 
     root.dataset.mode = mode;
     scroller.style.overflowY = mode === "run" ? "auto" : "hidden";
+    root.style.setProperty("--topicness", mode === "topic" ? "1" : "0");
+    root.dataset.recompose = "false";
+    Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal")).forEach((signal) => {
+      signal.style.setProperty("--morph-x", "0px");
+      signal.style.setProperty("--morph-y", "0px");
+      signal.style.setProperty("--morph-scale-delta", "0");
+    });
 
     const setFrame = (flipProgress: number, deckness: number, hero: number, signals: number) => {
       flipProgressRef.current = flipProgress;
@@ -480,9 +521,7 @@ export function MotionLab() {
     if (mode === "deck") {
       flipTweenRef.current?.progress(1);
       root.dataset.layout = "deck";
-      Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal")).forEach((signal) => {
-        signal.style.removeProperty("transform");
-      });
+      Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal")).forEach((signal) => signal.style.removeProperty("transform"));
       setFrame(1, 1, 0, 1);
     } else {
       root.dataset.layout = "overview";
@@ -509,47 +548,29 @@ export function MotionLab() {
             <header className="motion-lab-meta">
               <div>
                 <strong>FR / MOTION LAB</strong>
-                <span>LAB-03 SIGNAL DECK → OVERVIEW / DAMPED GSAP FLIP</span>
+                <span>LAB-05 OVERVIEW → FRONTIER MAP / SCROLL RECOMPOSE</span>
               </div>
-              <div>
-                <span>PROTOTYPE ONLY</span>
-                <span>NO LIVE DATA</span>
-              </div>
+              <div><span>PROTOTYPE ONLY</span><span>NO LIVE DATA</span></div>
             </header>
 
             <div className="motion-lab-deck-readout" aria-hidden="true">
-              <span>458 SCANNED</span>
-              <strong>07</strong>
-              <span>SELECTED SIGNALS</span>
+              <span>458 SCANNED</span><strong>07</strong><span>SELECTED SIGNALS</span>
             </div>
 
             <div className="motion-lab-signal-stage" aria-label="Seven prototype signals">
               {SIGNALS.map((signal) => (
-                <article
-                  key={signal.rank}
-                  className={`motion-lab-signal motion-lab-signal-${signal.rank} motion-lab-signal-${signal.lane}`}
-                >
+                <article key={signal.rank} className={`motion-lab-signal motion-lab-signal-${signal.rank} motion-lab-signal-${signal.lane}`}>
                   <span className="motion-lab-rank">{signal.rank}</span>
                   <div className="motion-lab-signal-copy">
                     <span className="motion-lab-topic">{signal.topic}</span>
                     <h2>{signal.title}</h2>
                   </div>
-                  <div className="motion-lab-score">
-                    <strong>{signal.score}</strong>
-                    <span>FR</span>
-                  </div>
+                  <div className="motion-lab-score"><strong>{signal.score}</strong><span>FR</span></div>
                   <span className="motion-lab-age">{signal.age}</span>
-
                   <div className="motion-lab-deck-face" aria-hidden="true">
-                    <div className="motion-lab-deck-face-top">
-                      <span>INTEL BRIEF</span>
-                      <span>FR / {signal.score}</span>
-                    </div>
+                    <div className="motion-lab-deck-face-top"><span>INTEL BRIEF</span><span>FR / {signal.score}</span></div>
                     <strong>{signal.rank}</strong>
-                    <div className="motion-lab-deck-face-bottom">
-                      <span>{signal.topic}</span>
-                      <span>{signal.age} / SIGNAL</span>
-                    </div>
+                    <div className="motion-lab-deck-face-bottom"><span>{signal.topic}</span><span>{signal.age} / SIGNAL</span></div>
                   </div>
                 </article>
               ))}
@@ -573,27 +594,18 @@ export function MotionLab() {
                 <span className="motion-lab-title-line motion-lab-title-line-2"><i>BEFORE IT HAS</i></span>
                 <span className="motion-lab-title-line motion-lab-title-line-3"><i>A NAME.</i></span>
               </h1>
-              <div className="motion-lab-hero-footer">
-                <span>458 FOUND → 07 SELECTED → 01 VIEWPORT</span>
-                <span>TEAR · COMPRESS · HOLD · RELEASE</span>
-              </div>
+              <div className="motion-lab-hero-footer"><span>458 FOUND → 07 SELECTED → 01 VIEWPORT</span><span>TEAR · COMPRESS · HOLD · RELEASE · RECOMPOSE</span></div>
             </div>
 
             <aside className="motion-lab-hud" aria-label="Motion Lab controls">
-              <div className="motion-lab-hud-title">
-                <strong>MOTION LAB</strong>
-                <Link href="/today">EXIT ↗</Link>
-              </div>
+              <div className="motion-lab-hud-title"><strong>MOTION LAB</strong><Link href="/today">EXIT ↗</Link></div>
               <dl>
                 <div><dt>STATE</dt><dd><span ref={stateRef}>LIVE</span></dd></div>
                 <div><dt>PROGRESS</dt><dd><span ref={progressRef}>0.000</span></dd></div>
                 <div><dt>VELOCITY</dt><dd><span ref={velocityRef}>0 px/s</span></dd></div>
                 <div><dt>ENGINE</dt><dd><span ref={engineRef}>GSAP / FLIP LOADING</span></dd></div>
               </dl>
-              <div className="motion-lab-control-group">
-                <span>PLAY</span>
-                <button type="button" data-active={mode === "run"} onClick={() => setMode("run")}>RUN</button>
-              </div>
+              <div className="motion-lab-control-group"><span>PLAY</span><button type="button" data-active={mode === "run"} onClick={() => setMode("run")}>RUN</button></div>
               <div className="motion-lab-control-group">
                 <span>STATIC FRAMES</span>
                 <button type="button" data-active={mode === "hero"} onClick={() => setMode("hero")}>HERO</button>
@@ -607,9 +619,7 @@ export function MotionLab() {
           </section>
         </div>
       </div>
-      <style jsx global>{`
-        body:has(.motion-lab-shell) { overflow: hidden; }
-      `}</style>
+      <style jsx global>{`body:has(.motion-lab-shell) { overflow: hidden; }`}</style>
     </div>
   );
 }

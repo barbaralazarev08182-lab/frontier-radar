@@ -1,0 +1,74 @@
+.motion-lab-track { min-height: 350vh; }
+
+.motion-lab-shell { --topicness: 0; }
+
+.motion-lab-shell[data-pointer-lab="ready"] .motion-lab-signal {
+  translate: calc(var(--gravity-x, 0px) + var(--morph-x, 0px)) calc(var(--gravity-y, 0px) + var(--morph-y, 0px));
+  scale: calc(var(--gravity-scale, 1) + var(--morph-scale-delta, 0));
+}
+
+.motion-lab-shell[data-mode="run"][data-recompose="true"] .motion-lab-signal {
+  transition: filter 260ms ease !important;
+  will-change: translate, scale;
+}
+
+.motion-lab-shell[data-mode="run"] .motion-lab-topic-map {
+  opacity: var(--topicness, 0);
+  transition: none;
+}
+
+.motion-lab-shell[data-mode="run"] .motion-lab-topic-map::before {
+  content: "RANK VIEW  →  FRONTIER MAP";
+  position: absolute;
+  left: 50%;
+  top: 9.5vh;
+  translate: -50% 0;
+  padding: .3rem .55rem;
+  background: rgba(241, 238, 229, .9);
+  border: 1px solid rgba(11, 11, 11, .16);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .52rem;
+  font-weight: 900;
+  letter-spacing: .15em;
+  white-space: nowrap;
+}
+
+.motion-lab-shell[data-mode="run"] .motion-lab-topic-map::after {
+  content: "FRONTIER / MAP";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  color: rgba(11, 11, 11, .035);
+  font-size: clamp(6rem, 15vw, 17rem);
+  font-weight: 950;
+  line-height: .72;
+  letter-spacing: -.09em;
+  white-space: nowrap;
+}
+
+.motion-lab-shell[data-mode="run"] .motion-lab-cluster { box-shadow: 0 0 0 1px rgba(11, 11, 11, .06); }
+.motion-lab-shell[data-mode="run"][data-recompose="true"] .motion-lab-signal-01::before { opacity: .018; }
+
+.motion-lab-meta > div:first-child > span { font-size: 0; }
+.motion-lab-meta > div:first-child > span::after {
+  content: "LAB-05 OVERVIEW → FRONTIER MAP / LAB-04 INVISIBLE LENS PRESERVED";
+  font-size: .62rem;
+}
+
+@media (max-width: 1100px) {
+  .motion-lab-track { min-height: 320vh; }
+  .motion-lab-shell[data-mode="run"] .motion-lab-topic-map::after { font-size: 12vw; }
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-track { min-height: 250vh; }
+  .motion-lab-shell[data-mode="run"] .motion-lab-topic-map { display: none; }
+  .motion-lab-shell[data-mode="run"] .motion-lab-signal { translate: 0 0 !important; scale: 1 !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-track { min-height: 250vh; }
+  .motion-lab-shell[data-mode="run"] .motion-lab-topic-map { opacity: 0 !important; }
+  .motion-lab-shell[data-mode="run"] .motion-lab-signal { translate: 0 0 !important; scale: 1 !important; }
+}
