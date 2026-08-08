@@ -1,48 +1,97 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 
-type AnalysisPhase = "entry" | "agents" | "local" | "interface" | "final";
+type PatternId = "agents" | "local" | "interface";
+type Marker = "ADJACENT" | "WILDCARD";
 
-type Evidence = {
+type Signal = {
   rank: string;
   title: string;
+  pattern: PatternId;
+  top: number;
+  marker?: Marker;
+};
+
+type Pattern = {
+  id: PatternId;
+  index: string;
+  eyebrow: string;
+  title: string;
+  short: string;
+  summary: string;
+  why: string;
   stat: string;
-  marker?: "adjacent" | "wildcard";
+  top: number;
+  evidence: string[];
 };
 
-type SignalLane = {
+type Thread = {
   rank: string;
-  title: string;
-  cluster: "agents" | "local" | "interface";
-  marker?: "ADJACENT" | "WILDCARD";
+  pattern: PatternId;
+  d: string;
+  accent?: "blue" | "orange";
+  delay: string;
 };
 
-const SIGNALS: SignalLane[] = [
-  { rank: "01", title: "Memory layer for agents", cluster: "agents" },
-  { rank: "02", title: "Browser-native orchestration", cluster: "agents" },
-  { rank: "03", title: "Local multimodal models", cluster: "local" },
-  { rank: "04", title: "Interfaces generated as motion", cluster: "interface" },
-  { rank: "05", title: "Tiny inference runtimes", cluster: "agents" },
-  { rank: "06", title: "Playable research instrument", cluster: "interface", marker: "ADJACENT" },
-  { rank: "07", title: "Strange interface primitive", cluster: "interface", marker: "WILDCARD" },
+const SIGNALS: Signal[] = [
+  { rank: "01", title: "Memory layer for agents", pattern: "agents", top: 15 },
+  { rank: "02", title: "Browser-native orchestration", pattern: "agents", top: 26 },
+  { rank: "03", title: "Local multimodal models", pattern: "local", top: 38 },
+  { rank: "04", title: "Interfaces generated as motion", pattern: "interface", top: 50 },
+  { rank: "05", title: "Tiny inference runtimes", pattern: "agents", top: 62 },
+  { rank: "06", title: "Playable research instrument", pattern: "interface", top: 74, marker: "ADJACENT" },
+  { rank: "07", title: "Strange interface primitive", pattern: "interface", top: 86, marker: "WILDCARD" },
 ];
 
-const AGENT_EVIDENCE: Evidence[] = [
-  { rank: "01", title: "Memory layer for agents", stat: "+382%" },
-  { rank: "02", title: "Browser-native orchestration", stat: "+244%" },
-  { rank: "05", title: "Tiny inference runtimes", stat: "+139%" },
+const PATTERNS: Pattern[] = [
+  {
+    id: "agents",
+    index: "01",
+    eyebrow: "STRONGEST CLUSTER",
+    title: "AGENTS ARE MOVING DOWN THE STACK",
+    short: "AGENT INFRASTRUCTURE",
+    summary: "Memory, orchestration and tiny runtimes are converging beneath the visible product layer.",
+    why: "The agent layer is becoming infrastructure — something products build on, not another feature they bolt on.",
+    stat: "3 / 7 · AVG MOMENTUM +255%",
+    top: 22,
+    evidence: ["01 MEMORY", "02 ORCHESTRATION", "05 RUNTIME"],
+  },
+  {
+    id: "local",
+    index: "02",
+    eyebrow: "EARLY FORMATION",
+    title: "LOCAL IS BECOMING NATIVE",
+    short: "LOCAL / NATIVE",
+    summary: "Local multimodal latency is crossing the threshold from impressive demo to immediate product behavior.",
+    why: "One signal only — but if latency becomes invisible, trust, privacy and product form all change at once.",
+    stat: "1 / 7 · MOMENTUM +198%",
+    top: 49,
+    evidence: ["03 LOCAL MULTIMODAL"],
+  },
+  {
+    id: "interface",
+    index: "03",
+    eyebrow: "HIGH NOVELTY",
+    title: "INTERFACES ARE BECOMING INSTRUMENTS",
+    short: "INTERFACE / INSTRUMENT",
+    summary: "Motion, play and strange interaction primitives are starting to behave like product structure, not decoration.",
+    why: "The interface is shifting from passive surface to active medium — something navigated, manipulated and felt.",
+    stat: "3 / 7 · AVG NOVELTY 91",
+    top: 73,
+    evidence: ["04 MOTION", "06 ADJACENT", "07 WILDCARD"],
+  },
 ];
 
-const LOCAL_EVIDENCE: Evidence[] = [
-  { rank: "03", title: "Local multimodal models", stat: "+198%" },
-];
-
-const INTERFACE_EVIDENCE: Evidence[] = [
-  { rank: "04", title: "Interfaces generated as motion", stat: "+171%" },
-  { rank: "06", title: "Playable research instrument", stat: "+112%", marker: "adjacent" },
-  { rank: "07", title: "Strange interface primitive", stat: "N98", marker: "wildcard" },
+const THREADS: Thread[] = [
+  { rank: "01", pattern: "agents", d: "M 225 112 C 385 112, 448 182, 585 198 C 728 215, 842 188, 968 188", delay: "-0.2s" },
+  { rank: "02", pattern: "agents", d: "M 225 194 C 388 194, 462 202, 592 198 C 738 194, 846 188, 968 188", delay: "-1.6s" },
+  { rank: "03", pattern: "local", d: "M 225 278 C 400 278, 455 338, 608 350 C 752 362, 855 348, 968 348", delay: "-2.8s" },
+  { rank: "04", pattern: "interface", d: "M 225 365 C 396 365, 448 465, 598 505 C 744 544, 856 514, 968 514", delay: "-0.8s" },
+  { rank: "05", pattern: "agents", d: "M 225 452 C 385 450, 438 270, 590 205 C 731 145, 851 188, 968 188", delay: "-3.7s" },
+  { rank: "06", pattern: "interface", d: "M 225 535 C 398 535, 472 520, 610 516 C 756 512, 854 514, 968 514", accent: "blue", delay: "-2.1s" },
+  { rank: "07", pattern: "interface", d: "M 225 618 C 364 620, 438 598, 520 548 C 674 454, 832 532, 968 514", accent: "orange", delay: "-4.4s" },
 ];
 
 const ANALYSIS_FADE_START = 0.82;
@@ -52,39 +101,19 @@ function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
 }
 
-function smoothstep(value: number) {
-  const t = clamp(value);
-  return t * t * (3 - 2 * t);
-}
-
-function phaseForProgress(progress: number): AnalysisPhase {
-  if (progress < 0.13) return "entry";
-  if (progress < 0.38) return "agents";
-  if (progress < 0.61) return "local";
-  if (progress < 0.86) return "interface";
-  return "final";
-}
-
-function EvidenceList({ items }: { items: Evidence[] }) {
-  return (
-    <ol className="synth-evidence">
-      {items.map((item) => (
-        <li key={item.rank} data-marker={item.marker ?? "core"}>
-          <strong>{item.rank}</strong>
-          <span>{item.title}</span>
-          {item.marker ? <em>{item.marker.toUpperCase()}</em> : null}
-          <b>{item.stat}</b>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 export function MotionLabAnalysis() {
   const [mount, setMount] = useState<HTMLElement | null>(null);
-  const [phase, setPhase] = useState<AnalysisPhase>("entry");
+  const [hoveredPattern, setHoveredPattern] = useState<PatternId | null>(null);
+  const [hoveredSignal, setHoveredSignal] = useState<string | null>(null);
+  const [pinnedPattern, setPinnedPattern] = useState<PatternId | null>(null);
+  const [showTake, setShowTake] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const phaseRef = useRef<AnalysisPhase>("entry");
+
+  const hoveredSignalPattern = hoveredSignal
+    ? SIGNALS.find((signal) => signal.rank === hoveredSignal)?.pattern ?? null
+    : null;
+  const activePattern = pinnedPattern ?? hoveredPattern ?? hoveredSignalPattern;
+  const activePatternData = activePattern ? PATTERNS.find((pattern) => pattern.id === activePattern) ?? null : null;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -117,7 +146,7 @@ export function MotionLabAnalysis() {
         alpha = 1;
         ready = true;
       } else if (mode === "run") {
-        alpha = smoothstep((progress - ANALYSIS_FADE_START) / (ANALYSIS_READY_START - ANALYSIS_FADE_START));
+        alpha = clamp((progress - ANALYSIS_FADE_START) / (ANALYSIS_READY_START - ANALYSIS_FADE_START));
         ready = progress >= ANALYSIS_READY_START;
       }
 
@@ -125,12 +154,14 @@ export function MotionLabAnalysis() {
       section.dataset.ready = ready ? "true" : "false";
       root.style.setProperty("--analysis-alpha", alpha.toFixed(4));
       root.dataset.analysis = ready ? "ready" : alpha > 0.002 ? "entering" : "off";
-      if (ready && stateSpan) stateSpan.textContent = "SYNTHESIS";
+      if (ready && stateSpan) stateSpan.textContent = "WEAVE";
 
       if (wasReady && !ready) {
         section.scrollTop = 0;
-        phaseRef.current = "entry";
-        setPhase("entry");
+        setPinnedPattern(null);
+        setHoveredPattern(null);
+        setHoveredSignal(null);
+        setShowTake(false);
       }
       wasReady = ready;
     };
@@ -160,148 +191,191 @@ export function MotionLabAnalysis() {
   return createPortal(
     <section
       ref={sectionRef}
-      className="motion-lab-analysis synth-analysis"
-      data-phase={phase}
-      aria-label="Today's synthesis analysis"
+      className="motion-lab-analysis weave-analysis"
+      data-active-pattern={activePattern ?? "all"}
+      data-active-signal={hoveredSignal ?? "none"}
+      data-take={showTake ? "true" : "false"}
+      aria-label="Today's signal weave analysis"
       onScroll={(event) => {
         const node = event.currentTarget;
         const travel = Math.max(1, node.scrollHeight - node.clientHeight);
         const progress = clamp(node.scrollTop / travel);
-        node.style.setProperty("--synth-progress", progress.toFixed(4));
-        const nextPhase = phaseForProgress(progress);
-        if (nextPhase !== phaseRef.current) {
-          phaseRef.current = nextPhase;
-          setPhase(nextPhase);
-        }
+        node.style.setProperty("--weave-scroll", progress.toFixed(4));
+        setShowTake(progress > 0.58);
       }}
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const x = clamp((event.clientX - rect.left) / Math.max(1, rect.width));
         const y = clamp((event.clientY - rect.top) / Math.max(1, rect.height));
-        event.currentTarget.style.setProperty("--px", x.toFixed(4));
-        event.currentTarget.style.setProperty("--py", y.toFixed(4));
-        event.currentTarget.style.setProperty("--pdx", `${((x - 0.5) * 2).toFixed(4)}`);
-        event.currentTarget.style.setProperty("--pdy", `${((y - 0.5) * 2).toFixed(4)}`);
+        event.currentTarget.style.setProperty("--mx", `${(x * 100).toFixed(2)}%`);
+        event.currentTarget.style.setProperty("--my", `${(y * 100).toFixed(2)}%`);
       }}
       onPointerLeave={(event) => {
-        event.currentTarget.style.setProperty("--px", ".5");
-        event.currentTarget.style.setProperty("--py", ".5");
-        event.currentTarget.style.setProperty("--pdx", "0");
-        event.currentTarget.style.setProperty("--pdy", "0");
+        event.currentTarget.style.setProperty("--mx", "52%");
+        event.currentTarget.style.setProperty("--my", "42%");
+        setHoveredPattern(null);
+        setHoveredSignal(null);
       }}
     >
-      <div className="synth-fixed" aria-hidden="true">
-        <div className="synth-fixed-grid" />
-        <div className="synth-fixed-scan" />
-        <div className="synth-fixed-label">
-          <span>FR / ANALYSIS ENGINE</span>
-          <strong>{phase === "entry" ? "07 → 03" : phase === "final" ? "TAKE / 001" : `PATTERN / ${phase === "agents" ? "01" : phase === "local" ? "02" : "03"}`}</strong>
-        </div>
-        <div className="synth-fixed-progress">
-          <span>ENTRY</span><i /><span>01</span><i /><span>02</span><i /><span>03</span><i /><span>TAKE</span>
-        </div>
-      </div>
+      <div className="weave-scroll-space">
+        <div className="weave-stage">
+          <div className="weave-ambient" aria-hidden="true" />
+          <div className="weave-grain" aria-hidden="true" />
 
-      <div className="synth-flow">
-        <section className="synth-entry synth-panel" aria-labelledby="synth-entry-title">
-          <div className="synth-entry-copy">
-            <span className="synth-kicker">TODAY / SYNTHESIS</span>
-            <h2 id="synth-entry-title"><span>07 SIGNALS.</span><span>03 DIRECTIONS.</span></h2>
-            <p>Do not read today&apos;s discoveries apart. Watch the relationships become the story.</p>
+          <header className="weave-header">
+            <div className="weave-brand">
+              <span>FR / TODAY&apos;S SYNTHESIS</span>
+              <strong>07 SIGNALS → 03 DIRECTIONS</strong>
+            </div>
+            <div className="weave-instruction">
+              <span>MOVE THROUGH A SIGNAL</span>
+              <i />
+              <span>CLICK A DIRECTION TO PIN</span>
+            </div>
+          </header>
+
+          <div className="weave-canvas" aria-label="Interactive relationship map between today's seven signals and three emerging directions">
+            <svg className="weave-svg" viewBox="0 0 1200 720" role="img" aria-label="Seven moving signal threads weaving into three emerging directions">
+              <defs>
+                <linearGradient id="weaveSilver" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#65717d" stopOpacity="0.12" />
+                  <stop offset="45%" stopColor="#8aa0b6" stopOpacity="0.34" />
+                  <stop offset="100%" stopColor="#26313a" stopOpacity="0.56" />
+                </linearGradient>
+                <linearGradient id="weaveBlue" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#8fb4ff" stopOpacity="0.26" />
+                  <stop offset="100%" stopColor="#4267ff" stopOpacity="0.9" />
+                </linearGradient>
+                <linearGradient id="weaveOrange" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#ffba8e" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#ff6a3d" stopOpacity="0.9" />
+                </linearGradient>
+                <filter id="weaveGlow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
+
+              <g className="weave-axis" aria-hidden="true">
+                <path d="M 225 76 L 225 650" />
+                <path d="M 968 112 L 968 584" />
+              </g>
+
+              {THREADS.map((thread) => (
+                <g
+                  key={thread.rank}
+                  className="weave-thread"
+                  data-pattern={thread.pattern}
+                  data-signal={thread.rank}
+                  data-accent={thread.accent ?? "silver"}
+                  onPointerEnter={() => setHoveredSignal(thread.rank)}
+                  onPointerLeave={() => setHoveredSignal(null)}
+                  onClick={() => setPinnedPattern((current) => current === thread.pattern ? null : thread.pattern)}
+                >
+                  <path className="weave-thread-glow" d={thread.d} />
+                  <path className="weave-thread-ribbon" d={thread.d} />
+                  <path
+                    className="weave-thread-pulse"
+                    d={thread.d}
+                    pathLength="100"
+                    style={{ "--thread-delay": thread.delay } as CSSProperties}
+                  />
+                  <path className="weave-thread-hit" d={thread.d} />
+                </g>
+              ))}
+
+              <g className="weave-hubs" aria-hidden="true">
+                <g className="weave-hub" data-pattern="agents" transform="translate(968 188)"><circle r="8" /><circle className="weave-hub-ring" r="24" /></g>
+                <g className="weave-hub" data-pattern="local" transform="translate(968 348)"><circle r="8" /><circle className="weave-hub-ring" r="24" /></g>
+                <g className="weave-hub" data-pattern="interface" transform="translate(968 514)"><circle r="8" /><circle className="weave-hub-ring" r="24" /></g>
+              </g>
+            </svg>
+
+            <div className="weave-signal-layer">
+              {SIGNALS.map((signal) => (
+                <button
+                  key={signal.rank}
+                  type="button"
+                  className="weave-signal"
+                  data-pattern={signal.pattern}
+                  data-signal={signal.rank}
+                  data-marker={signal.marker?.toLowerCase() ?? "core"}
+                  style={{ "--signal-top": `${signal.top}%` } as CSSProperties}
+                  onPointerEnter={() => setHoveredSignal(signal.rank)}
+                  onPointerLeave={() => setHoveredSignal(null)}
+                  onFocus={() => setHoveredSignal(signal.rank)}
+                  onBlur={() => setHoveredSignal(null)}
+                  onClick={() => setPinnedPattern((current) => current === signal.pattern ? null : signal.pattern)}
+                >
+                  <strong>{signal.rank}</strong>
+                  <span>{signal.title}</span>
+                  {signal.marker ? <em>{signal.marker}</em> : null}
+                </button>
+              ))}
+            </div>
+
+            <div className="weave-pattern-layer">
+              {PATTERNS.map((pattern) => (
+                <button
+                  key={pattern.id}
+                  type="button"
+                  className="weave-pattern"
+                  data-pattern={pattern.id}
+                  style={{ "--pattern-top": `${pattern.top}%` } as CSSProperties}
+                  aria-pressed={pinnedPattern === pattern.id}
+                  onPointerEnter={() => setHoveredPattern(pattern.id)}
+                  onPointerLeave={() => setHoveredPattern(null)}
+                  onFocus={() => setHoveredPattern(pattern.id)}
+                  onBlur={() => setHoveredPattern(null)}
+                  onClick={() => setPinnedPattern((current) => current === pattern.id ? null : pattern.id)}
+                >
+                  <span className="weave-pattern-index">{pattern.index}</span>
+                  <span className="weave-pattern-copy">
+                    <small>{pattern.eyebrow}</small>
+                    <strong>{pattern.short}</strong>
+                    <em>{pattern.stat}</em>
+                  </span>
+                  <i aria-hidden="true" />
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="synth-loom" aria-label="Seven signals regrouping into three directions">
-            {SIGNALS.map((signal) => (
-              <div
-                key={signal.rank}
-                className="synth-loom-row"
-                data-cluster={signal.cluster}
-                data-marker={signal.marker?.toLowerCase() ?? "core"}
-              >
-                <strong>{signal.rank}</strong>
-                <span>{signal.title}</span>
-                {signal.marker ? <em>{signal.marker}</em> : null}
-                <i aria-hidden="true" />
+          <aside className="weave-readout" data-open={activePatternData ? "true" : "false"} aria-live="polite">
+            {activePatternData ? (
+              <>
+                <div className="weave-readout-head">
+                  <span>{activePatternData.index} / {activePatternData.eyebrow}</span>
+                  <button type="button" onClick={() => setPinnedPattern(null)} aria-label="Clear pinned direction">×</button>
+                </div>
+                <div className="weave-readout-main">
+                  <h2>{activePatternData.title}</h2>
+                  <p>{activePatternData.summary}</p>
+                </div>
+                <div className="weave-readout-foot">
+                  <div className="weave-evidence">
+                    {activePatternData.evidence.map((item) => <span key={item}>{item}</span>)}
+                  </div>
+                  <div className="weave-why"><strong>WHY</strong><span>{activePatternData.why}</span></div>
+                  <a href={`/explore?pattern=${activePatternData.id}`}>EXPLORE DIRECTION <b>↗</b></a>
+                </div>
+              </>
+            ) : (
+              <div className="weave-readout-idle">
+                <span>THE WEAVE IS LIVE</span>
+                <strong>Follow any thread. The relationship is the analysis.</strong>
               </div>
-            ))}
-            <div className="synth-loom-destination synth-loom-destination-agents">01</div>
-            <div className="synth-loom-destination synth-loom-destination-local">02</div>
-            <div className="synth-loom-destination synth-loom-destination-interface">03</div>
-          </div>
-        </section>
+            )}
+          </aside>
 
-        <section className="synth-scene synth-scene-agents synth-panel" aria-labelledby="synth-agents-title">
-          <div className="synth-visual synth-stack" aria-hidden="true">
-            <div className="synth-stack-spine"><span>INFRASTRUCTURE</span></div>
-            <div className="synth-stack-layer synth-stack-memory"><b>01</b><span>MEMORY</span><i>STATE / CONTEXT / RECALL</i></div>
-            <div className="synth-stack-layer synth-stack-orchestration"><b>02</b><span>ORCHESTRATION</span><i>TOOLS / BROWSER / ACTION</i></div>
-            <div className="synth-stack-layer synth-stack-runtime"><b>05</b><span>RUNTIME</span><i>EDGE / INFERENCE / EXECUTION</i></div>
-            <div className="synth-stack-caption">VISIBLE FEATURES ↑<br />SYSTEM LAYER ↓</div>
+          <div className="weave-take" aria-hidden={!showTake}>
+            <span>TODAY&apos;S TAKE / 001</span>
+            <strong>THE FRONTIER IS MOVING FROM FEATURES TO SYSTEMS.</strong>
+            <i>07 SIGNALS / 03 PATTERNS / 01 DAILY BRIEF</i>
           </div>
 
-          <div className="synth-copy">
-            <div className="synth-scene-meta"><span>01 / STRONGEST CLUSTER</span><strong>3 / 7 SIGNALS</strong></div>
-            <h3 id="synth-agents-title">AGENTS ARE<br />MOVING DOWN<br />THE STACK.</h3>
-            <p className="synth-summary">Agent innovation is shifting beneath the visible product layer — toward memory, orchestration and runtime infrastructure.</p>
-            <EvidenceList items={AGENT_EVIDENCE} />
-            <div className="synth-why"><span>WHY IT MATTERS</span><p>The agent layer is becoming something products build on, not another feature they bolt on.</p></div>
-            <div className="synth-actions"><span>AVG MOMENTUM +255%</span><a href="/explore?pattern=agents">OPEN DIRECTION <b>↗</b></a></div>
-          </div>
-        </section>
-
-        <section className="synth-scene synth-scene-local synth-panel" aria-labelledby="synth-local-title">
-          <div className="synth-local-label"><span>FORMATION</span><strong>EARLY</strong><i><b /><b /><b /><b /><b /><b /><b /></i></div>
-
-          <div className="synth-visual synth-local-core" aria-hidden="true">
-            <div className="synth-latency-ring ring-1"><span>198</span></div>
-            <div className="synth-latency-ring ring-2"><span>112</span></div>
-            <div className="synth-latency-ring ring-3"><span>68</span></div>
-            <div className="synth-latency-ring ring-4"><span>31</span></div>
-            <div className="synth-core-mark"><b>03</b><span>LOCAL</span></div>
-            <small>NATIVE THRESHOLD</small>
-          </div>
-
-          <div className="synth-copy">
-            <div className="synth-scene-meta"><span>02 / EMERGING</span><strong>1 / 7 SIGNAL</strong></div>
-            <h3 id="synth-local-title">LOCAL IS<br />BECOMING<br />NATIVE.</h3>
-            <p className="synth-summary">Local multimodal latency is crossing the line from impressive demo to something that can feel normal inside a product.</p>
-            <EvidenceList items={LOCAL_EVIDENCE} />
-            <div className="synth-why"><span>WHY IT MATTERS</span><p>When local AI becomes immediate, trust, privacy, latency and product form all change at once.</p></div>
-            <div className="synth-actions"><span>MOMENTUM +198%</span><a href="/explore?pattern=local">TRACK SIGNAL <b>↗</b></a></div>
-          </div>
-        </section>
-
-        <section className="synth-scene synth-scene-interface synth-panel" aria-labelledby="synth-interface-title">
-          <div className="synth-visual synth-instrument" aria-hidden="true">
-            <div className="synth-membrane"><span>04</span></div>
-            <div className="synth-string synth-string-06"><b>06</b><span>ADJACENT</span></div>
-            <div className="synth-shard"><b>07</b><span>WILDCARD</span></div>
-            <div className="synth-ripple ripple-a" />
-            <div className="synth-ripple ripple-b" />
-            <small>MOVE / BEND / INTERROGATE</small>
-          </div>
-
-          <div className="synth-copy">
-            <div className="synth-scene-meta"><span>03 / HIGH NOVELTY</span><strong>3 / 7 SIGNALS</strong></div>
-            <h3 id="synth-interface-title">INTERFACES<br />ARE BECOMING<br />INSTRUMENTS.</h3>
-            <p className="synth-summary">Motion, play and unusual interaction primitives are beginning to act like product structure instead of decoration.</p>
-            <EvidenceList items={INTERFACE_EVIDENCE} />
-            <div className="synth-why"><span>WHY IT MATTERS</span><p>The interface is shifting from passive surface to active medium — something navigated, manipulated and felt.</p></div>
-            <div className="synth-actions"><span>AVG NOVELTY 91</span><a href="/explore?pattern=interface">ENTER FIELD <b>↗</b></a></div>
-          </div>
-        </section>
-
-        <section className="synth-final synth-panel" aria-labelledby="synth-final-title">
-          <div className="synth-final-marks" aria-hidden="true">
-            <div className="synth-final-mark mark-stack"><i /><i /><i /><span>01</span></div>
-            <div className="synth-final-mark mark-core"><i /><span>02</span></div>
-            <div className="synth-final-mark mark-instrument"><i /><i /><span>03</span></div>
-          </div>
-          <span className="synth-kicker">TODAY&apos;S TAKE / 001</span>
-          <h3 id="synth-final-title">THE FRONTIER<br />IS MOVING FROM<br /><em>FEATURES</em> TO <em>SYSTEMS.</em></h3>
-          <div className="synth-final-meta"><span>07 SIGNALS</span><span>03 PATTERNS</span><span>01 DAILY SYNTHESIS</span></div>
-          <a className="synth-final-cta" href="/explore">EXPLORE THE FRONTIER <b>↗</b></a>
-        </section>
+          <div className="weave-scroll-cue" aria-hidden="true"><span>SCROLL TO RESOLVE</span><i /></div>
+        </div>
       </div>
     </section>,
     mount,
