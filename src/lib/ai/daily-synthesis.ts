@@ -1,8 +1,20 @@
 import { sha256Hex } from "@/lib/hash";
 
 export const DAILY_SYNTHESIS_SCHEMA_VERSION = "daily-synthesis-v1";
+export const DAILY_SYNTHESIS_PROMPT_VERSION = "daily-synthesis-prompt-v1";
 
 export type SynthesisFormation = "strong" | "emerging" | "novel";
+
+export interface DailySynthesisSignalInput {
+  id: string;
+  rank: number;
+  title: string;
+  summary: string;
+  tags: string[];
+  lane: "core" | "adjacent" | "wildcard";
+  whyNow: string | null;
+  score: number | null;
+}
 
 export interface DailySynthesisPattern {
   id: string;
@@ -14,8 +26,6 @@ export interface DailySynthesisPattern {
   why: string;
   signalIds: string[];
   confidence: number;
-  avgMomentum: number | null;
-  avgNovelty: number | null;
 }
 
 export interface DailySynthesisSnapshot {
@@ -34,10 +44,6 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
-function isNullableFiniteNumber(value: unknown): value is number | null {
-  return value === null || isFiniteNumber(value);
-}
-
 function isPattern(value: unknown): value is DailySynthesisPattern {
   if (!value || typeof value !== "object") return false;
   const pattern = value as Partial<DailySynthesisPattern>;
@@ -54,9 +60,7 @@ function isPattern(value: unknown): value is DailySynthesisPattern {
     pattern.signalIds.every((id) => typeof id === "string") &&
     isFiniteNumber(pattern.confidence) &&
     pattern.confidence >= 0 &&
-    pattern.confidence <= 1 &&
-    isNullableFiniteNumber(pattern.avgMomentum) &&
-    isNullableFiniteNumber(pattern.avgNovelty)
+    pattern.confidence <= 1
   );
 }
 
@@ -81,5 +85,7 @@ export function isDailySynthesisSnapshot(value: unknown): value is DailySynthesi
 
   const selected = new Set(snapshot.signalIds);
   const evidence = snapshot.patterns.flatMap((pattern) => pattern.signalIds);
+  if (evidence.length !== snapshot.signalIds.length) return false;
+  if (new Set(evidence).size !== evidence.length) return false;
   return evidence.every((id) => selected.has(id));
 }
