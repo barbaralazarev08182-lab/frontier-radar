@@ -10,6 +10,14 @@ type SignalDetail = {
   whyNow: string;
 };
 
+type PatternKey = "agents" | "local" | "interface";
+
+type PatternDefinition = {
+  selector: string;
+  ranks: string[];
+  label: string;
+};
+
 const DETAILS: Record<string, SignalDetail> = {
   "01": {
     momentum: "+382%",
@@ -62,7 +70,28 @@ const DETAILS: Record<string, SignalDetail> = {
   },
 };
 
+const PATTERNS: Record<PatternKey, PatternDefinition> = {
+  agents: {
+    selector: ".motion-lab-cluster-agents",
+    ranks: ["01", "02", "05"],
+    label: "Open Agent Stack to Infrastructure pattern. Signals 01, 02 and 05.",
+  },
+  local: {
+    selector: ".motion-lab-cluster-infra",
+    ranks: ["03"],
+    label: "Open Local to Native pattern. Signal 03.",
+  },
+  interface: {
+    selector: ".motion-lab-cluster-creative",
+    ranks: ["04", "06", "07"],
+    label: "Open Interface to Instrument pattern. Signals 04, 06 and 07.",
+  },
+};
+
 const INTENT_DELAY_MS = 220;
+const OVERVIEW_SCENE_START = 0.575;
+const RECOMPOSE_SCENE_START = 0.68;
+const PATTERN_SCENE_START = 0.92;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -114,14 +143,82 @@ export function MotionLabInteractions() {
     const scroller = root.querySelector<HTMLElement>(".motion-lab-scroller");
     const stateSpan = root.querySelector<HTMLElement>(".motion-lab-hud dl > div:first-child dd span");
     const metaLabel = root.querySelector<HTMLElement>(".motion-lab-meta > div:first-child span");
+    const topicMap = root.querySelector<HTMLElement>(".motion-lab-topic-map");
     const previousMetaLabel = metaLabel?.textContent ?? "";
 
-    if (metaLabel) metaLabel.textContent = "LAB-04 SCANNER + FOCUS GRAVITY / LAB-03 MOTION PRESERVED";
+    if (metaLabel) metaLabel.textContent = "LAB-05 TWO STABLE SCENES / LAB-04 INVISIBLE LENS PRESERVED";
+    topicMap?.removeAttribute("aria-hidden");
+
+    const patternElements = (Object.entries(PATTERNS) as [PatternKey, PatternDefinition][]) .map(([key, pattern]) => {
+      const element = root.querySelector<HTMLElement>(pattern.selector);
+      if (!element) return null;
+      element.dataset.pattern = key;
+      element.setAttribute("role", "button");
+      element.setAttribute("tabindex", "0");
+      element.setAttribute("aria-label", pattern.label);
+      return { key, pattern, element };
+    }).filter((entry): entry is { key: PatternKey; pattern: PatternDefinition; element: HTMLElement } => Boolean(entry));
+
+    let currentPattern: PatternKey | null = null;
+    const setPatternFocus = (key: PatternKey | null) => {
+      currentPattern = key;
+      if (key) root.dataset.patternFocus = key;
+      else root.removeAttribute("data-pattern-focus");
+      patternElements.forEach(({ key: patternKey, element }) => {
+        element.setAttribute("aria-pressed", patternKey === key ? "true" : "false");
+      });
+    };
+
+    const patternHandlers = patternElements.map(({ key, element }) => {
+      const activate = () => {
+        if (root.dataset.scene !== "patterns") return;
+        setPatternFocus(currentPattern === key ? null : key);
+      };
+      const onClick = () => activate();
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        activate();
+      };
+      element.addEventListener("click", onClick);
+      element.addEventListener("keydown", onKeyDown);
+      return { element, onClick, onKeyDown };
+    });
+
+    const syncScene = () => {
+      if (!scroller) return;
+      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+      const progress = clamp(scroller.scrollTop / travel, 0, 1);
+      let scene = "story";
+      if (progress >= PATTERN_SCENE_START) scene = "patterns";
+      else if (progress >= RECOMPOSE_SCENE_START) scene = "transition";
+      else if (progress >= OVERVIEW_SCENE_START) scene = "overview";
+      root.dataset.scene = scene;
+      if (scene !== "patterns" && currentPattern) setPatternFocus(null);
+    };
+
+    syncScene();
 
     if (reduced || coarsePointer || signals.length === 0) {
       root.dataset.pointerLab = "disabled";
+      const onSceneScroll = () => window.requestAnimationFrame(syncScene);
+      scroller?.addEventListener("scroll", onSceneScroll, { passive: true });
       return () => {
+        scroller?.removeEventListener("scroll", onSceneScroll);
+        patternHandlers.forEach(({ element, onClick, onKeyDown }) => {
+          element.removeEventListener("click", onClick);
+          element.removeEventListener("keydown", onKeyDown);
+        });
+        patternElements.forEach(({ element }) => {
+          element.removeAttribute("role");
+          element.removeAttribute("tabindex");
+          element.removeAttribute("aria-label");
+          element.removeAttribute("aria-pressed");
+          element.removeAttribute("data-pattern");
+        });
         if (metaLabel) metaLabel.textContent = previousMetaLabel;
+        root.removeAttribute("data-scene");
+        root.removeAttribute("data-pattern-focus");
         root.removeAttribute("data-pointer-lab");
       };
     }
@@ -147,7 +244,7 @@ export function MotionLabInteractions() {
 
     const isOverview = () => {
       const state = stateSpan?.textContent?.trim();
-      return state === "OVERVIEW" && root.dataset.layout === "overview";
+      return state === "OVERVIEW" && root.dataset.layout === "overview" && root.dataset.scene === "overview";
     };
 
     const setScannerMode = (mode: "SCAN" | "FOCUS") => {
@@ -287,6 +384,7 @@ export function MotionLabInteractions() {
 
     const onScroll = () => {
       window.requestAnimationFrame(() => {
+        syncScene();
         if (!isOverview()) {
           deactivateScanner();
           baseRects = null;
@@ -297,6 +395,7 @@ export function MotionLabInteractions() {
     const onResize = () => {
       baseRects = null;
       deactivateScanner();
+      syncScene();
     };
 
     scroller?.addEventListener("scroll", onScroll, { passive: true });
@@ -310,6 +409,17 @@ export function MotionLabInteractions() {
         signal.removeEventListener("pointermove", onMove);
         signal.removeEventListener("pointerleave", onLeave);
       });
+      patternHandlers.forEach(({ element, onClick, onKeyDown }) => {
+        element.removeEventListener("click", onClick);
+        element.removeEventListener("keydown", onKeyDown);
+      });
+      patternElements.forEach(({ element }) => {
+        element.removeAttribute("role");
+        element.removeAttribute("tabindex");
+        element.removeAttribute("aria-label");
+        element.removeAttribute("aria-pressed");
+        element.removeAttribute("data-pattern");
+      });
       scroller?.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       injectedLayers.forEach((layer) => layer.remove());
@@ -317,6 +427,8 @@ export function MotionLabInteractions() {
       root.removeAttribute("data-focus");
       root.removeAttribute("data-scanning");
       root.removeAttribute("data-pointer-lab");
+      root.removeAttribute("data-scene");
+      root.removeAttribute("data-pattern-focus");
     };
   }, []);
 
