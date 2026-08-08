@@ -205,7 +205,12 @@ export function MotionLabAnalysis() {
 
           <div className="synth-loom" aria-label="Seven signals regrouping into three directions">
             {SIGNALS.map((signal) => (
-              <div key={signal.rank} className="synth-loom-row" data-cluster={signal.cluster}>
+              <div
+                key={signal.rank}
+                className="synth-loom-row"
+                data-cluster={signal.cluster}
+                data-marker={signal.marker?.toLowerCase() ?? "core"}
+              >
                 <strong>{signal.rank}</strong>
                 <span>{signal.title}</span>
                 {signal.marker ? <em>{signal.marker}</em> : null}
