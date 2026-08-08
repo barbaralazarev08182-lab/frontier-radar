@@ -85,7 +85,10 @@ export function MotionLabAnalysis() {
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    setMount(document.querySelector<HTMLElement>(".motion-lab-stage"));
+    const frame = window.requestAnimationFrame(() => {
+      setMount(document.querySelector<HTMLElement>(".motion-lab-stage"));
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
