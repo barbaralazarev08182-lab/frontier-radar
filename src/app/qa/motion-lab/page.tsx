@@ -4,6 +4,7 @@ import { MotionLabInteractions } from "@/components/frontier/motion-lab/motion-l
 import { MotionLabAnalysis } from "@/components/frontier/motion-lab/motion-lab-analysis";
 import { MotionLabAnomaly } from "@/components/frontier/motion-lab/motion-lab-anomaly";
 import { MotionLabDirectHandoff } from "@/components/frontier/motion-lab/motion-lab-direct-handoff";
+import { MotionLabWeaveWheelGuard } from "@/components/frontier/motion-lab/motion-lab-weave-wheel-guard";
 import "./motion-lab.css";
 import "./motion-lab-lab03.css";
 import "./motion-lab-lab04.css";
@@ -29,6 +30,7 @@ export default function MotionLabPage() {
       <MotionLabAnalysis />
       <MotionLabAnomaly />
       <MotionLabDirectHandoff />
+      <MotionLabWeaveWheelGuard />
     </>
   );
 }
