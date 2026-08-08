@@ -12,7 +12,14 @@ type Evidence = {
   marker?: "adjacent" | "wildcard";
 };
 
-const SIGNALS = [
+type SignalLane = {
+  rank: string;
+  title: string;
+  cluster: "agents" | "local" | "interface";
+  marker?: "ADJACENT" | "WILDCARD";
+};
+
+const SIGNALS: SignalLane[] = [
   { rank: "01", title: "Memory layer for agents", cluster: "agents" },
   { rank: "02", title: "Browser-native orchestration", cluster: "agents" },
   { rank: "03", title: "Local multimodal models", cluster: "local" },
@@ -20,7 +27,7 @@ const SIGNALS = [
   { rank: "05", title: "Tiny inference runtimes", cluster: "agents" },
   { rank: "06", title: "Playable research instrument", cluster: "interface", marker: "ADJACENT" },
   { rank: "07", title: "Strange interface primitive", cluster: "interface", marker: "WILDCARD" },
-] as const;
+];
 
 const AGENT_EVIDENCE: Evidence[] = [
   { rank: "01", title: "Memory layer for agents", stat: "+382%" },
