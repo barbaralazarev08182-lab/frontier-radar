@@ -104,19 +104,19 @@ function lerp(current: number, target: number, amount: number) {
 }
 
 function deckMorphForProgress(progress: number) {
-  if (progress < 0.4) return 1;
-  if (progress < 0.52) return 1 - clamp((progress - 0.4) / 0.12);
-  if (progress < 0.58) return 0;
-  if (progress < 0.82) return clamp((progress - 0.58) / 0.24);
+  if (progress < 0.34) return 1;
+  if (progress < 0.52) return 1 - clamp((progress - 0.34) / 0.18);
+  if (progress < 0.62) return 0;
+  if (progress < 0.9) return clamp((progress - 0.62) / 0.28);
   return 1;
 }
 
 function labelForProgress(progress: number) {
   if (progress < 0.06) return "LIVE";
-  if (progress < 0.4) return "TEAR";
+  if (progress < 0.34) return "TEAR";
   if (progress < 0.52) return "COMPRESSION";
-  if (progress < 0.58) return "DECK";
-  if (progress < 0.82) return "EXPAND";
+  if (progress < 0.62) return "DECK";
+  if (progress < 0.9) return "EXPAND";
   return "OVERVIEW";
 }
 
@@ -153,9 +153,6 @@ export function MotionLab() {
       gsap.registerPlugin(Flip);
       root.dataset.gsap = "booting";
 
-      // Capture two real CSS layouts. These elements are already absolutely positioned,
-      // so forcing Flip's `absolute` mode creates a second positioning system and breaks
-      // right/bottom anchored cards. Keep Flip transform-only here.
       root.dataset.layout = "deck";
       void signals[0]?.offsetWidth;
       const deckState = Flip.getState(signals);
@@ -167,8 +164,8 @@ export function MotionLab() {
         duration: 1,
         paused: true,
         scale: true,
-        ease: "power4.inOut",
-        stagger: { each: 0.045, from: "start" },
+        ease: "sine.inOut",
+        stagger: { each: 0.018, from: "start" },
       });
 
       const desiredProgress = root.dataset.mode === "deck" ? 1 : flipProgressRef.current;
@@ -177,7 +174,6 @@ export function MotionLab() {
 
       if (root.dataset.mode === "deck") {
         root.dataset.layout = "deck";
-        // At a static endpoint, use the actual deck layout rather than a cached inverse transform.
         signals.forEach((signal) => signal.style.removeProperty("transform"));
       }
 
@@ -251,6 +247,7 @@ export function MotionLab() {
       signalScale: 0.96,
       deckness: 0,
       progress: 0,
+      flipProgress: 1,
     };
 
     const write = () => {
@@ -290,10 +287,9 @@ export function MotionLab() {
 
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       const progress = clamp(scroller.scrollTop / travel);
-      const tear = clamp((progress - 0.025) / 0.39);
-      const reveal = clamp((progress - 0.15) / 0.28);
-      const flipProgress = reduced || mobile ? 1 : deckMorphForProgress(progress);
-      const deckness = 1 - flipProgress;
+      const tear = clamp((progress - 0.025) / 0.36);
+      const reveal = clamp((progress - 0.13) / 0.3);
+      const targetFlipProgress = reduced || mobile ? 1 : deckMorphForProgress(progress);
       const velocityEnergy = clamp(impulse, -1.6, 1.6);
 
       const target = reduced
@@ -313,7 +309,6 @@ export function MotionLab() {
             hero: progress < 0.32 ? 1 : 0,
             signals: progress < 0.24 ? 0.18 : 1,
             signalScale: progress < 0.24 ? 0.96 : 1,
-            deckness: 0,
             progress,
           }
         : {
@@ -329,14 +324,13 @@ export function MotionLab() {
             s1: 1 + tear * 0.075,
             s2: 1 - tear * 0.055,
             s3: 1 + tear * 0.11,
-            hero: 1 - clamp((progress - 0.24) / 0.2),
+            hero: 1 - clamp((progress - 0.22) / 0.22),
             signals: 0.18 + reveal * 0.82,
             signalScale: 0.96 + reveal * 0.04,
-            deckness,
             progress,
           };
 
-      const smoothing = reduced ? 1 : 0.135;
+      const smoothing = reduced ? 1 : 0.125;
       current.x1 = lerp(current.x1, target.x1, smoothing);
       current.x2 = lerp(current.x2, target.x2, smoothing);
       current.x3 = lerp(current.x3, target.x3, smoothing);
@@ -349,13 +343,14 @@ export function MotionLab() {
       current.s1 = lerp(current.s1, target.s1, smoothing);
       current.s2 = lerp(current.s2, target.s2, smoothing);
       current.s3 = lerp(current.s3, target.s3, smoothing);
-      current.hero = lerp(current.hero, target.hero, 0.16);
-      current.signals = lerp(current.signals, target.signals, 0.16);
-      current.signalScale = lerp(current.signalScale, target.signalScale, 0.16);
-      current.deckness = lerp(current.deckness, target.deckness, 0.2);
-      current.progress = lerp(current.progress, target.progress, 0.22);
-      impulse *= 0.88;
-      applyFlipProgress(flipProgress);
+      current.hero = lerp(current.hero, target.hero, 0.145);
+      current.signals = lerp(current.signals, target.signals, 0.145);
+      current.signalScale = lerp(current.signalScale, target.signalScale, 0.145);
+      current.flipProgress = lerp(current.flipProgress, targetFlipProgress, reduced ? 1 : 0.085);
+      current.deckness = lerp(current.deckness, 1 - current.flipProgress, reduced ? 1 : 0.14);
+      current.progress = lerp(current.progress, target.progress, 0.18);
+      impulse *= 0.9;
+      applyFlipProgress(current.flipProgress);
       write();
 
       if (progressRef.current) progressRef.current.textContent = progress.toFixed(3);
@@ -366,7 +361,8 @@ export function MotionLab() {
         Math.abs(current.x1 - target.x1) > 0.02 ||
         Math.abs(current.x2 - target.x2) > 0.02 ||
         Math.abs(current.x3 - target.x3) > 0.02 ||
-        Math.abs(current.deckness - target.deckness) > 0.004 ||
+        Math.abs(current.flipProgress - targetFlipProgress) > 0.001 ||
+        Math.abs(current.deckness - (1 - current.flipProgress)) > 0.003 ||
         Math.abs(impulse) > 0.008;
 
       if (unsettled) animationFrame = window.requestAnimationFrame(render);
@@ -384,7 +380,7 @@ export function MotionLab() {
       const pxPerMs = delta / elapsed;
       lastScrollTop = scroller.scrollTop;
       lastTime = now;
-      impulse = clamp(impulse + pxPerMs * 0.58, -1.6, 1.6);
+      impulse = clamp(impulse + pxPerMs * 0.52, -1.6, 1.6);
       requestRender();
     };
 
@@ -407,6 +403,7 @@ export function MotionLab() {
         signalScale: 0.96,
         deckness: 0,
         progress: 0,
+        flipProgress: 1,
       };
       impulse = 0;
       lastScrollTop = scroller.scrollTop;
@@ -481,9 +478,6 @@ export function MotionLab() {
     root.style.setProperty("--tear-s-3", "1");
 
     if (mode === "deck") {
-      // Static DECK must use the actual CSS deck endpoint, not Flip progress(0).
-      // The latter is an inverse transform based on the overview layout and was the
-      // source of the giant cards escaping to the right/bottom in the QA screenshot.
       flipTweenRef.current?.progress(1);
       root.dataset.layout = "deck";
       Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal")).forEach((signal) => {
@@ -515,7 +509,7 @@ export function MotionLab() {
             <header className="motion-lab-meta">
               <div>
                 <strong>FR / MOTION LAB</strong>
-                <span>LAB-03 SIGNAL DECK → OVERVIEW / GSAP FLIP PHYSICS</span>
+                <span>LAB-03 SIGNAL DECK → OVERVIEW / DAMPED GSAP FLIP</span>
               </div>
               <div>
                 <span>PROTOTYPE ONLY</span>
