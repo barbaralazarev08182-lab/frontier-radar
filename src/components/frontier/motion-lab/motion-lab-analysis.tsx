@@ -41,7 +41,7 @@ const PATTERNS: Pattern[] = [
   {
     id: "local",
     number: "02",
-    meta: "1 / 7 SIGNAL · EMERGING",
+    meta: "1 / 7 SIGNAL · EARLY FORMATION",
     title: "LOCAL IS BECOMING NATIVE",
     summary: "Local multimodal latency is crossing the line from impressive demo to something that can feel normal in a product.",
     why: "This is still a narrow signal, so it should not be presented as a broad trend yet. What matters is that the usability threshold appears to be moving.",
@@ -81,7 +81,6 @@ function smoothstep(value: number) {
 export function MotionLabAnalysis() {
   const [mount, setMount] = useState<HTMLElement | null>(null);
   const [hovered, setHovered] = useState<PatternId | null>(null);
-  const [expanded, setExpanded] = useState<PatternId | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -120,7 +119,6 @@ export function MotionLabAnalysis() {
       }
 
       section.style.setProperty("--analysis-alpha", alpha.toFixed(4));
-      section.style.transform = `translate3d(0, ${((1 - alpha) * 22).toFixed(2)}px, 0)`;
       section.dataset.ready = ready ? "true" : "false";
       root.style.setProperty("--analysis-alpha", alpha.toFixed(4));
       root.dataset.analysis = ready ? "ready" : alpha > 0.002 ? "entering" : "off";
@@ -128,7 +126,7 @@ export function MotionLabAnalysis() {
 
       if (wasReady && !ready) {
         setHovered(null);
-        setExpanded(null);
+        section.scrollTop = 0;
       }
       wasReady = ready;
     };
@@ -160,26 +158,35 @@ export function MotionLabAnalysis() {
       ref={sectionRef}
       className="motion-lab-analysis"
       data-hovered={hovered ?? "none"}
-      aria-label="Today's pattern analysis"
+      aria-label="Today's analysis brief"
     >
-      <header className="motion-lab-analysis-header">
-        <div className="motion-lab-analysis-kicker">03 / PATTERNS · TODAY&apos;S ANALYSIS</div>
-        <h2>THE SHAPE<br />BEHIND TODAY.</h2>
-        <div className="motion-lab-analysis-intro">
-          <strong>07 SIGNALS → 03 DIRECTIONS</strong>
-          <p>The seven discoveries are no longer shown as a ranking. Here they become the larger directions they point toward together.</p>
-        </div>
-      </header>
+      <div className="motion-lab-analysis-surface">
+        <div className="motion-lab-analysis-foil" aria-hidden="true" />
 
-      <div className="motion-lab-analysis-grid">
-        {PATTERNS.map((pattern) => {
-          const isExpanded = expanded === pattern.id;
-          return (
+        <div className="motion-lab-analysis-registration" aria-hidden="true">
+          <span>FRONTIER RADAR / DAILY BRIEF</span>
+          <span>ISSUE 008 · SIGNAL SET 07 · SYNTHESIS 03</span>
+        </div>
+
+        <header className="motion-lab-analysis-header">
+          <div className="motion-lab-analysis-kicker">TODAY / SYNTHESIS</div>
+          <h2>
+            <span>TODAY&apos;S</span>
+            <span>ANALYSIS</span>
+          </h2>
+          <div className="motion-lab-analysis-intro">
+            <strong>07 SELECTED SIGNALS → 03 EMERGING DIRECTIONS</strong>
+            <p>What today&apos;s seven discoveries say when they are read together instead of ranked apart.</p>
+          </div>
+        </header>
+
+        <div className="motion-lab-analysis-grid">
+          {PATTERNS.map((pattern) => (
             <article
               key={pattern.id}
+              id={`analysis-pattern-${pattern.id}`}
               className={`motion-lab-pattern motion-lab-pattern-${pattern.id}`}
               data-pattern={pattern.id}
-              data-expanded={isExpanded ? "true" : "false"}
               onPointerEnter={() => setHovered(pattern.id)}
               onPointerLeave={() => setHovered(null)}
               onFocusCapture={() => setHovered(pattern.id)}
@@ -187,49 +194,53 @@ export function MotionLabAnalysis() {
                 if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHovered(null);
               }}
             >
-              <div className="motion-lab-pattern-meta">
-                <span>{pattern.number}</span>
-                <span>{pattern.meta}</span>
+              <div className="motion-lab-pattern-number" aria-hidden="true">{pattern.number}</div>
+
+              <div className="motion-lab-pattern-body">
+                <div className="motion-lab-pattern-meta">{pattern.meta}</div>
+                <h3>{pattern.title}</h3>
+                <p className="motion-lab-pattern-summary">{pattern.summary}</p>
+
+                <div className="motion-lab-pattern-why">
+                  <span>WHY THIS MATTERS</span>
+                  <p>{pattern.why}</p>
+                </div>
               </div>
-              <h3>{pattern.title}</h3>
-              <p className="motion-lab-pattern-summary">{pattern.summary}</p>
 
-              <ol className="motion-lab-pattern-evidence" aria-label={`Evidence for ${pattern.title}`}>
-                {pattern.evidence.map((item) => (
-                  <li key={item.rank} data-marker={item.marker ?? "core"}>
-                    <strong>{item.rank}</strong>
-                    <span>{item.title}</span>
-                    {item.marker ? <em>{item.marker.toUpperCase()}</em> : null}
-                    <b>{item.stat}</b>
-                  </li>
-                ))}
-              </ol>
+              <div className="motion-lab-pattern-evidence-panel">
+                <span className="motion-lab-pattern-evidence-label">FRONTIER EVIDENCE</span>
+                <ol className="motion-lab-pattern-evidence" aria-label={`Evidence for ${pattern.title}`}>
+                  {pattern.evidence.map((item) => (
+                    <li key={item.rank} data-marker={item.marker ?? "core"}>
+                      <strong>{item.rank}</strong>
+                      <span>{item.title}</span>
+                      {item.marker ? <em>{item.marker.toUpperCase()}</em> : null}
+                      <b>{item.stat}</b>
+                    </li>
+                  ))}
+                </ol>
 
-              <button
-                type="button"
-                className="motion-lab-pattern-explore"
-                aria-expanded={isExpanded}
-                aria-controls={`motion-lab-pattern-deep-${pattern.id}`}
-                onClick={() => setExpanded(isExpanded ? null : pattern.id)}
-              >
-                {isExpanded ? "CLOSE DEEP READ ↑" : "EXPLORE PATTERN ↗"}
-              </button>
-
-              <div id={`motion-lab-pattern-deep-${pattern.id}`} className="motion-lab-pattern-deep" aria-hidden={!isExpanded}>
-                <span>WHY THIS MATTERS</span>
-                <p>{pattern.why}</p>
-                <strong>{pattern.signal}</strong>
+                <div className="motion-lab-pattern-actions">
+                  <span className="motion-lab-pattern-signal">{pattern.signal}</span>
+                  <a className="motion-lab-pattern-explore" href={`/explore?pattern=${pattern.id}`}>
+                    EXPLORE DIRECTION <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
               </div>
             </article>
-          );
-        })}
-      </div>
+          ))}
+        </div>
 
-      <footer className="motion-lab-analysis-take">
-        <span>TODAY&apos;S TAKE</span>
-        <strong>THE FRONTIER IS MOVING FROM FEATURES TO SYSTEMS.</strong>
-        <small>Default state tells the story. Interaction lets you interrogate it.</small>
-      </footer>
+        <footer className="motion-lab-analysis-take">
+          <span>TODAY&apos;S TAKE / 001</span>
+          <strong>THE FRONTIER IS MOVING<br />FROM FEATURES TO SYSTEMS.</strong>
+          <div className="motion-lab-analysis-take-meta">
+            <span>07 SIGNALS</span>
+            <span>03 PATTERNS</span>
+            <span>01 DAILY BRIEF</span>
+          </div>
+        </footer>
+      </div>
     </section>,
     mount,
   );
