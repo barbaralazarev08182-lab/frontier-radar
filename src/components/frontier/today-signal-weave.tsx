@@ -8,6 +8,7 @@ import type {
   SynthesisFormation,
 } from "@/lib/ai/daily-synthesis";
 import styles from "./today-signal-weave.module.css";
+import polish from "./today-signal-weave-polish.module.css";
 
 type ResolveSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
 
@@ -123,15 +124,19 @@ export function TodaySignalWeave({
         const y = clamp((event.clientY - rect.top) / Math.max(1, rect.height));
         event.currentTarget.style.setProperty("--weave-mx", `${(x * 100).toFixed(2)}%`);
         event.currentTarget.style.setProperty("--weave-my", `${(y * 100).toFixed(2)}%`);
+        event.currentTarget.style.setProperty("--weave-parallax-x", `${((x - 0.5) * 6).toFixed(2)}px`);
+        event.currentTarget.style.setProperty("--weave-parallax-y", `${((y - 0.5) * 6).toFixed(2)}px`);
       }}
       onPointerLeave={(event) => {
         event.currentTarget.style.setProperty("--weave-mx", "52%");
         event.currentTarget.style.setProperty("--weave-my", "42%");
+        event.currentTarget.style.setProperty("--weave-parallax-x", "0px");
+        event.currentTarget.style.setProperty("--weave-parallax-y", "0px");
         setHoveredPattern(null);
         setHoveredSignal(null);
       }}
     >
-      <div className={styles.ambient} aria-hidden="true" />
+      <div className={`${styles.ambient} ${polish.ambientParallax}`} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
 
       <header className={styles.header}>
@@ -150,7 +155,7 @@ export function TodaySignalWeave({
 
       <div className={styles.canvas}>
         <svg
-          className={styles.svg}
+          className={`${styles.svg} ${polish.svgParallax}`}
           viewBox="0 0 1200 720"
           role="img"
           aria-label={`${signals.length} signals weaving into ${patterns.length} emerging directions`}
@@ -193,11 +198,16 @@ export function TodaySignalWeave({
             const signalActive = hoveredSignal === signal.id;
             const accent = signal.lane === "adjacent" ? styles.blue : signal.lane === "wildcard" ? styles.orange : "";
             const path = threadPath(sourceY, targetY, index);
+            const threadDelay = `${-(index * 0.83 + 0.2)}s`;
 
             return (
               <g
                 key={signal.id}
-                className={`${styles.thread} ${accent} ${active ? styles.threadActive : ""} ${dimmed ? styles.dimmed : ""} ${signalActive ? styles.signalActive : ""}`}
+                className={`${styles.thread} ${polish.threadFx} ${accent} ${active ? styles.threadActive : ""} ${dimmed ? styles.dimmed : ""} ${signalActive ? styles.signalActive : ""}`}
+                data-lane={signal.lane}
+                data-active={active ? "true" : "false"}
+                data-dimmed={dimmed ? "true" : "false"}
+                data-signal-active={signalActive ? "true" : "false"}
                 onPointerEnter={() => setHoveredSignal(signal.id)}
                 onPointerLeave={() => setHoveredSignal(null)}
                 onClick={() => targetPattern && setPinnedPattern((current) => current === targetPattern ? null : targetPattern)}
@@ -205,10 +215,16 @@ export function TodaySignalWeave({
                 <path className={styles.threadGlow} d={path} />
                 <path className={styles.threadRibbon} d={path} />
                 <path
+                  className={polish.threadSheen}
+                  d={path}
+                  pathLength="100"
+                  style={{ "--thread-delay": threadDelay } as CSSProperties}
+                />
+                <path
                   className={styles.threadPulse}
                   d={path}
                   pathLength="100"
-                  style={{ "--thread-delay": `${-(index * 0.83 + 0.2)}s` } as CSSProperties}
+                  style={{ "--thread-delay": threadDelay } as CSSProperties}
                 />
                 <path className={styles.threadHit} d={path} />
               </g>
@@ -216,16 +232,21 @@ export function TodaySignalWeave({
           })}
 
           <g className={styles.hubs} aria-hidden="true">
-            {patterns.map((pattern, index) => (
-              <g
-                key={pattern.id}
-                className={`${styles.hub} ${activePatternId === pattern.id ? styles.hubActive : ""}`}
-                transform={`translate(968 ${patternY[index] ?? patternY[0]})`}
-              >
-                <circle r="8" />
-                <circle className={styles.hubRing} r="24" />
-              </g>
-            ))}
+            {patterns.map((pattern, index) => {
+              const hubActive = activePatternId === pattern.id;
+              return (
+                <g
+                  key={pattern.id}
+                  className={`${styles.hub} ${polish.hubFx} ${hubActive ? styles.hubActive : ""}`}
+                  data-active={hubActive ? "true" : "false"}
+                  transform={`translate(968 ${patternY[index] ?? patternY[0]})`}
+                >
+                  <circle r="8" />
+                  <circle className={`${styles.hubRing} ${polish.hubRingFix}`} r="24" />
+                  <circle className={polish.hubReception} r="12" />
+                </g>
+              );
+            })}
           </g>
         </svg>
 
@@ -292,11 +313,11 @@ export function TodaySignalWeave({
               <span>{activePattern.index} / {FORMATION_LABEL[activePattern.formation]}</span>
               <button type="button" onClick={() => setPinnedPattern(null)} aria-label="Clear pinned direction">×</button>
             </div>
-            <div className={styles.readoutMain}>
-              <h2>{activePattern.title}</h2>
+            <div className={`${styles.readoutMain} ${polish.readoutMainGuard}`}>
+              <h2 className={polish.readoutTitleGuard}>{activePattern.title}</h2>
               <p>{activePattern.summary}</p>
             </div>
-            <div className={styles.readoutFoot}>
+            <div className={`${styles.readoutFoot} ${polish.readoutFootGuard}`}>
               <div className={styles.evidence}>
                 {activePattern.signalIds.map((signalId) => {
                   const signal = signalById.get(signalId);
