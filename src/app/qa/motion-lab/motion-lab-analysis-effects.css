@@ -1,0 +1,127 @@
+/* -------------------------------------------------------------------------- */
+/* TODAY'S ANALYSIS SHEET — restrained material interactions                  */
+/* -------------------------------------------------------------------------- */
+
+/* Remove the old LAB-05 overlay grain so the new material plane owns texture. */
+.motion-lab-analysis::before { display: none; }
+
+/* Do not dim unrelated patterns in this version: default readability wins. */
+.motion-lab-analysis[data-hovered] .motion-lab-pattern {
+  opacity: 1 !important;
+  transform: none !important;
+}
+.motion-lab-analysis[data-hovered] .motion-lab-pattern .motion-lab-pattern-evidence li {
+  transform: none !important;
+}
+
+/* Cursor-following iridescent reflection. It is intentionally low contrast. */
+.motion-lab-analysis-surface::after {
+  inset: 0 14rem auto 32%;
+  height: 44svh;
+  opacity: .15;
+  background:
+    radial-gradient(circle at var(--analysis-pointer-x, 72%) var(--analysis-pointer-y, 18%), rgba(112,221,255,.78), transparent 20%),
+    radial-gradient(circle at calc(var(--analysis-pointer-x, 72%) - 13%) calc(var(--analysis-pointer-y, 18%) + 8%), rgba(191,133,255,.55), transparent 24%),
+    radial-gradient(circle at calc(var(--analysis-pointer-x, 72%) + 9%) calc(var(--analysis-pointer-y, 18%) + 16%), rgba(255,220,150,.42), transparent 25%);
+  filter: blur(36px) saturate(.82);
+  mix-blend-mode: multiply;
+  transition: opacity 220ms ease;
+}
+
+.motion-lab-analysis-foil {
+  transform: translateX(var(--analysis-foil-shift, 0px)) skewY(var(--analysis-foil-skew, 0deg));
+  transform-origin: 50% 18%;
+  transition: transform 180ms cubic-bezier(.16,1,.3,1), opacity 180ms ease;
+}
+
+/* Evidence becomes visibly related only when the user interrogates a pattern. */
+.motion-lab-pattern-evidence::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 1.65rem;
+  bottom: 1.65rem;
+  left: 1.18rem;
+  width: 1px;
+  background: rgba(11,11,11,.5);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 360ms cubic-bezier(.16,1,.3,1);
+}
+
+.motion-lab-pattern-evidence li {
+  position: relative;
+  z-index: 1;
+}
+
+.motion-lab-pattern-evidence li::before {
+  content: "";
+  position: absolute;
+  left: 1.02rem;
+  top: 50%;
+  width: .34rem;
+  height: .34rem;
+  border: 1px solid rgba(11,11,11,.56);
+  border-radius: 50%;
+  background: #e7e8e4;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.7);
+  transition: opacity 180ms ease, transform 240ms cubic-bezier(.16,1,.3,1), background 180ms ease;
+}
+
+.motion-lab-pattern:hover .motion-lab-pattern-evidence::before,
+.motion-lab-pattern:focus-within .motion-lab-pattern-evidence::before {
+  transform: scaleY(1);
+}
+
+.motion-lab-pattern:hover .motion-lab-pattern-evidence li::before,
+.motion-lab-pattern:focus-within .motion-lab-pattern-evidence li::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.motion-lab-pattern:hover .motion-lab-pattern-evidence li:nth-child(2)::before,
+.motion-lab-pattern:focus-within .motion-lab-pattern-evidence li:nth-child(2)::before {
+  transition-delay: 55ms;
+}
+
+.motion-lab-pattern:hover .motion-lab-pattern-evidence li:nth-child(3)::before,
+.motion-lab-pattern:focus-within .motion-lab-pattern-evidence li:nth-child(3)::before {
+  transition-delay: 105ms;
+}
+
+/* A restrained foil sweep makes the CTA unambiguously interactive. */
+.motion-lab-pattern-explore {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.motion-lab-pattern-explore::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -40% auto -40% -45%;
+  width: 38%;
+  opacity: .7;
+  background: linear-gradient(90deg, transparent, rgba(116,221,255,.34), rgba(196,142,255,.28), rgba(255,222,151,.3), transparent);
+  transform: skewX(-18deg) translateX(-220%);
+  transition: transform 520ms cubic-bezier(.16,1,.3,1);
+}
+
+.motion-lab-pattern-explore:hover::before,
+.motion-lab-pattern-explore:focus-visible::before {
+  transform: skewX(-18deg) translateX(520%);
+}
+
+@media (max-width: 900px) {
+  .motion-lab-analysis-surface::after { right: 0; left: 18%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-analysis-surface::after { opacity: .08; }
+  .motion-lab-analysis-foil { transform: none !important; }
+  .motion-lab-pattern-evidence::before { transform: scaleY(1); transition: none; }
+  .motion-lab-pattern-evidence li::before { opacity: 1; transform: translate(-50%, -50%) scale(1); transition: none; }
+  .motion-lab-pattern-explore::before { display: none; }
+}
