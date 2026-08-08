@@ -6,6 +6,7 @@ import "./motion-lab.css";
 import "./motion-lab-lab03.css";
 import "./motion-lab-lab04.css";
 import "./motion-lab-lab05.css";
+import "./motion-lab-handoff.css";
 
 export const metadata: Metadata = {
   title: "Motion Lab · Frontier Radar",
