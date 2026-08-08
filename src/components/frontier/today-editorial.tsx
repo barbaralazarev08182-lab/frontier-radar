@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowUpRight, Heart, ThumbsDown } from "lucide-react";
 import type { FeedbackMetadata } from "@/lib/personalization/browser";
 import { trackFeedback } from "@/lib/personalization/browser";
 import { RecommendationObserver } from "./recommendation-observer";
 import styles from "./today-editorial.module.css";
 import scrollStyles from "./today-scroll-effects.module.css";
+import kineticStyles from "./today-kinetic-effects.module.css";
 
 export type EditorialLane = "core" | "adjacent" | "wildcard";
 
@@ -42,6 +44,16 @@ interface TodayEditorialProps {
   signals: EditorialSignal[];
 }
 
+interface DustParticle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  phase: number;
+  tone: string;
+}
+
 const SOURCE_LABEL: Record<string, string> = {
   github: "GitHub",
   huggingface: "Hugging Face",
@@ -66,6 +78,143 @@ function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
 }
 
+function SignalDust() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const host = canvas?.parentElement;
+    if (!canvas || !host) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    const pointer = { x: -999, y: -999, active: false };
+    const palette = [
+      "rgba(11, 11, 11, 0.42)",
+      "rgba(11, 11, 11, 0.28)",
+      "rgba(49, 80, 255, 0.48)",
+      "rgba(255, 75, 0, 0.4)",
+    ];
+
+    let particles: DustParticle[] = [];
+    let width = 1;
+    let height = 1;
+    let animationFrame = 0;
+    let visible = true;
+    let lastScrollY = window.scrollY;
+    let scrollImpulse = 0;
+
+    const seedParticles = () => {
+      const count = Math.round(Math.min(92, Math.max(42, width / 23)));
+      particles = Array.from({ length: count }, (_, index) => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.16,
+        vy: (Math.random() - 0.5) * 0.13,
+        size: index % 11 === 0 ? 2.2 : Math.random() * 1.15 + 0.45,
+        phase: Math.random() * Math.PI * 2,
+        tone: palette[index % palette.length]!,
+      }));
+    };
+
+    const resize = () => {
+      const rect = host.getBoundingClientRect();
+      width = Math.max(1, Math.round(rect.width));
+      height = Math.max(1, Math.round(rect.height));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seedParticles();
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const rect = host.getBoundingClientRect();
+      const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      pointer.active = inside;
+      if (inside) {
+        pointer.x = event.clientX - rect.left;
+        pointer.y = event.clientY - rect.top;
+      }
+    };
+
+    const onScroll = () => {
+      const delta = window.scrollY - lastScrollY;
+      lastScrollY = window.scrollY;
+      scrollImpulse = clamp(scrollImpulse + delta * 0.07, -18, 18);
+    };
+
+    const draw = (time: number) => {
+      animationFrame = window.requestAnimationFrame(draw);
+      if (!visible) return;
+
+      context.clearRect(0, 0, width, height);
+      scrollImpulse *= 0.9;
+
+      for (const particle of particles) {
+        const dx = pointer.x - particle.x;
+        const dy = pointer.y - particle.y;
+        const distance = Math.hypot(dx, dy);
+
+        if (pointer.active && distance > 0 && distance < 210) {
+          const force = (1 - distance / 210) * 0.018;
+          particle.vx += (dx / distance) * force;
+          particle.vy += (dy / distance) * force;
+
+          context.beginPath();
+          context.moveTo(particle.x, particle.y);
+          context.lineTo(pointer.x, pointer.y);
+          context.strokeStyle = `rgba(49, 80, 255, ${0.055 * (1 - distance / 210)})`;
+          context.lineWidth = 0.6;
+          context.stroke();
+        }
+
+        particle.vx *= 0.986;
+        particle.vy *= 0.986;
+        particle.x += particle.vx + Math.sin(time * 0.00035 + particle.phase) * 0.045;
+        particle.y += particle.vy - scrollImpulse * 0.026 + Math.cos(time * 0.00028 + particle.phase) * 0.035;
+
+        if (particle.x < -8) particle.x = width + 8;
+        if (particle.x > width + 8) particle.x = -8;
+        if (particle.y < -8) particle.y = height + 8;
+        if (particle.y > height + 8) particle.y = -8;
+
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        context.fillStyle = particle.tone;
+        context.fill();
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(host);
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = Boolean(entry?.isIntersecting);
+    });
+    visibilityObserver.observe(canvas);
+
+    resize();
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    animationFrame = window.requestAnimationFrame(draw);
+
+    return () => {
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("scroll", onScroll);
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className={kineticStyles.signalDust} aria-hidden="true" />;
+}
+
 export function TodayEditorial({
   dateLabel,
   dataLabel,
@@ -80,6 +229,7 @@ export function TodayEditorial({
   const experienceRef = useRef<HTMLDivElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
   const feedRef = useRef<HTMLElement | null>(null);
+  const cursorRef = useRef<HTMLDivElement | null>(null);
   const rowRefs = useRef<Array<HTMLElement | null>>([]);
 
   useEffect(() => {
@@ -146,6 +296,58 @@ export function TodayEditorial({
     };
   }, []);
 
+  useEffect(() => {
+    const root = experienceRef.current;
+    const cursor = cursorRef.current;
+    if (!root || !cursor || window.matchMedia("(pointer: coarse)").matches) return;
+
+    let frame = 0;
+    let cursorX = -100;
+    let cursorY = -100;
+
+    const render = () => {
+      frame = 0;
+      root.style.setProperty("--cursor-x", `${cursorX}px`);
+      root.style.setProperty("--cursor-y", `${cursorY}px`);
+    };
+
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(render);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      cursorX = event.clientX;
+      cursorY = event.clientY;
+      cursor.dataset.visible = "true";
+
+      const target = event.target instanceof Element ? event.target : null;
+      cursor.dataset.mode = target?.closest("[data-signal-row]")
+        ? "signal"
+        : target?.closest("a, button")
+          ? "action"
+          : "default";
+
+      const pointerX = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 18;
+      const pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 7;
+      root.style.setProperty("--pointer-x", `${pointerX.toFixed(2)}px`);
+      root.style.setProperty("--pointer-x-reverse", `${(-pointerX).toFixed(2)}px`);
+      root.style.setProperty("--pointer-y", `${pointerY.toFixed(2)}px`);
+      schedule();
+    };
+
+    const onPointerOut = (event: PointerEvent) => {
+      if (!event.relatedTarget) cursor.dataset.visible = "false";
+    };
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerout", onPointerOut, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerout", onPointerOut);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   if (signals.length === 0) return null;
 
   const active = signals[Math.min(activeIndex, signals.length - 1)]!;
@@ -158,8 +360,26 @@ export function TodayEditorial({
     trackFeedback(signal.id, choice, undefined, signal.metadata);
   }
 
+  function tiltRow(event: ReactPointerEvent<HTMLElement>) {
+    if (event.pointerType === "touch") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const horizontal = clamp((event.clientX - rect.left) / Math.max(1, rect.width), 0, 1) - 0.5;
+    const vertical = clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0, 1) - 0.5;
+    const tilt = horizontal * 3.4 - vertical * 0.6;
+    event.currentTarget.style.setProperty("--row-tilt", `${tilt.toFixed(2)}deg`);
+  }
+
+  function releaseRow(event: ReactPointerEvent<HTMLElement>) {
+    event.currentTarget.style.setProperty("--row-tilt", "0deg");
+  }
+
   return (
-    <div ref={experienceRef} className={`${styles.experience} ${scrollStyles.experience}`}>
+    <div ref={experienceRef} className={`${styles.experience} ${scrollStyles.experience} ${kineticStyles.kineticRoot}`}>
+      <div ref={cursorRef} className={kineticStyles.cursorLens} data-visible="false" data-mode="default" aria-hidden="true">
+        <span />
+        <em>SCAN</em>
+      </div>
+
       <div className={scrollStyles.pageProgress} aria-hidden="true">
         <span />
       </div>
@@ -177,6 +397,7 @@ export function TodayEditorial({
         <div className={`${styles.field} ${scrollStyles.field}`} aria-hidden="true" />
         <div className={`${styles.fieldCut} ${scrollStyles.fieldCut}`} aria-hidden="true" />
         <div className={styles.grain} aria-hidden="true" />
+        <SignalDust />
 
         <div className={`${styles.heroMeta} ${scrollStyles.heroMeta}`}>
           <span>FR / DAILY EDITION</span>
@@ -186,7 +407,7 @@ export function TodayEditorial({
 
         <div className={`${styles.heroCopy} ${scrollStyles.heroCopy}`}>
           <p className={styles.eyebrow}>PERSONAL FRONTIER INTELLIGENCE</p>
-          <h1 id="today-editorial-title" className={`${styles.heroTitle} ${scrollStyles.heroTitle}`}>
+          <h1 id="today-editorial-title" className={`${styles.heroTitle} ${scrollStyles.heroTitle} ${kineticStyles.heroTitle}`}>
             <span className={styles.titleMask}><span>FIND WHAT&apos;S NEXT</span></span>
             <span className={styles.titleMask}><span>BEFORE IT HAS</span></span>
             <span className={`${styles.titleMask} ${styles.titleAccent}`}><span>A NAME.</span></span>
@@ -247,11 +468,14 @@ export function TodayEditorial({
                 key={signal.id}
                 ref={(node) => { rowRefs.current[index] = node; }}
                 data-index={index}
+                data-signal-row="true"
                 data-lane={signal.lane}
                 data-active={activeIndex === index ? "true" : "false"}
-                className={`${styles.rankRow} ${scrollStyles.rankRow}`}
+                className={`${styles.rankRow} ${scrollStyles.rankRow} ${kineticStyles.interactiveRow}`}
                 onMouseEnter={() => setActiveIndex(index)}
                 onFocus={() => setActiveIndex(index)}
+                onPointerMove={tiltRow}
+                onPointerLeave={releaseRow}
               >
                 <span className={scrollStyles.rowProgress} aria-hidden="true" />
                 <RecommendationObserver itemId={signal.id} metadata={signal.metadata} />
@@ -264,7 +488,7 @@ export function TodayEditorial({
                   </div>
                   <Link
                     href={`/project/${signal.id}`}
-                    className={styles.rankTitle}
+                    className={`${styles.rankTitle} ${kineticStyles.rankTitle}`}
                     onClick={() => trackFeedback(signal.id, "open_detail", undefined, signal.metadata)}
                   >
                     {signal.title}
@@ -280,8 +504,8 @@ export function TodayEditorial({
             ))}
           </div>
 
-          <aside className={`${styles.previewRail} ${scrollStyles.previewRail}`} aria-live="polite">
-            <div key={active.id} className={`${styles.previewVisual} ${scrollStyles.previewVisual}`} data-theme={activeIndex % 7}>
+          <aside className={`${styles.previewRail} ${scrollStyles.previewRail} ${kineticStyles.previewRail}`} aria-live="polite">
+            <div key={active.id} className={`${styles.previewVisual} ${scrollStyles.previewVisual} ${kineticStyles.previewVisual}`} data-theme={activeIndex % 7}>
               <div className={styles.previewNoise} aria-hidden="true" />
               <div className={styles.previewTopline}>
                 <span>{activeRank}</span>
