@@ -1,0 +1,68 @@
+.closure {
+  min-height: 46svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 3rem;
+  padding: clamp(4rem, 8vw, 8rem) 5vw 4rem;
+  border-top: 1px solid rgba(11,11,11,.12);
+  background: #f1eee5;
+  color: #0b0b0b;
+}
+
+.closure > div {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.closure span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .56rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  opacity: .48;
+}
+
+.closure p {
+  margin: 0;
+  max-width: 15ch;
+  font-size: clamp(2.2rem, 5vw, 6rem);
+  font-weight: 950;
+  line-height: .88;
+  letter-spacing: -.07em;
+}
+
+.closure a {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding-bottom: .35rem;
+  border-bottom: 1px solid currentColor;
+  color: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .65rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-decoration: none;
+}
+
+.closure a svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 180ms ease;
+}
+
+.closure a:hover svg { transform: translate(.18rem,-.18rem); }
+
+@media (max-width: 760px) {
+  .closure {
+    min-height: 40svh;
+    grid-template-columns: 1fr;
+    align-items: end;
+    padding: 4rem 1.1rem 2.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closure a svg { transition: none; }
+}
