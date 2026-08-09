@@ -1,43 +1,23 @@
-/* V4.6 — compression stays physical, but legacy blue/orange UI can never leak back in. */
+/* V4.7 — one renderer only: the real seven production signals + the foil field. */
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-age,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .today-production-open-cue {
-  opacity: clamp(0, calc(1 - var(--deckness) * 1.85), 1) !important;
+/* Legacy compression artwork is not allowed to participate in production at all. */
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"] .motion-lab-deck-readout {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
+/* The GPU material remains continuous through the whole Hero → stack → Today's 7 path. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
   opacity: 1 !important;
   filter: none !important;
   transition: none !important;
 }
 
-/* The transition face is always one neutral holographic family. */
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face {
-  visibility: visible !important;
-  opacity: clamp(0, calc((var(--deckness) - .16) * 1.42), .86) !important;
-  z-index: 22 !important;
-  padding: 1.05rem 1.15rem 1rem !important;
-  border: 1px solid rgba(18,18,18,.22) !important;
-  border-top-color: rgba(255,255,255,.76) !important;
-  background-color: rgba(246,245,239,.10) !important;
-  background-image:
-    linear-gradient(112deg,
-      rgba(255,255,255,.24) 0%,
-      rgba(221,250,244,.11) 23%,
-      rgba(246,226,252,.12) 46%,
-      rgba(252,244,216,.10) 69%,
-      rgba(255,255,255,.18) 100%) !important;
-  color: rgba(12,12,12,.76) !important;
-  box-shadow:
-    0 10px 28px rgba(22,22,22,.045),
-    inset 0 0 0 1px rgba(255,255,255,.45) !important;
-  pointer-events: none !important;
-}
-
-/* Hard kill every legacy lane-color path: current data semantics AND stale prototype classes. */
+/* Never reintroduce card paint while the real signals are being compressed. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"],
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="adjacent"],
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="wildcard"],
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-adjacent[role="link"],
@@ -45,79 +25,52 @@
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
-  border-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   color: var(--ink) !important;
+  backdrop-filter: none !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-deck-face,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-deck-face,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-adjacent[role="link"] .motion-lab-deck-face,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-wildcard[role="link"] .motion-lab-deck-face {
-  border: 1px solid rgba(18,18,18,.22) !important;
-  border-top-color: rgba(255,255,255,.76) !important;
-  background-color: rgba(246,245,239,.10) !important;
-  background-image:
-    linear-gradient(112deg,
-      rgba(255,255,255,.24) 0%,
-      rgba(221,250,244,.11) 23%,
-      rgba(246,226,252,.12) 46%,
-      rgba(252,244,216,.10) 69%,
-      rgba(255,255,255,.18) 100%) !important;
-  color: rgba(12,12,12,.76) !important;
-  box-shadow:
-    0 10px 28px rgba(22,22,22,.045),
-    inset 0 0 0 1px rgba(255,255,255,.45) !important;
+/* During compression the same production copy simplifies instead of swapping to a second face. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank {
+  opacity: clamp(.34, calc(1 - var(--deckness) * .66), 1) !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face::before {
-  display: block !important;
-  opacity: .08 !important;
-  background-image: radial-gradient(circle, rgba(20,20,20,.72) .52px, transparent .7px) !important;
-  background-size: 16px 16px !important;
-  mask-image: linear-gradient(125deg, black, transparent 72%) !important;
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy {
+  opacity: clamp(.055, calc(1 - var(--deckness) * 1.18), 1) !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face > strong {
-  font-size: clamp(3.3rem, 5.7vw, 6rem) !important;
-  line-height: .72 !important;
-  letter-spacing: -.095em !important;
-  opacity: .78 !important;
-  color: rgba(12,12,12,.72) !important;
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-age {
+  opacity: clamp(0, calc(1 - var(--deckness) * 1.48), 1) !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face-top,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face-bottom {
-  font-size: .48rem !important;
-  letter-spacing: .16em !important;
-  opacity: .62 !important;
-  color: rgba(12,12,12,.72) !important;
+.motion-lab-shell[data-production="true"][data-mode="run"] .today-production-open-cue {
+  opacity: 0 !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face-bottom {
-  padding-top: .55rem !important;
-  border-top-color: rgba(15,15,15,.22) !important;
+/* Explicit deck endpoint: keep only quiet ranks on the seven physical foil sheets. */
+.motion-lab-shell[data-production="true"][data-mode="run"][data-layout="deck"] .motion-lab-signal[role="link"] > .motion-lab-rank {
+  opacity: .34 !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-field {
-  opacity: calc(var(--deckness) * .20) !important;
+.motion-lab-shell[data-production="true"][data-mode="run"][data-layout="deck"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy {
+  opacity: .055 !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-scanline {
-  opacity: calc(var(--deckness) * .035) !important;
+.motion-lab-shell[data-production="true"][data-mode="run"][data-layout="deck"] .motion-lab-signal[role="link"] > .motion-lab-score,
+.motion-lab-shell[data-production="true"][data-mode="run"][data-layout="deck"] .motion-lab-signal[role="link"] > .motion-lab-age {
+  opacity: 0 !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] {
-  pointer-events: auto;
+/* Interaction is disabled only at maximum stack density; the final editorial frame remains interactive. */
+.motion-lab-shell[data-production="true"][data-mode="run"][data-layout="deck"] .motion-lab-signal[role="link"] {
+  pointer-events: none;
 }
 
 @media (max-width: 760px), (pointer: coarse) {
   .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
     opacity: 0 !important;
-    filter: none !important;
-  }
-
-  .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face {
-    display: none !important;
   }
 }
