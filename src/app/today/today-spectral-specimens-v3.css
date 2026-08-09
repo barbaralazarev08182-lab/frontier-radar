@@ -1,9 +1,4 @@
-/*
- * TODAY'S 7 / Spectral Specimens V3
- *
- * The DOM owns editorial hierarchy. The GPU owns material behavior.
- * No cards, no colored fills, no decorative glow.
- */
+/* TODAY'S 7 / Foil + Candy Film V4 */
 
 .today-spectral-field {
   position: absolute;
@@ -13,26 +8,21 @@
   height: 100%;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 220ms linear;
+  transition: opacity 180ms linear;
   will-change: opacity;
 }
 
-/* Once the GPU field is present it replaces the old QA dot/grid treatment. */
-.motion-lab-shell[data-production="true"][data-spectral-v3="active"] .motion-lab-field,
-.motion-lab-shell[data-production="true"][data-spectral-v3="active"] .motion-lab-scanline {
+.motion-lab-shell[data-production="true"][data-foil-v4="active"] .motion-lab-field,
+.motion-lab-shell[data-production="true"][data-foil-v4="active"] .motion-lab-scanline {
   opacity: 0 !important;
 }
 
 .motion-lab-shell[data-production="true"] .motion-lab-field,
 .motion-lab-shell[data-production="true"] .motion-lab-scanline {
-  transition: opacity 240ms ease !important;
+  transition: opacity 180ms ease !important;
 }
 
-/*
- * Stable specimen geometry.
- * GSAP Flip still owns the Deck -> Overview transform channel, but pointer gravity
- * and the retired recompose morph are not allowed to move the final composition.
- */
+/* Lock the final editorial frame. Material moves; typography does not. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
   translate: 0 0 !important;
   scale: 1 !important;
@@ -48,10 +38,10 @@
   backdrop-filter: none !important;
   filter: none !important;
   padding: .72rem .82rem .78rem !important;
-  transition: opacity 220ms ease, color 180ms ease !important;
+  transition: opacity 180ms ease !important;
 }
 
-/* Kill every old card/foil/anomaly pseudo treatment. The GPU is the material. */
+/* Absolutely no legacy card, glow, halo or anomaly pseudo surface. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::before,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::after {
   content: none !important;
@@ -61,7 +51,6 @@
   filter: none !important;
 }
 
-/* Real semantics are never encoded as a blue/orange rectangle. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"],
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"],
 .motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal[role="link"][data-lane="adjacent"],
@@ -79,7 +68,6 @@
   transform: none !important;
 }
 
-/* Retired rank-06/07 QA geometry cannot leak back in during the final handoff. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"],
 .motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"],
 .motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-06[role="link"],
@@ -108,32 +96,31 @@
   align-self: auto !important;
 }
 
-/* 01 remains the editorial anchor. Its optical scale now lives entirely in WebGL. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal-01[role="link"] {
   padding: .84rem .82rem .9rem !important;
 }
 
-/* Lane identity becomes wavelength behavior, with only tiny typographic clues. */
+/* Material identity is visual, not a colored text code. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-topic,
-.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-score span {
-  color: #5136df !important;
-  opacity: .82 !important;
-}
-
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-score span,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-topic,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-score span {
-  color: #d43a78 !important;
-  opacity: .82 !important;
+  color: currentColor !important;
+  opacity: .52 !important;
 }
 
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-score strong,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-score strong {
-  color: var(--ink) !important;
+  color: currentColor !important;
 }
 
-/* Hover interrogates the optical field; the specimen itself stays pinned. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] h2 {
+  text-shadow: none !important;
+}
+
+/* Hover changes incidence in WebGL. DOM stays physically pinned. */
 .motion-lab-shell[data-production-signal-hover="true"] .motion-lab-signal[role="link"]:not([data-production-hovered="true"]) {
-  opacity: .52;
+  opacity: .66;
   filter: none !important;
 }
 
@@ -149,18 +136,6 @@
   filter: none !important;
 }
 
-.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"][data-production-hovered="true"] h2 {
-  text-shadow:
-    -1.4px 0 rgba(101, 56, 255, .24),
-    1.4px 0 rgba(17, 211, 255, .20);
-}
-
-.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"][data-production-hovered="true"] h2 {
-  text-shadow:
-    -1.5px 0 rgba(255, 42, 139, .22),
-    1.5px 0 rgba(255, 167, 35, .20);
-}
-
 .motion-lab-shell[data-production="true"] .today-production-open-cue {
   left: .82rem !important;
   bottom: .44rem !important;
@@ -172,17 +147,15 @@
 
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-production-hovered="true"] .today-production-open-cue,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]:focus-visible .today-production-open-cue {
-  opacity: .72;
+  opacity: .68;
   transform: none;
 }
 
-/* The outgoing chapter remains one exact composition while the Weave rises. */
 .motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-stage,
 .motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal-stage {
   pointer-events: none;
 }
 
-/* The old recompose messaging is never part of production V3. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal-stage::before,
 .motion-lab-shell[data-production="true"] .motion-lab-signal-stage::after {
   content: none !important;
@@ -205,8 +178,4 @@
 
 @media (prefers-reduced-motion: reduce) {
   .today-spectral-field { display: none; }
-
-  .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] h2 {
-    text-shadow: none !important;
-  }
 }
