@@ -24,7 +24,7 @@ uniform vec2 uPointer;
 uniform float uHandoff;
 uniform float uAlpha;
 
-const float PI = 3.141592653589793;
+const int SIGNAL_COUNT = 7;
 
 float sat(float value) {
   return clamp(value, 0.0, 1.0);
