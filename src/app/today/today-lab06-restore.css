@@ -1,0 +1,332 @@
+/* Restore the approved LAB-06 visual language on /today only.
+   Scroll snapping, production data, handoff and Signal Weave stay untouched. */
+
+/* Retire only the later visual experiments. */
+.today-compression-artifact,
+.today-spectral-field {
+  display: none !important;
+}
+
+/* Bring the original paper field and center axis back. */
+.motion-lab-shell[data-production="true"] .motion-lab-field {
+  opacity: .48 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-scanline {
+  opacity: 1 !important;
+}
+
+/* Match the LAB-06 page identity shown in the approved frame. */
+.motion-lab-shell[data-production="true"] .motion-lab-meta > div:first-child > span {
+  font-size: 0 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta > div:first-child > span::after {
+  content: "LAB-06 ADJACENT / WILDCARD ANOMALY PHYSICS · PREVIOUS LABS PRESERVED" !important;
+  display: inline !important;
+  font-size: .56rem !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* OVERVIEW — restore the original rank-based editorial composition.          */
+/* -------------------------------------------------------------------------- */
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
+  cursor: pointer;
+  overflow: visible !important;
+  isolation: auto !important;
+  min-height: 0;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: .9rem !important;
+  padding: .75rem 0 .8rem !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(11,11,11,.72) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+  translate:
+    calc(var(--gravity-x, 0px) + var(--morph-x, 0px) + var(--anomaly-x, 0px))
+    calc(var(--gravity-y, 0px) + var(--morph-y, 0px) + var(--anomaly-y, 0px)) !important;
+  scale: calc(var(--gravity-scale, 1) + var(--morph-scale-delta, 0) + var(--anomaly-scale, 0)) !important;
+  rotate: 0deg !important;
+}
+
+/* Production lane semantics must not repaint ranks 03/05. LAB-06 is rank based. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"],
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(11,11,11,.72) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::after {
+  content: none !important;
+  display: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] .motion-lab-rank {
+  grid-column: auto !important;
+  font-size: clamp(.8rem, 1vw, 1.05rem) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] .motion-lab-signal-copy {
+  align-self: auto !important;
+}
+
+/* Lead signal. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal-01[role="link"] {
+  left: 5.4vw;
+  top: 17vh;
+  width: 48vw;
+  min-height: 25vh !important;
+  padding-top: 1rem !important;
+  border-top-width: 2px !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-01[role="link"]::before {
+  content: "01" !important;
+  display: block !important;
+  position: absolute;
+  z-index: -1;
+  left: -.3rem;
+  top: 1.55rem;
+  font-size: clamp(7rem, 15vw, 15rem);
+  font-weight: 950;
+  line-height: .75;
+  letter-spacing: -.12em;
+  opacity: .055;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-01[role="link"] h2 {
+  max-width: 18ch;
+  font-size: clamp(1.9rem, 3.55vw, 4.4rem) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-01[role="link"] .motion-lab-score strong {
+  font-size: clamp(2rem, 3vw, 3.4rem) !important;
+}
+
+/* Rank 06 is the cobalt Adjacent card in LAB-06. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] {
+  right: 4vw;
+  top: 44vh;
+  width: 14vw;
+  min-height: 38vh !important;
+  grid-template-columns: 1fr auto !important;
+  padding: 1rem !important;
+  border: 0 !important;
+  background: var(--cobalt) !important;
+  color: #fff !important;
+  transform: none !important;
+  translate: 0 0 !important;
+  scale: 1 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-rank {
+  grid-column: 1 / -1 !important;
+  font-size: 2.2rem !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-signal-copy {
+  align-self: end !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-topic {
+  opacity: .72 !important;
+  color: currentColor !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] h2 {
+  font-size: clamp(1.05rem, 1.5vw, 1.65rem) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-age {
+  right: 1rem !important;
+  bottom: 1rem !important;
+  color: currentColor !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-score span {
+  color: currentColor !important;
+}
+
+/* Rank 07 is the orange Wildcard card in LAB-06. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"] {
+  right: 20vw;
+  bottom: 8vh;
+  width: 17vw;
+  min-height: 18vh !important;
+  padding: .9rem 1rem 1rem !important;
+  border: 0 !important;
+  background: var(--orange) !important;
+  color: var(--ink) !important;
+  transform: rotate(-2.4deg) !important;
+  translate: 0 0 !important;
+  scale: 1 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"] h2 {
+  font-size: clamp(1rem, 1.35vw, 1.45rem) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"] .motion-lab-topic {
+  opacity: .72 !important;
+  color: currentColor !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"] .motion-lab-age {
+  right: 1rem !important;
+  bottom: .85rem !important;
+  color: currentColor !important;
+}
+
+/* Remove later production hover paint; keep the LAB geometry stable. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-production-hovered="true"],
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]:focus-visible {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* COMPRESSION — restore the original seven-card deck with 07 on top.         */
+/* -------------------------------------------------------------------------- */
+
+.motion-lab-shell[data-production="true"] .motion-lab-deck-readout {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: var(--deckness) !important;
+  pointer-events: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: flex !important;
+  visibility: visible !important;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 1.1rem 1.05rem !important;
+  overflow: hidden;
+  border: 1px solid rgba(11,11,11,.75) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.32), transparent 42%),
+    var(--paper-deep) !important;
+  color: var(--ink) !important;
+  opacity: var(--deckness) !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-adjacent .motion-lab-deck-face {
+  background: var(--cobalt) !important;
+  color: #fff !important;
+  border-color: rgba(11,11,11,.85) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-wildcard .motion-lab-deck-face {
+  background: var(--orange) !important;
+  color: var(--ink) !important;
+  border-color: rgba(11,11,11,.85) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  opacity: .16 !important;
+  background-image: radial-gradient(circle, currentColor .65px, transparent .8px) !important;
+  background-size: 14px 14px !important;
+  mask-image: linear-gradient(135deg, black, transparent 68%) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face > strong {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  margin-left: -.05em;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(6rem, 13vw, 13rem) !important;
+  line-height: .68 !important;
+  letter-spacing: -.12em !important;
+  opacity: 1 !important;
+  color: currentColor !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face-top,
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face-bottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .54rem !important;
+  font-weight: 900;
+  letter-spacing: .14em !important;
+  text-transform: uppercase;
+  opacity: 1 !important;
+  color: currentColor !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face-bottom {
+  padding-top: .75rem !important;
+  border-top: 1px solid currentColor !important;
+}
+
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal[role="link"] {
+  right: auto !important;
+  bottom: auto !important;
+  width: 52vw !important;
+  height: 42vh !important;
+  min-height: 42vh !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: var(--paper-deep) !important;
+  color: var(--ink) !important;
+  transform-origin: 50% 50%;
+  translate: 0 0 !important;
+  scale: 1 !important;
+}
+
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal::before {
+  display: none !important;
+}
+
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-01 { left: 24vw !important; top: 19.5vh !important; transform: rotate(-1.15deg) !important; z-index: 17; }
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-02 { left: 25.1vw !important; top: 20.7vh !important; transform: rotate(.85deg) !important; z-index: 16; }
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-03 { left: 23.5vw !important; top: 21.9vh !important; transform: rotate(-1.75deg) !important; z-index: 15; }
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-04 { left: 26.2vw !important; top: 23.1vh !important; transform: rotate(1.45deg) !important; z-index: 14; }
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-05 { left: 24.8vw !important; top: 24.25vh !important; transform: rotate(-.55deg) !important; z-index: 13; }
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-06 { left: 27vw !important; top: 25.35vh !important; transform: rotate(1.8deg) !important; z-index: 12; }
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal-07 { left: 22.7vw !important; top: 26.5vh !important; transform: rotate(-2.05deg) !important; z-index: 18; }
+
+/* At maximum compression, only the deck faces read; overview copy stays behind them. */
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-rank,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-signal-copy,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-score,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-age,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .today-production-open-cue {
+  opacity: max(.06, var(--overviewness)) !important;
+}
+
+@media (max-width: 1100px) {
+  .motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal[role="link"] {
+    width: 56vw !important;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-shell[data-production="true"] .motion-lab-deck-readout,
+  .motion-lab-shell[data-production="true"] .motion-lab-deck-face {
+    display: none !important;
+  }
+}
