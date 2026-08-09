@@ -9,6 +9,7 @@ import type { EditorialSignal } from "@/components/frontier/today-editorial";
 import type { DailySynthesisSignalInput, DailySynthesisSnapshot } from "@/lib/ai/daily-synthesis";
 
 type ResolveSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
+type SynthesisStatus = "idle" | "loading" | "ready" | "unavailable";
 
 interface TodayMotionProductionProps {
   dateLabel: string;
@@ -38,6 +39,65 @@ function scoreLabel(score: number | null) {
   return score == null ? "--" : String(Math.round(score));
 }
 
+function SynthesisPending({
+  signals,
+  status,
+}: {
+  signals: DailySynthesisSignalInput[];
+  status: Exclude<SynthesisStatus, "ready">;
+}) {
+  const loading = status === "loading";
+  const unavailable = status === "unavailable";
+
+  return (
+    <section className="today-synthesis-state" data-state={status} aria-label="Today's synthesis status">
+      <div className="today-synthesis-state-ambient" aria-hidden="true" />
+      <header className="today-synthesis-state-header">
+        <div>
+          <span>FR / TODAY&apos;S SYNTHESIS</span>
+          <strong>{String(signals.length).padStart(2, "0")} SIGNALS → ANALYSIS</strong>
+        </div>
+        <span>{loading ? "RESOLVING RELATIONSHIPS" : unavailable ? "SYNTHESIS UNAVAILABLE" : "SYNTHESIS STANDBY"}</span>
+      </header>
+
+      <div className="today-synthesis-state-field">
+        <div className="today-synthesis-state-signals">
+          {signals.map((signal) => (
+            <div key={signal.id} className="today-synthesis-state-signal" data-lane={signal.lane}>
+              <strong>{String(signal.rank).padStart(2, "0")}</strong>
+              <span>{signal.title}</span>
+              <i aria-hidden="true" />
+            </div>
+          ))}
+        </div>
+
+        <div className="today-synthesis-state-copy">
+          <span>RELATIONSHIP FIELD / {loading ? "RESOLVING" : unavailable ? "NO RESULT" : "WAITING"}</span>
+          <h2>
+            {loading
+              ? "THE SIGNALS ARE LOOKING FOR SHAPE."
+              : unavailable
+                ? "TODAY’S 7 REMAIN THE BRIEF."
+                : "THE ANALYSIS IS FORMING."}
+          </h2>
+          <p>
+            {loading
+              ? "The seven selected signals are being synthesized into evidence-backed directions."
+              : unavailable
+                ? "No verified synthesis is available for this selection yet. The system will not invent a pattern to fill the space."
+                : "The final field is ready. Verified directions will appear here as soon as synthesis begins."}
+          </p>
+        </div>
+      </div>
+
+      <footer className="today-synthesis-state-footer">
+        <span>REAL PATTERNS ONLY</span>
+        <span>NO SYNTHETIC FALLBACK</span>
+      </footer>
+    </section>
+  );
+}
+
 export function TodayMotionProduction({
   dateLabel,
   dataLabel,
@@ -49,11 +109,12 @@ export function TodayMotionProduction({
 }: TodayMotionProductionProps) {
   const [stage, setStage] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<DailySynthesisSnapshot | null>(initialSnapshot);
+  const [synthesisStatus, setSynthesisStatus] = useState<SynthesisStatus>(initialSnapshot ? "ready" : "idle");
   const requestedRef = useRef(false);
   const analysisRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let frame = window.requestAnimationFrame(() => {
+    const frame = window.requestAnimationFrame(() => {
       const root = document.querySelector<HTMLElement>(".motion-lab-shell");
       const nextStage = root?.querySelector<HTMLElement>(".motion-lab-stage") ?? null;
       if (root) root.dataset.production = "true";
@@ -168,14 +229,20 @@ export function TodayMotionProduction({
       if (requestedRef.current) return;
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       const progress = scroller.scrollTop / travel;
-      if (progress < 0.42) return;
+      if (progress < 0.2) return;
 
       requestedRef.current = true;
+      setSynthesisStatus("loading");
       void resolveSynthesisAction()
         .then((result) => {
-          if (result) setSnapshot(result);
+          if (result) {
+            setSnapshot(result);
+            setSynthesisStatus("ready");
+          } else {
+            setSynthesisStatus("unavailable");
+          }
         })
-        .catch(() => {});
+        .catch(() => setSynthesisStatus("unavailable"));
     };
     const onScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(maybeResolve);
@@ -191,7 +258,7 @@ export function TodayMotionProduction({
 
   useEffect(() => {
     const node = analysisRef.current;
-    if (!node || !snapshot) return;
+    if (!node) return;
     const root = node.closest<HTMLElement>(".motion-lab-shell");
     const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
     if (!root || !scroller) return;
@@ -205,20 +272,28 @@ export function TodayMotionProduction({
 
     node.addEventListener("wheel", onWheel, { passive: false });
     return () => node.removeEventListener("wheel", onWheel);
-  }, [snapshot, stage]);
+  }, [stage]);
 
   return (
     <>
       <MotionLab />
       <MotionLabDirectHandoff />
-      {stage && snapshot
+      {stage
         ? createPortal(
-            <div ref={analysisRef} className="motion-lab-analysis today-production-analysis">
-              <TodaySignalWeave
-                signals={synthesisSignals}
-                initialSnapshot={snapshot}
-                resolveSynthesisAction={null}
-              />
+            <div
+              ref={analysisRef}
+              className="motion-lab-analysis today-production-analysis"
+              data-synthesis-status={synthesisStatus}
+            >
+              {snapshot ? (
+                <TodaySignalWeave
+                  signals={synthesisSignals}
+                  initialSnapshot={snapshot}
+                  resolveSynthesisAction={null}
+                />
+              ) : (
+                <SynthesisPending signals={synthesisSignals} status={synthesisStatus === "ready" ? "idle" : synthesisStatus} />
+              )}
             </div>,
             stage
           )
