@@ -1,0 +1,73 @@
+/* V4.2 — keep the foil world, remove the compression ghost/overexposure state. */
+
+/* The seven editorial copies are readable at the two stable endpoints only.
+   During compression/overlap they get out of the way instead of stacking into
+   the giant translucent text pile visible in QA. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-age,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .today-production-open-cue {
+  opacity: clamp(
+    0,
+    calc(
+      var(--overviewness)
+      + var(--overviewness)
+      + var(--overviewness)
+      + var(--overviewness)
+      + var(--overviewness)
+      - 4
+    ),
+    1
+  ) !important;
+}
+
+/* Seven foil sheets briefly occupy the same physical region while Flip is in
+   its compression phase. Do not add seven full-strength specular passes there.
+   Keep a quiet material trace instead, then recover to full foil at Overview. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
+  opacity: max(
+    .16,
+    calc(1 - var(--deckness) - var(--deckness))
+  ) !important;
+  transition: none !important;
+}
+
+/* Crossfade the paper/grid substrate back underneath the attenuated foil stack
+   so the transition never becomes a blown-out white void. */
+.motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-field {
+  opacity: var(--deckness) !important;
+}
+
+.motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-scanline {
+  opacity: calc(var(--deckness) / 4) !important;
+}
+
+/* Compression is a material stack, not an interaction state. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] {
+  pointer-events: auto;
+}
+
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-rank,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-signal-copy,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-score,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-age {
+  opacity: clamp(
+    0,
+    calc(
+      var(--overviewness)
+      + var(--overviewness)
+      + var(--overviewness)
+      + var(--overviewness)
+      + var(--overviewness)
+      - 4
+    ),
+    1
+  ) !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
+    opacity: 0 !important;
+  }
+}
