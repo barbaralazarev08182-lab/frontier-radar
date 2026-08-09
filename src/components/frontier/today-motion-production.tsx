@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MotionLab } from "@/components/frontier/motion-lab/motion-lab";
 import { MotionLabDirectHandoff } from "@/components/frontier/motion-lab/motion-lab-direct-handoff";
+import { TodayCompressionArtifact } from "@/components/frontier/today-compression-artifact";
 import { TodaySignalWeave } from "@/components/frontier/today-signal-weave";
 import { TodaySpectralField } from "@/components/frontier/today-spectral-field";
 import { TodayStageScrollController } from "@/components/frontier/today-stage-scroll-controller";
@@ -272,6 +273,15 @@ export function TodayMotionProduction({
       <TodayStageScrollController canEnterWeave={Boolean(snapshot)} />
       {snapshot ? <MotionLabDirectHandoff /> : null}
       {stage ? createPortal(<TodaySpectralField />, stage) : null}
+      {stage
+        ? createPortal(
+            <TodayCompressionArtifact
+              totalDiscoveries={totalDiscoveries}
+              dateLabel={dateLabel}
+            />,
+            stage
+          )
+        : null}
       {stage && snapshot
         ? createPortal(
             <div ref={analysisRef} className="motion-lab-analysis today-production-analysis">
