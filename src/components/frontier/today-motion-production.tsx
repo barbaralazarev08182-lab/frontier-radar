@@ -112,6 +112,30 @@ export function TodayMotionProduction({
       if (deckBottom[1]) deckBottom[1].textContent = `${source} / SIGNAL`;
 
       const open = () => window.open(signal.canonicalUrl, "_blank", "noopener,noreferrer");
+      const openCue = document.createElement("span");
+      openCue.className = "today-production-open-cue";
+      openCue.textContent = "OPEN ↗";
+      openCue.setAttribute("aria-hidden", "true");
+      card.appendChild(openCue);
+
+      const setFoilPosition = (event: PointerEvent) => {
+        const rect = card.getBoundingClientRect();
+        const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / Math.max(1, rect.width)));
+        const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / Math.max(1, rect.height)));
+        card.style.setProperty("--production-foil-x", `${(x * 100).toFixed(2)}%`);
+        card.style.setProperty("--production-foil-y", `${(y * 100).toFixed(2)}%`);
+        card.style.setProperty("--production-foil-nx", (x * 2 - 1).toFixed(3));
+      };
+      const activateCard = () => {
+        root.dataset.productionSignalHover = "true";
+        card.dataset.productionHovered = "true";
+      };
+      const deactivateCard = () => {
+        delete card.dataset.productionHovered;
+        if (!root.querySelector('[data-production-hovered="true"]')) {
+          delete root.dataset.productionSignalHover;
+        }
+      };
       const onClick = (event: MouseEvent) => {
         if (event.defaultPrevented) return;
         open();
@@ -121,11 +145,26 @@ export function TodayMotionProduction({
         event.preventDefault();
         open();
       };
+      card.addEventListener("pointerenter", activateCard);
+      card.addEventListener("pointermove", setFoilPosition);
+      card.addEventListener("pointerleave", deactivateCard);
+      card.addEventListener("focus", activateCard);
+      card.addEventListener("blur", deactivateCard);
       card.addEventListener("click", onClick);
       card.addEventListener("keydown", onKeyDown);
       cleanups.push(() => {
+        card.removeEventListener("pointerenter", activateCard);
+        card.removeEventListener("pointermove", setFoilPosition);
+        card.removeEventListener("pointerleave", deactivateCard);
+        card.removeEventListener("focus", activateCard);
+        card.removeEventListener("blur", deactivateCard);
         card.removeEventListener("click", onClick);
         card.removeEventListener("keydown", onKeyDown);
+        card.removeAttribute("data-production-hovered");
+        card.style.removeProperty("--production-foil-x");
+        card.style.removeProperty("--production-foil-y");
+        card.style.removeProperty("--production-foil-nx");
+        openCue.remove();
       });
     });
 
@@ -152,6 +191,7 @@ export function TodayMotionProduction({
 
     return () => {
       cleanups.forEach((cleanup) => cleanup());
+      delete root.dataset.productionSignalHover;
       root.removeAttribute("data-production");
     };
   }, [dataLabel, dateLabel, signals, totalDiscoveries]);

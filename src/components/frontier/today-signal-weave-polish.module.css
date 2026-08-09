@@ -73,7 +73,9 @@
 }
 
 .hubFx[data-active="true"] .hubReception {
-  animation: productionHubReception 1.85s cubic-bezier(.2,.7,.2,1) infinite;
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 5px rgba(66,103,255,.24));
+  animation: productionHubReception 1.42s cubic-bezier(.2,.7,.2,1) infinite;
 }
 
 @keyframes productionHubReception {

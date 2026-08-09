@@ -285,10 +285,22 @@ export function TodaySignalWeave({
                 key={pattern.id}
                 type="button"
                 className={`${styles.pattern} ${dimmed ? styles.patternDimmed : ""} ${selected ? styles.patternActive : ""}`}
+                data-formation={pattern.formation}
                 style={{ "--pattern-top": `${patternTop[index] ?? 50}%` } as CSSProperties}
                 aria-pressed={pinnedPattern === pattern.id}
                 onPointerEnter={() => setHoveredPattern(pattern.id)}
-                onPointerLeave={() => setHoveredPattern(null)}
+                onPointerMove={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  const x = clamp((event.clientX - rect.left) / Math.max(1, rect.width));
+                  const y = clamp((event.clientY - rect.top) / Math.max(1, rect.height));
+                  event.currentTarget.style.setProperty("--pattern-sheen-x", `${(x * 100).toFixed(2)}%`);
+                  event.currentTarget.style.setProperty("--pattern-sheen-y", `${(y * 100).toFixed(2)}%`);
+                }}
+                onPointerLeave={(event) => {
+                  event.currentTarget.style.setProperty("--pattern-sheen-x", "52%");
+                  event.currentTarget.style.setProperty("--pattern-sheen-y", "34%");
+                  setHoveredPattern(null);
+                }}
                 onFocus={() => setHoveredPattern(pattern.id)}
                 onBlur={() => setHoveredPattern(null)}
                 onClick={() => setPinnedPattern((current) => current === pattern.id ? null : pattern.id)}
