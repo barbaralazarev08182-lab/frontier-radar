@@ -1,0 +1,72 @@
+.today-production-shell {
+  min-height: 100svh;
+  background: #f1eee5;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-hud {
+  display: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-progress {
+  opacity: .34;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta {
+  top: 1.65rem;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta > div:last-child {
+  margin-left: auto;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta strong,
+.motion-lab-shell[data-production="true"] .motion-lab-meta > div:last-child span:last-child {
+  opacity: 1;
+}
+
+/* The prototype topic map contained authored demo clusters. Production analysis comes from Daily Synthesis. */
+.motion-lab-shell[data-production="true"] .motion-lab-topic-map {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
+  cursor: pointer;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]:focus-visible {
+  outline: 2px solid #3150ff;
+  outline-offset: 5px;
+}
+
+/* Real Daily Synthesis is mounted into the same sticky stage used by the validated handoff. */
+.today-production-analysis.motion-lab-analysis {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  pointer-events: none;
+  background: #eef1ee;
+}
+
+.motion-lab-shell[data-direct-handoff="ready"] .today-production-analysis.motion-lab-analysis {
+  pointer-events: auto !important;
+}
+
+/* Never expose QA labels if the adapter has not populated them yet. */
+.motion-lab-shell[data-production="true"] .motion-lab-meta [data-production-placeholder="true"] {
+  visibility: hidden;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-shell[data-production="true"] .motion-lab-meta {
+    top: 1rem;
+  }
+
+  .today-production-analysis.motion-lab-analysis {
+    height: 100svh;
+  }
+}
