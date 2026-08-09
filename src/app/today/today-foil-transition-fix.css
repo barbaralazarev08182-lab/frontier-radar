@@ -1,8 +1,7 @@
-/* V4.3 — preserve a readable material transition through compression. */
+/* V4.4 — keep the compression transition materially present. */
 
-/* Copy fades out before the seven sheets fully overlap, then fades back in on
-   expansion. This prevents the giant ghost-text pile without deleting the
-   transition itself. */
+/* Copy fades out before the seven sheets fully overlap, then returns on expansion.
+   This avoids the old giant ghost-text pile while leaving the material itself visible. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
@@ -11,24 +10,27 @@
   opacity: clamp(0, calc(1 - var(--deckness) * 2.2), 1) !important;
 }
 
-/* Keep the foil stack materially present throughout compression. The shader
-   already attenuates each overlapping sheet, so do not double-fade it away. */
+/* Do not crossfade the GPU sheet stack away during compression. The shader already
+   attenuates overlapping sheets, so the canvas remains fully present. As deckness
+   rises, contrast/saturation increase only inside the compression phase; Overview
+   and the final Today's 7 frame remain unchanged because deckness returns to 0. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
-  opacity: clamp(.62, calc(1 - var(--deckness) * .38), 1) !important;
+  opacity: 1 !important;
+  filter:
+    contrast(calc(1 + var(--deckness)))
+    saturate(calc(1 + var(--deckness))) !important;
   transition: none !important;
 }
 
-/* Let a restrained paper/grid substrate show through at maximum compression;
-   it anchors the stack without turning the frame into a white flash. */
+/* Keep only a faint physical substrate under the stack. */
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-field {
-  opacity: calc(var(--deckness) * .32) !important;
+  opacity: calc(var(--deckness) * .12) !important;
 }
 
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-scanline {
-  opacity: calc(var(--deckness) * .06) !important;
+  opacity: calc(var(--deckness) * .025) !important;
 }
 
-/* Compression is visual only; the DOM remains stable and non-jumping. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] {
   pointer-events: auto;
 }
@@ -43,5 +45,6 @@
 @media (max-width: 760px), (pointer: coarse) {
   .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
     opacity: 0 !important;
+    filter: none !important;
   }
 }
