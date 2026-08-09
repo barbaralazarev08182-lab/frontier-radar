@@ -40,7 +40,6 @@ export function TodayCompressionArtifact({
         ))}
 
         <div className="today-compression-cover">
-          <span className="today-compression-cover-index">01</span>
           <div className="today-compression-cover-film" />
           <div className="today-compression-cover-sheen" />
 
