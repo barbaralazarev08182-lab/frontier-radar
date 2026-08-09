@@ -1,5 +1,7 @@
 "use client";
 
+import type { CSSProperties } from "react";
+
 interface TodayCompressionArtifactProps {
   totalDiscoveries: number;
   dateLabel: string;
@@ -31,7 +33,7 @@ export function TodayCompressionArtifact({
             style={{
               "--sheet-index": sheetIndex,
               "--sheet-depth": SHEETS.length - sheetIndex,
-            } as React.CSSProperties}
+            } as CSSProperties}
           >
             <span className="today-compression-edge-index">{sheet.index}</span>
             <span className="today-compression-registration" />
@@ -81,7 +83,7 @@ export function TodayCompressionArtifact({
             </div>
             <div>
               <strong>FR / 07 / 01</strong>
-              <span>525 → 07 → 01</span>
+              <span>{totalDiscoveries} → 07 → 01</span>
               <span>DAILY RADAR INTERNAL</span>
             </div>
           </footer>
