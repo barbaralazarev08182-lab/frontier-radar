@@ -25,6 +25,7 @@ uniform float uHandoff;
 uniform float uAlpha;
 
 const int SIGNAL_COUNT = 7;
+const float PI = 3.141592653589793;
 
 float sat(float value) {
   return clamp(value, 0.0, 1.0);
@@ -34,6 +35,19 @@ mat2 rotate2d(float angle) {
   float s = sin(angle);
   float c = cos(angle);
   return mat2(c, -s, s, c);
+}
+
+float sdBox(vec2 p, vec2 b) {
+  vec2 d = abs(p) - b;
+  return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+}
+
+float fillMask(float sd, float feather) {
+  return 1.0 - smoothstep(-feather, feather, sd);
+}
+
+float edgeMask(float sd, float width) {
+  return exp(-pow(sd / width, 2.0));
 }
 
 float dotGrid(vec2 uv) {
@@ -52,88 +66,105 @@ float laneMask(float lane, float target) {
   return 1.0 - smoothstep(0.1, 0.45, abs(lane - target));
 }
 
+vec3 thinFilm(float phase) {
+  return 0.52 + 0.48 * cos(phase + vec3(0.0, 2.0943951, 4.1887902));
+}
+
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution.xy;
   float aspect = uResolution.x / max(1.0, uResolution.y);
 
   vec2 warp = vec2(0.0);
-  float castShadow = 0.0;
-  vec3 spectral = vec3(0.0);
+  float contactShadow = 0.0;
+  float laminate = 0.0;
+  vec3 foil = vec3(0.0);
   vec3 traces = vec3(0.0);
-  float glassBody = 0.0;
-
-  vec3 laserViolet = vec3(0.47, 0.18, 1.00);
-  vec3 candyUltraviolet = vec3(0.78, 0.20, 1.00);
-  vec3 electricCyan = vec3(0.03, 0.86, 1.00);
-  vec3 hotMagenta = vec3(1.00, 0.13, 0.67);
-  vec3 amber = vec3(1.00, 0.56, 0.11);
-  vec3 pearl = vec3(0.90, 0.95, 0.98);
 
   for (int i = 0; i < SIGNAL_COUNT; i++) {
+    float fi = float(i);
     vec4 rect = uRects[i];
-    vec2 halfSize = max(rect.zw, vec2(0.018));
+    vec2 halfSize = max(rect.zw, vec2(0.014));
 
     float lead = i == 0 ? 1.0 : 0.0;
     float adjacent = laneMask(uLane[i], 1.0);
     float wildcard = laneMask(uLane[i], 2.0);
     float core = 1.0 - max(adjacent, wildcard);
-    float hovered = 1.0 - smoothstep(0.1, 0.45, abs(uHover - float(i)));
+    float hovered = 1.0 - smoothstep(0.1, 0.45, abs(uHover - fi));
 
-    vec2 expanded = halfSize * vec2(lead > 0.5 ? 1.55 : 1.27, lead > 0.5 ? 2.25 : 1.72);
-    vec2 q = (uv - rect.xy) / expanded;
-    q.x *= aspect / max(1.0, aspect * 0.74);
+    vec2 q = (uv - rect.xy) / halfSize;
+    q.x *= aspect / max(1.0, aspect * 0.86);
 
-    float baseAngle = (-0.07 + float(i) * 0.037) + (uPointer.x - 0.5) * 0.055 * (0.25 + hovered);
-    q = rotate2d(baseAngle) * q;
+    float tilt = (-0.020 + fi * 0.009) + lead * -0.018 + adjacent * 0.025 + wildcard * -0.032;
+    tilt += (uPointer.x - 0.5) * 0.018 * (0.25 + hovered * 0.75);
+    q = rotate2d(tilt) * q;
 
-    float ripple = sin(q.x * 5.4 + q.y * 3.1 + float(i) * 1.7 + uTime * (0.08 + hovered * 0.22)) * 0.045;
-    float d = length(q * vec2(0.92, 1.08 + ripple));
-    float field = 1.0 - smoothstep(0.16, 1.18, d);
-    float coreField = pow(field, 1.32);
-    float edge = exp(-pow((d - 0.82) * (lead > 0.5 ? 8.5 : 11.0), 2.0));
+    vec2 b = vec2(1.05, 1.13);
+    b += vec2(lead * 0.20, lead * 0.42);
+    b += vec2(adjacent * 0.08, adjacent * 0.11);
+    b += vec2(wildcard * 0.10, wildcard * 0.16);
 
-    vec2 radial = normalize(q + vec2(0.0001));
-    radial.x /= max(1.0, aspect * 0.82);
+    vec2 fq = q;
+    fq.x += fq.y * (0.018 + adjacent * 0.028 - wildcard * 0.024);
+    fq.y += sin(fq.x * (2.25 + fi * 0.13) + fi * 0.91) * (0.010 + lead * 0.020 + wildcard * 0.032);
+    fq.x += sin(fq.y * 3.1 - fi * 0.67) * wildcard * 0.024;
 
-    float strength = 0.0038 + lead * 0.0105 + adjacent * 0.0065 + wildcard * 0.0078;
-    strength *= 1.0 + hovered * 1.35;
-    strength *= 1.0 - uHandoff * 0.52;
-    warp += radial * coreField * strength;
+    float sd = sdBox(fq, b);
+    float sheet = fillMask(sd, 0.024);
+    float edge = edgeMask(sd, 0.030 + lead * 0.008);
 
-    vec2 shadowCenter = rect.xy + vec2((0.010 + float(i) * 0.0015), -(0.015 + lead * 0.018));
-    vec2 sq = (uv - shadowCenter) / (expanded * vec2(1.08, 0.78));
-    float shadowField = 1.0 - smoothstep(0.12, 1.15, length(sq));
-    castShadow += shadowField * (0.012 + lead * 0.040 + adjacent * 0.012 + wildcard * 0.015);
+    vec2 shadowQ = fq - vec2(0.045 + fi * 0.002, -0.080 - lead * 0.035);
+    float shadowSheet = fillMask(sdBox(shadowQ, b + vec2(0.018, 0.022)), 0.080);
+    float exposedShadow = max(shadowSheet - sheet * 0.94, 0.0);
+    contactShadow += exposedShadow * (0.025 + lead * 0.022 + wildcard * 0.006);
 
-    float beamCoord = q.y + q.x * (0.27 + wildcard * 0.22 - adjacent * 0.14);
-    float beam = pow(sat(1.0 - abs(beamCoord + ripple * 0.65) * (5.8 + core * 2.5)), 4.2) * field;
-    float crossBeam = pow(sat(1.0 - abs(q.y - q.x * 0.52) * 8.5), 5.0) * field;
+    float pointerAngle = (uPointer.x - 0.5) * 0.95 + (uPointer.y - 0.5) * -0.35;
+    float sweep = -0.82 + (uPointer.x * 1.52) + sin(uTime * 0.22 + fi) * 0.035;
+    float streakCoord = fq.y + fq.x * (0.20 + adjacent * 0.13 - wildcard * 0.10) - sweep;
+    float hardSpec = exp(-pow(streakCoord * (26.0 + lead * 7.0 + adjacent * 8.0), 2.0)) * sheet;
+    float razorSpec = exp(-pow((streakCoord + 0.105 + sin(fi) * 0.025) * 74.0, 2.0)) * sheet;
 
-    vec3 coreSpectrum = mix(laserViolet, electricCyan, sat(q.x * 0.45 + 0.5));
-    spectral += coreSpectrum * edge * core * (0.055 + lead * 0.15 + hovered * 0.08);
-    spectral += pearl * beam * core * (0.035 + lead * 0.11);
+    float foldA = exp(-pow((fq.y - sin(fq.x * 2.7 + fi * 1.3) * 0.17) * (35.0 + wildcard * 10.0), 2.0));
+    float foldB = exp(-pow((fq.x * 0.61 + fq.y * 0.79 - 0.18 * sin(fi * 2.1)) * (48.0 + wildcard * 16.0), 2.0));
+    float foldC = exp(-pow((fq.x * -0.42 + fq.y * 0.91 + 0.25) * 54.0, 2.0));
+    float crinkle = sat(foldA * 0.62 + foldB * 0.54 + foldC * wildcard * 0.72) * sheet;
 
-    vec3 adjacentSpectrum = mix(laserViolet, electricCyan, sat(q.x * 0.62 + 0.48));
-    spectral += adjacentSpectrum * (edge * 0.58 + beam * 0.44) * adjacent * (0.68 + hovered * 0.34);
-    spectral += candyUltraviolet * crossBeam * adjacent * (0.22 + hovered * 0.18);
+    float diffraction = pow(0.5 + 0.5 * sin((fq.x * 48.0 + fq.y * 13.0) + fi * 4.1 + pointerAngle * 7.0), 18.0) * sheet;
+    diffraction *= 0.32 + edge * 0.78;
 
-    vec3 wildcardA = mix(hotMagenta, amber, sat(q.x * 0.55 + 0.50));
-    vec3 wildcardB = mix(candyUltraviolet, hotMagenta, sat(q.y * 0.58 + 0.47));
-    spectral += wildcardA * (edge * 0.48 + beam * 0.38) * wildcard * (0.78 + hovered * 0.42);
-    spectral += wildcardB * crossBeam * wildcard * (0.26 + hovered * 0.20);
+    float phase = fq.x * 8.2 + fq.y * -4.6 + fi * 1.93 + pointerAngle * 4.8;
+    phase += hardSpec * 2.4 + crinkle * 1.8;
+    vec3 spectrum = thinFilm(phase);
+    vec3 pearlSpectrum = mix(vec3(0.96, 0.975, 0.99), spectrum, 0.72);
 
-    glassBody += field * (0.006 + lead * 0.018 + adjacent * 0.010 + wildcard * 0.012);
+    float coreIntensity = 0.018 + lead * 0.115 + hovered * 0.030;
+    float adjacentIntensity = adjacent * (0.31 + hovered * 0.18);
+    float wildcardIntensity = wildcard * (0.26 + hovered * 0.20);
+
+    foil += vec3(1.0) * (hardSpec * (0.17 + lead * 0.24 + adjacent * 0.12 + wildcard * 0.10));
+    foil += vec3(1.0) * razorSpec * (0.30 + lead * 0.28 + adjacent * 0.22 + wildcard * 0.19);
+    foil += pearlSpectrum * edge * (coreIntensity + adjacentIntensity + wildcardIntensity);
+    foil += spectrum * diffraction * (lead * 0.11 + adjacent * 0.28 + wildcard * 0.18 + hovered * 0.06);
+
+    vec3 candySpectrum = mix(vec3(1.0, 0.86, 0.72), spectrum, 0.72);
+    foil += candySpectrum * crinkle * wildcard * (0.28 + hovered * 0.18);
+    foil += vec3(1.0, 0.96, 0.90) * crinkle * wildcard * 0.16;
+
+    laminate += sheet * (0.006 + lead * 0.013 + adjacent * 0.008 + wildcard * 0.010);
+
+    vec2 creaseDirection = normalize(vec2(0.55 + 0.15 * sin(fi), 0.83));
+    float creaseWarp = (foldA - foldB * 0.72 + foldC * 0.48) * sheet;
+    float warpStrength = 0.00045 + lead * 0.00085 + adjacent * 0.00070 + wildcard * 0.00105;
+    warpStrength *= 1.0 + hovered * 0.85;
+    warp += creaseDirection * creaseWarp * warpStrength;
+    warp += vec2(hardSpec * 0.00035, -hardSpec * 0.00024) * (1.0 + adjacent + wildcard * 0.7);
 
     float below = step(uv.y, rect.y);
-    float traceCurve = rect.x + sin((uv.y * 7.0) + float(i) * 1.4) * (0.004 + 0.009 * uHandoff);
-    float traceWidth = 0.0015 + lead * 0.0009 + adjacent * 0.0007 + wildcard * 0.0009;
+    float traceCurve = rect.x + sin((uv.y * 7.0) + fi * 1.4) * (0.003 + 0.009 * uHandoff);
+    float traceWidth = 0.00115 + lead * 0.00065 + adjacent * 0.00055 + wildcard * 0.00068;
     float trace = exp(-pow((uv.x - traceCurve) / traceWidth, 2.0));
     trace *= below * smoothstep(0.0, 0.12, rect.y - uv.y) * uHandoff;
-
-    vec3 traceColor = pearl;
-    traceColor = mix(traceColor, mix(laserViolet, electricCyan, 0.55), adjacent);
-    traceColor = mix(traceColor, mix(hotMagenta, amber, 0.55), wildcard);
-    traces += traceColor * trace * (0.36 + adjacent * 0.28 + wildcard * 0.30);
+    vec3 traceColor = mix(vec3(0.92, 0.95, 0.98), spectrum, adjacent * 0.58 + wildcard * 0.46);
+    traces += traceColor * trace * (0.34 + adjacent * 0.27 + wildcard * 0.25);
   }
 
   vec2 warpedUv = uv + warp;
@@ -152,13 +183,13 @@ void main() {
   vec3 color = paper;
   color -= dots * vec3(0.080, 0.074, 0.084);
   color -= axis * vec3(0.050, 0.047, 0.055);
-  color -= vec3(castShadow) * (1.0 - uHandoff * 0.82);
-  color += vec3(glassBody * 0.68, glassBody * 0.86, glassBody);
-  color += spectral * (1.0 - uHandoff * 0.36);
+  color -= vec3(contactShadow) * (1.0 - uHandoff * 0.84);
+  color += vec3(laminate * 0.58, laminate * 0.66, laminate * 0.72);
+  color += foil * (1.0 - uHandoff * 0.32);
   color += traces;
 
-  float vignette = smoothstep(1.12, 0.18, distance(uv, vec2(0.5)));
-  color += vec3(0.008) * vignette;
+  float paperGrain = sin(gl_FragCoord.x * 0.73 + gl_FragCoord.y * 0.41) * sin(gl_FragCoord.y * 1.17 - gl_FragCoord.x * 0.23);
+  color += vec3(paperGrain * 0.0018);
 
   outColor = vec4(color, sat(uAlpha));
 }`;
@@ -169,7 +200,7 @@ function compileShader(gl: WebGL2RenderingContext, type: number, source: string)
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error("Spectral shader compile failed", gl.getShaderInfoLog(shader));
+    console.error("Foil shader compile failed", gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
     return null;
   }
@@ -190,7 +221,7 @@ function createProgram(gl: WebGL2RenderingContext) {
   gl.deleteShader(fragment);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error("Spectral shader link failed", gl.getProgramInfoLog(program));
+    console.error("Foil shader link failed", gl.getProgramInfoLog(program));
     gl.deleteProgram(program);
     return null;
   }
@@ -225,13 +256,13 @@ export function TodaySpectralField() {
       powerPreference: "high-performance",
     });
     if (!gl) {
-      root.dataset.spectralV3 = "fallback";
+      root.dataset.foilV4 = "fallback";
       return;
     }
 
     const program = createProgram(gl);
     if (!program) {
-      root.dataset.spectralV3 = "fallback";
+      root.dataset.foilV4 = "fallback";
       return;
     }
 
@@ -262,7 +293,7 @@ export function TodaySpectralField() {
     const started = performance.now();
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.65);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.7);
       const width = Math.max(1, Math.round(stage.clientWidth * dpr));
       const height = Math.max(1, Math.round(stage.clientHeight * dpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -305,7 +336,7 @@ export function TodaySpectralField() {
       const computed = getComputedStyle(root);
       const rawProgress = Number.parseFloat(computed.getPropertyValue("--lab-progress")) || 0;
       const handoff = Number.parseFloat(computed.getPropertyValue("--direct-handoff")) || 0;
-      const alpha = smoothstep((rawProgress - 0.50) / 0.115);
+      const alpha = smoothstep((rawProgress - 0.50) / 0.105);
 
       if (now - lastMeasure > 100 || handoff > 0.001) {
         measureSignals();
@@ -315,8 +346,8 @@ export function TodaySpectralField() {
       const cards = Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal[role=\"link\"]")).slice(0, SIGNAL_COUNT);
       const hovered = cards.findIndex((card) => card.dataset.productionHovered === "true");
 
-      root.dataset.spectralV3 = alpha > 0.05 ? "active" : "off";
-      canvas.style.opacity = String(Math.min(1, alpha * 1.06));
+      root.dataset.foilV4 = alpha > 0.05 ? "active" : "off";
+      canvas.style.opacity = String(Math.min(1, alpha * 1.04));
 
       gl.useProgram(program);
       gl.uniform2f(uResolution, canvas.width, canvas.height);
@@ -338,14 +369,14 @@ export function TodaySpectralField() {
     root.addEventListener("pointermove", onPointerMove, { passive: true });
     resize();
     measureSignals();
-    root.dataset.spectralV3 = "off";
+    root.dataset.foilV4 = "off";
     frame = window.requestAnimationFrame(render);
 
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       resizeObserver.disconnect();
       root.removeEventListener("pointermove", onPointerMove);
-      root.removeAttribute("data-spectral-v3");
+      root.removeAttribute("data-foil-v4");
       if (buffer) gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
     };
