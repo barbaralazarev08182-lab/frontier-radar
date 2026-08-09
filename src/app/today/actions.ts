@@ -53,7 +53,25 @@ export async function resolveTodaySynthesis(
   const baseUrl = process.env.AI_BASE_URL;
   const apiKey = process.env.AI_API_KEY;
   const model = process.env.AI_MODEL;
-  if (!baseUrl || !apiKey || !model) return null;
+  if (!baseUrl || !apiKey || !model) {
+    const missing = [
+      !baseUrl ? "AI_BASE_URL" : null,
+      !apiKey ? "AI_API_KEY" : null,
+      !model ? "AI_MODEL" : null,
+    ].filter(Boolean).join(", ");
+
+    await upsertDailySynthesisFailure(supabase, {
+      editionDate,
+      selectionHash,
+      signalIds,
+      provider: "tencent",
+      model: model ?? "unconfigured",
+      promptVersion: DAILY_SYNTHESIS_PROMPT_VERSION,
+      errorMessage: `Missing AI environment: ${missing}`,
+      latencyMs: 0,
+    }).catch(() => {});
+    return null;
+  }
 
   const client = new TokenHubClient({
     baseUrl,
