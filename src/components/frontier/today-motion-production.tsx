@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { MotionLab } from "@/components/frontier/motion-lab/motion-lab";
 import { MotionLabDirectHandoff } from "@/components/frontier/motion-lab/motion-lab-direct-handoff";
 import { TodaySignalWeave } from "@/components/frontier/today-signal-weave";
+import { TodaySpectralField } from "@/components/frontier/today-spectral-field";
 import type { EditorialSignal } from "@/components/frontier/today-editorial";
 import type { DailySynthesisSignalInput, DailySynthesisSnapshot } from "@/lib/ai/daily-synthesis";
 
@@ -268,6 +269,7 @@ export function TodayMotionProduction({
     <>
       <MotionLab />
       {snapshot ? <MotionLabDirectHandoff /> : null}
+      {stage ? createPortal(<TodaySpectralField />, stage) : null}
       {stage && snapshot
         ? createPortal(
             <div ref={analysisRef} className="motion-lab-analysis today-production-analysis">
