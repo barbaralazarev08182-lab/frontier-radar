@@ -7,10 +7,6 @@ import "../qa/motion-lab/motion-lab-handoff.css";
 import "../qa/motion-lab/motion-lab-lab06.css";
 import "../qa/motion-lab/motion-lab-direct-handoff.css";
 import "./today-motion-production.css";
-import "./today-spectral-specimens-v3.css";
-import "./today-foil-transition-fix.css";
-import "./today-compression-artifact.css";
-import "./today-lab06-restore.css";
 
 export default function TodayLayout({ children }: { children: ReactNode }) {
   return children;
