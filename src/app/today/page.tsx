@@ -20,12 +20,8 @@ import {
 import type { InterestKey } from "@/config/interest-profile";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
-import {
-  TodayEditorial,
-  type EditorialSignal,
-} from "@/components/frontier/today-editorial";
-import { TodaySignalWeave } from "@/components/frontier/today-signal-weave";
-import { TodayProductionClosure } from "@/components/frontier/today-production-closure";
+import type { EditorialSignal } from "@/components/frontier/today-editorial";
+import { TodayMotionProduction } from "@/components/frontier/today-motion-production";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { personalizeFeed } from "@/lib/personalization/server";
 import { resolveTodaySynthesis } from "./actions";
@@ -34,19 +30,6 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Today · Frontier Radar" };
 
 const DAILY_RADAR_LIMIT = 7;
-
-function computeTopTags(feed: FeedResult, limit: number): string[] {
-  const freq = new Map<string, number>();
-  for (const item of feed.items) {
-    for (const tag of item.tags.slice(0, 5)) {
-      freq.set(tag, (freq.get(tag) ?? 0) + 1);
-    }
-  }
-  return [...freq.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, limit)
-    .map(([tag]) => tag);
-}
 
 function compact(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -78,9 +61,6 @@ export default async function TodayPage() {
 
   let feed: FeedResult | null = null;
   let error: { kind: "unconfigured" | "query"; message: string } | null = null;
-  let personalizationApplied = false;
-  let personalizationSignals = 0;
-  let personalizationMode: "vector" | "rules" | null = null;
   let strongestInterests: Array<{ key: InterestKey; weight: number }> = [];
   let explanations = new Map<string, DiscoveryExplanation>();
   let discoveryLanes = new Map<string, DiscoveryLane>();
@@ -113,10 +93,6 @@ export default async function TodayPage() {
       const mixed = buildDiscoveryMix(confirmed.feed, strongestInterests, DAILY_RADAR_LIMIT);
       feed = mixed.feed;
       discoveryLanes = mixed.lanes;
-
-      personalizationApplied = personalized.applied;
-      personalizationSignals = personalized.signalCount;
-      personalizationMode = personalized.mode;
       explanations = await getDiscoveryExplanations(feed.items, strongestInterests);
     }
   } catch (err) {
@@ -212,26 +188,17 @@ export default async function TodayPage() {
     })
     .toUpperCase();
 
-  const personalizationLabel = personalizationApplied
-    ? `${personalizationMode === "vector" ? "VECTOR PROFILE" : "RULE PROFILE"} / ${personalizationSignals} RECENT SIGNALS LEARNED`
-    : "PROFILE STILL LEARNING / YOUR FEEDBACK WILL CHANGE THE CORE FIVE";
-
   return (
     <div className="today-production-shell">
-      <TodayEditorial
+      <TodayMotionProduction
         dateLabel={dateLabel}
         dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
         totalDiscoveries={totalDiscoveries}
-        personalizationLabel={personalizationLabel}
-        topTags={computeTopTags(feed, 6)}
         signals={signals}
-      />
-      <TodaySignalWeave
-        signals={synthesisSignals}
+        synthesisSignals={synthesisSignals}
         initialSnapshot={initialSynthesis}
         resolveSynthesisAction={resolveSynthesisAction}
       />
-      <TodayProductionClosure />
     </div>
   );
 }
