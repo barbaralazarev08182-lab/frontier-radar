@@ -1,0 +1,372 @@
+/* Dedicated middle hero: 525 scanned → 07 selected → 01 daily brief. */
+
+.today-compression-artifact {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: clamp(0, calc((var(--deckness) - .18) * 1.55), 1);
+  transform: translateY(calc((1 - var(--deckness)) * 18px)) scale(calc(.965 + var(--deckness) * .035));
+  transform-origin: 47% 54%;
+  transition: none;
+  will-change: opacity, transform;
+}
+
+.today-compression-shadow {
+  position: absolute;
+  left: 24.4vw;
+  top: 69.2vh;
+  width: 46vw;
+  height: 6.5vh;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(20, 22, 22, .18), rgba(20, 22, 22, .06) 45%, transparent 73%);
+  filter: blur(18px);
+  opacity: calc(var(--deckness) * .68);
+}
+
+.today-compression-stack {
+  position: absolute;
+  left: 22vw;
+  top: 19.3vh;
+  width: min(52vw, 880px);
+  height: 54vh;
+  min-height: 430px;
+  max-height: 620px;
+  perspective: 1600px;
+  transform: rotateX(.7deg) rotateY(-1.1deg);
+  transform-style: preserve-3d;
+}
+
+.today-compression-sheet,
+.today-compression-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  border: 1px solid rgba(37, 42, 42, .18);
+  box-shadow:
+    0 16px 34px rgba(25, 28, 28, .055),
+    inset 0 1px rgba(255, 255, 255, .9),
+    inset 0 -1px rgba(48, 54, 54, .055);
+}
+
+.today-compression-sheet {
+  --dx: calc(var(--sheet-index) * 7px);
+  --dy: calc(var(--sheet-index) * 8px);
+  z-index: var(--sheet-depth);
+  transform:
+    translate3d(var(--dx), var(--dy), calc(var(--sheet-index) * -3px))
+    rotate(calc((var(--sheet-index) - 3) * .11deg));
+  overflow: hidden;
+  background:
+    linear-gradient(116deg, rgba(255,255,255,.62), rgba(238,239,235,.42) 42%, rgba(255,255,255,.52)),
+    rgba(244,243,237,.64);
+  backdrop-filter: blur(4px) saturate(1.08);
+}
+
+.today-compression-sheet::before,
+.today-compression-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .58;
+  background:
+    linear-gradient(112deg, transparent 0 19%, rgba(255,255,255,.54) 20% 20.6%, transparent 21.4% 57%, rgba(255,255,255,.21) 58% 58.6%, transparent 59.3%),
+    radial-gradient(circle at 84% 13%, rgba(190,255,242,.18), transparent 22%),
+    radial-gradient(circle at 92% 23%, rgba(246,201,255,.14), transparent 19%);
+  mix-blend-mode: screen;
+}
+
+.today-compression-sheet-silver {
+  background:
+    linear-gradient(118deg, rgba(255,255,255,.67), rgba(227,231,230,.48) 45%, rgba(250,250,247,.59)),
+    rgba(238,239,236,.68);
+}
+
+.today-compression-sheet-holo {
+  border-color: rgba(133, 154, 161, .25);
+  background:
+    linear-gradient(106deg, rgba(255,255,255,.66) 0 22%, rgba(211,255,244,.34) 31%, rgba(227,219,255,.31) 46%, rgba(255,221,242,.26) 60%, rgba(252,247,211,.29) 75%, rgba(255,255,255,.59) 100%),
+    rgba(238,241,238,.66);
+  box-shadow:
+    0 17px 36px rgba(31, 38, 39, .055),
+    5px 0 0 rgba(183, 238, 255, .14),
+    8px 0 0 rgba(228, 199, 255, .09),
+    inset 0 1px rgba(255,255,255,.94);
+}
+
+.today-compression-sheet-candy {
+  border-color: rgba(142, 95, 79, .18);
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.58), rgba(255,230,225,.31) 34%, rgba(255,214,228,.28) 51%, rgba(255,238,194,.3) 73%, rgba(255,255,255,.55)),
+    rgba(246,239,233,.63);
+  box-shadow:
+    0 17px 36px rgba(38, 30, 27, .05),
+    4px 6px 0 rgba(255, 199, 188, .08),
+    7px 9px 0 rgba(255, 222, 171, .07),
+    inset 0 1px rgba(255,255,255,.9);
+}
+
+.today-compression-sheet-candy::after {
+  content: "";
+  position: absolute;
+  inset: 7% 4% 4% 58%;
+  opacity: .34;
+  background:
+    linear-gradient(72deg, transparent 46%, rgba(255,255,255,.58) 48% 49%, transparent 51%),
+    linear-gradient(121deg, transparent 48%, rgba(255,255,255,.36) 49% 50%, transparent 52%),
+    linear-gradient(28deg, transparent 44%, rgba(255,244,220,.42) 46% 47%, transparent 49%);
+  filter: blur(.2px);
+}
+
+.today-compression-edge-index {
+  position: absolute;
+  right: 12px;
+  bottom: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .48rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  color: rgba(15, 17, 17, .45);
+}
+
+.today-compression-registration {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  opacity: .38;
+}
+
+.today-compression-registration::before,
+.today-compression-registration::after {
+  content: "";
+  position: absolute;
+  background: rgba(22,24,24,.55);
+}
+
+.today-compression-registration::before { left: 3.5px; top: 0; width: 1px; height: 8px; }
+.today-compression-registration::after { left: 0; top: 3.5px; width: 8px; height: 1px; }
+
+.today-compression-cover {
+  z-index: 20;
+  overflow: hidden;
+  background:
+    linear-gradient(118deg, rgba(255,255,255,.72), rgba(241,241,235,.55) 42%, rgba(255,255,255,.66)),
+    rgba(242,241,234,.73);
+  backdrop-filter: blur(7px) saturate(1.06);
+  color: rgba(11, 13, 13, .82);
+}
+
+.today-compression-cover-film {
+  position: absolute;
+  inset: 0;
+  opacity: .72;
+  background:
+    radial-gradient(circle at 82% 12%, rgba(176,255,236,.22), transparent 21%),
+    radial-gradient(circle at 92% 15%, rgba(226,194,255,.18), transparent 19%),
+    radial-gradient(circle at 96% 25%, rgba(255,225,192,.16), transparent 18%),
+    linear-gradient(108deg, transparent 0 57%, rgba(205,255,247,.14) 64%, rgba(236,209,255,.15) 71%, rgba(255,230,199,.13) 78%, transparent 87%);
+  mix-blend-mode: screen;
+}
+
+.today-compression-cover-sheen {
+  position: absolute;
+  z-index: 2;
+  left: -15%;
+  top: -14%;
+  width: 137%;
+  height: 146%;
+  opacity: .88;
+  background:
+    linear-gradient(124deg,
+      transparent 0 37.2%,
+      rgba(255,255,255,.08) 37.6%,
+      rgba(255,255,255,.94) 39.1%,
+      rgba(255,255,255,.99) 40.05%,
+      rgba(219,255,246,.42) 40.8%,
+      rgba(244,217,255,.28) 41.35%,
+      transparent 42.2% 100%);
+  transform: translateX(calc((1 - var(--deckness)) * -5%));
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.today-compression-cover-head,
+.today-compression-cover-foot,
+.today-compression-flow,
+.today-compression-core {
+  position: absolute;
+  z-index: 4;
+}
+
+.today-compression-cover-head {
+  top: 7.6%;
+  left: 6.2%;
+  right: 6.1%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.today-compression-cover-head > div,
+.today-compression-cover-foot > div {
+  display: grid;
+  gap: .18rem;
+}
+
+.today-compression-cover-head strong,
+.today-compression-cover-foot strong {
+  font-size: .62rem;
+  letter-spacing: .13em;
+}
+
+.today-compression-cover-head span,
+.today-compression-cover-foot span {
+  font-size: .46rem;
+  font-weight: 750;
+  letter-spacing: .1em;
+  opacity: .55;
+}
+
+.today-compression-flow {
+  left: 6.2%;
+  top: 34%;
+  display: grid;
+  gap: .7rem;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.today-compression-flow-node {
+  display: grid;
+  gap: .16rem;
+}
+
+.today-compression-flow-node strong {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1.55rem, 2.2vw, 2.8rem);
+  font-weight: 500;
+  line-height: .9;
+  letter-spacing: -.055em;
+}
+
+.today-compression-flow-node span {
+  font-size: .49rem;
+  font-weight: 850;
+  letter-spacing: .13em;
+  opacity: .62;
+}
+
+.today-compression-flow i {
+  font-style: normal;
+  font-size: 1rem;
+  opacity: .45;
+}
+
+.today-compression-core {
+  left: 38%;
+  top: 36.2%;
+  width: 28%;
+  height: 28%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.today-compression-core > strong {
+  margin-bottom: .45rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(4rem, 6.4vw, 7.2rem);
+  font-weight: 500;
+  line-height: .68;
+  letter-spacing: -.09em;
+}
+
+.today-compression-core > span:not(.today-compression-crop) {
+  font-size: .62rem;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.today-compression-core > em {
+  margin-top: .24rem;
+  font-size: .43rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .1em;
+  opacity: .58;
+}
+
+.today-compression-crop {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  opacity: .38;
+}
+
+.today-compression-crop-tl { left: 0; top: 0; border-left: 1px solid; border-top: 1px solid; }
+.today-compression-crop-tr { right: 0; top: 0; border-right: 1px solid; border-top: 1px solid; }
+.today-compression-crop-bl { left: 0; bottom: 0; border-left: 1px solid; border-bottom: 1px solid; }
+.today-compression-crop-br { right: 0; bottom: 0; border-right: 1px solid; border-bottom: 1px solid; }
+
+.today-compression-cover-foot {
+  left: 6.2%;
+  right: 6.1%;
+  bottom: 7.4%;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.today-compression-cover-foot > div:last-child {
+  text-align: right;
+}
+
+/* During compression the original seven DOM signals are measurement anchors only. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] {
+  opacity: clamp(0, calc(1 - var(--deckness) * 1.48), 1) !important;
+}
+
+/* Kill every legacy deck surface permanently in production. */
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"] .motion-lab-deck-readout {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* The full-screen optical field recedes so the artifact owns the middle frame. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
+  opacity: clamp(.16, calc(1 - var(--deckness) * .84), 1) !important;
+  filter: none !important;
+}
+
+@media (max-width: 980px) {
+  .today-compression-stack {
+    left: 15vw;
+    width: 66vw;
+  }
+
+  .today-compression-shadow {
+    left: 17vw;
+    width: 62vw;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .today-compression-artifact { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today-compression-artifact { display: none; }
+}
