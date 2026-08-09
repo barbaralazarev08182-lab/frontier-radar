@@ -22,10 +22,11 @@ uniform float uLane[7];
 uniform float uHover;
 uniform vec2 uPointer;
 uniform float uHandoff;
+uniform float uDeckness;
+uniform float uPresence;
 uniform float uAlpha;
 
 const int SIGNAL_COUNT = 7;
-const float PI = 3.141592653589793;
 
 float sat(float value) {
   return clamp(value, 0.0, 1.0);
@@ -67,7 +68,7 @@ float laneMask(float lane, float target) {
 }
 
 vec3 thinFilm(float phase) {
-  return 0.52 + 0.48 * cos(phase + vec3(0.0, 2.0943951, 4.1887902));
+  return 0.54 + 0.46 * cos(phase + vec3(0.0, 2.0943951, 4.1887902));
 }
 
 void main() {
@@ -79,6 +80,8 @@ void main() {
   float laminate = 0.0;
   vec3 foil = vec3(0.0);
   vec3 traces = vec3(0.0);
+
+  float deckAtten = mix(1.0, 0.30, sat(uDeckness));
 
   for (int i = 0; i < SIGNAL_COUNT; i++) {
     float fi = float(i);
@@ -94,77 +97,100 @@ void main() {
     vec2 q = (uv - rect.xy) / halfSize;
     q.x *= aspect / max(1.0, aspect * 0.86);
 
-    float tilt = (-0.020 + fi * 0.009) + lead * -0.018 + adjacent * 0.025 + wildcard * -0.032;
-    tilt += (uPointer.x - 0.5) * 0.018 * (0.25 + hovered * 0.75);
+    float tilt = -0.018 + fi * 0.008 + lead * -0.014 + adjacent * 0.018 - wildcard * 0.026;
+    tilt += (uPointer.x - 0.5) * 0.017 * (0.22 + hovered * 0.78);
     q = rotate2d(tilt) * q;
 
-    vec2 b = vec2(1.05, 1.13);
-    b += vec2(lead * 0.20, lead * 0.42);
-    b += vec2(adjacent * 0.08, adjacent * 0.11);
-    b += vec2(wildcard * 0.10, wildcard * 0.16);
+    vec2 b = vec2(1.05, 1.12);
+    b += vec2(lead * 0.18, lead * 0.34);
+    b += vec2(adjacent * 0.07, adjacent * 0.09);
+    b += vec2(wildcard * 0.09, wildcard * 0.13);
 
     vec2 fq = q;
-    fq.x += fq.y * (0.018 + adjacent * 0.028 - wildcard * 0.024);
-    fq.y += sin(fq.x * (2.25 + fi * 0.13) + fi * 0.91) * (0.010 + lead * 0.020 + wildcard * 0.032);
-    fq.x += sin(fq.y * 3.1 - fi * 0.67) * wildcard * 0.024;
+    fq.x += fq.y * (0.010 + adjacent * 0.018 - wildcard * 0.018);
+    fq.y += sin(fq.x * 2.15 + fi * 0.83) * (0.008 + lead * 0.014 + wildcard * 0.024);
+    fq.x += sin(fq.y * 2.75 - fi * 0.61) * wildcard * 0.018;
 
     float sd = sdBox(fq, b);
-    float sheet = fillMask(sd, 0.024);
-    float edge = edgeMask(sd, 0.030 + lead * 0.008);
+    float sheet = fillMask(sd, 0.022);
+    float edge = edgeMask(sd, 0.026 + lead * 0.007);
 
-    vec2 shadowQ = fq - vec2(0.045 + fi * 0.002, -0.080 - lead * 0.035);
-    float shadowSheet = fillMask(sdBox(shadowQ, b + vec2(0.018, 0.022)), 0.080);
-    float exposedShadow = max(shadowSheet - sheet * 0.94, 0.0);
-    contactShadow += exposedShadow * (0.025 + lead * 0.022 + wildcard * 0.006);
+    vec2 shadowQ = fq - vec2(0.032 + fi * 0.0015, -0.060 - lead * 0.026);
+    float shadowSheet = fillMask(sdBox(shadowQ, b + vec2(0.014, 0.018)), 0.070);
+    float exposedShadow = max(shadowSheet - sheet * 0.95, 0.0);
+    contactShadow += exposedShadow * (0.014 + lead * 0.014 + wildcard * 0.004) * deckAtten * uPresence;
 
-    float pointerAngle = (uPointer.x - 0.5) * 0.95 + (uPointer.y - 0.5) * -0.35;
-    float sweep = -0.82 + (uPointer.x * 1.52) + sin(uTime * 0.22 + fi) * 0.035;
-    float streakCoord = fq.y + fq.x * (0.20 + adjacent * 0.13 - wildcard * 0.10) - sweep;
-    float hardSpec = exp(-pow(streakCoord * (26.0 + lead * 7.0 + adjacent * 8.0), 2.0)) * sheet;
-    float razorSpec = exp(-pow((streakCoord + 0.105 + sin(fi) * 0.025) * 74.0, 2.0)) * sheet;
+    float pointerAngle = (uPointer.x - 0.5) * 1.10 + (uPointer.y - 0.5) * -0.46;
 
-    float foldA = exp(-pow((fq.y - sin(fq.x * 2.7 + fi * 1.3) * 0.17) * (35.0 + wildcard * 10.0), 2.0));
-    float foldB = exp(-pow((fq.x * 0.61 + fq.y * 0.79 - 0.18 * sin(fi * 2.1)) * (48.0 + wildcard * 16.0), 2.0));
-    float foldC = exp(-pow((fq.x * -0.42 + fq.y * 0.91 + 0.25) * 54.0, 2.0));
-    float crinkle = sat(foldA * 0.62 + foldB * 0.54 + foldC * wildcard * 0.72) * sheet;
+    float waveA = 0.5 + 0.5 * sin(
+      fq.x * (4.3 + lead * 0.7) +
+      sin(fq.y * 3.8 + fi * 0.72) * 1.55 +
+      pointerAngle * 2.7 + fi * 1.13
+    );
+    float waveB = 0.5 + 0.5 * sin(
+      fq.y * (6.1 + adjacent * 1.4) -
+      fq.x * 1.9 +
+      cos(fq.x * 3.1 - fi * 0.54) * 1.25 -
+      pointerAngle * 2.0
+    );
+    float interference = pow(sat(waveA * 0.56 + waveB * 0.44), 2.35) * sheet;
 
-    float diffraction = pow(0.5 + 0.5 * sin((fq.x * 48.0 + fq.y * 13.0) + fi * 4.1 + pointerAngle * 7.0), 18.0) * sheet;
-    diffraction *= 0.32 + edge * 0.78;
-
-    float phase = fq.x * 8.2 + fq.y * -4.6 + fi * 1.93 + pointerAngle * 4.8;
-    phase += hardSpec * 2.4 + crinkle * 1.8;
+    float phase = fq.x * 3.9 + fq.y * 5.1;
+    phase += sin(fq.x * 2.5 + fi) * 1.45 + sin(fq.y * 3.2 - fi * 0.7) * 1.05;
+    phase += pointerAngle * 3.8 + fi * 1.71;
     vec3 spectrum = thinFilm(phase);
-    vec3 pearlSpectrum = mix(vec3(0.96, 0.975, 0.99), spectrum, 0.72);
 
-    float coreIntensity = 0.018 + lead * 0.115 + hovered * 0.030;
-    float adjacentIntensity = adjacent * (0.31 + hovered * 0.18);
-    float wildcardIntensity = wildcard * (0.26 + hovered * 0.20);
+    vec2 specDir = normalize(vec2(0.88, 0.48 + adjacent * 0.14 - wildcard * 0.18));
+    float sweepCenter = -1.18 + uPointer.x * 2.34 + sin(uTime * 0.16 + fi * 0.77) * 0.055;
+    float specCoord = dot(fq, specDir) - sweepCenter;
+    float broadSpec = exp(-pow(specCoord * (8.0 + lead * 2.0), 2.0)) * sheet;
+    float razorSpec = exp(-pow((specCoord - 0.065 - sin(fi) * 0.010) * 58.0, 2.0)) * sheet;
 
-    foil += vec3(1.0) * (hardSpec * (0.17 + lead * 0.24 + adjacent * 0.12 + wildcard * 0.10));
-    foil += vec3(1.0) * razorSpec * (0.30 + lead * 0.28 + adjacent * 0.22 + wildcard * 0.19);
-    foil += pearlSpectrum * edge * (coreIntensity + adjacentIntensity + wildcardIntensity);
-    foil += spectrum * diffraction * (lead * 0.11 + adjacent * 0.28 + wildcard * 0.18 + hovered * 0.06);
+    float foldA = exp(-pow((fq.y - sin(fq.x * 2.45 + fi * 1.15) * 0.145) * 31.0, 2.0));
+    float foldB = exp(-pow((fq.x * 0.57 + fq.y * 0.82 - 0.16 * sin(fi * 1.8)) * 43.0, 2.0));
+    float foldC = exp(-pow((fq.x * -0.46 + fq.y * 0.88 + 0.22) * 49.0, 2.0));
+    float foldD = exp(-pow((fq.x * 0.91 - fq.y * 0.39 - 0.28) * 55.0, 2.0));
+    float crinkle = sat(foldA * 0.54 + foldB * 0.46 + foldC * 0.42 + foldD * 0.34) * sheet;
 
-    vec3 candySpectrum = mix(vec3(1.0, 0.86, 0.72), spectrum, 0.72);
-    foil += candySpectrum * crinkle * wildcard * (0.28 + hovered * 0.18);
-    foil += vec3(1.0, 0.96, 0.90) * crinkle * wildcard * 0.16;
+    float sparkleA = 0.5 + 0.5 * sin(fq.x * 31.0 + sin(fq.y * 17.0 + fi) * 4.1 + pointerAngle * 5.0);
+    float sparkleB = 0.5 + 0.5 * sin(fq.y * 37.0 - cos(fq.x * 19.0 - fi) * 3.7 - pointerAngle * 3.0);
+    float sparkle = pow(sat(sparkleA * sparkleB), 16.0) * sheet;
 
-    laminate += sheet * (0.006 + lead * 0.013 + adjacent * 0.008 + wildcard * 0.010);
+    float bodyIntensity = 0.030 + core * 0.020 + lead * 0.075 + adjacent * 0.095 + wildcard * 0.050;
+    bodyIntensity += hovered * 0.030;
+    vec3 pearlFilm = mix(vec3(0.985, 0.982, 0.974), spectrum, 0.56 + adjacent * 0.12);
+    foil += pearlFilm * interference * bodyIntensity * deckAtten * uPresence;
 
-    vec2 creaseDirection = normalize(vec2(0.55 + 0.15 * sin(fi), 0.83));
-    float creaseWarp = (foldA - foldB * 0.72 + foldC * 0.48) * sheet;
-    float warpStrength = 0.00045 + lead * 0.00085 + adjacent * 0.00070 + wildcard * 0.00105;
-    warpStrength *= 1.0 + hovered * 0.85;
-    warp += creaseDirection * creaseWarp * warpStrength;
-    warp += vec2(hardSpec * 0.00035, -hardSpec * 0.00024) * (1.0 + adjacent + wildcard * 0.7);
+    float edgeIntensity = 0.048 + lead * 0.085 + adjacent * 0.145 + wildcard * 0.075 + hovered * 0.040;
+    foil += mix(vec3(0.98), spectrum, 0.72) * edge * edgeIntensity * deckAtten * uPresence;
+
+    foil += vec3(1.0) * broadSpec * (0.035 + lead * 0.070 + adjacent * 0.055 + wildcard * 0.030) * deckAtten * uPresence;
+    foil += mix(vec3(1.0), spectrum, 0.36) * razorSpec * (0.18 + lead * 0.17 + adjacent * 0.15 + wildcard * 0.10) * deckAtten * uPresence;
+    foil += spectrum * sparkle * (0.040 + lead * 0.070 + adjacent * 0.11 + wildcard * 0.055 + hovered * 0.045) * deckAtten * uPresence;
+
+    float candyBodyWave = 0.5 + 0.5 * sin(fq.x * 2.8 - fq.y * 3.5 + fi + pointerAngle * 1.7);
+    vec3 candyWarm = mix(vec3(1.00, 0.79, 0.83), vec3(1.00, 0.91, 0.64), candyBodyWave);
+    foil += candyWarm * sheet * wildcard * (0.026 + interference * 0.026) * deckAtten * uPresence;
+    foil += mix(candyWarm, spectrum, 0.58) * crinkle * wildcard * (0.18 + hovered * 0.11) * deckAtten * uPresence;
+    foil += vec3(1.0, 0.97, 0.93) * crinkle * wildcard * 0.075 * deckAtten * uPresence;
+
+    laminate += sheet * (0.0035 + lead * 0.006 + adjacent * 0.004 + wildcard * 0.005) * deckAtten * uPresence;
+
+    float relief = sin(fq.x * 3.0 + fi) * sin(fq.y * 2.6 - fi * 0.47) * sheet;
+    vec2 reliefDir = normalize(vec2(cos(fi * 0.71 + 0.4), sin(fi * 0.71 + 0.4)));
+    float warpStrength = 0.00024 + lead * 0.00052 + adjacent * 0.00043 + wildcard * 0.00066;
+    warpStrength *= 1.0 + hovered * 0.80;
+    warp += reliefDir * relief * warpStrength * deckAtten * uPresence;
+    warp += normalize(vec2(0.58, 0.82)) * (foldA - foldB * 0.62 + foldC * 0.35) * wildcard * 0.00062 * deckAtten * uPresence;
+    warp += vec2(razorSpec * 0.00028, -razorSpec * 0.00018) * (1.0 + adjacent * 0.8 + wildcard * 0.5) * deckAtten * uPresence;
 
     float below = step(uv.y, rect.y);
     float traceCurve = rect.x + sin((uv.y * 7.0) + fi * 1.4) * (0.003 + 0.009 * uHandoff);
     float traceWidth = 0.00115 + lead * 0.00065 + adjacent * 0.00055 + wildcard * 0.00068;
     float trace = exp(-pow((uv.x - traceCurve) / traceWidth, 2.0));
     trace *= below * smoothstep(0.0, 0.12, rect.y - uv.y) * uHandoff;
-    vec3 traceColor = mix(vec3(0.92, 0.95, 0.98), spectrum, adjacent * 0.58 + wildcard * 0.46);
-    traces += traceColor * trace * (0.34 + adjacent * 0.27 + wildcard * 0.25);
+    vec3 traceColor = mix(vec3(0.93, 0.95, 0.97), spectrum, adjacent * 0.62 + wildcard * 0.52);
+    traces += traceColor * trace * (0.32 + adjacent * 0.24 + wildcard * 0.22);
   }
 
   vec2 warpedUv = uv + warp;
@@ -184,12 +210,12 @@ void main() {
   color -= dots * vec3(0.080, 0.074, 0.084);
   color -= axis * vec3(0.050, 0.047, 0.055);
   color -= vec3(contactShadow) * (1.0 - uHandoff * 0.84);
-  color += vec3(laminate * 0.58, laminate * 0.66, laminate * 0.72);
-  color += foil * (1.0 - uHandoff * 0.32);
+  color += vec3(laminate * 0.54, laminate * 0.61, laminate * 0.68);
+  color += foil * (1.0 - uHandoff * 0.30);
   color += traces;
 
   float paperGrain = sin(gl_FragCoord.x * 0.73 + gl_FragCoord.y * 0.41) * sin(gl_FragCoord.y * 1.17 - gl_FragCoord.x * 0.23);
-  color += vec3(paperGrain * 0.0018);
+  color += vec3(paperGrain * 0.0016);
 
   outColor = vec4(color, sat(uAlpha));
 }`;
@@ -282,6 +308,8 @@ export function TodaySpectralField() {
     const uHover = gl.getUniformLocation(program, "uHover");
     const uPointer = gl.getUniformLocation(program, "uPointer");
     const uHandoff = gl.getUniformLocation(program, "uHandoff");
+    const uDeckness = gl.getUniformLocation(program, "uDeckness");
+    const uPresence = gl.getUniformLocation(program, "uPresence");
     const uAlpha = gl.getUniformLocation(program, "uAlpha");
 
     const rects = new Float32Array(SIGNAL_COUNT * 4);
@@ -289,7 +317,6 @@ export function TodaySpectralField() {
     let pointerX = 0.5;
     let pointerY = 0.5;
     let frame = 0;
-    let lastMeasure = -100;
     const started = performance.now();
 
     const resize = () => {
@@ -332,22 +359,19 @@ export function TodaySpectralField() {
     const render = (now: number) => {
       frame = window.requestAnimationFrame(render);
       resize();
+      measureSignals();
 
       const computed = getComputedStyle(root);
       const rawProgress = Number.parseFloat(computed.getPropertyValue("--lab-progress")) || 0;
       const handoff = Number.parseFloat(computed.getPropertyValue("--direct-handoff")) || 0;
-      const alpha = smoothstep((rawProgress - 0.50) / 0.105);
-
-      if (now - lastMeasure > 100 || handoff > 0.001) {
-        measureSignals();
-        lastMeasure = now;
-      }
+      const deckness = Number.parseFloat(computed.getPropertyValue("--deckness")) || 0;
+      const presence = 0.46 + smoothstep((rawProgress - 0.16) / 0.38) * 0.54;
 
       const cards = Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal[role=\"link\"]")).slice(0, SIGNAL_COUNT);
       const hovered = cards.findIndex((card) => card.dataset.productionHovered === "true");
 
-      root.dataset.foilV4 = alpha > 0.05 ? "active" : "off";
-      canvas.style.opacity = String(Math.min(1, alpha * 1.04));
+      root.dataset.foilV4 = "active";
+      canvas.style.opacity = "1";
 
       gl.useProgram(program);
       gl.uniform2f(uResolution, canvas.width, canvas.height);
@@ -357,6 +381,8 @@ export function TodaySpectralField() {
       gl.uniform1f(uHover, hovered);
       gl.uniform2f(uPointer, pointerX, pointerY);
       gl.uniform1f(uHandoff, Math.min(1, Math.max(0, handoff)));
+      gl.uniform1f(uDeckness, Math.min(1, Math.max(0, deckness)));
+      gl.uniform1f(uPresence, Math.min(1, Math.max(0, presence)));
       gl.uniform1f(uAlpha, 1);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
@@ -369,7 +395,7 @@ export function TodaySpectralField() {
     root.addEventListener("pointermove", onPointerMove, { passive: true });
     resize();
     measureSignals();
-    root.dataset.foilV4 = "off";
+    root.dataset.foilV4 = "active";
     frame = window.requestAnimationFrame(render);
 
     return () => {
