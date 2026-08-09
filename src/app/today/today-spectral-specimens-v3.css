@@ -1,0 +1,212 @@
+/*
+ * TODAY'S 7 / Spectral Specimens V3
+ *
+ * The DOM owns editorial hierarchy. The GPU owns material behavior.
+ * No cards, no colored fills, no decorative glow.
+ */
+
+.today-spectral-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms linear;
+  will-change: opacity;
+}
+
+/* Once the GPU field is present it replaces the old QA dot/grid treatment. */
+.motion-lab-shell[data-production="true"][data-spectral-v3="active"] .motion-lab-field,
+.motion-lab-shell[data-production="true"][data-spectral-v3="active"] .motion-lab-scanline {
+  opacity: 0 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-field,
+.motion-lab-shell[data-production="true"] .motion-lab-scanline {
+  transition: opacity 240ms ease !important;
+}
+
+/*
+ * Stable specimen geometry.
+ * GSAP Flip still owns the Deck -> Overview transform channel, but pointer gravity
+ * and the retired recompose morph are not allowed to move the final composition.
+ */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
+  translate: 0 0 !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+  overflow: visible !important;
+  isolation: auto !important;
+  cursor: pointer;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+  padding: .72rem .82rem .78rem !important;
+  transition: opacity 220ms ease, color 180ms ease !important;
+}
+
+/* Kill every old card/foil/anomaly pseudo treatment. The GPU is the material. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::before,
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Real semantics are never encoded as a blue/orange rectangle. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"],
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal[role="link"][data-lane="adjacent"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal[role="link"][data-lane="adjacent"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal[role="link"][data-lane="wildcard"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal[role="link"][data-lane="wildcard"] {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  min-height: 0 !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  padding: .72rem .82rem .78rem !important;
+  transform: none !important;
+}
+
+/* Retired rank-06/07 QA geometry cannot leak back in during the final handoff. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"],
+.motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-06[role="link"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal-06[role="link"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-07[role="link"],
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal-07[role="link"] {
+  min-height: 0 !important;
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+  padding: .72rem .82rem .78rem !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  transform: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-rank,
+.motion-lab-shell[data-production="true"] .motion-lab-signal-07[role="link"] .motion-lab-rank,
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-06[role="link"] .motion-lab-rank,
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal-06[role="link"] .motion-lab-rank {
+  grid-column: auto !important;
+  font-size: clamp(.8rem, 1vw, 1.05rem) !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-signal-copy,
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-06[role="link"] .motion-lab-signal-copy,
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal-06[role="link"] .motion-lab-signal-copy {
+  align-self: auto !important;
+}
+
+/* 01 remains the editorial anchor. Its optical scale now lives entirely in WebGL. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal-01[role="link"] {
+  padding: .84rem .82rem .9rem !important;
+}
+
+/* Lane identity becomes wavelength behavior, with only tiny typographic clues. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-topic,
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-score span {
+  color: #5136df !important;
+  opacity: .82 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-topic,
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-score span {
+  color: #d43a78 !important;
+  opacity: .82 !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-score strong,
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-score strong {
+  color: var(--ink) !important;
+}
+
+/* Hover interrogates the optical field; the specimen itself stays pinned. */
+.motion-lab-shell[data-production-signal-hover="true"] .motion-lab-signal[role="link"]:not([data-production-hovered="true"]) {
+  opacity: .52;
+  filter: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-production-hovered="true"],
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]:focus-visible {
+  z-index: 14;
+  translate: 0 0 !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  filter: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"][data-production-hovered="true"] h2 {
+  text-shadow:
+    -1.4px 0 rgba(101, 56, 255, .24),
+    1.4px 0 rgba(17, 211, 255, .20);
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"][data-production-hovered="true"] h2 {
+  text-shadow:
+    -1.5px 0 rgba(255, 42, 139, .22),
+    1.5px 0 rgba(255, 167, 35, .20);
+}
+
+.motion-lab-shell[data-production="true"] .today-production-open-cue {
+  left: .82rem !important;
+  bottom: .44rem !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  opacity: 0;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-production-hovered="true"] .today-production-open-cue,
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]:focus-visible .today-production-open-cue {
+  opacity: .72;
+  transform: none;
+}
+
+/* The outgoing chapter remains one exact composition while the Weave rises. */
+.motion-lab-shell[data-production="true"][data-direct-handoff="active"] .motion-lab-signal-stage,
+.motion-lab-shell[data-production="true"][data-direct-handoff="ready"] .motion-lab-signal-stage {
+  pointer-events: none;
+}
+
+/* The old recompose messaging is never part of production V3. */
+.motion-lab-shell[data-production="true"] .motion-lab-signal-stage::before,
+.motion-lab-shell[data-production="true"] .motion-lab-signal-stage::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .today-spectral-field { display: none; }
+
+  .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
+    overflow: hidden !important;
+    padding: .6rem .72rem !important;
+  }
+
+  .motion-lab-shell[data-production="true"] .motion-lab-field,
+  .motion-lab-shell[data-production="true"] .motion-lab-scanline {
+    opacity: .28 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today-spectral-field { display: none; }
+
+  .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] h2 {
+    text-shadow: none !important;
+  }
+}
