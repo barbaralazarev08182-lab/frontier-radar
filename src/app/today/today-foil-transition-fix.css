@@ -1,6 +1,5 @@
-/* V4.5 — compression must read as a physical seven-sheet stack, never an empty white frame. */
+/* V4.6 — compression stays physical, but legacy blue/orange UI can never leak back in. */
 
-/* Overview copy recedes while the dedicated stack face takes over. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
@@ -9,81 +8,97 @@
   opacity: clamp(0, calc(1 - var(--deckness) * 1.85), 1) !important;
 }
 
-/* The GPU material stays present, but never receives the contrast boost that
-   previously blew the entire stage out to white. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
   opacity: 1 !important;
   filter: none !important;
   transition: none !important;
 }
 
-/* Reintroduce a dedicated compression face only while the seven signals are
-   becoming a stack. It is transparent enough to let the foil shader remain the
-   material, while its edge and micro-copy make every layer physically legible. */
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face {
+/* The transition face is always one neutral holographic family. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face {
   visibility: visible !important;
   opacity: clamp(0, calc((var(--deckness) - .16) * 1.42), .86) !important;
   z-index: 22 !important;
   padding: 1.05rem 1.15rem 1rem !important;
-  border: 1px solid rgba(18, 18, 18, .24) !important;
-  background:
+  border: 1px solid rgba(18,18,18,.22) !important;
+  border-top-color: rgba(255,255,255,.76) !important;
+  background-color: rgba(246,245,239,.10) !important;
+  background-image:
     linear-gradient(112deg,
-      rgba(255,255,255,.26) 0%,
-      rgba(222,255,248,.13) 24%,
-      rgba(248,222,255,.14) 47%,
-      rgba(255,246,211,.12) 69%,
-      rgba(255,255,255,.20) 100%) !important;
+      rgba(255,255,255,.24) 0%,
+      rgba(221,250,244,.11) 23%,
+      rgba(246,226,252,.12) 46%,
+      rgba(252,244,216,.10) 69%,
+      rgba(255,255,255,.18) 100%) !important;
   color: rgba(12,12,12,.76) !important;
   box-shadow:
     0 10px 28px rgba(22,22,22,.045),
-    inset 0 0 0 1px rgba(255,255,255,.48) !important;
+    inset 0 0 0 1px rgba(255,255,255,.45) !important;
   pointer-events: none !important;
 }
 
-/* Kill the old blue/orange compression cards. Lane identity remains in the foil. */
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal-adjacent .motion-lab-deck-face,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal-wildcard .motion-lab-deck-face {
-  background:
-    linear-gradient(112deg,
-      rgba(255,255,255,.26) 0%,
-      rgba(220,255,249,.14) 24%,
-      rgba(247,222,255,.15) 48%,
-      rgba(255,246,213,.12) 70%,
-      rgba(255,255,255,.20) 100%) !important;
-  color: rgba(12,12,12,.76) !important;
-  border-color: rgba(18,18,18,.24) !important;
+/* Hard kill every legacy lane-color path: current data semantics AND stale prototype classes. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="adjacent"],
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="wildcard"],
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-adjacent[role="link"],
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-wildcard[role="link"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face::before {
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-adjacent[role="link"] .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal.motion-lab-signal-wildcard[role="link"] .motion-lab-deck-face {
+  border: 1px solid rgba(18,18,18,.22) !important;
+  border-top-color: rgba(255,255,255,.76) !important;
+  background-color: rgba(246,245,239,.10) !important;
+  background-image:
+    linear-gradient(112deg,
+      rgba(255,255,255,.24) 0%,
+      rgba(221,250,244,.11) 23%,
+      rgba(246,226,252,.12) 46%,
+      rgba(252,244,216,.10) 69%,
+      rgba(255,255,255,.18) 100%) !important;
+  color: rgba(12,12,12,.76) !important;
+  box-shadow:
+    0 10px 28px rgba(22,22,22,.045),
+    inset 0 0 0 1px rgba(255,255,255,.45) !important;
+}
+
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face::before {
   display: block !important;
-  opacity: .10 !important;
-  background-image: radial-gradient(circle, rgba(20,20,20,.78) .55px, transparent .72px) !important;
+  opacity: .08 !important;
+  background-image: radial-gradient(circle, rgba(20,20,20,.72) .52px, transparent .7px) !important;
   background-size: 16px 16px !important;
   mask-image: linear-gradient(125deg, black, transparent 72%) !important;
 }
 
-/* Keep information inside the stack, but stop the enormous 01/02/03 numerals
-   from becoming the previous ghost-text pile. */
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face > strong {
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face > strong {
   font-size: clamp(3.3rem, 5.7vw, 6rem) !important;
   line-height: .72 !important;
   letter-spacing: -.095em !important;
-  opacity: .86 !important;
+  opacity: .78 !important;
+  color: rgba(12,12,12,.72) !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face-top,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face-bottom {
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face-top,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face-bottom {
   font-size: .48rem !important;
   letter-spacing: .16em !important;
-  opacity: .68 !important;
+  opacity: .62 !important;
+  color: rgba(12,12,12,.72) !important;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face-bottom {
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] .motion-lab-deck-face-bottom {
   padding-top: .55rem !important;
-  border-top-color: rgba(15,15,15,.26) !important;
+  border-top-color: rgba(15,15,15,.22) !important;
 }
 
-/* A little substrate keeps the stack anchored without washing it out. */
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-field {
   opacity: calc(var(--deckness) * .20) !important;
 }
