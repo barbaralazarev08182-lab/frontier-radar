@@ -7,14 +7,13 @@ interface TodayCompressionArtifactProps {
   dateLabel: string;
 }
 
-const SHEETS = [
+const BACK_SHEETS = [
   { index: "07", kind: "pearl" },
   { index: "06", kind: "silver" },
   { index: "05", kind: "candy" },
   { index: "04", kind: "pearl" },
   { index: "03", kind: "holo" },
   { index: "02", kind: "silver" },
-  { index: "01", kind: "pearl" },
 ] as const;
 
 export function TodayCompressionArtifact({
@@ -26,13 +25,13 @@ export function TodayCompressionArtifact({
       <div className="today-compression-shadow" />
 
       <div className="today-compression-stack">
-        {SHEETS.map((sheet, sheetIndex) => (
+        {BACK_SHEETS.map((sheet, sheetIndex) => (
           <div
             key={sheet.index}
             className={`today-compression-sheet today-compression-sheet-${sheet.kind}`}
             style={{
-              "--sheet-index": sheetIndex,
-              "--sheet-depth": SHEETS.length - sheetIndex,
+              "--sheet-index": sheetIndex + 1,
+              "--sheet-depth": BACK_SHEETS.length - sheetIndex,
             } as CSSProperties}
           >
             <span className="today-compression-edge-index">{sheet.index}</span>
@@ -41,6 +40,7 @@ export function TodayCompressionArtifact({
         ))}
 
         <div className="today-compression-cover">
+          <span className="today-compression-cover-index">01</span>
           <div className="today-compression-cover-film" />
           <div className="today-compression-cover-sheen" />
 
