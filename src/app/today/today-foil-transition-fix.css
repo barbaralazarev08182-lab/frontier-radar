@@ -1,49 +1,34 @@
-/* V4.2 — keep the foil world, remove the compression ghost/overexposure state. */
+/* V4.3 — preserve a readable material transition through compression. */
 
-/* The seven editorial copies are readable at the two stable endpoints only.
-   During compression/overlap they get out of the way instead of stacking into
-   the giant translucent text pile visible in QA. */
+/* Copy fades out before the seven sheets fully overlap, then fades back in on
+   expansion. This prevents the giant ghost-text pile without deleting the
+   transition itself. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-age,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .today-production-open-cue {
-  opacity: clamp(
-    0,
-    calc(
-      var(--overviewness)
-      + var(--overviewness)
-      + var(--overviewness)
-      + var(--overviewness)
-      + var(--overviewness)
-      - 4
-    ),
-    1
-  ) !important;
+  opacity: clamp(0, calc(1 - var(--deckness) * 2.2), 1) !important;
 }
 
-/* Seven foil sheets briefly occupy the same physical region while Flip is in
-   its compression phase. Do not add seven full-strength specular passes there.
-   Keep a quiet material trace instead, then recover to full foil at Overview. */
+/* Keep the foil stack materially present throughout compression. The shader
+   already attenuates each overlapping sheet, so do not double-fade it away. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
-  opacity: max(
-    .16,
-    calc(1 - var(--deckness) - var(--deckness))
-  ) !important;
+  opacity: clamp(.62, calc(1 - var(--deckness) * .38), 1) !important;
   transition: none !important;
 }
 
-/* Crossfade the paper/grid substrate back underneath the attenuated foil stack
-   so the transition never becomes a blown-out white void. */
+/* Let a restrained paper/grid substrate show through at maximum compression;
+   it anchors the stack without turning the frame into a white flash. */
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-field {
-  opacity: var(--deckness) !important;
+  opacity: calc(var(--deckness) * .32) !important;
 }
 
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-scanline {
-  opacity: calc(var(--deckness) / 4) !important;
+  opacity: calc(var(--deckness) * .06) !important;
 }
 
-/* Compression is a material stack, not an interaction state. */
+/* Compression is visual only; the DOM remains stable and non-jumping. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] {
   pointer-events: auto;
 }
@@ -52,18 +37,7 @@
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-signal-copy,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-score,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-age {
-  opacity: clamp(
-    0,
-    calc(
-      var(--overviewness)
-      + var(--overviewness)
-      + var(--overviewness)
-      + var(--overviewness)
-      + var(--overviewness)
-      - 4
-    ),
-    1
-  ) !important;
+  opacity: clamp(0, calc(1 - var(--deckness) * 2.2), 1) !important;
 }
 
 @media (max-width: 760px), (pointer: coarse) {
