@@ -51,7 +51,6 @@ export function TodayMotionProduction({
   const [stage, setStage] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<DailySynthesisSnapshot | null>(initialSnapshot);
   const requestedRef = useRef(false);
-  const analysisRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -207,24 +206,6 @@ export function TodayMotionProduction({
     return () => scroller.removeEventListener("scroll", holdAtTodaySeven);
   }, [snapshot]);
 
-  useEffect(() => {
-    const node = analysisRef.current;
-    if (!node || !snapshot) return;
-    const root = node.closest<HTMLElement>(".motion-lab-shell");
-    const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
-    if (!root || !scroller) return;
-
-    const onWheel = (event: WheelEvent) => {
-      if (root.dataset.directHandoff !== "ready") return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      if (event.deltaY < 0) scroller.scrollTop += event.deltaY;
-    };
-
-    node.addEventListener("wheel", onWheel, { passive: false });
-    return () => node.removeEventListener("wheel", onWheel);
-  }, [snapshot, stage]);
-
   return (
     <>
       <MotionLab />
@@ -232,7 +213,7 @@ export function TodayMotionProduction({
       {snapshot ? <MotionLabDirectHandoff /> : null}
       {stage && snapshot
         ? createPortal(
-            <div ref={analysisRef} className="motion-lab-analysis today-production-analysis">
+            <div className="motion-lab-analysis today-production-analysis">
               <TodaySignalWeave
                 signals={synthesisSignals}
                 initialSnapshot={snapshot}
