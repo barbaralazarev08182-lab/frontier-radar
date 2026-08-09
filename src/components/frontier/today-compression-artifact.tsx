@@ -8,12 +8,11 @@ interface TodayCompressionArtifactProps {
 }
 
 const BACK_SHEETS = [
-  { index: "07", kind: "pearl" },
-  { index: "06", kind: "silver" },
-  { index: "05", kind: "candy" },
-  { index: "04", kind: "pearl" },
-  { index: "03", kind: "holo" },
-  { index: "02", kind: "silver" },
+  { index: "07", kind: "pearl", x: 18, y: 20, r: 0.58 },
+  { index: "06", kind: "silver", x: -9, y: 15, r: -0.42 },
+  { index: "04", kind: "pearl", x: 11, y: 9, r: 0.26 },
+  { index: "03", kind: "holo", x: 25, y: 4, r: 0.82 },
+  { index: "02", kind: "silver", x: -5, y: 3, r: -0.24 },
 ] as const;
 
 export function TodayCompressionArtifact({
@@ -32,6 +31,9 @@ export function TodayCompressionArtifact({
             style={{
               "--sheet-index": sheetIndex + 1,
               "--sheet-depth": BACK_SHEETS.length - sheetIndex,
+              "--sheet-x": `${sheet.x}px`,
+              "--sheet-y": `${sheet.y}px`,
+              "--sheet-r": `${sheet.r}deg`,
             } as CSSProperties}
           >
             <span className="today-compression-edge-index">{sheet.index}</span>
@@ -86,6 +88,15 @@ export function TodayCompressionArtifact({
               <span>DAILY RADAR INTERNAL</span>
             </div>
           </footer>
+        </div>
+
+        <div className="today-compression-candy-foreground">
+          <div className="today-compression-candy-crinkle" />
+          <div className="today-compression-candy-sheen" />
+          <div className="today-compression-candy-label">
+            <strong>05</strong>
+            <span>WILDCARD / CANDY FILM</span>
+          </div>
         </div>
       </div>
     </section>
