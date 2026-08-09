@@ -1,50 +1,108 @@
-/* V4.4 — keep the compression transition materially present. */
+/* V4.5 — compression must read as a physical seven-sheet stack, never an empty white frame. */
 
-/* Copy fades out before the seven sheets fully overlap, then returns on expansion.
-   This avoids the old giant ghost-text pile while leaving the material itself visible. */
+/* Overview copy recedes while the dedicated stack face takes over. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-rank,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-signal-copy,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-score,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .motion-lab-age,
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] > .today-production-open-cue {
-  opacity: clamp(0, calc(1 - var(--deckness) * 2.2), 1) !important;
+  opacity: clamp(0, calc(1 - var(--deckness) * 1.85), 1) !important;
 }
 
-/* Do not crossfade the GPU sheet stack away during compression. The shader already
-   attenuates overlapping sheets, so the canvas remains fully present. As deckness
-   rises, contrast/saturation increase only inside the compression phase; Overview
-   and the final Today's 7 frame remain unchanged because deckness returns to 0. */
+/* The GPU material stays present, but never receives the contrast boost that
+   previously blew the entire stage out to white. */
 .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
   opacity: 1 !important;
-  filter:
-    contrast(calc(1 + var(--deckness)))
-    saturate(calc(1 + var(--deckness))) !important;
+  filter: none !important;
   transition: none !important;
 }
 
-/* Keep only a faint physical substrate under the stack. */
+/* Reintroduce a dedicated compression face only while the seven signals are
+   becoming a stack. It is transparent enough to let the foil shader remain the
+   material, while its edge and micro-copy make every layer physically legible. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face {
+  visibility: visible !important;
+  opacity: clamp(0, calc((var(--deckness) - .16) * 1.42), .86) !important;
+  z-index: 22 !important;
+  padding: 1.05rem 1.15rem 1rem !important;
+  border: 1px solid rgba(18, 18, 18, .24) !important;
+  background:
+    linear-gradient(112deg,
+      rgba(255,255,255,.26) 0%,
+      rgba(222,255,248,.13) 24%,
+      rgba(248,222,255,.14) 47%,
+      rgba(255,246,211,.12) 69%,
+      rgba(255,255,255,.20) 100%) !important;
+  color: rgba(12,12,12,.76) !important;
+  box-shadow:
+    0 10px 28px rgba(22,22,22,.045),
+    inset 0 0 0 1px rgba(255,255,255,.48) !important;
+  pointer-events: none !important;
+}
+
+/* Kill the old blue/orange compression cards. Lane identity remains in the foil. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal-adjacent .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal-wildcard .motion-lab-deck-face {
+  background:
+    linear-gradient(112deg,
+      rgba(255,255,255,.26) 0%,
+      rgba(220,255,249,.14) 24%,
+      rgba(247,222,255,.15) 48%,
+      rgba(255,246,213,.12) 70%,
+      rgba(255,255,255,.20) 100%) !important;
+  color: rgba(12,12,12,.76) !important;
+  border-color: rgba(18,18,18,.24) !important;
+}
+
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face::before {
+  display: block !important;
+  opacity: .10 !important;
+  background-image: radial-gradient(circle, rgba(20,20,20,.78) .55px, transparent .72px) !important;
+  background-size: 16px 16px !important;
+  mask-image: linear-gradient(125deg, black, transparent 72%) !important;
+}
+
+/* Keep information inside the stack, but stop the enormous 01/02/03 numerals
+   from becoming the previous ghost-text pile. */
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face > strong {
+  font-size: clamp(3.3rem, 5.7vw, 6rem) !important;
+  line-height: .72 !important;
+  letter-spacing: -.095em !important;
+  opacity: .86 !important;
+}
+
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face-top,
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face-bottom {
+  font-size: .48rem !important;
+  letter-spacing: .16em !important;
+  opacity: .68 !important;
+}
+
+.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face-bottom {
+  padding-top: .55rem !important;
+  border-top-color: rgba(15,15,15,.26) !important;
+}
+
+/* A little substrate keeps the stack anchored without washing it out. */
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-field {
-  opacity: calc(var(--deckness) * .12) !important;
+  opacity: calc(var(--deckness) * .20) !important;
 }
 
 .motion-lab-shell[data-production="true"][data-mode="run"][data-foil-v4="active"] .motion-lab-scanline {
-  opacity: calc(var(--deckness) * .025) !important;
+  opacity: calc(var(--deckness) * .035) !important;
 }
 
 .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"] {
   pointer-events: auto;
 }
 
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-rank,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-signal-copy,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-score,
-.motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-signal[role="link"][data-production-hovered="true"] > .motion-lab-age {
-  opacity: clamp(0, calc(1 - var(--deckness) * 2.2), 1) !important;
-}
-
 @media (max-width: 760px), (pointer: coarse) {
   .motion-lab-shell[data-production="true"][data-mode="run"] .today-spectral-field {
     opacity: 0 !important;
     filter: none !important;
+  }
+
+  .motion-lab-shell[data-production="true"][data-mode="run"] .motion-lab-deck-face {
+    display: none !important;
   }
 }
