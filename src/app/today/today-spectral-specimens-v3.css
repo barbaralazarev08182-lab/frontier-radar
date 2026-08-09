@@ -22,9 +22,10 @@
   transition: opacity 140ms ease !important;
 }
 
-/* Production never exposes the old compression-card artwork. */
+/* Production never exposes the legacy compression-card renderer. */
 .motion-lab-shell[data-production="true"] .motion-lab-deck-face,
 .motion-lab-shell[data-production="true"] .motion-lab-deck-readout {
+  display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
@@ -38,7 +39,7 @@
   color: var(--ink) !important;
 }
 
-/* In the overlap phase only the physical sheets remain visible. */
+/* The real seven signals remain the only transition objects. */
 .motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-rank,
 .motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-signal-copy,
 .motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-score,
@@ -47,7 +48,7 @@
   opacity: 0 !important;
 }
 
-/* Lock the final editorial frame. Material moves; typography does not. */
+/* Lock the final editorial material language without blocking GSAP Flip transforms. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
   translate: 0 0 !important;
   scale: 1 !important;
@@ -89,7 +90,6 @@
   min-height: 0 !important;
   grid-template-columns: auto minmax(0, 1fr) auto !important;
   padding: .72rem .82rem .78rem !important;
-  transform: none !important;
 }
 
 .motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"],
@@ -103,7 +103,6 @@
   padding: .72rem .82rem .78rem !important;
   background: transparent !important;
   color: var(--ink) !important;
-  transform: none !important;
 }
 
 .motion-lab-shell[data-production="true"] .motion-lab-signal-06[role="link"] .motion-lab-rank,
