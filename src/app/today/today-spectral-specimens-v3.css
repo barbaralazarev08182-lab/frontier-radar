@@ -1,4 +1,4 @@
-/* TODAY'S 7 / Foil + Candy Film V4 */
+/* TODAY'S 7 / Foil + Candy Film V4.1 */
 
 .today-spectral-field {
   position: absolute;
@@ -8,7 +8,7 @@
   height: 100%;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 180ms linear;
+  transition: opacity 120ms linear;
   will-change: opacity;
 }
 
@@ -19,7 +19,32 @@
 
 .motion-lab-shell[data-production="true"] .motion-lab-field,
 .motion-lab-shell[data-production="true"] .motion-lab-scanline {
-  transition: opacity 180ms ease !important;
+  transition: opacity 140ms ease !important;
+}
+
+/* Production never exposes the old compression-card artwork. */
+.motion-lab-shell[data-production="true"] .motion-lab-deck-face,
+.motion-lab-shell[data-production="true"] .motion-lab-deck-readout {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal,
+.motion-lab-shell[data-production="true"][data-mode="deck"] .motion-lab-signal {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+
+/* In the overlap phase only the physical sheets remain visible. */
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-rank,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-signal-copy,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-score,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .motion-lab-signal > .motion-lab-age,
+.motion-lab-shell[data-production="true"][data-layout="deck"] .today-production-open-cue {
+  opacity: 0 !important;
 }
 
 /* Lock the final editorial frame. Material moves; typography does not. */
@@ -38,10 +63,9 @@
   backdrop-filter: none !important;
   filter: none !important;
   padding: .72rem .82rem .78rem !important;
-  transition: opacity 180ms ease !important;
+  transition: opacity 160ms ease !important;
 }
 
-/* Absolutely no legacy card, glow, halo or anomaly pseudo surface. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::before,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]::after {
   content: none !important;
@@ -100,7 +124,6 @@
   padding: .84rem .82rem .9rem !important;
 }
 
-/* Material identity is visual, not a colored text code. */
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-topic,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="adjacent"] .motion-lab-score span,
 .motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"][data-lane="wildcard"] .motion-lab-topic,
@@ -118,9 +141,8 @@
   text-shadow: none !important;
 }
 
-/* Hover changes incidence in WebGL. DOM stays physically pinned. */
 .motion-lab-shell[data-production-signal-hover="true"] .motion-lab-signal[role="link"]:not([data-production-hovered="true"]) {
-  opacity: .66;
+  opacity: .74;
   filter: none !important;
 }
 
