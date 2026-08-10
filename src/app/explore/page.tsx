@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
 import { ExploreField } from "./explore-field";
 import "./explore-field.css";
+// One route-scoped visual system only; retired experiment layers are intentionally not imported.
 import "./explore-v2.css";
 
 export const dynamic = "force-dynamic";
