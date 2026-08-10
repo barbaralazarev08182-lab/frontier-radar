@@ -1,5 +1,7 @@
 # Frontier Radar — 产品需求文档（PRD）
 
+> **历史文档提示（2026-08-10）**：这是项目最初 Stage-0 / MVP 设计基线，保留用于追踪产品决策历史；它已经不能完整代表当前实现。当前项目已扩展到 Show HN、Product Hunt、Project Entity、Today’s 7、Adjacent/Wildcard、Daily Synthesis、Signal Weave 等能力。新协作者请优先阅读 [`START-HERE.md`](START-HERE.md) 和最新 checkpoint，再回到本文件理解最初约束。
+>
 > 版本：0.1 · 阶段 0 草案 · 个人使用
 
 ## 1. 愿景
