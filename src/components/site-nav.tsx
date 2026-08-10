@@ -26,7 +26,7 @@ export function SiteNav() {
           : project
             ? "pointer-events-none fixed border-transparent bg-transparent text-[#111214]"
             : lightEditorial
-              ? "sticky border-b border-black/10 bg-[#f3f0e7]/92 text-[#111214] backdrop-blur-lg"
+              ? "sticky border-b border-black/10 bg-[#f3f0e7] text-[#111214] shadow-[0_1px_0_rgba(255,255,255,.6)]"
               : "sticky border-b border-white/[0.06] bg-background/82 text-foreground backdrop-blur-xl",
       ].join(" ")}
     >
@@ -74,7 +74,7 @@ export function SiteNav() {
               : project
                 ? "border border-black/15 bg-[#f5f1e8]/94 shadow-[7px_7px_0_rgba(255,91,33,.18)] backdrop-blur-xl"
                 : lightEditorial
-                  ? "border-y border-black/20 backdrop-blur-[2px]"
+                  ? "border-y border-black/20 bg-white/30"
                   : "border-y border-white/15 backdrop-blur-[2px]",
           ].join(" ")}
           aria-label="Primary navigation"
@@ -96,7 +96,7 @@ export function SiteNav() {
                       : project
                         ? "border-[#3150ff] bg-[#3150ff] text-white shadow-[3px_3px_0_rgba(0,0,0,.12)]"
                         : lightEditorial
-                          ? "border-black/60 text-black"
+                          ? "border-black/60 bg-[#111317] text-white"
                           : "border-white/55 text-foreground"
                     : exploreEntry
                       ? today
@@ -111,7 +111,7 @@ export function SiteNav() {
                         : project
                           ? "text-black/58 hover:border-black/25 hover:bg-black/[0.04] hover:text-black"
                           : lightEditorial
-                            ? "text-black opacity-52 hover:border-black/25 hover:opacity-100"
+                            ? "text-black opacity-58 hover:border-black/25 hover:opacity-100"
                             : "text-foreground opacity-55 hover:border-white/20 hover:opacity-100",
                 ].join(" ")}
               >
