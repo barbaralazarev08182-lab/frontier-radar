@@ -5,7 +5,9 @@ import { loadProjectDetail } from "@/lib/feed/project-detail";
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
 import { ProjectIntelligenceMotion } from "@/components/frontier/project-intelligence-motion";
+import { ProjectIntelligenceField } from "@/components/frontier/project-intelligence-field";
 import "./project-intelligence.css";
+import "./project-intelligence-v3.css";
 
 export const dynamic = "force-dynamic";
 
@@ -155,6 +157,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="project-intelligence-shell" data-pi-stage="0" data-pi-step="0">
+      <ProjectIntelligenceField />
       <ProjectIntelligenceMotion
         evidenceCount={evidenceNodes.length}
         caseCount={interrogationNodes.length}
