@@ -5,10 +5,7 @@ import { loadProjectDetail } from "@/lib/feed/project-detail";
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
 import { ProjectIntelligenceMotion } from "@/components/frontier/project-intelligence-motion";
-import { ProjectIntelligenceField } from "@/components/frontier/project-intelligence-field";
 import "./project-intelligence.css";
-import "./project-intelligence-v3.css";
-import "./project-intelligence-v5.css";
 
 export const dynamic = "force-dynamic";
 
@@ -158,7 +155,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="project-intelligence-shell" data-pi-stage="0" data-pi-step="0">
-      <ProjectIntelligenceField />
       <ProjectIntelligenceMotion
         evidenceCount={evidenceNodes.length}
         caseCount={interrogationNodes.length}
@@ -229,7 +225,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
         <section className="pi-stage pi-stage-evidence" data-pi-stage-panel="1" data-active="false" aria-hidden="true">
           <div className="pi-stage-heading">
-            <span>02 / EVIDENCE CHAMBER</span>
+            <span>02 / EVIDENCE FILM</span>
             <strong>WHY SHOULD<br />YOU BELIEVE IT?</strong>
             <small>Each gesture advances one source node.</small>
           </div>
@@ -327,7 +323,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
         <section className="pi-stage pi-stage-build" data-pi-stage-panel="4" data-active="false" aria-hidden="true">
           <div className="pi-build-heading">
-            <span>05 / BUILD LAUNCH</span>
+            <span>05 / BUILD</span>
             <strong>DON&apos;T JUST<br />UNDERSTAND IT.</strong>
             <small>Choose a direction and turn the signal into a move.</small>
           </div>
