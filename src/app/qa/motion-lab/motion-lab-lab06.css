@@ -1,0 +1,152 @@
+.motion-lab-shell {
+  --anomaly-strength: 0;
+  --anomaly-local-x: 0;
+  --anomaly-local-y: 0;
+  --anomaly-screen-x: 50vw;
+  --anomaly-screen-y: 50vh;
+}
+
+/* LAB-06 owns a fourth transform channel without disturbing Flip, morph or normal focus. */
+.motion-lab-shell[data-anomaly-lab="ready"] .motion-lab-signal {
+  translate:
+    calc(var(--gravity-x, 0px) + var(--morph-x, 0px) + var(--anomaly-x, 0px))
+    calc(var(--gravity-y, 0px) + var(--morph-y, 0px) + var(--anomaly-y, 0px));
+  scale: calc(var(--gravity-scale, 1) + var(--morph-scale-delta, 0) + var(--anomaly-scale, 0));
+}
+
+/* Special signals replace normal gravity with their own physics while active. */
+.motion-lab-shell[data-anomaly="adjacent"] .motion-lab-signal,
+.motion-lab-shell[data-anomaly="wildcard"] .motion-lab-signal {
+  --gravity-x: 0px !important;
+  --gravity-y: 0px !important;
+  --gravity-scale: 1 !important;
+}
+
+/* The base field moves almost imperceptibly for Adjacent, more locally for Wildcard. */
+.motion-lab-field {
+  transition: transform 360ms cubic-bezier(.16,1,.3,1), opacity 260ms ease;
+  transform-origin: var(--anomaly-screen-x) var(--anomaly-screen-y);
+}
+.motion-lab-shell[data-anomaly="adjacent"] .motion-lab-field {
+  transform:
+    translate3d(calc(var(--anomaly-local-x) * 3px), calc(var(--anomaly-local-y) * 1.5px), 0)
+    skewX(calc(var(--anomaly-local-x) * .16deg));
+}
+.motion-lab-shell[data-anomaly="wildcard"] .motion-lab-field {
+  transform:
+    translate3d(calc(var(--anomaly-local-x) * 6px), calc(var(--anomaly-local-y) * 4px), 0)
+    scale(calc(1 + var(--anomaly-strength) * .009))
+    skewX(calc(var(--anomaly-local-x) * .38deg));
+}
+
+/* Local field visualisation: a seam for Adjacent, a pressure field for Wildcard. */
+.motion-lab-field::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: min(38vw, 34rem);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform:
+    translate3d(calc(var(--anomaly-screen-x) - 50%), calc(var(--anomaly-screen-y) - 50%), 0)
+    scale(.78);
+  transform-origin: center;
+  transition: opacity 180ms ease, transform 360ms cubic-bezier(.16,1,.3,1);
+}
+
+.motion-lab-shell[data-anomaly="adjacent"] .motion-lab-field::after {
+  opacity: calc(var(--anomaly-strength) * .48);
+  background:
+    repeating-linear-gradient(
+      101deg,
+      transparent 0 18px,
+      rgba(49,80,255,.24) 18.5px 19.5px,
+      transparent 20px 38px
+    );
+  mask-image: radial-gradient(ellipse at center, #000 0 18%, rgba(0,0,0,.68) 39%, transparent 72%);
+  transform:
+    translate3d(calc(var(--anomaly-screen-x) - 50%), calc(var(--anomaly-screen-y) - 50%), 0)
+    rotate(calc(-7deg + var(--anomaly-local-x) * 4deg))
+    scaleX(.62)
+    scaleY(1.08);
+}
+
+.motion-lab-shell[data-anomaly="wildcard"] .motion-lab-field::after {
+  opacity: calc(var(--anomaly-strength) * .68);
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 18%, rgba(255,75,0,.16) 19% 20%, transparent 21% 31%, rgba(11,11,11,.11) 32% 33%, transparent 34% 46%, rgba(255,75,0,.12) 47% 48%, transparent 49%),
+    conic-gradient(from calc(20deg + var(--anomaly-local-x) * 9deg), transparent 0 14%, rgba(11,11,11,.08) 14.5% 15.5%, transparent 16% 43%, rgba(255,75,0,.11) 43.5% 44.5%, transparent 45% 100%);
+  mask-image: radial-gradient(circle at center, #000 0 48%, rgba(0,0,0,.72) 58%, transparent 76%);
+  transform:
+    translate3d(calc(var(--anomaly-screen-x) - 50%), calc(var(--anomaly-screen-y) - 50%), 0)
+    rotate(calc(var(--anomaly-local-x) * 7deg))
+    scale(calc(.88 + var(--anomaly-strength) * .12));
+}
+
+/* The permanent room axis itself begins to lose alignment near the boundary signal. */
+.motion-lab-scanline {
+  transition: transform 340ms cubic-bezier(.16,1,.3,1), opacity 220ms ease;
+  transform-origin: 50% 50%;
+}
+.motion-lab-shell[data-anomaly="adjacent"] .motion-lab-scanline {
+  transform: translateX(calc(var(--anomaly-local-x) * 5px)) rotate(.34deg);
+}
+.motion-lab-shell[data-anomaly="wildcard"] .motion-lab-scanline {
+  transform: translateX(calc(var(--anomaly-local-x) * 9px)) rotate(calc(var(--anomaly-local-x) * .72deg));
+  opacity: .42;
+}
+
+/* Adjacent: familiar material, but the geometry slips sideways. */
+.motion-lab-shell[data-anomaly="adjacent"] .motion-lab-signal-06 {
+  box-shadow:
+    calc(var(--anomaly-local-x) * 7px) 0 0 rgba(49,80,255,.14),
+    calc(var(--anomaly-local-x) * -4px) 0 0 rgba(241,238,229,.56);
+}
+.motion-lab-shell[data-anomaly="adjacent"] .motion-lab-signal-06::after {
+  content: "EDGE OF PROFILE";
+  position: absolute;
+  left: 1rem;
+  top: -1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .44rem;
+  font-weight: 950;
+  letter-spacing: .15em;
+  color: #3150ff;
+}
+
+/* Wildcard stays comparatively steady; the surroundings carry the anomaly. */
+.motion-lab-shell[data-anomaly="wildcard"] .motion-lab-signal-07 {
+  box-shadow: 0 0 0 1px rgba(11,11,11,.12);
+}
+.motion-lab-shell[data-anomaly="wildcard"] .motion-lab-signal-07::after {
+  content: "RULE BREAK / N98";
+  position: absolute;
+  right: .85rem;
+  top: -.95rem;
+  padding: .14rem .24rem;
+  background: #f1eee5;
+  color: #c53d00;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .42rem;
+  font-weight: 950;
+  letter-spacing: .12em;
+  transform: rotate(calc(var(--anomaly-local-x) * -2deg));
+}
+
+/* Make the lab identity explicit without changing production semantics. */
+.motion-lab-meta > div:first-child > span::after {
+  content: "LAB-06 ADJACENT / WILDCARD ANOMALY PHYSICS · PREVIOUS LABS PRESERVED";
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-field::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-field,
+  .motion-lab-scanline { transform: none !important; }
+  .motion-lab-field::after { display: none; }
+}

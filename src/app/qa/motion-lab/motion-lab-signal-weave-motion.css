@@ -1,0 +1,206 @@
+/* -------------------------------------------------------------------------- */
+/* SIGNAL WEAVE / MOTION POLISH                                               */
+/* Motion should clarify relationships: flow, reception, focus, then resolve. */
+/* -------------------------------------------------------------------------- */
+
+.weave-analysis {
+  --focus-y: 49%;
+  --focus-tone: rgba(108, 137, 255, .12);
+}
+
+.weave-analysis[data-active-pattern="agents"] {
+  --focus-y: 22%;
+  --focus-tone: rgba(120, 149, 188, .14);
+}
+
+.weave-analysis[data-active-pattern="local"] {
+  --focus-y: 49%;
+  --focus-tone: rgba(93, 123, 255, .16);
+}
+
+.weave-analysis[data-active-pattern="interface"] {
+  --focus-y: 73%;
+  --focus-tone: rgba(137, 116, 255, .13);
+}
+
+/* A faint receiving field appears around the destination being interrogated. */
+.weave-canvas::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -8% -5%;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 84% var(--focus-y), var(--focus-tone) 0, transparent 17%),
+    radial-gradient(circle at 77% var(--focus-y), rgba(255,255,255,.42) 0, transparent 12%);
+  filter: blur(18px);
+  transform: scale(.96);
+  transition: opacity 320ms ease, transform 620ms cubic-bezier(.16,1,.3,1), background 380ms ease;
+}
+
+.weave-analysis:not([data-active-pattern="all"]) .weave-canvas::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.weave-svg { z-index: 1; }
+.weave-signal-layer,
+.weave-pattern-layer { z-index: 2; }
+
+/* Focus feels magnetic: the chosen evidence leans into the weave while context recedes. */
+.weave-analysis:not([data-active-pattern="all"]) .weave-signal {
+  transition:
+    color 180ms ease,
+    transform 520ms cubic-bezier(.16,1,.3,1),
+    border-color 180ms ease,
+    opacity 220ms ease;
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-signal[data-pattern="agents"],
+.weave-analysis[data-active-pattern="local"] .weave-signal[data-pattern="local"],
+.weave-analysis[data-active-pattern="interface"] .weave-signal[data-pattern="interface"] {
+  transform: translate(.86rem,-50%);
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-signal:not([data-pattern="agents"]),
+.weave-analysis[data-active-pattern="local"] .weave-signal:not([data-pattern="local"]),
+.weave-analysis[data-active-pattern="interface"] .weave-signal:not([data-pattern="interface"]) {
+  transform: translate(-.14rem,-50%);
+}
+
+/* A pinned or hovered destination physically receives its cluster. */
+.weave-analysis[data-active-pattern="agents"] .weave-pattern[data-pattern="agents"],
+.weave-analysis[data-active-pattern="local"] .weave-pattern[data-pattern="local"],
+.weave-analysis[data-active-pattern="interface"] .weave-pattern[data-pattern="interface"] {
+  transform: translate(-1.05rem,-50%);
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-pattern[data-pattern="agents"] > i,
+.weave-analysis[data-active-pattern="local"] .weave-pattern[data-pattern="local"] > i,
+.weave-analysis[data-active-pattern="interface"] .weave-pattern[data-pattern="interface"] > i {
+  background: #4267ff;
+  animation: weaveReceiverDot 1.8s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+@keyframes weaveReceiverDot {
+  0%, 100% { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(66,103,255,.07), 0 0 0 0 rgba(66,103,255,.12); }
+  52% { transform: scale(1.28); box-shadow: 0 0 0 9px rgba(66,103,255,.09), 0 0 0 18px rgba(66,103,255,0); }
+}
+
+/* The whole cluster flows faster when it becomes the current interpretation. */
+.weave-analysis[data-active-pattern="agents"] .weave-thread[data-pattern="agents"] .weave-thread-pulse,
+.weave-analysis[data-active-pattern="local"] .weave-thread[data-pattern="local"] .weave-thread-pulse,
+.weave-analysis[data-active-pattern="interface"] .weave-thread[data-pattern="interface"] .weave-thread-pulse {
+  opacity: .96;
+  stroke-width: 3.15;
+  stroke-dasharray: 9 91;
+  animation-duration: 1.85s;
+  filter: url(#weaveGlow) drop-shadow(0 0 4px rgba(255,255,255,.72));
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-thread[data-pattern="agents"] .weave-thread-ribbon,
+.weave-analysis[data-active-pattern="local"] .weave-thread[data-pattern="local"] .weave-thread-ribbon,
+.weave-analysis[data-active-pattern="interface"] .weave-thread[data-pattern="interface"] .weave-thread-ribbon {
+  animation: weaveRibbonTension 2.8s ease-in-out infinite;
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-thread[data-pattern="agents"] .weave-thread-glow,
+.weave-analysis[data-active-pattern="local"] .weave-thread[data-pattern="local"] .weave-thread-glow,
+.weave-analysis[data-active-pattern="interface"] .weave-thread[data-pattern="interface"] .weave-thread-glow {
+  animation: weaveGlowTension 2.8s ease-in-out infinite;
+}
+
+@keyframes weaveRibbonTension {
+  0%,100% { opacity: .88; }
+  50% { opacity: 1; }
+}
+
+@keyframes weaveGlowTension {
+  0%,100% { opacity: .38; }
+  50% { opacity: .55; }
+}
+
+/* Hovering one signal turns its packet into a fast probe through the relationship. */
+.weave-analysis[data-active-signal="01"] .weave-thread[data-signal="01"] .weave-thread-pulse,
+.weave-analysis[data-active-signal="02"] .weave-thread[data-signal="02"] .weave-thread-pulse,
+.weave-analysis[data-active-signal="03"] .weave-thread[data-signal="03"] .weave-thread-pulse,
+.weave-analysis[data-active-signal="04"] .weave-thread[data-signal="04"] .weave-thread-pulse,
+.weave-analysis[data-active-signal="05"] .weave-thread[data-signal="05"] .weave-thread-pulse,
+.weave-analysis[data-active-signal="06"] .weave-thread[data-signal="06"] .weave-thread-pulse,
+.weave-analysis[data-active-signal="07"] .weave-thread[data-signal="07"] .weave-thread-pulse {
+  opacity: 1;
+  stroke-width: 4.4;
+  stroke-dasharray: 14 86;
+  animation-duration: .92s;
+}
+
+.weave-analysis[data-active-signal="01"] .weave-thread[data-signal="01"] .weave-thread-glow,
+.weave-analysis[data-active-signal="02"] .weave-thread[data-signal="02"] .weave-thread-glow,
+.weave-analysis[data-active-signal="03"] .weave-thread[data-signal="03"] .weave-thread-glow,
+.weave-analysis[data-active-signal="04"] .weave-thread[data-signal="04"] .weave-thread-glow,
+.weave-analysis[data-active-signal="05"] .weave-thread[data-signal="05"] .weave-thread-glow,
+.weave-analysis[data-active-signal="06"] .weave-thread[data-signal="06"] .weave-thread-glow,
+.weave-analysis[data-active-signal="07"] .weave-thread[data-signal="07"] .weave-thread-glow {
+  opacity: .68;
+}
+
+/* Hub reception is deliberately quieter than the travelling packet. */
+.weave-hub circle:first-child {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill 220ms ease, stroke 220ms ease, transform 420ms cubic-bezier(.16,1,.3,1);
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-hub[data-pattern="agents"] circle:first-child,
+.weave-analysis[data-active-pattern="local"] .weave-hub[data-pattern="local"] circle:first-child,
+.weave-analysis[data-active-pattern="interface"] .weave-hub[data-pattern="interface"] circle:first-child {
+  fill: #f7f9ff;
+  stroke: rgba(51,76,211,.76);
+  transform: scale(1.16);
+}
+
+.weave-analysis[data-active-pattern="agents"] .weave-hub[data-pattern="agents"] .weave-hub-ring,
+.weave-analysis[data-active-pattern="local"] .weave-hub[data-pattern="local"] .weave-hub-ring,
+.weave-analysis[data-active-pattern="interface"] .weave-hub[data-pattern="interface"] .weave-hub-ring {
+  animation: weaveHubReceive 1.8s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+@keyframes weaveHubReceive {
+  0%,100% { transform: scale(.92); opacity: .3; }
+  55% { transform: scale(1.42); opacity: .8; }
+}
+
+/* The analysis readout settles in rather than simply appearing. */
+.weave-readout[data-open="true"] {
+  animation: weaveReadoutSettle 360ms cubic-bezier(.16,1,.3,1) both;
+}
+
+@keyframes weaveReadoutSettle {
+  from { transform: translateY(.55rem) scale(.992); box-shadow: 0 12px 34px rgba(59,73,84,.06), inset 0 1px rgba(255,255,255,.78); }
+  to { transform: translateY(0) scale(1); }
+}
+
+/* Resolve state: movement quiets down before the take becomes the protagonist. */
+.weave-analysis[data-take="true"] .weave-thread-pulse {
+  animation-duration: 8s !important;
+  opacity: .28 !important;
+}
+
+.weave-analysis[data-take="true"] .weave-hub-ring,
+.weave-analysis[data-take="true"] .weave-pattern > i {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weave-analysis[data-active-pattern] .weave-thread-ribbon,
+  .weave-analysis[data-active-pattern] .weave-thread-glow,
+  .weave-analysis[data-active-pattern] .weave-thread-pulse,
+  .weave-analysis[data-active-pattern] .weave-hub-ring,
+  .weave-analysis[data-active-pattern] .weave-pattern > i,
+  .weave-readout[data-open="true"] {
+    animation: none !important;
+  }
+
+  .weave-canvas::before { transition: none; }
+}
