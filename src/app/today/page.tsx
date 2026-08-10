@@ -24,7 +24,7 @@ import type { EditorialSignal } from "@/components/frontier/today-editorial";
 import { TodayMotionProduction } from "@/components/frontier/today-motion-production";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { personalizeFeed } from "@/lib/personalization/server";
-import { resolveTodaySynthesis } from "./actions";
+import { loadTodaySynthesis, resolveTodaySynthesis } from "./actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Today · Frontier Radar" };
@@ -170,12 +170,16 @@ export default async function TodayPage() {
     whyNow: signal.whyNow,
     score: signal.score,
   }));
+  const synthesisSignalIds = synthesisSignals.map((signal) => signal.id);
 
   const initialSynthesis = mode === "supabase"
-    ? await tryLoadDailySynthesis(editionDate, synthesisSignals.map((signal) => signal.id))
+    ? await tryLoadDailySynthesis(editionDate, synthesisSignalIds)
     : null;
   const resolveSynthesisAction = mode === "supabase"
     ? resolveTodaySynthesis.bind(null, editionDate, synthesisSignals)
+    : null;
+  const loadSynthesisAction = mode === "supabase"
+    ? loadTodaySynthesis.bind(null, editionDate, synthesisSignalIds)
     : null;
 
   const dateLabel = new Date()
@@ -198,6 +202,7 @@ export default async function TodayPage() {
         synthesisSignals={synthesisSignals}
         initialSnapshot={initialSynthesis}
         resolveSynthesisAction={resolveSynthesisAction}
+        loadSynthesisAction={loadSynthesisAction}
       />
     </div>
   );
