@@ -88,6 +88,7 @@ export function ExploreField({
 
   const focus = ordered.find((candidate) => candidate.itemId === focusId) ?? ordered[0] ?? null;
   const isSearching = searchOpen || query.trim().length > 0;
+  const activeLens = LENSES.find((entry) => entry.id === lens) ?? LENSES[0]!;
 
   useEffect(() => {
     if (!focus) return;
@@ -104,6 +105,31 @@ export function ExploreField({
       });
     };
   }, [focus, lens]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+
+    root.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setQuery("");
+      setSearchOpen(false);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      root.style.overflow = previousRootOverflow;
+      body.style.overflow = previousBodyOverflow;
+    };
+  }, [searchOpen]);
 
   const rankById = useMemo(() => new Map(ordered.map((candidate, index) => [candidate.itemId, index])), [ordered]);
 
@@ -144,77 +170,105 @@ export function ExploreField({
     setFocusId(candidates[0]?.itemId ?? null);
   }
 
+  function closeSearch() {
+    setQuery("");
+    setSearchOpen(false);
+  }
+
   return (
     <section
       className="explore-field-shell"
       data-lens={lens}
       data-searching={isSearching ? "true" : "false"}
     >
-      <header className="explore-field-header">
-        <div className="explore-field-kicker">
-          <span>FRONTIER RADAR / EXPLORE</span>
-          <span>{dataLabel}</span>
-        </div>
-        <div className="explore-field-heading-row">
-          <div>
-            <h1>CURRENT FRONTIER</h1>
-            <p>Move from what you already care about toward what you did not know you should care about.</p>
+      <div className="explore-control-surface">
+        <header className="explore-field-header">
+          <div className="explore-field-kicker">
+            <span>FRONTIER RADAR / EXPLORE</span>
+            <span>{dataLabel}</span>
           </div>
-          <button className="explore-search-trigger" type="button" onClick={() => setSearchOpen(true)}>
-            <Search aria-hidden />
-            SEARCH FRONTIER
-          </button>
-        </div>
-        <div className="explore-field-stats" aria-label="Explore scan status">
-          <span><strong>{ordered.length}</strong> active signals</span>
-          <span><strong>{totalDiscoveries}</strong> discoveries in range</span>
-          <span>{personalized ? "PERSONAL GRAVITY ACTIVE" : "COLD-START GRAVITY"}</span>
-        </div>
-        {searchOpen ? (
-          <div className="explore-search-panel">
-            <Search aria-hidden />
-            <input
-              autoFocus
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search this frontier scan"
-              aria-label="Search this frontier scan"
-            />
-            <button type="button" onClick={() => { setQuery(""); setSearchOpen(false); }} aria-label="Close search">
-              <X aria-hidden />
-            </button>
-          </div>
-        ) : null}
-      </header>
 
-      <nav className="explore-lens-strip" aria-label="Discovery lens">
-        <div className="explore-lens-title">
-          <Radar aria-hidden />
-          <span>
-            <strong>RADAR LENS</strong>
-            <small>RETUNE HOW THE FIELD IS RANKED</small>
-          </span>
-        </div>
-        <div className="explore-lens-options">
-          {LENSES.map((entry) => (
+          <div className="explore-field-heading-row">
+            <div>
+              <h1>CURRENT FRONTIER</h1>
+              <p>Move from what you already care about toward what you did not know you should care about.</p>
+            </div>
             <button
+              className="explore-search-trigger"
               type="button"
-              key={entry.id}
-              onClick={() => chooseLens(entry.id)}
-              className={lens === entry.id ? "is-active" : ""}
-              aria-pressed={lens === entry.id}
-              title={`${entry.label} — ${entry.note}`}
+              onClick={() => setSearchOpen(true)}
+              aria-expanded={searchOpen}
             >
-              <strong className="explore-lens-full">{entry.label}</strong>
-              <strong className="explore-lens-short">{entry.short}</strong>
-              <small>{entry.note}</small>
+              <span className="explore-search-trigger-icon"><Search aria-hidden /></span>
+              <span className="explore-search-trigger-copy">
+                <strong>SEARCH FRONTIER</strong>
+                <small>LIVE SCAN</small>
+              </span>
+              <span className="explore-search-trigger-led" aria-hidden />
             </button>
-          ))}
-        </div>
-        <button className="explore-lens-reset" type="button" onClick={resetField}>
-          RESET SCAN
-        </button>
-      </nav>
+          </div>
+
+          <div className="explore-field-stats" aria-label="Explore scan status">
+            <span><strong>{ordered.length}</strong> active signals</span>
+            <span><strong>{totalDiscoveries}</strong> discoveries in range</span>
+            <span>{personalized ? "PERSONAL GRAVITY ACTIVE" : "COLD-START GRAVITY"}</span>
+          </div>
+
+          {searchOpen ? (
+            <div className="explore-search-panel" role="search" aria-label="Search current frontier scan">
+              <div className="explore-search-panel-label">
+                <span>FRONTIER SCAN</span>
+                <strong>{String(ordered.length).padStart(2, "0")}</strong>
+              </div>
+              <Search aria-hidden />
+              <input
+                autoFocus
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search this frontier scan"
+                aria-label="Search this frontier scan"
+              />
+              <div className="explore-search-readout" aria-hidden>
+                <span>{activeLens.label}</span>
+                <strong>{query.trim() ? "FILTERING" : "READY"}</strong>
+              </div>
+              <button className="explore-search-close" type="button" onClick={closeSearch} aria-label="Close search">
+                <X aria-hidden />
+              </button>
+            </div>
+          ) : null}
+        </header>
+
+        <nav className="explore-lens-strip" aria-label="Discovery lens">
+          <div className="explore-lens-title">
+            <Radar aria-hidden />
+            <span>
+              <strong>RADAR LENS</strong>
+              <small>RETUNE HOW THE FIELD IS RANKED</small>
+            </span>
+          </div>
+          <div className="explore-lens-options">
+            {LENSES.map((entry) => (
+              <button
+                type="button"
+                key={entry.id}
+                data-lens-id={entry.id}
+                onClick={() => chooseLens(entry.id)}
+                className={lens === entry.id ? "is-active" : ""}
+                aria-pressed={lens === entry.id}
+                title={`${entry.label} — ${entry.note}`}
+              >
+                <strong className="explore-lens-full">{entry.label}</strong>
+                <strong className="explore-lens-short">{entry.short}</strong>
+                <small>{entry.note}</small>
+              </button>
+            ))}
+          </div>
+          <button className="explore-lens-reset" type="button" onClick={resetField}>
+            RESET SCAN
+          </button>
+        </nav>
+      </div>
 
       <div className="explore-field-stage" aria-label="Frontier discovery field">
         <div className="explore-field-scan" aria-hidden />
