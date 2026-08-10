@@ -1,0 +1,12 @@
+/* Small readability/material refinements only. No layout, motion, or transition ownership. */
+
+.pi-stage-interrogation .pi-interrogation-card {
+  background: rgba(8, 8, 8, .65);
+  backdrop-filter: blur(2px) saturate(.96);
+  -webkit-backdrop-filter: blur(2px) saturate(.96);
+}
+
+.pi-stage-resolution .pi-score-shard > span {
+  font-size: .58rem;
+  opacity: .58;
+}
