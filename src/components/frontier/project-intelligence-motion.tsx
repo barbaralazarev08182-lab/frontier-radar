@@ -1,161 +1,269 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+const STAGES = ["CAPTURE", "EVIDENCE", "INTERROGATION", "RESOLUTION", "BUILD"] as const;
 
-export function ProjectIntelligenceMotion() {
+type Props = {
+  evidenceCount: number;
+  caseCount: number;
+  buildCount: number;
+};
+
+type Cursor = {
+  stage: number;
+  step: number;
+};
+
+export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount }: Props) {
+  const stageCounts = useMemo(
+    () => [1, Math.max(1, evidenceCount), Math.max(1, caseCount), 1, Math.max(1, buildCount)],
+    [evidenceCount, caseCount, buildCount]
+  );
+  const stageStarts = useMemo(() => {
+    const starts: number[] = [];
+    let cursor = 0;
+    for (const count of stageCounts) {
+      starts.push(cursor);
+      cursor += count;
+    }
+    return starts;
+  }, [stageCounts]);
+  const totalPositions = stageCounts.reduce((sum, count) => sum + count, 0);
+
+  const decode = (position: number): Cursor => {
+    for (let stage = stageCounts.length - 1; stage >= 0; stage -= 1) {
+      if (position >= stageStarts[stage]!) {
+        return { stage, step: position - stageStarts[stage]! };
+      }
+    }
+    return { stage: 0, step: 0 };
+  };
+
+  const [position, setPosition] = useState(0);
+  const positionRef = useRef(0);
+  const consumedRef = useRef(false);
+  const lockedRef = useRef(false);
+  const accumulatedRef = useRef(0);
+  const gestureEndTimer = useRef<number | null>(null);
+  const unlockTimer = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const directionRef = useRef(1);
+
+  const cursor = decode(position);
+
+  const moveTo = (next: number, direction: number) => {
+    const clamped = Math.max(0, Math.min(totalPositions - 1, next));
+    if (clamped === positionRef.current) return;
+    directionRef.current = direction;
+    positionRef.current = clamped;
+    lockedRef.current = true;
+    setPosition(clamped);
+    if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
+    unlockTimer.current = window.setTimeout(() => {
+      lockedRef.current = false;
+    }, 920);
+  };
+
   useEffect(() => {
     const root = document.querySelector<HTMLElement>(".project-intelligence-shell");
     if (!root) return;
 
-    const motionNodes = Array.from(
-      root.querySelectorAll<HTMLElement>(
-        "[data-pi-motion], .pi-evidence-row, .pi-case-block, .pi-score-cell, .pi-build-row, .pi-ledger-row"
-      )
-    );
-    const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-section]"));
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousOverscroll = html.style.overscrollBehavior;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
 
-    let frame = 0;
-    let pointerX = 0;
-    let pointerY = 0;
+    const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-stage-panel]"));
+    const evidence = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-evidence]"));
+    const cases = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-case]"));
+    const builds = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-build]"));
+    const interrogation = root.querySelector<HTMLElement>(".pi-stage-interrogation");
 
-    const settleNode = (node: HTMLElement) => {
-      node.style.setProperty("--pi-enter", "1");
-      node.style.setProperty("--pi-pass", "0");
-      node.style.setProperty("--pi-enter-x", "0px");
-      node.style.setProperty("--pi-enter-y", "0px");
-      node.style.setProperty("--pi-enter-z", "0px");
-      node.style.setProperty("--pi-enter-rot", "0deg");
-      node.style.setProperty("--pi-pass-y", "0px");
-      node.style.setProperty("--pi-motion-opacity", "1");
-    };
+    const applyStates = () => {
+      const current = decode(positionRef.current);
+      root.dataset.piStage = String(current.stage);
+      root.dataset.piStep = String(current.step);
+      root.dataset.piDir = String(directionRef.current);
+      root.style.setProperty("--pi-stage", String(current.stage));
+      root.style.setProperty("--pi-step", String(current.step));
+      root.style.setProperty("--pi-progress", String(positionRef.current / Math.max(1, totalPositions - 1)));
 
-    const render = () => {
-      frame = 0;
+      panels.forEach((panel, index) => {
+        const active = index === current.stage;
+        panel.dataset.active = active ? "true" : "false";
+        panel.setAttribute("aria-hidden", active ? "false" : "true");
+      });
 
-      if (reduced.matches) {
-        root.style.setProperty("--pi-scroll", "0");
-        root.style.setProperty("--pi-scroll-shift", "0px");
-        root.style.setProperty("--pi-marker-y", "12%");
-        root.style.setProperty("--pi-pointer-x", "0px");
-        root.style.setProperty("--pi-pointer-y", "0px");
-        root.style.setProperty("--pi-pointer-rx", "0deg");
-        root.style.setProperty("--pi-pointer-ry", "0deg");
-        motionNodes.forEach(settleNode);
-        return;
+      const applyItemStates = (items: HTMLElement[], activeStep: number, activeStage: number) => {
+        items.forEach((item, index) => {
+          const state = current.stage !== activeStage
+            ? "dormant"
+            : index === activeStep
+              ? "active"
+              : index < activeStep
+                ? "before"
+                : "after";
+          item.dataset.state = state;
+        });
+      };
+
+      applyItemStates(evidence, current.step, 1);
+      applyItemStates(cases, current.step, 2);
+      applyItemStates(builds, current.step, 4);
+
+      if (interrogation && current.stage === 2) {
+        interrogation.dataset.activeLabel = cases[current.step]?.dataset.label ?? "INTERROGATION";
       }
-
-      const viewport = Math.max(1, window.innerHeight);
-      const rootRect = root.getBoundingClientRect();
-      const travel = Math.max(1, root.scrollHeight - viewport);
-      const rootProgress = clamp01((-rootRect.top) / travel);
-
-      root.style.setProperty("--pi-scroll", rootProgress.toFixed(4));
-      root.style.setProperty("--pi-scroll-shift", `${(-150 * rootProgress).toFixed(2)}px`);
-      root.style.setProperty("--pi-marker-y", `${(12 + rootProgress * 76).toFixed(2)}%`);
-      root.style.setProperty("--pi-pointer-x", `${(pointerX * 12).toFixed(2)}px`);
-      root.style.setProperty("--pi-pointer-y", `${(pointerY * 9).toFixed(2)}px`);
-      root.style.setProperty("--pi-pointer-rx", `${(-pointerY * 3.2).toFixed(2)}deg`);
-      root.style.setProperty("--pi-pointer-ry", `${(pointerX * 4.2).toFixed(2)}deg`);
-
-      motionNodes.forEach((node) => {
-        const rect = node.getBoundingClientRect();
-        const enter = clamp01((viewport * 0.94 - rect.top) / (viewport * 0.52));
-        const pass = clamp01((viewport * 0.28 - rect.top) / Math.max(viewport * 0.78, rect.height));
-        const from = 1 - enter;
-
-        let x = 0;
-        let y = from * 76;
-        let z = from * -130;
-        let rot = from * 5.5;
-
-        if (node.classList.contains("pi-case-block") || node.classList.contains("pi-build-row")) {
-          const odd = Array.from(node.parentElement?.children ?? []).indexOf(node) % 2 === 0;
-          x = from * (odd ? 48 : -48);
-          z = from * -170;
-          rot = from * (odd ? 6 : -6);
-        } else if (node.classList.contains("pi-evidence-row")) {
-          x = from * 28;
-          y = from * 54;
-          z = from * -120;
-          rot = from * 4;
-        } else if (node.classList.contains("pi-score-cell")) {
-          y = from * 42;
-          z = from * -220;
-          rot = from * 8;
-        } else if (node.classList.contains("pi-ledger-row")) {
-          y = from * 34;
-          z = from * -90;
-          rot = from * 2.5;
-        }
-
-        node.style.setProperty("--pi-enter", enter.toFixed(4));
-        node.style.setProperty("--pi-pass", pass.toFixed(4));
-        node.style.setProperty("--pi-enter-x", `${x.toFixed(2)}px`);
-        node.style.setProperty("--pi-enter-y", `${y.toFixed(2)}px`);
-        node.style.setProperty("--pi-enter-z", `${z.toFixed(2)}px`);
-        node.style.setProperty("--pi-enter-rot", `${rot.toFixed(2)}deg`);
-        node.style.setProperty("--pi-pass-y", `${(-28 * pass).toFixed(2)}px`);
-        node.style.setProperty("--pi-motion-opacity", `${(0.3 + enter * 0.7).toFixed(3)}`);
-      });
-
-      let active = "00";
-      let bestDistance = Number.POSITIVE_INFINITY;
-      const focusY = viewport * 0.46;
-      sections.forEach((section) => {
-        const rect = section.getBoundingClientRect();
-        const center = rect.top + Math.min(rect.height, viewport) * 0.36;
-        const distance = Math.abs(center - focusY);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          active = section.dataset.piSection ?? "00";
-        }
-      });
-      root.dataset.piActive = active;
     };
 
-    const schedule = () => {
-      if (!frame) frame = window.requestAnimationFrame(render);
+    const rearmGesture = () => {
+      consumedRef.current = false;
+      accumulatedRef.current = 0;
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      if (gestureEndTimer.current) window.clearTimeout(gestureEndTimer.current);
+      gestureEndTimer.current = window.setTimeout(rearmGesture, 260);
+      if (lockedRef.current || consumedRef.current) return;
+
+      accumulatedRef.current += event.deltaY;
+      if (Math.abs(accumulatedRef.current) < 42) return;
+
+      const direction = accumulatedRef.current > 0 ? 1 : -1;
+      consumedRef.current = true;
+      accumulatedRef.current = 0;
+      moveTo(positionRef.current + direction, direction);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        moveTo(positionRef.current + 1, 1);
+      } else if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        moveTo(positionRef.current - 1, -1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        moveTo(0, -1);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        moveTo(totalPositions - 1, 1);
+      }
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (touchStartY.current == null) return;
+      const endY = event.changedTouches[0]?.clientY ?? touchStartY.current;
+      const delta = touchStartY.current - endY;
+      touchStartY.current = null;
+      if (Math.abs(delta) < 34 || lockedRef.current) return;
+      moveTo(positionRef.current + (delta > 0 ? 1 : -1), delta > 0 ? 1 : -1);
     };
 
     const onPointerMove = (event: PointerEvent) => {
-      pointerX = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
-      pointerY = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
-      schedule();
+      const px = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+      const py = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+      root.style.setProperty("--pi-px", px.toFixed(3));
+      root.style.setProperty("--pi-py", py.toFixed(3));
     };
 
-    const onPointerLeave = () => {
-      pointerX = 0;
-      pointerY = 0;
-      schedule();
-    };
-
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.documentElement.addEventListener("mouseleave", onPointerLeave);
-    reduced.addEventListener("change", schedule);
-
-    render();
+    applyStates();
 
     return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("wheel", onWheel, true);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("pointermove", onPointerMove);
-      document.documentElement.removeEventListener("mouseleave", onPointerLeave);
-      reduced.removeEventListener("change", schedule);
-      if (frame) window.cancelAnimationFrame(frame);
+      if (gestureEndTimer.current) window.clearTimeout(gestureEndTimer.current);
+      if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      html.style.overscrollBehavior = previousOverscroll;
     };
-  }, []);
+  }, [stageCounts, stageStarts, totalPositions]);
+
+  useEffect(() => {
+    const root = document.querySelector<HTMLElement>(".project-intelligence-shell");
+    if (!root) return;
+    const current = decode(position);
+    root.dataset.piStage = String(current.stage);
+    root.dataset.piStep = String(current.step);
+
+    const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-stage-panel]"));
+    panels.forEach((panel, index) => {
+      const active = index === current.stage;
+      panel.dataset.active = active ? "true" : "false";
+      panel.setAttribute("aria-hidden", active ? "false" : "true");
+    });
+
+    const updateItems = (selector: string, stage: number) => {
+      const items = Array.from(root.querySelectorAll<HTMLElement>(selector));
+      items.forEach((item, index) => {
+        item.dataset.state = current.stage !== stage
+          ? "dormant"
+          : index === current.step
+            ? "active"
+            : index < current.step
+              ? "before"
+              : "after";
+      });
+    };
+
+    updateItems("[data-pi-evidence]", 1);
+    updateItems("[data-pi-case]", 2);
+    updateItems("[data-pi-build]", 4);
+
+    const interrogation = root.querySelector<HTMLElement>(".pi-stage-interrogation");
+    const cases = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-case]"));
+    if (interrogation && current.stage === 2) {
+      interrogation.dataset.activeLabel = cases[current.step]?.dataset.label ?? "INTERROGATION";
+    }
+  }, [position]);
+
+  const jumpToStage = (stage: number) => {
+    const target = stageStarts[stage] ?? 0;
+    moveTo(target, target >= positionRef.current ? 1 : -1);
+  };
 
   return (
-    <div className="pi-motion-layer" aria-hidden="true">
-      <div className="pi-depth-axis" />
-      <div className="pi-depth-marker" />
-      <div className="pi-ambient-sheet pi-ambient-sheet-a" />
-      <div className="pi-ambient-sheet pi-ambient-sheet-b" />
+    <div className="pi-stage-ui" aria-label="Project Intelligence stages">
+      <div className="pi-stage-counter">
+        <strong>{String(cursor.stage + 1).padStart(2, "0")}</strong>
+        <span>/ 05</span>
+      </div>
+      <div className="pi-stage-nav">
+        {STAGES.map((label, index) => (
+          <button
+            key={label}
+            type="button"
+            className={index === cursor.stage ? "active" : ""}
+            onClick={() => jumpToStage(index)}
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{label}</strong>
+          </button>
+        ))}
+      </div>
+      <div className="pi-stage-instruction">
+        <span>{cursor.step + 1} / {stageCounts[cursor.stage]}</span>
+        <strong>SCROLL / SWIPE TO ADVANCE</strong>
+      </div>
     </div>
   );
 }
