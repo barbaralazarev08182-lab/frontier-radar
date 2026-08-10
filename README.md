@@ -1,127 +1,194 @@
 # Frontier Radar
 
-个人前沿信息雷达：每日从 GitHub、Hugging Face、arXiv 发现值得关注的 AI / 机器学习 / 开源 / Vibe Coding / 产品设计 / 量化金融条目，并用 AI 解释成可行动的内容。
+**A personalized discovery engine for things being built at the frontier of technology.**
+
+Frontier Radar 不是普通 AI 新闻聚合器，也不是简单的 GitHub 热榜。它每天从多个技术来源发现正在变得值得关注的项目、Demo、模型、论文和工具，再通过评分、个性化和跨来源证据筛出 **Today’s 7**，最后把这 7 条信号综合成更高层的趋势与方向。
+
+核心产品链路：
+
+```text
+Discover → Understand → Get Inspired → Build
+```
+
+> **新协作者请先读：[`docs/START-HERE.md`](docs/START-HERE.md)**
+>
+> AI coding agent / Codex 还应阅读 [`AGENTS.md`](AGENTS.md)。
+
+## 当前产品形态
+
+### 数据发现
+
+当前候选来源包括：
+
+- GitHub
+- Hugging Face（Spaces-first）
+- Show HN
+- Product Hunt
+- arXiv
+
+推荐不只看绝对热度，重点关注：
+
+- Freshness
+- Domain Relevance
+- Momentum
+- Project Health
+- Novelty
+- Idea Spark
+- Tryability
+
+Today 默认保持探索结构：
+
+```text
+5 × Core + 1 × Adjacent + 1 × Wildcard
+```
+
+### `/today`
+
+当前 Today 正在从普通 Feed 演进成一个滚动驱动的 editorial / motion experience：
+
+```text
+Hero
+  ↓ continuous
+Compression
+  ↓ one gesture
+Today’s 7
+  ↓ one gesture
+Signal Weave
+  ↓ continuous
+```
+
+其中：
+
+- Adjacent 保留蓝色身份
+- Wildcard 保留橙色身份
+- Signal Weave 将 7 条 Daily Signals 综合成 3 个更高层 pattern
+
+当前 Today 的主要视觉 / motion 实验整合分支是：
+
+```text
+proto/today-foil-candy-v4
+```
+
+`main` 仍作为仓库入口与相对稳定基线。开始修改前请先确认任务应该落在哪个分支。
 
 ## 技术栈
 
-Next.js (App Router) · TypeScript (strict) · Tailwind CSS · shadcn/ui · Supabase PostgreSQL · Vercel · 腾讯云 TokenHub / OpenAI 兼容模型接口（经 AI Provider 抽象层）
+Next.js (App Router) · TypeScript (strict) · Tailwind CSS · shadcn/ui · Supabase PostgreSQL · Vercel · AI Provider 抽象层
 
 ## 环境要求
 
 - Node.js ≥ 20
-- npm（本仓库使用单一 lockfile：`package-lock.json`）
+- npm
+- 本仓库使用 `package-lock.json`
 
-## 安装
+## 安装与启动
 
 ```bash
 npm install
+npm run dev
 ```
+
+常用页面：
+
+```text
+http://localhost:3000/today
+http://localhost:3000/qa/motion-lab
+```
+
+## 工程检查
+
+```bash
+npm run typecheck
+npm run lint
+npm run test
+npm run build
+```
+
+Build / tests 通过不等于视觉通过。涉及 Today motion / UI 的改动必须尽量在真实浏览器验证。
 
 ## 环境变量
 
 复制 `.env.example` 为 `.env.local` 并填写。
 
-- **构建不依赖**任何密钥：缺环境变量时 `npm run build` 不会崩溃。
-- 调用 Supabase / AI 功能时才校验对应变量，缺失会给出清晰错误。
-- 仅 `NEXT_PUBLIC_*` 前缀变量会暴露给浏览器；密钥（service role / AI key）一律仅服务端。
-- 真实密钥只放 `.env.local` 或部署平台环境变量，**禁止**入库、入 git、入文档或快照。
+- 构建本身不应依赖真实密钥。
+- Supabase / AI / 外部 API 在实际调用时校验对应变量。
+- 仅 `NEXT_PUBLIC_*` 前缀变量可暴露给浏览器。
+- service role、AI key、GitHub token 等真实 secret **禁止入库**。
 
-| 变量 | 说明 | 范围 |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 项目地址 | 前端可用 |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 匿名 key | 前端可用 |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role（绕过 RLS） | 仅服务端 |
-| `GITHUB_TOKEN` | GitHub 采集 token（fine-grained PAT） | 仅服务端 |
-| `GITHUB_API_BASE_URL` / `GITHUB_API_VERSION` | GitHub API 地址与版本 | 仅服务端 |
-| `GITHUB_DISCOVERY_DAYS` 等 `GITHUB_*` | 发现/搜索/富化/超时/重试参数 | 仅服务端 |
-| `AI_PROVIDER` | AI Provider 标识（默认 `tencent`） | 仅服务端 |
-| `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` / `AI_EMBEDDING_MODEL` | 统一 AI Provider 配置 | 仅服务端 |
-
-## 启动
+## 主要命令
 
 ```bash
-npm run dev      # 开发
-npm run build    # 生产构建
-npm run start    # 生产启动
+npm run dev
+npm run build
+npm run start
+npm run typecheck
+npm run lint
+npm run test
+
+npm run collect:github
+npm run collect:github:dry
+npm run collect:huggingface
+npm run collect:huggingface:dry
+npm run collect:arxiv
+npm run collect:arxiv:dry
+npm run analyze:items
 ```
 
-## 检查命令
+具体可用脚本以 `package.json` 为准。
 
-```bash
-npm run typecheck   # TypeScript strict 类型检查
-npm run lint        # ESLint
-npm run test        # node:test（GitHub 采集器单元测试，不真实消耗 API 配额）
-npm run build       # 构建验证
-```
-
-## GitHub 采集（阶段 1.2）
-
-```bash
-npm run collect:github      # 真实采集：需 GITHUB_TOKEN + Supabase 配置
-npm run collect:github:dry  # dry-run：调用真实 GitHub API，完成发现/标准化/去重，不写数据库
-```
-
-- **真实采集**（`collect:github`）：发现 → 标准化 → 去重 → 写 `raw_items` /
-  `items` / `item_metrics_snapshot` / `collection_runs` / `collector_state`。
-- **dry-run**（`collect:github:dry`）：调用真实 GitHub API 并输出汇总统计，
-  不写数据库、不输出完整 payload、不输出 Token、不伪造成功。
-- 缺 `GITHUB_TOKEN`：真实采集明确失败；dry-run 输出缺失 Token 提示且不伪造成功。
-- 缺 Supabase 配置：真实采集明确报错；dry-run 仍可运行（但需 Token 调用真实 API）。
-- 可选参数：`--days` `--pages` `--per-page` `--enrich-limit` `--min-stars` `--readme-max-bytes`。
-
-健康检查（不返回任何密钥）：
-
-```bash
-curl http://localhost:3000/api/health
-```
-
-## 路由
+## 主要路由
 
 | 路径 | 说明 |
 | --- | --- |
 | `/` | 重定向到 `/today` |
-| `/today` | 今日值得关注条目 |
-| `/explore` | 按源 / 类型 / 标签浏览 |
+| `/today` | Daily Radar / Today’s 7 / Signal Weave |
+| `/explore` | 历史发现浏览 |
 | `/saved` | 收藏与笔记 |
-| `/idea-lab` | 灵感沉淀 |
+| `/idea-lab` | 灵感工作区 |
+| `/project/[id]` | Project Intelligence 详情 |
+| `/qa/motion-lab` | Today motion / interaction QA |
 | `/api/health` | 健康检查 |
 
-## 目录结构
+## 目录概览
 
-```
+```text
 frontier-radar/
-├── docs/                  文档（PRD / 数据源 / 评分 / 阶段 / 风险）
-├── supabase/migrations/   数据库迁移（0001 初始 + 0002 增量）
-├── src/
-│   ├── app/               App Router（today/explore/saved/idea-lab/api）
-│   │   └── api/cron/      未来 Vercel Cron（占位）
-│   ├── components/        UI 组件（site-nav / page-placeholder）
-│   ├── lib/
-│   │   ├── types/         统一数据类型
-│   │   ├── supabase/      client.ts（浏览器端）/ server.ts（服务端）/ admin.ts（脚本）
-│   │   ├── env/           server.ts / public.ts 环境变量封装
-│   │   ├── ai/            AI Provider 抽象层（暂不调用模型）
-│   │   ├── github/        GitHub HTTP 客户端（client/errors/rate-limit/types）
-│   │   ├── collectors/github/ 采集器（collector/normalize/discover/enrich/sink）
-│   │   ├── db/repositories/ 数据访问层（sources/collection-runs/raw-items/items/metric-snapshots/collector-state）
-│   │   ├── scoring/       评分逻辑（阶段 1.4）
-│   │   ├── jobs/          后台任务（阶段 1.6）
-│   │   ├── hash.ts        稳定 payload 哈希
-│   │   ├── concurrency.ts 受限并发执行器
-│   │   ├── logger.ts      结构化日志
-│   │   └── utils.ts       cn() 工具
-│   ├── config/            interest-profile.ts（兴趣画像）/ github-discovery.ts（发现查询组）
-│   └── styles/            全局样式
-└── scripts/               collect-github.ts（采集命令）
+├── docs/                     产品、数据、评分、风险、阶段和 handoff 文档
+├── supabase/migrations/      数据库迁移
+├── scripts/                  collector / doctor / analysis 脚本
+└── src/
+    ├── app/                  App Router 页面与 API
+    ├── components/frontier/  Today / Motion Lab / Signal Weave 等前端核心
+    ├── config/               兴趣画像 / discovery 配置
+    └── lib/
+        ├── collectors/       多来源采集器
+        ├── scoring/          Discovery Score
+        ├── feed/             Daily mix / ranking
+        ├── ai/               AI analysis / daily synthesis
+        ├── db/repositories/  数据访问层
+        └── supabase/         Supabase client/server/admin
 ```
 
-## 阶段进度
+## 文档阅读顺序
 
-- **阶段 0（基础）**：完成。
-- **阶段 1.1（可运行 Next.js 工程）**：完成（含 1.1.1 升级至 Next.js 16）。
-- **阶段 1.2（GitHub 采集器）**：完成。
-- 阶段 1.3（Hugging Face 采集器）及之后：未开始，须经确认。
+第一次接触项目建议按这个顺序：
 
-## 下一步
+1. [`docs/START-HERE.md`](docs/START-HERE.md)
+2. [`AGENTS.md`](AGENTS.md)（如果你是 coding agent 或使用 Codex）
+3. [`docs/checkpoints/2026-08-08-frontier-radar-checkpoint.md`](docs/checkpoints/2026-08-08-frontier-radar-checkpoint.md)
+4. `docs/DATA-SOURCES.md`
+5. `docs/SCORING.md`
+6. `docs/RISKS.md`
 
-见 `docs/PHASES.md` 与 `docs/RISKS.md`。
+`docs/PRD.md` 和 `docs/PHASES.md` 是项目最早期规划，仍有历史价值，但**不代表 2026-08-10 的全部现状**。
+
+## 协作原则
+
+- 修改前先确认 branch / HEAD。
+- 不把机器 PASS 当成视觉 PASS。
+- 不用不断增加高 specificity / `!important` 掩盖 CSS 架构冲突。
+- 不在视觉任务里顺手改推荐/数据逻辑。
+- 不在滚动任务里顺手重做视觉。
+- 不暴露 secret。
+- 不 force push，除非仓库 owner 明确要求。
+- 无法验证的部分要明确说明，不伪造验收结果。
