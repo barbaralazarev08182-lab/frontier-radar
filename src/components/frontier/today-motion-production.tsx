@@ -10,6 +10,7 @@ import type { EditorialSignal } from "@/components/frontier/today-editorial";
 import type { DailySynthesisSignalInput, DailySynthesisSnapshot } from "@/lib/ai/daily-synthesis";
 
 type ResolveSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
+type LoadSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
 
 interface TodayMotionProductionProps {
   dateLabel: string;
@@ -19,6 +20,7 @@ interface TodayMotionProductionProps {
   synthesisSignals: DailySynthesisSignalInput[];
   initialSnapshot: DailySynthesisSnapshot | null;
   resolveSynthesisAction: ResolveSynthesisAction | null;
+  loadSynthesisAction: LoadSynthesisAction | null;
 }
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -29,8 +31,10 @@ const SOURCE_LABEL: Record<string, string> = {
   arxiv: "ARXIV",
 };
 
-const SYNTHESIS_RETRY_DELAY_MS = 1_800;
-const SYNTHESIS_MAX_ATTEMPTS = 3;
+const SYNTHESIS_POLL_INTERVAL_MS = 2_500;
+const SYNTHESIS_POLL_WINDOW_MS = 120_000;
+const SYNTHESIS_GENERATION_RETRY_DELAY_MS = 12_000;
+const SYNTHESIS_MAX_GENERATION_ATTEMPTS = 2;
 
 function topicLabel(signal: EditorialSignal) {
   if (signal.lane === "adjacent") return "OUTSIDE YOUR BUBBLE";
@@ -50,6 +54,7 @@ export function TodayMotionProduction({
   synthesisSignals,
   initialSnapshot,
   resolveSynthesisAction,
+  loadSynthesisAction,
 }: TodayMotionProductionProps) {
   const [stage, setStage] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<DailySynthesisSnapshot | null>(initialSnapshot);
@@ -160,66 +165,114 @@ export function TodayMotionProduction({
   }, [dataLabel, dateLabel, signals, totalDiscoveries]);
 
   useEffect(() => {
-    if (snapshot || !resolveSynthesisAction) return;
+    if (snapshot || (!resolveSynthesisAction && !loadSynthesisAction)) return;
     const root = document.querySelector<HTMLElement>(".motion-lab-shell");
     const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
     if (!root || !scroller) return;
 
     let frame = 0;
-    let retryTimer = 0;
-    let attempts = 0;
+    let generationRetryTimer = 0;
+    let pollTimer = 0;
+    let generationAttempts = 0;
+    let pollStartedAt = 0;
+    let started = false;
     let disposed = false;
 
-    const maybeResolve = () => {
-      frame = 0;
-      if (disposed || requestedRef.current || attempts >= SYNTHESIS_MAX_ATTEMPTS) return;
+    const schedulePoll = () => {
+      if (disposed || !loadSynthesisAction) return;
+      if (Date.now() - pollStartedAt >= SYNTHESIS_POLL_WINDOW_MS) return;
+      window.clearTimeout(pollTimer);
+      pollTimer = window.setTimeout(pollPersistedSnapshot, SYNTHESIS_POLL_INTERVAL_MS);
+    };
 
-      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
-      const progress = scroller.scrollTop / travel;
-      if (progress < 0.2) return;
+    const pollPersistedSnapshot = () => {
+      if (disposed || !loadSynthesisAction) return;
+      void loadSynthesisAction()
+        .then((result) => {
+          if (disposed) return;
+          if (result) {
+            setSnapshot(result);
+            return;
+          }
+          schedulePoll();
+        })
+        .catch(() => {
+          if (!disposed) schedulePoll();
+        });
+    };
+
+    const launchGeneration = () => {
+      if (
+        disposed ||
+        !resolveSynthesisAction ||
+        requestedRef.current ||
+        generationAttempts >= SYNTHESIS_MAX_GENERATION_ATTEMPTS
+      ) {
+        return;
+      }
 
       requestedRef.current = true;
-      attempts += 1;
+      generationAttempts += 1;
 
       void resolveSynthesisAction()
         .then((result) => {
           if (disposed) return;
           requestedRef.current = false;
-
           if (result) {
             setSnapshot(result);
             return;
           }
 
-          if (attempts < SYNTHESIS_MAX_ATTEMPTS) {
-            window.clearTimeout(retryTimer);
-            retryTimer = window.setTimeout(maybeResolve, SYNTHESIS_RETRY_DELAY_MS);
+          if (generationAttempts < SYNTHESIS_MAX_GENERATION_ATTEMPTS) {
+            window.clearTimeout(generationRetryTimer);
+            generationRetryTimer = window.setTimeout(
+              launchGeneration,
+              SYNTHESIS_GENERATION_RETRY_DELAY_MS
+            );
           }
         })
         .catch(() => {
           if (disposed) return;
           requestedRef.current = false;
-          if (attempts < SYNTHESIS_MAX_ATTEMPTS) {
-            window.clearTimeout(retryTimer);
-            retryTimer = window.setTimeout(maybeResolve, SYNTHESIS_RETRY_DELAY_MS);
+          if (generationAttempts < SYNTHESIS_MAX_GENERATION_ATTEMPTS) {
+            window.clearTimeout(generationRetryTimer);
+            generationRetryTimer = window.setTimeout(
+              launchGeneration,
+              SYNTHESIS_GENERATION_RETRY_DELAY_MS
+            );
           }
         });
     };
 
+    const maybeStart = () => {
+      frame = 0;
+      if (disposed || started) return;
+
+      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+      const progress = scroller.scrollTop / travel;
+      if (progress < 0.2) return;
+
+      started = true;
+      pollStartedAt = Date.now();
+      pollPersistedSnapshot();
+      launchGeneration();
+    };
+
     const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(maybeResolve);
+      if (!frame) frame = window.requestAnimationFrame(maybeStart);
     };
 
     scroller.addEventListener("scroll", onScroll, { passive: true });
-    maybeResolve();
+    maybeStart();
     return () => {
       disposed = true;
       requestedRef.current = false;
       scroller.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
-      window.clearTimeout(retryTimer);
+      window.clearTimeout(generationRetryTimer);
+      window.clearTimeout(pollTimer);
     };
-  }, [resolveSynthesisAction, snapshot]);
+  }, [loadSynthesisAction, resolveSynthesisAction, snapshot]);
 
   return (
     <>
