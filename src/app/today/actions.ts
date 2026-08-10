@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai/daily-synthesis";
 import { generateDailySynthesis } from "@/lib/ai/generate-daily-synthesis";
 import { TokenHubClient } from "@/lib/ai/tokenhub-client";
+import { tryLoadDailySynthesis } from "@/lib/feed/daily-synthesis";
 import {
   findDailySynthesis,
   upsertDailySynthesisFailure,
@@ -18,6 +19,15 @@ import {
 function positiveNumber(value: string | undefined, fallback: number): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+export async function loadTodaySynthesis(
+  editionDate: string,
+  signalIds: string[]
+): Promise<DailySynthesisSnapshot | null> {
+  if (signalIds.length < 1 || signalIds.length > 7) return null;
+  if (new Set(signalIds).size !== signalIds.length) return null;
+  return tryLoadDailySynthesis(editionDate, signalIds);
 }
 
 /**
