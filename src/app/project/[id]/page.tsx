@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { loadProjectDetail } from "@/lib/feed/project-detail";
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
+import { ProjectIntelligenceMotion } from "@/components/frontier/project-intelligence-motion";
 import "./project-intelligence.css";
 
 export const dynamic = "force-dynamic";
@@ -146,12 +147,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="project-intelligence-shell">
+      <ProjectIntelligenceMotion />
       <div className="pi-frame">
         <Link href="/today" className="pi-back">
           <ArrowLeft className="h-3.5 w-3.5" /> Daily Radar
         </Link>
 
-        <header className="pi-hero">
+        <header className="pi-hero" data-pi-motion data-pi-section="00">
           <div className="pi-hero-main">
             <div className="pi-kicker">
               <strong>FR / PROJECT INTELLIGENCE</strong>
@@ -162,6 +164,23 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
             <h1 className="pi-title">{item.title}</h1>
             <p className="pi-deck">{summary}</p>
+          </div>
+
+          <div className="pi-hero-object" aria-hidden="true">
+            <div className="pi-object-sheet pi-object-sheet-back" />
+            <div className="pi-object-sheet pi-object-sheet-mid" />
+            <div className="pi-object-sheet pi-object-sheet-front">
+              <div className="pi-object-topline">
+                <span>FR / EVIDENCE DOSSIER</span>
+                <span>{SOURCE_LABEL[item.source] ?? item.source}</span>
+              </div>
+              <strong>{String(evidence.length).padStart(2, "0")}</strong>
+              <div className="pi-object-bottomline">
+                <span>EVIDENCE NODES</span>
+                <span>{read.label}</span>
+              </div>
+            </div>
+            <div className="pi-object-scan" />
           </div>
 
           <aside className="pi-hero-aside">
@@ -192,7 +211,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </aside>
         </header>
 
-        <section className="pi-section">
+        <section className="pi-section" data-pi-motion data-pi-section="01">
           <div className="pi-section-rail">
             <span className="pi-section-index">01 / EVIDENCE</span>
             <h2 className="pi-section-title">Why the radar believes it.</h2>
@@ -232,7 +251,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-        <section className="pi-section">
+        <section className="pi-section" data-pi-motion data-pi-section="02">
           <div className="pi-section-rail">
             <span className="pi-section-index">02 / THE CASE</span>
             <h2 className="pi-section-title">What actually matters.</h2>
@@ -256,7 +275,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-        <section className="pi-section">
+        <section className="pi-section" data-pi-motion data-pi-section="03">
           <div className="pi-section-rail">
             <span className="pi-section-index">03 / RADAR READ</span>
             <h2 className="pi-section-title">Why it entered the frontier set.</h2>
@@ -278,7 +297,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-        <section className="pi-section">
+        <section className="pi-section" data-pi-motion data-pi-section="04">
           <div className="pi-section-rail">
             <span className="pi-section-index">04 / BUILD SURFACE</span>
             <h2 className="pi-section-title">What this lets you build next.</h2>
@@ -304,7 +323,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-        <section className="pi-section">
+        <section className="pi-section" data-pi-motion data-pi-section="05">
           <div className="pi-section-rail">
             <span className="pi-section-index">05 / SOURCE LEDGER</span>
             <h2 className="pi-section-title">The record underneath the judgment.</h2>
@@ -332,7 +351,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-        <footer className="pi-footer">
+        <footer className="pi-footer" data-pi-motion data-pi-section="06">
           <h2 className="pi-footer-title">Signal understood. Decide what to do with it.</h2>
           <div className="pi-footer-meta">
             <div>FR / PROJECT INTELLIGENCE</div>
