@@ -119,7 +119,7 @@ export function TodayMotionProduction({
       if (deckBottom[0]) deckBottom[0].textContent = topic;
       if (deckBottom[1]) deckBottom[1].textContent = `${source} / SIGNAL`;
 
-      const open = () => window.open(signal.canonicalUrl, "_blank", "noopener,noreferrer");
+      const open = () => window.location.assign(`/project/${encodeURIComponent(signal.id)}`);
       const onClick = (event: MouseEvent) => {
         if (event.defaultPrevented) return;
         open();
