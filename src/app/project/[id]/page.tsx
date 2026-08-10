@@ -8,6 +8,7 @@ import { ProjectIntelligenceMotion } from "@/components/frontier/project-intelli
 import { ProjectIntelligenceField } from "@/components/frontier/project-intelligence-field";
 import "./project-intelligence.css";
 import "./project-intelligence-v3.css";
+import "./project-intelligence-v5.css";
 
 export const dynamic = "force-dynamic";
 
