@@ -1,0 +1,406 @@
+/* Gate 4.3 — intentionally bold contrast/color/effects pass. */
+
+/* Give Rising and New their own stronger identities instead of neutral greys. */
+.explore-field-shell[data-lens="rising"] {
+  --explore-accent: #a8cf00;
+  --explore-accent-soft: rgba(217, 255, 67, 0.22);
+}
+
+.explore-field-shell[data-lens="new"] {
+  --explore-accent: #16a9d4;
+  --explore-accent-soft: rgba(84, 216, 255, 0.2);
+}
+
+/* Search is a mode switch, not a quiet text link. */
+.explore-search-trigger {
+  position: relative;
+  isolation: isolate;
+  min-height: 2.9rem;
+  border: 1px solid #17181a;
+  border-bottom: 1px solid #17181a;
+  background: #17181a;
+  color: #fff;
+  padding: .78rem 1rem .76rem 1.05rem;
+  box-shadow: 5px 5px 0 #3150ff;
+  overflow: hidden;
+  transition:
+    transform 180ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.explore-search-trigger::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0 38%, rgba(49,80,255,.68) 45%, transparent 52% 100%);
+  translate: -120% 0;
+  transition: translate 520ms cubic-bezier(.2,.8,.2,1);
+}
+
+.explore-search-trigger::after {
+  content: "SCAN";
+  margin-left: .25rem;
+  color: #d9ff43;
+  font-size: .45rem;
+  letter-spacing: .15em;
+}
+
+.explore-search-trigger:hover,
+.explore-search-trigger:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 #ff5b21;
+  background: #0c0d0f;
+  outline: none;
+}
+
+.explore-search-trigger:hover::before,
+.explore-search-trigger:focus-visible::before {
+  translate: 120% 0;
+}
+
+.explore-search-trigger svg {
+  color: #54d8ff;
+}
+
+/* Once search opens, make the query itself the strongest control on the page. */
+.explore-field-shell[data-searching="true"] .explore-field-header {
+  background:
+    linear-gradient(90deg, rgba(49,80,255,.055), transparent 38%, rgba(255,91,33,.045)),
+    rgba(246,244,237,.97);
+}
+
+.explore-field-shell[data-searching="true"] .explore-field-kicker,
+.explore-field-shell[data-searching="true"] .explore-field-stats {
+  opacity: .62;
+}
+
+.explore-search-panel {
+  position: relative;
+  isolation: isolate;
+  min-height: 4rem;
+  border: 1px solid #17181a;
+  border-left: 5px solid #3150ff;
+  background:
+    linear-gradient(90deg, rgba(49,80,255,.16), transparent 24%, transparent 72%, rgba(255,91,33,.11)),
+    #15171a;
+  box-shadow:
+    0 1.1rem 3rem -2rem rgba(0,0,0,.7),
+    5px 5px 0 rgba(217,255,67,.8);
+  color: white;
+  overflow: hidden;
+}
+
+.explore-search-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -18%;
+  width: 20%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(84,216,255,.26), transparent);
+  transform: skewX(-12deg);
+  animation: explore-query-scan 3.2s linear infinite;
+}
+
+.explore-search-panel::after {
+  content: "LIVE QUERY / FILTERING FIELD";
+  position: absolute;
+  right: 3.2rem;
+  top: .52rem;
+  color: rgba(217,255,67,.78);
+  font: 700 .43rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .12em;
+  pointer-events: none;
+}
+
+@keyframes explore-query-scan {
+  from { translate: -12vw 0; }
+  to { translate: 125vw 0; }
+}
+
+.explore-search-panel > svg {
+  color: #54d8ff;
+  filter: drop-shadow(0 0 8px rgba(84,216,255,.38));
+}
+
+.explore-search-panel input {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  caret-color: #d9ff43;
+  font-size: clamp(1rem, 1.4vw, 1.24rem);
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+.explore-search-panel input::placeholder {
+  color: rgba(255,255,255,.44);
+}
+
+.explore-search-panel button {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+}
+
+.explore-search-panel button:hover,
+.explore-search-panel button:focus-visible {
+  border-color: #ff5b21;
+  background: #ff5b21;
+  outline: none;
+}
+
+/* The controller should look like the instrument panel that drives the field. */
+.explore-lens-strip {
+  position: relative !important;
+  overflow: hidden;
+  border-top: 1px solid rgba(23,24,26,.18) !important;
+  border-bottom: 1px solid rgba(23,24,26,.24) !important;
+  background:
+    linear-gradient(90deg, rgba(49,80,255,.09), rgba(248,246,240,.96) 31% 68%, rgba(255,91,33,.09)) !important;
+  box-shadow: 0 .9rem 2.8rem -2.4rem rgba(23,24,26,.48);
+}
+
+.explore-lens-strip::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #17181a 0 18%, #3150ff 18% 40%, #d9ff43 40% 60%, #54d8ff 60% 80%, #ff5b21 80% 100%);
+  pointer-events: none;
+}
+
+.explore-lens-title > svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #3150ff;
+  filter: drop-shadow(0 0 8px rgba(49,80,255,.24));
+  animation: explore-radar-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes explore-radar-pulse {
+  0%,100% { transform: scale(1); opacity: .72; }
+  50% { transform: scale(1.1) rotate(8deg); opacity: 1; }
+}
+
+.explore-lens-title strong {
+  font-size: .65rem;
+  color: #111214;
+}
+
+.explore-lens-title small {
+  color: rgba(17,18,20,.52);
+}
+
+.explore-lens-options button {
+  overflow: hidden;
+  min-height: 3.55rem;
+  border-width: 1px !important;
+  opacity: 1;
+  box-shadow: 0 .55rem 1.6rem -1.45rem rgba(23,24,26,.5);
+}
+
+.explore-lens-options button::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  opacity: .8;
+  transition: height 180ms ease, opacity 180ms ease;
+}
+
+.explore-lens-options button:nth-child(1) {
+  border-color: rgba(23,24,26,.28) !important;
+  background: rgba(23,24,26,.075) !important;
+}
+.explore-lens-options button:nth-child(1)::before { background: #17181a; }
+
+.explore-lens-options button:nth-child(2) {
+  border-color: rgba(49,80,255,.32) !important;
+  background: rgba(49,80,255,.095) !important;
+  color: #1738d1 !important;
+}
+.explore-lens-options button:nth-child(2)::before { background: #3150ff; }
+
+.explore-lens-options button:nth-child(3) {
+  border-color: rgba(154,192,0,.4) !important;
+  background: rgba(217,255,67,.27) !important;
+  color: #415200 !important;
+}
+.explore-lens-options button:nth-child(3)::before { background: #a8cf00; }
+
+.explore-lens-options button:nth-child(4) {
+  border-color: rgba(22,169,212,.38) !important;
+  background: rgba(84,216,255,.2) !important;
+  color: #087393 !important;
+}
+.explore-lens-options button:nth-child(4)::before { background: #16a9d4; }
+
+.explore-lens-options button:nth-child(5) {
+  border-color: rgba(255,91,33,.38) !important;
+  background: rgba(255,91,33,.13) !important;
+  color: #c43708 !important;
+}
+.explore-lens-options button:nth-child(5)::before { background: #ff5b21; }
+
+.explore-lens-options button:hover,
+.explore-lens-options button:focus-visible {
+  transform: translate(-2px, -4px) !important;
+  box-shadow: 5px 6px 0 rgba(23,24,26,.12), 0 1.2rem 2.2rem -1.5rem rgba(23,24,26,.48) !important;
+}
+
+.explore-lens-options button:hover::before,
+.explore-lens-options button:focus-visible::before,
+.explore-lens-options button.is-active::before {
+  height: 6px;
+  opacity: 1;
+}
+
+.explore-lens-options button:nth-child(1).is-active {
+  border-color: #17181a !important;
+  background: #17181a !important;
+  color: #fff !important;
+  box-shadow: 6px 6px 0 rgba(49,80,255,.22) !important;
+}
+.explore-lens-options button:nth-child(2).is-active {
+  border-color: #3150ff !important;
+  background: #3150ff !important;
+  color: #fff !important;
+  box-shadow: 6px 6px 0 rgba(49,80,255,.2) !important;
+}
+.explore-lens-options button:nth-child(3).is-active {
+  border-color: #a8cf00 !important;
+  background: #d9ff43 !important;
+  color: #111214 !important;
+  box-shadow: 6px 6px 0 rgba(168,207,0,.22) !important;
+}
+.explore-lens-options button:nth-child(4).is-active {
+  border-color: #16a9d4 !important;
+  background: #54d8ff !important;
+  color: #071519 !important;
+  box-shadow: 6px 6px 0 rgba(22,169,212,.22) !important;
+}
+.explore-lens-options button:nth-child(5).is-active {
+  border-color: #ff5b21 !important;
+  background: #ff5b21 !important;
+  color: #fff !important;
+  box-shadow: 6px 6px 0 rgba(255,91,33,.2) !important;
+}
+
+.explore-lens-options button.is-active small {
+  opacity: .78;
+  color: currentColor;
+}
+
+.explore-lens-reset {
+  border: 1px solid #17181a !important;
+  background: #fff !important;
+  color: #17181a !important;
+  box-shadow: 3px 3px 0 rgba(23,24,26,.12);
+}
+
+.explore-lens-reset:hover,
+.explore-lens-reset:focus-visible {
+  transform: translate(-1px,-1px);
+  border-color: #ff5b21 !important;
+  background: #ff5b21 !important;
+  color: white !important;
+  box-shadow: 5px 5px 0 rgba(49,80,255,.22);
+}
+
+/* The field gets more chromatic depth so the controls no longer disappear into paper. */
+.explore-field-stage {
+  background:
+    linear-gradient(90deg, transparent 49.88%, rgba(23,24,26,.045) 50%, transparent 50.12%),
+    linear-gradient(0deg, transparent 49.88%, rgba(23,24,26,.045) 50%, transparent 50.12%),
+    radial-gradient(circle at 57% 47%, var(--explore-accent-soft), transparent 24%),
+    radial-gradient(circle at 12% 15%, rgba(49,80,255,.055), transparent 24%),
+    radial-gradient(circle at 88% 80%, rgba(255,91,33,.045), transparent 23%);
+}
+
+/* Signal cards inherit their dominant discovery identity instead of all being beige rectangles. */
+.explore-signal[data-dominant="for-you"]:not(.is-focus) .explore-signal-button {
+  border-color: rgba(23,24,26,.2);
+  background: rgba(255,255,255,.42);
+}
+.explore-signal[data-dominant="adjacent"]:not(.is-focus) .explore-signal-button {
+  border-color: rgba(49,80,255,.27);
+  background: rgba(49,80,255,.085);
+}
+.explore-signal[data-dominant="rising"]:not(.is-focus) .explore-signal-button {
+  border-color: rgba(168,207,0,.3);
+  background: rgba(217,255,67,.13);
+}
+.explore-signal[data-dominant="new"]:not(.is-focus) .explore-signal-button {
+  border-color: rgba(22,169,212,.28);
+  background: rgba(84,216,255,.105);
+}
+.explore-signal[data-dominant="wildcard"]:not(.is-focus) .explore-signal-button {
+  border-color: rgba(255,91,33,.28);
+  background: rgba(255,91,33,.085);
+}
+
+.explore-signal:not(.is-focus) .explore-signal-button:hover,
+.explore-signal:not(.is-focus) .explore-signal-button:focus-visible {
+  background: rgba(255,255,255,.93);
+  box-shadow: 5px 6px 0 color-mix(in srgb, var(--explore-accent) 18%, transparent), 0 1.4rem 3rem -1.8rem rgba(23,24,26,.5);
+}
+
+/* The selected intelligence plate should clearly sit above the field. */
+.explore-focus-card {
+  border: 1px solid rgba(23,24,26,.28);
+  border-top: 5px solid var(--explore-accent);
+  box-shadow:
+    8px 9px 0 color-mix(in srgb, var(--explore-accent) 18%, transparent),
+    0 3rem 8rem -4rem rgba(23,24,26,.62);
+}
+
+.explore-focus-card::before {
+  border-color: color-mix(in srgb, var(--explore-accent) 58%, transparent);
+}
+
+.explore-focus-meta strong {
+  display: grid;
+  place-items: center;
+  min-width: 2.7rem;
+  min-height: 2.7rem;
+  padding: .25rem;
+  background: var(--explore-accent);
+  color: #fff;
+}
+
+.explore-field-shell[data-lens="rising"] .explore-focus-meta strong,
+.explore-field-shell[data-lens="new"] .explore-focus-meta strong {
+  color: #111214;
+}
+
+.explore-open-intelligence {
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--explore-accent) 24%, transparent);
+}
+
+.explore-open-intelligence:hover,
+.explore-open-intelligence:focus-visible {
+  transform: translate(-1px,-1px);
+  box-shadow: 6px 6px 0 color-mix(in srgb, var(--explore-accent) 32%, transparent);
+  outline: none;
+}
+
+@media (max-width: 700px) {
+  .explore-search-panel::after { display: none; }
+  .explore-search-trigger::after { display: none; }
+  .explore-lens-options button:hover,
+  .explore-lens-options button:focus-visible { transform: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-search-panel::before,
+  .explore-lens-title > svg { animation: none !important; }
+  .explore-search-trigger::before { display: none; }
+}
