@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Heart, Radar, Search, Sparkles, ThumbsDown, X } from "lucide-react";
+import { ArrowUpRight, Heart, MousePointer2, Radar, Search, Sparkles, ThumbsDown, X } from "lucide-react";
 import { TrackedDetailLink } from "@/components/frontier/tracked-detail-link";
 import { trackFeedback } from "@/lib/personalization/browser";
 import type { ExploreCandidate, ExploreLens } from "@/lib/feed/explore-candidates";
@@ -139,7 +139,7 @@ export function ExploreField({
     setSuppressed(new Set());
     setLiked(new Set());
     setQuery("");
-    setFocusId(null);
+    setFocusId(candidates[0]?.itemId ?? null);
   }
 
   return (
@@ -163,6 +163,10 @@ export function ExploreField({
           <span><strong>{candidates.length}</strong> signals in this scan</span>
           <span><strong>{totalDiscoveries}</strong> discoveries in range</span>
           <span>{personalized ? "PERSONAL GRAVITY ACTIVE" : "COLD-START GRAVITY"}</span>
+        </div>
+        <div className="explore-interaction-cue" aria-label="Explore interaction hint">
+          <MousePointer2 aria-hidden />
+          <span><strong>CLICK A SIGNAL TO INSPECT</strong> · SWITCH THE RADAR LENS TO RETUNE THE FIELD</span>
         </div>
         {searchOpen ? (
           <div className="explore-search-panel">
@@ -275,6 +279,7 @@ export function ExploreField({
                   <span className="explore-signal-index">{String(rank + 1).padStart(2, "0")}</span>
                   <strong>{candidate.title}</strong>
                   <span>{Math.round(candidate.lensScores[lens])} / {sourceLabel(candidate.source)}</span>
+                  <span className="explore-signal-affordance"><MousePointer2 aria-hidden /> INSPECT</span>
                 </button>
               )}
             </article>
@@ -313,10 +318,10 @@ export function ExploreField({
       <footer className="explore-field-edge">
         <div>
           <span>EDGE OF CURRENT SCAN</span>
-          <strong>This field is intentionally bounded.</strong>
-          <p>Explore the current candidates, teach the Radar, then return later for a new scan instead of falling into an endless feed.</p>
+          <strong>THIS SCAN STOPS HERE BY DESIGN.</strong>
+          <p>Reset the local field when you want to revisit hidden signals. A future scan can bring a different frontier back into range.</p>
         </div>
-        <button type="button" onClick={resetField}>RESET FIELD</button>
+        <button type="button" onClick={resetField}>RESET SCAN</button>
       </footer>
     </section>
   );
