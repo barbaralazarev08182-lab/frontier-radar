@@ -1,0 +1,6 @@
+/* Interrogation only: keep the existing composition and motion, but let the orange field show through the black sheets. */
+.pi-stage-interrogation .pi-interrogation-card {
+  background: rgba(8, 8, 8, .80);
+  backdrop-filter: blur(2px) saturate(.96);
+  -webkit-backdrop-filter: blur(2px) saturate(.96);
+}
