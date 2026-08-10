@@ -15,6 +15,11 @@ type Cursor = {
   step: number;
 };
 
+type MoveOptions = {
+  lockMs?: number;
+  transition?: boolean;
+};
+
 export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount }: Props) {
   const stageCounts = useMemo(
     () => [1, Math.max(1, evidenceCount), Math.max(1, caseCount), 1, Math.max(1, buildCount)],
@@ -45,24 +50,48 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
   const consumedRef = useRef(false);
   const lockedRef = useRef(false);
   const accumulatedRef = useRef(0);
+  const interrogationDeltaRef = useRef(0);
+  const interrogationMovedRef = useRef(false);
   const gestureEndTimer = useRef<number | null>(null);
   const unlockTimer = useRef<number | null>(null);
+  const transitionTimer = useRef<number | null>(null);
+  const pointerVelocityTimer = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const directionRef = useRef(1);
+  const lastPointerRef = useRef({ x: 0, y: 0 });
 
   const cursor = decode(position);
 
-  const moveTo = (next: number, direction: number) => {
+  const moveTo = (next: number, direction: number, options: MoveOptions = {}) => {
     const clamped = Math.max(0, Math.min(totalPositions - 1, next));
     if (clamped === positionRef.current) return;
+
+    const from = decode(positionRef.current);
+    const to = decode(clamped);
+    const root = document.querySelector<HTMLElement>(".project-intelligence-shell");
+
     directionRef.current = direction;
     positionRef.current = clamped;
-    lockedRef.current = true;
     setPosition(clamped);
+
+    const lockMs = options.lockMs ?? 920;
+    lockedRef.current = lockMs > 0;
     if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
-    unlockTimer.current = window.setTimeout(() => {
-      lockedRef.current = false;
-    }, 920);
+    if (lockMs > 0) {
+      unlockTimer.current = window.setTimeout(() => {
+        lockedRef.current = false;
+      }, lockMs);
+    }
+
+    if (root && options.transition !== false && from.stage !== to.stage) {
+      root.dataset.piTransition = `${from.stage}-${to.stage}`;
+      root.dataset.piTransitioning = "true";
+      root.style.setProperty("--pi-transition-dir", String(direction));
+      if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
+      transitionTimer.current = window.setTimeout(() => {
+        delete root.dataset.piTransitioning;
+      }, 980);
+    }
   };
 
   useEffect(() => {
@@ -124,12 +153,58 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
     const rearmGesture = () => {
       consumedRef.current = false;
       accumulatedRef.current = 0;
+      interrogationDeltaRef.current = 0;
+      interrogationMovedRef.current = false;
+      delete root.dataset.piScrub;
     };
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       if (gestureEndTimer.current) window.clearTimeout(gestureEndTimer.current);
-      gestureEndTimer.current = window.setTimeout(rearmGesture, 260);
+      gestureEndTimer.current = window.setTimeout(rearmGesture, 280);
+
+      const current = decode(positionRef.current);
+
+      // Interrogation is intentionally different: one physical trackpad gesture can scrub
+      // through several cards, but the gesture is never allowed to leak into Resolution.
+      if (current.stage === 2) {
+        root.dataset.piScrub = "true";
+        interrogationDeltaRef.current += event.deltaY;
+        const threshold = 58;
+        if (Math.abs(interrogationDeltaRef.current) < threshold) return;
+
+        const direction = interrogationDeltaRef.current > 0 ? 1 : -1;
+        const start = stageStarts[2] ?? 0;
+        const end = start + (stageCounts[2] ?? 1) - 1;
+        const canMoveInside = direction > 0
+          ? positionRef.current < end
+          : positionRef.current > start;
+
+        if (canMoveInside) {
+          const steps = Math.max(1, Math.floor(Math.abs(interrogationDeltaRef.current) / threshold));
+          const target = Math.max(start, Math.min(end, positionRef.current + direction * steps));
+          interrogationDeltaRef.current -= direction * steps * threshold;
+          interrogationMovedRef.current = true;
+          moveTo(target, direction, { lockMs: 0, transition: false });
+          applyStates();
+
+          // Reaching the edge during this same gesture arms a hard boundary.
+          if (target === start || target === end) consumedRef.current = true;
+          return;
+        }
+
+        if (interrogationMovedRef.current || consumedRef.current) {
+          consumedRef.current = true;
+          return;
+        }
+
+        // If the gesture starts at an edge, it is a fresh gesture and may leave the stage.
+        interrogationDeltaRef.current = 0;
+        consumedRef.current = true;
+        moveTo(positionRef.current + direction, direction);
+        return;
+      }
+
       if (lockedRef.current || consumedRef.current) return;
 
       accumulatedRef.current += event.deltaY;
@@ -167,14 +242,40 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
       const delta = touchStartY.current - endY;
       touchStartY.current = null;
       if (Math.abs(delta) < 34 || lockedRef.current) return;
-      moveTo(positionRef.current + (delta > 0 ? 1 : -1), delta > 0 ? 1 : -1);
+
+      const current = decode(positionRef.current);
+      const direction = delta > 0 ? 1 : -1;
+      if (current.stage === 2) {
+        const start = stageStarts[2] ?? 0;
+        const end = start + (stageCounts[2] ?? 1) - 1;
+        const distance = Math.max(1, Math.round(Math.abs(delta) / 72));
+        const target = Math.max(start, Math.min(end, positionRef.current + direction * distance));
+        if (target !== positionRef.current) {
+          moveTo(target, direction, { lockMs: 0, transition: false });
+          return;
+        }
+      }
+      moveTo(positionRef.current + direction, direction);
     };
 
     const onPointerMove = (event: PointerEvent) => {
       const px = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
       const py = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+      const dx = event.clientX - lastPointerRef.current.x;
+      const dy = event.clientY - lastPointerRef.current.y;
+      const velocity = Math.min(1, Math.hypot(dx, dy) / 64);
+      lastPointerRef.current = { x: event.clientX, y: event.clientY };
+
       root.style.setProperty("--pi-px", px.toFixed(3));
       root.style.setProperty("--pi-py", py.toFixed(3));
+      root.style.setProperty("--pi-mx", `${event.clientX}px`);
+      root.style.setProperty("--pi-my", `${event.clientY}px`);
+      root.style.setProperty("--pi-pointer-v", velocity.toFixed(3));
+
+      if (pointerVelocityTimer.current) window.clearTimeout(pointerVelocityTimer.current);
+      pointerVelocityTimer.current = window.setTimeout(() => {
+        root.style.setProperty("--pi-pointer-v", "0");
+      }, 90);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false, capture: true });
@@ -192,6 +293,8 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
       window.removeEventListener("pointermove", onPointerMove);
       if (gestureEndTimer.current) window.clearTimeout(gestureEndTimer.current);
       if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
+      if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
+      if (pointerVelocityTimer.current) window.clearTimeout(pointerVelocityTimer.current);
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
       html.style.overscrollBehavior = previousOverscroll;
@@ -243,6 +346,28 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
 
   return (
     <div className="pi-stage-ui" aria-label="Project Intelligence stages">
+      <div className="pi-pointer-field" aria-hidden="true" />
+      <div className="pi-pointer-probe" aria-hidden="true">
+        <i />
+        <b />
+        <span>FR</span>
+      </div>
+
+      <div className="pi-capture-hud" aria-hidden="true">
+        <div className="pi-hud-orbit pi-hud-orbit-a" />
+        <div className="pi-hud-orbit pi-hud-orbit-b" />
+        <div className="pi-hud-reticle" />
+        <span className="pi-hud-tag pi-hud-tag-a">DOSSIER / ACTIVE</span>
+        <span className="pi-hud-tag pi-hud-tag-b">CURSOR / PROBE</span>
+        <span className="pi-hud-tag pi-hud-tag-c">TRACE / LIVE</span>
+      </div>
+
+      <div className="pi-transition-gate" aria-hidden="true">
+        <i className="pi-gate-blade pi-gate-blade-a" />
+        <i className="pi-gate-blade pi-gate-blade-b" />
+        <b className="pi-gate-core" />
+      </div>
+
       <div className="pi-stage-counter">
         <strong>{String(cursor.stage + 1).padStart(2, "0")}</strong>
         <span>/ 05</span>
@@ -262,7 +387,7 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
       </div>
       <div className="pi-stage-instruction">
         <span>{cursor.step + 1} / {stageCounts[cursor.stage]}</span>
-        <strong>SCROLL / SWIPE TO ADVANCE</strong>
+        <strong>{cursor.stage === 2 ? "ONE GESTURE / SCRUB THE CASE" : "SCROLL / SWIPE TO ADVANCE"}</strong>
       </div>
     </div>
   );
