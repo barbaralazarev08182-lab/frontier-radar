@@ -223,10 +223,12 @@ export function ProjectIntelligenceField() {
     let targetY = 0;
     let px = 0;
     let py = 0;
+    let needsResize = true;
     const start = performance.now();
 
     const resize = () => {
-      const dpr = Math.min(1.6, window.devicePixelRatio || 1);
+      if (!needsResize) return;
+      const dpr = Math.min(1.25, window.devicePixelRatio || 1);
       const width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
       const height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -234,6 +236,11 @@ export function ProjectIntelligenceField() {
         canvas.height = height;
       }
       gl.viewport(0, 0, width, height);
+      needsResize = false;
+    };
+
+    const onResize = () => {
+      needsResize = true;
     };
 
     const onPointer = (event: PointerEvent) => {
@@ -242,13 +249,17 @@ export function ProjectIntelligenceField() {
     };
 
     const render = (now: number) => {
+      if (document.visibilityState === "hidden") {
+        frame = window.requestAnimationFrame(render);
+        return;
+      }
+
       resize();
       px += (targetX - px) * .072;
       py += (targetY - py) * .072;
 
       const stageValue = Number(root.dataset.piStage ?? "0");
       const stepValue = Number(root.dataset.piStep ?? "0");
-      root.style.setProperty("--pi-idle-time", String((now - start) / 1000));
 
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -264,11 +275,14 @@ export function ProjectIntelligenceField() {
     };
 
     window.addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    resize();
     frame = window.requestAnimationFrame(render);
     root.dataset.piWebgl = "ready";
 
     return () => {
       window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("resize", onResize);
       window.cancelAnimationFrame(frame);
       gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
