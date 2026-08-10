@@ -4,6 +4,116 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 const STAGES = ["CAPTURE", "EVIDENCE", "INTERROGATION", "RESOLUTION", "BUILD"] as const;
 
+const PERF_STYLE = `
+.project-intelligence-shell .pi-stage[data-active="true"]::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+.project-intelligence-shell .pi-stage {
+  filter: none !important;
+  contain: paint;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  transition:
+    opacity 260ms ease,
+    transform 700ms cubic-bezier(.16,1,.3,1),
+    visibility 0s linear 700ms !important;
+}
+
+.project-intelligence-shell .pi-stage[data-active="true"] {
+  animation: none !important;
+}
+
+.project-intelligence-shell .pi-hud-tag,
+.project-intelligence-shell .pi-capture-sheet-1 {
+  backdrop-filter: none !important;
+}
+
+.project-intelligence-shell .pi-hud-tag {
+  background: rgba(247,245,238,.84) !important;
+}
+
+.project-intelligence-shell .pi-pointer-field {
+  inset: auto !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 520px !important;
+  height: 520px !important;
+  transform: translate3d(calc(var(--pi-mx) - 260px), calc(var(--pi-my) - 260px), 0);
+  will-change: transform;
+  contain: strict;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.13), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(118,205,255,.07), transparent 74%) !important;
+}
+
+.project-intelligence-shell[data-pi-stage="2"] .pi-pointer-field {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,235,211,.20), transparent 32%),
+    radial-gradient(circle at 50% 50%, rgba(80,0,0,.13), transparent 72%) !important;
+}
+
+.project-intelligence-shell[data-pi-stage="4"] .pi-pointer-field {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.18), transparent 34%),
+    radial-gradient(circle at 50% 50%, rgba(137,214,255,.12), transparent 76%) !important;
+}
+
+.project-intelligence-shell[data-pi-scrub="true"] .pi-stage-interrogation::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+
+.project-intelligence-shell[data-pi-scrub="true"] .pi-interrogation-stack::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 50%;
+  z-index: 40;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255,243,226,.76), transparent);
+  box-shadow: 0 0 18px rgba(255,230,190,.34);
+  animation: pi-perf-scrub-line .34s ease-out infinite alternate;
+}
+
+.project-intelligence-shell[data-pi-scrub="true"] .pi-interrogation-card[data-state="active"] {
+  animation: none !important;
+}
+
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-capture-object,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-capture-sheet,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-hud-orbit,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-hud-reticle,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-hud-tag,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-evidence::before,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-evidence-card,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-interrogation::before,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-interrogation-card,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-resolution::before,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-score-shard,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-resolution-core,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-build::before,
+.project-intelligence-shell[data-pi-transitioning="true"] .pi-build-card {
+  animation-play-state: paused !important;
+}
+
+@keyframes pi-perf-scrub-line {
+  from { transform: scaleX(.58); opacity: .34; }
+  to { transform: scaleX(1); opacity: .9; }
+}
+
+@keyframes pi-v4-build-tunnel {
+  0% { transform: scale(.18) rotate(-8deg); opacity: 0; }
+  42% { transform: scale(.92) rotate(0deg); opacity: .95; }
+  100% { transform: scale(3.2) rotate(7deg); opacity: 0; }
+}
+`;
+
 type Props = {
   evidenceCount: number;
   caseCount: number;
@@ -18,6 +128,14 @@ type Cursor = {
 type MoveOptions = {
   lockMs?: number;
   transition?: boolean;
+};
+
+type PendingPointer = {
+  px: number;
+  py: number;
+  x: number;
+  y: number;
+  velocity: number;
 };
 
 export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount }: Props) {
@@ -56,9 +174,11 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
   const unlockTimer = useRef<number | null>(null);
   const transitionTimer = useRef<number | null>(null);
   const pointerVelocityTimer = useRef<number | null>(null);
+  const pointerFrameRef = useRef<number | null>(null);
+  const pendingPointerRef = useRef<PendingPointer | null>(null);
   const touchStartY = useRef<number | null>(null);
   const directionRef = useRef(1);
-  const lastPointerRef = useRef({ x: 0, y: 0 });
+  const lastPointerRef = useRef({ x: 0, y: 0, ready: false });
 
   const cursor = decode(position);
 
@@ -73,6 +193,12 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
     directionRef.current = direction;
     positionRef.current = clamped;
     setPosition(clamped);
+
+    if (root) {
+      root.dataset.piStage = String(to.stage);
+      root.dataset.piStep = String(to.step);
+      root.dataset.piDir = String(direction);
+    }
 
     const lockMs = options.lockMs ?? 920;
     lockedRef.current = lockMs > 0;
@@ -165,8 +291,6 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
 
       const current = decode(positionRef.current);
 
-      // Interrogation is intentionally different: one physical trackpad gesture can scrub
-      // through several cards, but the gesture is never allowed to leak into Resolution.
       if (current.stage === 2) {
         root.dataset.piScrub = "true";
         interrogationDeltaRef.current += event.deltaY;
@@ -186,9 +310,7 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
           interrogationDeltaRef.current -= direction * steps * threshold;
           interrogationMovedRef.current = true;
           moveTo(target, direction, { lockMs: 0, transition: false });
-          applyStates();
 
-          // Reaching the edge during this same gesture arms a hard boundary.
           if (target === start || target === end) consumedRef.current = true;
           return;
         }
@@ -198,7 +320,6 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
           return;
         }
 
-        // If the gesture starts at an edge, it is a fresh gesture and may leave the stage.
         interrogationDeltaRef.current = 0;
         consumedRef.current = true;
         moveTo(positionRef.current + direction, direction);
@@ -258,24 +379,36 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
       moveTo(positionRef.current + direction, direction);
     };
 
-    const onPointerMove = (event: PointerEvent) => {
-      const px = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
-      const py = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
-      const dx = event.clientX - lastPointerRef.current.x;
-      const dy = event.clientY - lastPointerRef.current.y;
-      const velocity = Math.min(1, Math.hypot(dx, dy) / 64);
-      lastPointerRef.current = { x: event.clientX, y: event.clientY };
+    const flushPointer = () => {
+      pointerFrameRef.current = null;
+      const pending = pendingPointerRef.current;
+      if (!pending) return;
 
-      root.style.setProperty("--pi-px", px.toFixed(3));
-      root.style.setProperty("--pi-py", py.toFixed(3));
-      root.style.setProperty("--pi-mx", `${event.clientX}px`);
-      root.style.setProperty("--pi-my", `${event.clientY}px`);
-      root.style.setProperty("--pi-pointer-v", velocity.toFixed(3));
+      root.style.setProperty("--pi-px", pending.px.toFixed(3));
+      root.style.setProperty("--pi-py", pending.py.toFixed(3));
+      root.style.setProperty("--pi-mx", `${pending.x}px`);
+      root.style.setProperty("--pi-my", `${pending.y}px`);
+      root.style.setProperty("--pi-pointer-v", pending.velocity.toFixed(3));
 
       if (pointerVelocityTimer.current) window.clearTimeout(pointerVelocityTimer.current);
       pointerVelocityTimer.current = window.setTimeout(() => {
         root.style.setProperty("--pi-pointer-v", "0");
       }, 90);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const px = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+      const py = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+      const last = lastPointerRef.current;
+      const velocity = last.ready
+        ? Math.min(1, Math.hypot(event.clientX - last.x, event.clientY - last.y) / 64)
+        : 0;
+      lastPointerRef.current = { x: event.clientX, y: event.clientY, ready: true };
+      pendingPointerRef.current = { px, py, x: event.clientX, y: event.clientY, velocity };
+
+      if (pointerFrameRef.current == null) {
+        pointerFrameRef.current = window.requestAnimationFrame(flushPointer);
+      }
     };
 
     window.addEventListener("wheel", onWheel, { passive: false, capture: true });
@@ -295,6 +428,7 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
       if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
       if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
       if (pointerVelocityTimer.current) window.clearTimeout(pointerVelocityTimer.current);
+      if (pointerFrameRef.current != null) window.cancelAnimationFrame(pointerFrameRef.current);
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
       html.style.overscrollBehavior = previousOverscroll;
@@ -346,6 +480,7 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
 
   return (
     <div className="pi-stage-ui" aria-label="Project Intelligence stages">
+      <style>{PERF_STYLE}</style>
       <div className="pi-pointer-field" aria-hidden="true" />
       <div className="pi-pointer-probe" aria-hidden="true">
         <i />
