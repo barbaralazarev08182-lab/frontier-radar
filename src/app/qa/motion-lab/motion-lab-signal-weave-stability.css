@@ -1,0 +1,77 @@
+/* -------------------------------------------------------------------------- */
+/* SIGNAL WEAVE / STABILITY                                                   */
+/* Keep the analysis instrument viewport-locked and terminal.                 */
+/* -------------------------------------------------------------------------- */
+
+.weave-analysis {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.weave-scroll-space {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.weave-stage {
+  position: absolute !important;
+  inset: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* The handoff controller is the single source of truth for chapter ownership. */
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-hud,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-meta,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-progress,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-deck-readout,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-scanline,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-field {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 220ms ease, visibility 0s linear 220ms !important;
+}
+
+/* Signal Weave is the final scene. There is no secondary scroll-to-resolve beat. */
+.weave-take,
+.weave-scroll-cue {
+  display: none !important;
+}
+
+.weave-canvas {
+  transform: none !important;
+}
+
+/* Safety: even if stale state briefly reports data-take=true during hot reload,
+   keep the visible composition identical to the normal weave state. */
+.weave-analysis[data-take="true"] .weave-readout {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .weave-analysis { overflow-y: auto !important; overscroll-behavior: contain !important; }
+  .weave-scroll-space { position: relative !important; height: auto !important; min-height: 100svh !important; overflow: visible !important; }
+  .weave-stage { position: relative !important; height: auto !important; min-height: 100svh !important; overflow: visible !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-hud,
+  .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-meta,
+  .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-progress,
+  .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-deck-readout,
+  .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-scanline,
+  .motion-lab-shell[data-direct-handoff="ready"] .motion-lab-field,
+  .weave-canvas {
+    transition: none !important;
+  }
+}

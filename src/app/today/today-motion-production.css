@@ -1,0 +1,132 @@
+.today-production-shell {
+  min-height: 100svh;
+  background: #f1eee5;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-hud {
+  display: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-progress {
+  opacity: .34;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta {
+  top: 1.65rem;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta > div:last-child {
+  margin-left: auto;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta strong,
+.motion-lab-shell[data-production="true"] .motion-lab-meta > div:last-child span:last-child {
+  opacity: 1;
+}
+
+/* Authored demo clusters never enter the production data path. */
+.motion-lab-shell[data-production="true"] .motion-lab-topic-map {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"] {
+  cursor: pointer;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-signal[role="link"]:focus-visible {
+  outline: 2px solid #3150ff;
+  outline-offset: 5px;
+}
+
+/* The approved Signal Weave remains the only final chapter. */
+.today-production-analysis.motion-lab-analysis {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  width: 100%;
+  height: 100svh;
+  padding: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+  background: #eef1ee;
+}
+
+.motion-lab-shell[data-direct-handoff="ready"] .today-production-analysis.motion-lab-analysis {
+  pointer-events: auto !important;
+}
+
+.motion-lab-shell[data-production="true"] .motion-lab-meta [data-production-placeholder="true"] {
+  visibility: hidden;
+}
+
+.today-synthesis-pending {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 54% 42%, rgba(255,255,255,.96) 0 10%, transparent 30%),
+    linear-gradient(135deg, #f7f8f3 0%, #edf2f4 48%, #f6f2ec 100%);
+  color: #11171c;
+}
+
+.today-synthesis-pending-grid {
+  position: absolute;
+  inset: 0;
+  opacity: .23;
+  background-image:
+    linear-gradient(rgba(15,25,32,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,25,32,.04) 1px, transparent 1px);
+  background-size: 5.4vw 5.4vw;
+  mask-image: radial-gradient(circle at 54% 46%, #000 0 46%, transparent 82%);
+}
+
+.today-synthesis-pending-copy {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  gap: .8rem;
+  min-width: min(34rem, 76vw);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.today-synthesis-pending-copy span,
+.today-synthesis-pending-copy strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.today-synthesis-pending-copy span {
+  font-size: .56rem;
+  font-weight: 850;
+  letter-spacing: .15em;
+  color: rgba(17,23,28,.5);
+}
+
+.today-synthesis-pending-copy strong {
+  font-size: clamp(.86rem, 1.15vw, 1.15rem);
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.today-synthesis-pending-copy p {
+  margin: .15rem 0 0;
+  color: rgba(17,23,28,.52);
+  font-size: .78rem;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-shell[data-production="true"] .motion-lab-meta {
+    top: 1rem;
+  }
+
+  .today-production-analysis.motion-lab-analysis,
+  .today-synthesis-pending {
+    height: 100svh;
+  }
+}

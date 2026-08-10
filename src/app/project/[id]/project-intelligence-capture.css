@@ -1,0 +1,448 @@
+/* Project Intelligence / Capture hero only.
+   Purposefully isolated from stages 02–05. No scroll or transition ownership here. */
+
+/* ---------- immersive paper / light field ---------- */
+
+.project-intelligence-shell .pi-stage-capture {
+  background:
+    radial-gradient(circle at calc(78% + var(--pi-px) * 8%) calc(27% + var(--pi-py) * 7%), rgba(108,214,255,.18), transparent 19%),
+    radial-gradient(circle at calc(70% + var(--pi-px) * -5%) calc(42% + var(--pi-py) * -4%), rgba(255,166,211,.11), transparent 23%),
+    radial-gradient(circle at 52% 38%, rgba(255,255,255,.76), transparent 38%),
+    linear-gradient(112deg,#f2efe6 0%,#f5f2ea 54%,#ece9df 100%);
+}
+
+.project-intelligence-shell .pi-stage-capture::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    radial-gradient(circle 250px at var(--pi-mx) calc(var(--pi-my) - 3rem), rgba(255,255,255,.58), rgba(113,214,255,.10) 34%, transparent 72%),
+    linear-gradient(90deg,transparent 0 52%,rgba(49,80,255,.025) 68%,transparent 92%);
+  mix-blend-mode:screen;
+  opacity:.82;
+  animation:pi-capture-lens-breathe 5.6s ease-in-out infinite alternate;
+}
+
+.project-intelligence-shell .pi-stage-capture::after {
+  content:"";
+  position:absolute;
+  z-index:2;
+  inset:-34% -24%;
+  pointer-events:none;
+  background:
+    linear-gradient(111deg,
+      transparent 0 39%,
+      rgba(119,223,255,.07) 42%,
+      rgba(255,255,255,.62) 47%,
+      rgba(255,172,220,.16) 51%,
+      rgba(255,211,123,.07) 54%,
+      transparent 60% 100%);
+  opacity:.72;
+  transform:translate3d(-22%,0,0);
+  animation:pi-capture-hero-sweep 8.4s cubic-bezier(.16,1,.3,1) infinite;
+}
+
+.project-intelligence-shell .pi-capture-noise {
+  opacity:1;
+  background:
+    radial-gradient(rgba(8,8,8,.075) .55px,transparent .65px) 0 0/13px 13px,
+    repeating-linear-gradient(106deg,transparent 0 42px,rgba(255,255,255,.16) 43px,transparent 44px);
+  animation:pi-capture-grid-drift 18s linear infinite !important;
+}
+
+.project-intelligence-shell .pi-capture-noise::before,
+.project-intelligence-shell .pi-capture-noise::after {
+  content:"";
+  position:absolute;
+  z-index:3;
+  pointer-events:none;
+  border:1px solid rgba(8,8,8,.12);
+  border-radius:50%;
+  transform-origin:center;
+}
+
+.project-intelligence-shell .pi-capture-noise::before {
+  right:5.2vw;
+  top:3.5vh;
+  width:45vw;
+  height:56vh;
+  transform:rotate(-11deg) translate3d(calc(var(--pi-px) * 12px),calc(var(--pi-py) * 8px),0);
+  border-color:rgba(8,8,8,.13);
+  box-shadow:0 0 0 1px rgba(49,80,255,.025) inset;
+  animation:pi-capture-orbit-a 11s ease-in-out infinite alternate;
+}
+
+.project-intelligence-shell .pi-capture-noise::after {
+  right:10vw;
+  top:8vh;
+  width:36vw;
+  height:45vh;
+  border-color:rgba(49,80,255,.15);
+  transform:rotate(17deg) translate3d(calc(var(--pi-px) * -9px),calc(var(--pi-py) * -7px),0);
+  animation:pi-capture-orbit-b 8.6s ease-in-out -2.4s infinite alternate;
+}
+
+/* ---------- headline becomes part of the interaction ---------- */
+
+.project-intelligence-shell .pi-capture-copy {
+  left:5.2vw;
+  top:11.5vh;
+  width:54vw;
+  z-index:7;
+  transform:translate3d(calc(var(--pi-px) * -7px),calc(var(--pi-py) * -4px),0);
+}
+
+.project-intelligence-shell .pi-kicker {
+  margin-bottom:1.15rem;
+  opacity:.58;
+}
+
+.project-intelligence-shell .pi-title {
+  max-width:54vw;
+  font-size:clamp(4.8rem,6.65vw,8.65rem);
+  line-height:.805;
+  letter-spacing:-.08em;
+  background:
+    linear-gradient(102deg,
+      #080808 0 49%,
+      #080808 53%,
+      #9b8263 59%,
+      #6c8996 65%,
+      #76bdd9 68%,
+      #080808 76% 100%);
+  background-size:235% 100%;
+  background-position:calc(52% + var(--pi-px) * 20%) 50%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  transform:
+    perspective(1000px)
+    rotateY(calc(var(--pi-px) * -1.8deg))
+    rotateX(calc(var(--pi-py) * .75deg))
+    skewX(calc(var(--pi-pointer-v) * -1.6deg))
+    scaleX(calc(1 + var(--pi-pointer-v) * .038));
+  text-shadow:0 20px 38px rgba(8,8,8,.025);
+  filter:saturate(calc(1 + var(--pi-pointer-v) * .6));
+  transition:filter 180ms ease;
+}
+
+.project-intelligence-shell .pi-capture-copy::after {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:9%;
+  top:27%;
+  width:42vw;
+  height:38vh;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 52% 48%,rgba(120,205,255,.11),rgba(255,184,217,.045) 37%,transparent 69%);
+  filter:blur(8px);
+  transform:translate3d(calc(var(--pi-px) * 14px),calc(var(--pi-py) * 8px),0);
+  animation:pi-capture-title-aura 6.8s ease-in-out infinite alternate;
+}
+
+.project-intelligence-shell .pi-deck {
+  max-width:47vw;
+  margin-top:1rem;
+  color:rgba(8,8,8,.56);
+  transform:translate3d(calc(var(--pi-px) * -3px),0,0);
+}
+
+/* ---------- dossier becomes the anchor object ---------- */
+
+.project-intelligence-shell .pi-capture-object {
+  right:7.6rem;
+  top:7.8vh;
+  width:min(36.2vw,700px);
+  height:min(46vh,465px);
+  min-height:330px;
+  z-index:9;
+  cursor:crosshair;
+  transform:
+    perspective(1250px)
+    translate3d(calc(var(--pi-px) * 26px),calc(var(--pi-py) * 18px),0)
+    rotateX(calc(var(--pi-py) * -2deg))
+    rotateY(calc(var(--pi-px) * 3.1deg))
+    rotateZ(calc(-1.9deg + var(--pi-px) * .9deg));
+  transform-origin:50% 48%;
+  animation:pi-capture-anchor-float 5.4s ease-in-out infinite alternate;
+  transition:scale 420ms cubic-bezier(.16,1,.3,1),filter 420ms ease;
+  filter:drop-shadow(0 34px 30px rgba(16,20,32,.08));
+}
+
+.project-intelligence-shell .pi-capture-object::before,
+.project-intelligence-shell .pi-capture-object::after {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  border-radius:50%;
+  transform-origin:center;
+}
+
+.project-intelligence-shell .pi-capture-object::before {
+  inset:-24% -17%;
+  border:1px solid rgba(8,8,8,.15);
+  transform:rotate(-13deg);
+  animation:pi-capture-object-orbit 9.2s ease-in-out infinite alternate;
+}
+
+.project-intelligence-shell .pi-capture-object::after {
+  inset:-12% -26%;
+  border-top:1px solid rgba(49,80,255,.24);
+  border-bottom:1px solid rgba(241,84,36,.16);
+  transform:rotate(13deg);
+  animation:pi-capture-object-orbit-reverse 7.6s ease-in-out -2s infinite alternate;
+}
+
+.project-intelligence-shell .pi-capture-sheet {
+  transition:
+    translate 500ms cubic-bezier(.16,1,.3,1),
+    scale 500ms cubic-bezier(.16,1,.3,1),
+    box-shadow 500ms ease,
+    filter 500ms ease;
+}
+
+.project-intelligence-shell .pi-capture-sheet-1 {
+  background:
+    radial-gradient(circle at calc(52% + var(--pi-px) * 22%) calc(45% + var(--pi-py) * 18%),rgba(255,255,255,.95),transparent 27%),
+    linear-gradient(122deg,rgba(255,255,255,.995),rgba(246,243,235,.975));
+  box-shadow:
+    0 30px 70px rgba(16,20,28,.11),
+    inset 0 0 0 1px rgba(255,255,255,.7);
+}
+
+.project-intelligence-shell .pi-capture-sheet-1::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    radial-gradient(circle 170px at calc(52% + var(--pi-px) * 55%) calc(46% + var(--pi-py) * 45%),rgba(117,226,255,.14),rgba(255,175,224,.07) 31%,transparent 68%),
+    repeating-linear-gradient(105deg,transparent 0 22px,rgba(255,255,255,.11) 23px,transparent 24px);
+  mix-blend-mode:screen;
+  opacity:.72;
+  animation:pi-capture-surface-breathe 4.8s ease-in-out infinite alternate;
+}
+
+.project-intelligence-shell .pi-capture-sheet-1 > * {
+  position:relative;
+  z-index:3;
+}
+
+.project-intelligence-shell .pi-capture-sheet-1 > strong {
+  text-shadow:0 14px 34px rgba(8,8,8,.07);
+  transform:translate3d(calc(var(--pi-px) * -6px),calc(var(--pi-py) * -4px),0);
+}
+
+.project-intelligence-shell .pi-capture-sheet-2 {
+  filter:saturate(1.06) contrast(1.03);
+  box-shadow:0 26px 50px rgba(49,80,255,.10);
+}
+
+.project-intelligence-shell .pi-capture-sheet-3 {
+  filter:saturate(1.04);
+  box-shadow:0 28px 54px rgba(241,84,36,.10);
+}
+
+.project-intelligence-shell .pi-capture-object:hover {
+  scale:1.028;
+  filter:drop-shadow(0 42px 38px rgba(16,20,32,.13));
+}
+
+.project-intelligence-shell .pi-capture-object:hover .pi-capture-sheet-1 {
+  translate:-8px -7px;
+  scale:1.006;
+}
+
+.project-intelligence-shell .pi-capture-object:hover .pi-capture-sheet-2 {
+  translate:10px 13px;
+  scale:1.006;
+}
+
+.project-intelligence-shell .pi-capture-object:hover .pi-capture-sheet-3 {
+  translate:22px 21px;
+  scale:1.008;
+}
+
+.project-intelligence-shell .pi-capture-object:hover .pi-capture-sheet-4 {
+  translate:31px 30px;
+  scale:1.01;
+}
+
+.project-intelligence-shell .pi-capture-object:hover ~ .pi-capture-verdict {
+  translate:-7px 2px;
+}
+
+/* ---------- verdict behaves like a live lock readout ---------- */
+
+.project-intelligence-shell .pi-capture-verdict {
+  right:7.8rem;
+  bottom:4.7vh;
+  width:min(32vw,605px);
+  z-index:10;
+  transform:translate3d(calc(var(--pi-px) * -5px),calc(var(--pi-py) * -3px),0);
+  transition:translate 420ms cubic-bezier(.16,1,.3,1);
+}
+
+.project-intelligence-shell .pi-capture-verdict::before {
+  content:"";
+  position:absolute;
+  right:0;
+  top:-4px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#3150ff;
+  box-shadow:0 0 0 0 rgba(49,80,255,.22);
+  animation:pi-capture-lock-pulse 2.3s ease-out infinite;
+}
+
+.project-intelligence-shell .pi-capture-verdict > p {
+  font-size:clamp(2rem,2.45vw,3.15rem);
+}
+
+.project-intelligence-shell .pi-status {
+  background:rgba(242,239,230,.56);
+  backdrop-filter:blur(5px);
+}
+
+.project-intelligence-shell .pi-cta {
+  transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms ease,background 220ms ease;
+}
+
+.project-intelligence-shell .pi-cta:hover {
+  transform:translateY(-2px);
+  box-shadow:0 9px 22px rgba(8,8,8,.13);
+}
+
+/* ---------- Capture cursor = inspection lens ---------- */
+
+.project-intelligence-shell[data-pi-stage="0"] .pi-pointer {
+  width:42px;
+  height:42px;
+  margin:-21px 0 0 -21px;
+  color:rgba(8,8,8,.64);
+  border-color:rgba(8,8,8,.42);
+  opacity:.72;
+  mix-blend-mode:normal;
+  box-shadow:
+    0 0 0 10px rgba(49,80,255,.035),
+    0 0 0 1px rgba(255,255,255,.55) inset,
+    0 0 34px rgba(76,172,255,.08);
+  animation:pi-capture-pointer-pulse 2.8s ease-in-out infinite alternate;
+}
+
+.project-intelligence-shell[data-pi-stage="0"] .pi-pointer::before {
+  width:72px;
+  opacity:.42;
+}
+
+.project-intelligence-shell[data-pi-stage="0"] .pi-pointer::after {
+  height:72px;
+  opacity:.42;
+}
+
+/* Suspend decorative Capture motion while the real shared-object morph runs. */
+.project-intelligence-shell[data-pi-transition] .pi-stage-capture::before,
+.project-intelligence-shell[data-pi-transition] .pi-stage-capture::after,
+.project-intelligence-shell[data-pi-transition] .pi-capture-noise,
+.project-intelligence-shell[data-pi-transition] .pi-capture-noise::before,
+.project-intelligence-shell[data-pi-transition] .pi-capture-noise::after,
+.project-intelligence-shell[data-pi-transition] .pi-capture-object,
+.project-intelligence-shell[data-pi-transition] .pi-capture-object::before,
+.project-intelligence-shell[data-pi-transition] .pi-capture-object::after,
+.project-intelligence-shell[data-pi-transition] .pi-capture-sheet-1::before,
+.project-intelligence-shell[data-pi-transition] .pi-capture-verdict::before {
+  animation-play-state:paused !important;
+}
+
+@keyframes pi-capture-lens-breathe {
+  from { opacity:.52; }
+  to { opacity:.96; }
+}
+
+@keyframes pi-capture-hero-sweep {
+  0%,18% { transform:translate3d(-30%,0,0); opacity:.08; }
+  47% { opacity:.78; }
+  68% { transform:translate3d(22%,0,0); opacity:.46; }
+  82%,100% { transform:translate3d(32%,0,0); opacity:.06; }
+}
+
+@keyframes pi-capture-grid-drift {
+  from { background-position:0 0,0 0; }
+  to { background-position:78px 42px,130px 60px; }
+}
+
+@keyframes pi-capture-orbit-a {
+  from { rotate:-1.2deg; scale:.985; opacity:.44; }
+  to { rotate:1.5deg; scale:1.02; opacity:.74; }
+}
+
+@keyframes pi-capture-orbit-b {
+  from { rotate:1.1deg; scale:1.01; opacity:.36; }
+  to { rotate:-1.7deg; scale:.975; opacity:.72; }
+}
+
+@keyframes pi-capture-title-aura {
+  from { opacity:.42; scale:.94; }
+  to { opacity:.86; scale:1.08; }
+}
+
+@keyframes pi-capture-anchor-float {
+  from { translate:0 -5px; }
+  to { translate:0 8px; }
+}
+
+@keyframes pi-capture-object-orbit {
+  from { rotate:-1.4deg; scale:.98; opacity:.38; }
+  to { rotate:2deg; scale:1.025; opacity:.78; }
+}
+
+@keyframes pi-capture-object-orbit-reverse {
+  from { rotate:1.5deg; scale:1.02; opacity:.28; }
+  to { rotate:-2deg; scale:.985; opacity:.67; }
+}
+
+@keyframes pi-capture-surface-breathe {
+  from { opacity:.42; filter:saturate(.9); }
+  to { opacity:.88; filter:saturate(1.2); }
+}
+
+@keyframes pi-capture-lock-pulse {
+  0% { box-shadow:0 0 0 0 rgba(49,80,255,.24); opacity:1; }
+  78%,100% { box-shadow:0 0 0 14px rgba(49,80,255,0); opacity:.58; }
+}
+
+@keyframes pi-capture-pointer-pulse {
+  from { box-shadow:0 0 0 8px rgba(49,80,255,.025),0 0 0 1px rgba(255,255,255,.55) inset,0 0 24px rgba(76,172,255,.04); }
+  to { box-shadow:0 0 0 14px rgba(49,80,255,.055),0 0 0 1px rgba(255,255,255,.72) inset,0 0 42px rgba(76,172,255,.13); }
+}
+
+@media (max-width:1180px) {
+  .project-intelligence-shell .pi-capture-copy { left:4vw; width:54vw; }
+  .project-intelligence-shell .pi-title { max-width:54vw; font-size:clamp(4rem,6.55vw,6.8rem); }
+  .project-intelligence-shell .pi-capture-object { right:6.8rem; width:35vw; height:42vh; }
+  .project-intelligence-shell .pi-capture-verdict { right:6.8rem; width:32vw; }
+}
+
+@media (max-width:800px) {
+  .project-intelligence-shell .pi-capture-copy { left:1.2rem; top:9vh; width:88vw; transform:none; }
+  .project-intelligence-shell .pi-title { max-width:90vw; font-size:clamp(3.7rem,14vw,6.3rem); transform:none; }
+  .project-intelligence-shell .pi-capture-object { right:1.4rem; top:auto; bottom:13vh; width:55vw; height:27vh; min-height:0; transform:rotate(-1deg); }
+  .project-intelligence-shell .pi-capture-verdict { left:1.2rem; right:auto; bottom:3vh; width:48vw; transform:none; }
+  .project-intelligence-shell .pi-capture-noise::before,
+  .project-intelligence-shell .pi-capture-noise::after,
+  .project-intelligence-shell .pi-capture-object::before,
+  .project-intelligence-shell .pi-capture-object::after { display:none; }
+  .project-intelligence-shell[data-pi-stage="0"] .pi-pointer { width:30px; height:30px; margin:-15px 0 0 -15px; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .project-intelligence-shell .pi-stage-capture *,
+  .project-intelligence-shell .pi-stage-capture *::before,
+  .project-intelligence-shell .pi-stage-capture *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+}

@@ -1,0 +1,119 @@
+/* Direct chapter handoff: TODAY'S 7 -> TODAY'S ANALYSIS. No visible middle scene. */
+.motion-lab-shell {
+  --direct-handoff: 0;
+  --direct-handoff-y: 100svh;
+}
+
+/* Suppress every remnant of the old visible RECOMPOSE scene. */
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-stage::before,
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-stage::after,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-stage::before,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-stage::after {
+  content: "" !important;
+  opacity: 0 !important;
+}
+
+/* Keep the outgoing Overview composition intact beneath the incoming sheet. */
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal {
+  translate:
+    calc(var(--gravity-x, 0px) + var(--anomaly-x, 0px))
+    calc(var(--gravity-y, 0px) + var(--anomaly-y, 0px)) !important;
+  scale: calc(var(--gravity-scale, 1) + var(--anomaly-scale, 0)) !important;
+  filter: none !important;
+}
+
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-01,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-01,
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-02,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-02,
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-03,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-03,
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-04,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-04,
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-05,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-05 {
+  background: transparent !important;
+  color: var(--ink) !important;
+}
+
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-06,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-06 {
+  background: var(--cobalt) !important;
+  color: white !important;
+  min-height: 38vh !important;
+  grid-template-columns: 1fr auto !important;
+  padding: 1rem !important;
+}
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-06 .motion-lab-rank,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-06 .motion-lab-rank {
+  grid-column: 1 / -1 !important;
+  font-size: 2.2rem !important;
+}
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-06 .motion-lab-signal-copy,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-06 .motion-lab-signal-copy {
+  align-self: end !important;
+}
+
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-07,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-07 {
+  background: var(--orange) !important;
+  color: var(--ink) !important;
+  min-height: 18vh !important;
+  transform: rotate(-2.4deg) !important;
+}
+
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-topic,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-topic { opacity: .5 !important; }
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-score,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-score { opacity: 1 !important; }
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-age,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-age { opacity: .5 !important; }
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-rank,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-rank,
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal h2,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal h2 { opacity: 1 !important; }
+
+/* No anomaly or scanner should remain interactive while the next chapter is rising. */
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-signal-stage,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-signal-stage {
+  pointer-events: none;
+}
+
+/* The incoming analysis is the only visible transition: one whole page rises from below. */
+.motion-lab-analysis {
+  opacity: 1 !important;
+  transform: translate3d(0, var(--direct-handoff-y, 100svh), 0) !important;
+  box-shadow:
+    0 -1px 0 rgba(11,11,11,.2),
+    0 -30px 72px rgba(11,11,11,.065) !important;
+  will-change: transform !important;
+}
+.motion-lab-analysis::after { display: none !important; }
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-analysis { pointer-events: auto !important; }
+
+/* HUD describes the actual user-visible transition, never a fake intermediate page. */
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-hud dl > div:first-child dd span,
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-hud dl > div:first-child dd span {
+  font-size: 0;
+}
+.motion-lab-shell[data-direct-handoff="active"] .motion-lab-hud dl > div:first-child dd span::after {
+  content: "ANALYSIS ↑";
+  font-size: .55rem;
+}
+.motion-lab-shell[data-direct-handoff="ready"] .motion-lab-hud dl > div:first-child dd span::after {
+  content: "ANALYSIS";
+  font-size: .55rem;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-analysis { transform: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-analysis {
+    transform: none !important;
+    opacity: var(--analysis-alpha, 0) !important;
+    box-shadow: none !important;
+  }
+}

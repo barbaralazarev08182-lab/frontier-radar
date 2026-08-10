@@ -1,0 +1,33 @@
+/* Small readability/material refinements only. */
+
+/* Let the project stage continue behind the now-transparent global navigation. */
+.project-intelligence-shell {
+  inset: 0 !important;
+}
+
+.project-intelligence-shell .pi-back {
+  top: 5rem;
+}
+
+.pi-stage-interrogation .pi-interrogation-card {
+  background: rgba(8, 8, 8, .65);
+  backdrop-filter: blur(2px) saturate(.96);
+  -webkit-backdrop-filter: blur(2px) saturate(.96);
+}
+
+.pi-stage-resolution .pi-score-shard > span {
+  font-size: 1.16rem;
+  line-height: 1.05;
+  opacity: .72;
+  letter-spacing: .09em;
+}
+
+@media (max-width: 800px) {
+  .project-intelligence-shell .pi-back {
+    top: 4.4rem;
+  }
+
+  .pi-stage-resolution .pi-score-shard > span {
+    font-size: .9rem;
+  }
+}

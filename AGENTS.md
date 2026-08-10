@@ -1,158 +1,401 @@
-# Frontier Radar — Agent / Collaborator Handoff
+# Frontier Radar — Agent Handoff
 
-> Read `docs/START-HERE.md` first. This file is the operational contract for Codex / local coding agents and collaborators.
+> Read `docs/START-HERE.md` first.
+>
+> Updated: 2026-08-10
+>
+> Current phase: **Today + Project Intelligence experience freeze / integration preparation.**
 
-## Project identity
+## 1. Project identity
 
-Frontier Radar is a personalized discovery engine for things being built at the frontier of technology.
+Frontier Radar is not a generic AI news site.
 
-It is not a generic AI news site or a GitHub leaderboard.
-
-Core product chain:
+Product loop:
 
 ```text
 Discover → Understand → Get Inspired → Build
 ```
 
-Current Today experience:
+Core behavior:
+
+1. discover unusual/rising frontier projects from multiple sources;
+2. rank and personalize without collapsing into a narrow filter bubble;
+3. select Today’s 7;
+4. synthesize those 7 signals into higher-level patterns;
+5. let users inspect individual projects through Project Intelligence;
+6. turn understanding into a build/action direction.
+
+Principles:
+
+- Discovery > Search
+- Rising > Popular
+- Idea Spark > raw popularity
+- Projects / demos > passive content when quality is comparable
+- Preserve Adjacent / Wildcard exploration
+- Animation organizes information; it is not decoration
+- Build PASS is not Visual PASS
+
+---
+
+## 2. Current branch reality
+
+Default branch:
 
 ```text
-Hero → Compression → Today’s 7 → Signal Weave
+main
 ```
 
-## Branch discipline
+Current frozen experience branches:
 
-- `main` = repository entry / relatively stable baseline.
-- Current Today motion/visual/scroll integration work lives on `proto/today-foil-candy-v4` unless the user explicitly changes scope.
-- Before modifying anything, confirm the current branch and HEAD.
-- Do not assume the newest docs-only HEAD is the newest functional code baseline.
-- Never force-push unless the repository owner explicitly asks.
+```text
+proto/today-foil-candy-v4
+proto/project-intelligence-rebuild-v1
+```
 
-## Today visual baseline
+Current accepted Project Intelligence visual code baseline before docs-only updates:
 
-The accepted baseline is the original Motion Lab / LAB-03–06 visual system.
+```text
+e423b0b0f105b7daa5cc00935e236ea250d6d30e
+```
 
-Important identities:
+Do not assume the highest commit count means the best/current visual system. The repository contains many failed visual experiments.
 
-- Adjacent = strong blue visual identity.
-- Wildcard = strong orange visual identity.
-- Compression uses the original deck/signal system.
-- Today’s 7 uses the LAB-06 editorial composition.
+Before changing anything:
 
-Do not reintroduce the later production experiments that were removed because they polluted the render chain:
+1. confirm the actual target branch;
+2. inspect current code ownership;
+3. compare with `main` if the task affects release integration;
+4. do not copy an old experiment wholesale because its name sounds newer.
+
+---
+
+## 3. Today contract — frozen baseline
+
+Interaction model:
+
+```text
+Hero                continuous
+  ↓
+Compression         locked stable stage
+  ↓ one physical gesture
+Today’s 7           locked stable stage
+  ↓ one physical gesture
+Signal Weave        continuous internal scene
+```
+
+Reverse scrolling must be symmetric.
+
+### Today requirements
+
+- Hero remains freely scrubbed.
+- Compression and Today’s 7 are stable endpoints.
+- One real wheel/trackpad gesture may advance at most one middle stage.
+- Trackpad inertia must not skip stages.
+- Transition owns input until animation + inertia + cooldown are complete.
+- Signal Weave regains continuous scrolling after entry.
+- Final synthesis chapter must remain reachable while synthesis data is still loading.
+
+### Today visual ownership
+
+Accepted production identity:
+
+- editorial asymmetric composition
+- `06 / Adjacent` = cobalt blue
+- `07 / Wildcard` = saturated orange
+- LAB-03–06 remain the base visual owner
+
+Do not reintroduce retired production layers:
 
 - foil renderer
 - spectral renderer
 - standalone compression artifact renderer
-- extra restore/override CSS layers added only to fight those experiments
+- CSS restore layers created only to fight those experiments
 
-A previous failure mode was multiple high-specificity CSS systems overriding each other. Do not fix this by stacking more `!important` rules. Find the actual owner of the visual state and remove the conflict at the source.
+These combinations previously caused transparent cards, lost 06/07 colors, reverse-scroll ghosts and CSS ownership conflicts.
 
-## Scroll contract
-
-The intended state model is:
+Primary Today files:
 
 ```text
-Hero = continuous scroll
-Compression = locked stage
-Today’s 7 = locked stage
-Signal Weave = continuous scroll
+src/app/today/
+src/components/frontier/today-motion-production.tsx
+src/components/frontier/today-stage-scroll-controller.tsx
+src/components/frontier/today-signal-weave.tsx
+src/components/frontier/motion-lab/
+src/app/qa/motion-lab/
 ```
 
-Middle stages are gesture-driven:
+Do not modify scroll and visual systems together unless the root cause clearly crosses both.
 
-- one physical wheel / trackpad gesture → at most one stage transition
-- transition owns input while moving
-- inertial wheel events must not skip a stage
-- reverse direction should be symmetric
-- Hero remains freely scrubbed
-- Weave remains freely scrubbed once entered
+---
 
-Primary files:
+## 4. Signal Weave contract
 
-- `src/components/frontier/today-stage-scroll-controller.tsx`
-- `src/components/frontier/today-motion-production.tsx`
-- `src/components/frontier/motion-lab/motion-lab-direct-handoff.tsx`
+Approved direction:
 
-Do not modify LAB CSS while solving scroll unless browser evidence proves a visual-state dependency.
+- one interactive synthesis field
+- 7 signal ribbons/threads
+- 3 synthesized patterns
+- Final Take resolves in the same scene
+- no black cyberpunk dashboard
+- no three-card pattern layout
+- no separate Pattern 01 / Pattern 02 / Pattern 03 pages
 
-## Signal Weave
+Interaction:
 
-Signal Weave is the approved analysis direction:
+- threads remain visible enough to preserve 7 → 3 legibility
+- hover signal → emphasize relationship
+- hover/pin pattern → emphasize cluster
+- non-active evidence recedes, does not disappear
+- ribbon paths must not destroy destination labels
 
-- one unified field
-- 7 signal ribbons / threads → 3 synthesized patterns
-- hover / pin emphasizes evidence relationships
-- inactive context may recede but must remain legible
-- Final Take resolves inside the same scene
+---
 
-Avoid:
+## 5. Project Intelligence contract — frozen baseline
 
-- three-card analysis layouts
-- multi-page Pattern 01/02/03 navigation for basic understanding
-- black cyberpunk dashboard styling
-- giant poster typography as a substitute for structure
-- decorative particles / bloom with no semantic purpose
+Current sequence:
 
-## Known production issue
+```text
+01 CAPTURE
+02 EVIDENCE
+03 INTERROGATION
+04 RESOLUTION
+05 BUILD
+```
 
-There is an unresolved production entry issue around the final Weave scene.
+### 01 Capture
 
-Current code may gate all of these on Daily Synthesis `snapshot`:
+Purpose: create curiosity and make the project feel worth investigating.
 
-- `canEnterWeave`
-- `MotionLabDirectHandoff`
-- mounting `TodaySignalWeave`
+Accepted behavior:
 
-If `snapshot` fails because of the real data/Supabase path, the final scene may structurally disappear.
+- giant editorial headline
+- dossier / evidence stack
+- subtle foil / paper / cobalt / orange material language
+- parallax / cursor / scan response
+- strong idle motion even when user stops moving
+- transparent site nav integrated into the hero
 
-When investigating, distinguish:
+Do not replace this with a generic 3D world or SaaS hero.
 
-1. snapshot is null and the scene never mounts;
-2. snapshot exists but scroll/handoff never enters;
-3. both.
+### 02 Evidence
 
-Do not hide this by hard-coding `canEnterWeave=true`, fabricating production data, or redesigning Weave.
+Purpose: answer why the radar believes the project.
 
-## Product / ranking context
+- evidence/source objects should remain inspectable
+- source traceability matters more than decoration
+- not a dashboard or article list
 
-Today is designed around up to 7 picks with the exploration mix:
+### 03 Interrogation
+
+This is a protected visual anchor.
+
+Accepted identity:
+
+- saturated orange field
+- giant background typography
+- multiple analysis sheets
+- continuous internal scrub
+- black sheets approximately `rgba(8,8,8,.65)`
+- background remains visible through the sheets
+- idle motion continues when input stops
+
+Do not casually redesign this stage.
+
+### 04 Resolution
+
+Purpose: compress evidence + interrogation into a decision.
+
+- 7 score dimensions surround the central verdict
+- central `FRONTIER VERDICT`
+- score labels must remain clearly readable
+- idle attraction / pulse / convergence effects are intentional
+
+This is a decision-resolution scene, not a score dashboard.
+
+### 05 Build
+
+Purpose: move from understanding to action.
+
+- exposes action directions / Idea Lab path
+- should feel like a next move, not another explanation page
+- maintains idle motion without requiring cursor input
+
+### Current Project Intelligence files
+
+```text
+src/app/project/[id]/page.tsx
+src/app/project/[id]/layout.tsx
+src/app/project/[id]/project-intelligence.css
+src/app/project/[id]/project-intelligence-effects.css
+src/app/project/[id]/project-intelligence-capture.css
+src/app/project/[id]/project-intelligence-refinements.css
+src/components/frontier/project-intelligence-motion.tsx
+```
+
+---
+
+## 6. Explicitly rejected Project Intelligence directions
+
+Do not revive these as the default solution:
+
+### Full spatial / R3F world
+
+Branch:
+
+```text
+proto/project-intelligence-spatial-v1
+```
+
+Why rejected:
+
+- looked like a 3D technical demo
+- floating geometry replaced editorial design
+- added complexity without improving product meaning
+
+### Kinetic bridge experiment
+
+Branch:
+
+```text
+proto/project-intelligence-kinetic-v1
+```
+
+Why rejected:
+
+- transition bridges became visible intermediate pages
+- large color blocks / fake transition objects broke continuity
+- patching the bridge architecture produced CSS complexity
+
+### General lesson
+
+Prefer:
+
+```text
+real content + shared continuity + restrained 2.5D + idle motion
+```
+
+over:
+
+```text
+fake overlay transition page + full-screen effects + complete 3D rewrite
+```
+
+---
+
+## 7. Motion design rules
+
+All accepted core scenes should remain alive when idle.
+
+Use motion to express stage semantics:
+
+- Capture → scanning / foil / layered tension
+- Evidence → inspection / source motion
+- Interrogation → orange field / sheet tension
+- Resolution → attraction / convergence / pressure
+- Build → directional energy / action readiness
+
+Performance rules:
+
+- pause or reduce idle effects during stage transitions
+- avoid simultaneous full-screen blur + clip-path + gradient redraw + WebGL loops
+- pointer response should be additive, not the only animation trigger
+- prefer transform/opacity for frequent animation
+- do not add WebGL unless it explains something that DOM/SVG/CSS cannot
+
+---
+
+## 8. Release / integration discipline
+
+Do **not** directly hard-merge all experimental history into `main`.
+
+Current release problem:
+
+- final experience branches contain long experiment histories
+- `main` has moved independently
+- Project Intelligence branch is substantially ahead of and also behind `main`
+
+Approved next strategy:
+
+1. create a clean integration branch from latest `main`;
+2. inventory final Today + Project Intelligence + synthesis/data changes;
+3. bring in only final required files/commits;
+4. reconcile docs and migrations intentionally;
+5. run full CI;
+6. browser QA production-like flows;
+7. merge integration branch into `main`;
+8. let `main` become the single Production source.
+
+See:
+
+```text
+docs/INTEGRATION-PLAN-2026-08-10.md
+```
+
+Do not delete historical branches until final tags/checkpoints exist and release integration is complete.
+
+---
+
+## 9. Vercel notes
+
+Known deployment behavior:
+
+- Vercel build success and browser visual success are separate claims.
+- Hobby + private repo + collaborator commit author can produce `Deployment Blocked` because of access/identity, even when code is valid.
+- Do not change app code to work around a Vercel author-permission block.
+- Long-term desired release path is `main → Production`.
+- Avoid relying on manually promoted Preview deployments as the permanent source of truth.
+
+---
+
+## 10. Data / recommendation boundaries
+
+Current discovery sources include:
+
+- GitHub
+- Hugging Face
+- Show HN
+- Product Hunt
+- arXiv
+
+Today mix:
 
 ```text
 5 Core + 1 Adjacent + 1 Wildcard
 ```
 
-The public Discovery Score emphasizes:
+Discovery Score concepts:
 
-1. Freshness
-2. Domain Relevance
-3. Momentum
-4. Project Health
-5. Novelty
-6. Idea Spark
-7. Tryability
+- Freshness
+- Domain Relevance
+- Momentum
+- Project Health
+- Novelty
+- Idea Spark
+- Tryability
 
-Personal Match is a user-level reranking signal rather than a public score component.
+Existing infrastructure includes:
 
-Current sources include GitHub, Hugging Face, Show HN, Product Hunt and arXiv.
+- historical metric snapshots
+- behavior events
+- Personal Match / semantic profile
+- Project Entity / cross-source evidence
+- Project Intelligence
+- Daily Synthesis
 
-## Development workflow
+Do not alter scoring/recommendation/data behavior as a side effect of a visual task.
 
-Repository uses npm and `package-lock.json`.
+---
+
+## 11. Workflow
+
+Repository uses npm + `package-lock.json`.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Useful routes:
-
-```text
-http://localhost:3000/today
-http://localhost:3000/qa/motion-lab
-```
-
-Before declaring a task complete, run when practical:
+Checks:
 
 ```bash
 npm run typecheck
@@ -161,58 +404,28 @@ npm run test
 npm run build
 ```
 
-Do not expose or commit secrets. Never overwrite `.env.local` unless explicitly instructed.
+Browser QA for motion/visual tasks should include where applicable:
 
-## Browser QA contract
+1. forward full path
+2. reverse full path
+3. slow wheel
+4. fast trackpad fling
+5. idle 5–10 seconds on each scene
+6. resize / target desktop viewport
+7. production-data path vs fixture path
 
-Build success is not visual success.
+If a scenario cannot be tested, report it as **not verified**.
 
-For Today changes, verify the actual browser path that the change affects. For scroll work, check at minimum:
+---
 
-```text
-Hero
-↓
-Compression stable frame
-↓
-Today’s 7 stable frame
-↓
-Signal Weave
-↓
-reverse all the way back
-```
+## 12. Change discipline
 
-Also test a fast precision-trackpad fling when scroll logic changes.
-
-For visual changes, inspect the whole frame for regressions rather than only the single symptom reported by the user.
-
-## Scope discipline
-
-- Solve the root cause, not the screenshot symptom.
-- One task should change one conceptual layer where possible.
-- Do not modify recommendation/data logic during visual work.
-- Do not modify visual language during scroll work.
-- Do not refactor stable modules just because a cleaner architecture is imaginable.
-- Do not silently revive archived experiments.
-- Do not claim browser PASS when only tests/build passed.
-
-## Required handoff after a change
-
-Report:
-
-1. exact root cause;
-2. files changed;
-3. what behavior changed;
-4. browser verification performed;
-5. typecheck/lint/tests/build results;
-6. anything not verified and why;
-7. commit SHA.
-
-## Important historical checkpoints
-
-- `c634cd47fc00ea10fad586f6660e3194badf072f`
-  - removed foil/spectral/compression-artifact pollution from production
-  - restored LAB-06 blue/orange visual baseline
-- `e2e036825b2dd0a555cde7d83c180fa5c4d86069`
-  - introduced the explicit middle-stage gesture scroll state machine
-
-For full product context, read `docs/START-HERE.md` and the latest checkpoint under `docs/checkpoints/`.
+- Understand the owner of a state before adding code.
+- Prefer deleting conflicting layers over adding another override.
+- Do not refactor unrelated subsystems.
+- Do not modify secrets or user environment files.
+- Do not force-push unless explicitly requested.
+- Do not claim visual PASS from TypeScript/build success.
+- Do not claim Production PASS from fixture-only testing.
+- State root cause, changed files, verification and commit SHA at handoff.
+- Respect frozen stages; fix bugs incrementally instead of reopening design without a product reason.

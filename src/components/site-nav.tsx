@@ -12,15 +12,18 @@ const NAV_ITEMS = [
 
 export function SiteNav() {
   const pathname = usePathname();
-  const editorial = pathname === "/today";
+  const project = pathname.startsWith("/project/");
+  const editorial = pathname === "/today" || project;
 
   return (
     <header
       className={[
-        "sticky top-0 z-50 border-b backdrop-blur-xl transition-colors",
-        editorial
-          ? "border-black/10 bg-[#f1eee5]/88 text-[#0b0b0b]"
-          : "border-white/[0.06] bg-background/82 text-foreground",
+        "sticky top-0 z-50 border-b transition-colors",
+        project
+          ? "border-transparent bg-transparent text-white mix-blend-difference"
+          : editorial
+            ? "border-black/10 bg-[#f1eee5]/88 text-[#0b0b0b] backdrop-blur-xl"
+            : "border-white/[0.06] bg-background/82 text-foreground backdrop-blur-xl",
       ].join(" ")}
     >
       <div className="flex w-full items-center justify-between gap-4 px-4 py-3 sm:px-7 lg:px-10">
@@ -28,10 +31,18 @@ export function SiteNav() {
           <span
             className={[
               "relative grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[8px] font-black tracking-tighter transition-transform duration-300 group-hover:rotate-12",
-              editorial ? "border-black/50" : "border-white/35",
+              project ? "border-white/60" : editorial ? "border-black/50" : "border-white/35",
             ].join(" ")}
           >
-            <span className={editorial ? "h-1.5 w-1.5 rounded-full bg-[#3150ff]" : "h-1.5 w-1.5 rounded-full bg-cyan-300"} />
+            <span
+              className={
+                project
+                  ? "h-1.5 w-1.5 rounded-full bg-white"
+                  : editorial
+                    ? "h-1.5 w-1.5 rounded-full bg-[#3150ff]"
+                    : "h-1.5 w-1.5 rounded-full bg-cyan-300"
+              }
+            />
           </span>
           <span className="truncate text-[11px] font-black tracking-[0.16em] sm:text-xs">
             FRONTIER RADAR
@@ -57,7 +68,7 @@ export function SiteNav() {
                   <span
                     className={[
                       "absolute inset-x-0 -bottom-[0.84rem] h-[2px]",
-                      editorial ? "bg-[#3150ff]" : "bg-cyan-300",
+                      project ? "bg-white" : editorial ? "bg-[#3150ff]" : "bg-cyan-300",
                     ].join(" ")}
                   />
                 ) : null}

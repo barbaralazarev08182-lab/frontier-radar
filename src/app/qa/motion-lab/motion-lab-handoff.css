@@ -1,0 +1,104 @@
+/* LAB-05 handoff refinement: make the recompose a visual handoff, not a reading state. */
+
+/* The transition should explain itself through motion. Remove instructional copy. */
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal-stage::before,
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal-stage::after {
+  content: "" !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
+/* Keep the outgoing page physically present until the incoming sheet covers it. */
+.motion-lab-shell[data-mode="run"] .motion-lab-signal-stage {
+  opacity: var(--signal-alpha) !important;
+}
+
+/* During the handoff, Signals stop behaving like cards and become evidence fragments. */
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal {
+  background: transparent !important;
+  color: var(--ink, #0b0b0b) !important;
+  border-top-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  transition:
+    background-color 260ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    opacity 180ms ease !important;
+}
+
+.motion-lab-shell[data-scene="transition"] .motion-lab-topic,
+.motion-lab-shell[data-scene="transition"] .motion-lab-score,
+.motion-lab-shell[data-scene="transition"] .motion-lab-age,
+.motion-lab-shell[data-scene="transition"] .motion-lab-deck-face,
+.motion-lab-shell[data-scene="transition"] .motion-lab-deep-layer {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.motion-lab-shell[data-scene="transition"] .motion-lab-rank {
+  opacity: .46;
+}
+
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal h2 {
+  opacity: .82 !important;
+}
+
+/* Adjacent / Wildcard lose their standalone tile treatment before joining a pattern. */
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal-06 {
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  min-height: 0 !important;
+}
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal-06 .motion-lab-rank {
+  grid-column: auto !important;
+  font-size: .82rem !important;
+}
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal-06 .motion-lab-signal-copy {
+  align-self: auto !important;
+}
+.motion-lab-shell[data-scene="transition"] .motion-lab-signal-07 {
+  transform: none !important;
+}
+
+/* Incoming Analysis is a physical sheet that rises over the outgoing page. */
+.motion-lab-analysis {
+  opacity: 1 !important;
+  transform: translate3d(0, calc((1 - var(--analysis-alpha, 0)) * 100%), 0) !important;
+  box-shadow:
+    0 -1px 0 rgba(11,11,11,.18),
+    0 -28px 64px rgba(11,11,11,.055);
+  will-change: transform !important;
+}
+
+/* Give the sheet edge a tiny editorial registration mark during arrival. */
+.motion-lab-analysis::after {
+  content: "ANALYSIS / 03 PATTERNS";
+  position: absolute;
+  z-index: 2;
+  top: .72rem;
+  left: 5.2vw;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .44rem;
+  font-weight: 900;
+  letter-spacing: .16em;
+  opacity: calc((1 - var(--analysis-alpha, 0)) * .42);
+  pointer-events: none;
+}
+
+.motion-lab-analysis[data-ready="true"]::after {
+  opacity: 0;
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  .motion-lab-analysis { transform: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab-analysis {
+    transform: none !important;
+    opacity: var(--analysis-alpha, 0) !important;
+    box-shadow: none;
+  }
+}
