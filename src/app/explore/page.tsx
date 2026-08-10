@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
 import { ExploreField } from "./explore-field";
 import "./explore-field.css";
+import "./explore-refinement.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
@@ -46,24 +47,25 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       try {
         clustered = (await tryLoadPersistentProjectFeed(personalized.feed)) ?? clustered;
       } catch {
-        // Persistent project identity remains a sidecar. Runtime clustering is the fallback.
+        // Persistent Project Entities are a sidecar; runtime clustering remains the safe fallback.
       }
     }
 
     const confirmed = promoteCrossSourceEvidence(clustered);
+    const strongestInterests = personalized.strongestInterests;
     let explanations = new Map<string, DiscoveryExplanation>();
     try {
-      explanations = await getDiscoveryExplanations(confirmed.feed.items, personalized.strongestInterests);
+      explanations = await getDiscoveryExplanations(confirmed.feed.items.slice(0, 24), strongestInterests);
     } catch {
-      // Explore still works when explanation evidence is temporarily unavailable.
+      // Explore remains usable without explanation rows.
     }
 
     candidates = buildExploreCandidates(
       confirmed.feed.items,
       confirmed.entities,
       explanations,
-      personalized.strongestInterests,
-      20
+      strongestInterests,
+      24
     );
   } catch (err) {
     error =
@@ -83,9 +85,9 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   if (candidates.length === 0) {
     return (
       <EmptyState
-        title="当前扫描没有可探索的 signal"
-        description="采集尚未完成，或当前 URL 中的搜索条件没有命中候选。"
-        hint={mode === "supabase" ? "Radar 会继续从现有数据源补充候选；无需重建 Explore 数据库。" : null}
+        title="当前扫描没有可探索信号"
+        description="Radar 已连接，但这一轮候选不足。稍后重新扫描，或检查采集与分析任务。"
+        hint={mode === "supabase" ? "Explore 会复用现有 ingestion、scoring 与 personalization 数据。" : null}
       />
     );
   }
