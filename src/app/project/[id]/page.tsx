@@ -1,21 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  BarChart3,
-  Code,
-  ExternalLink,
-  Play,
-  Radar,
-  Sparkles,
-} from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { loadProjectDetail } from "@/lib/feed/project-detail";
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
-import { SourceBadge } from "@/components/frontier/source-badge";
-import { ScoreBadge } from "@/components/frontier/score-badge";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
-import { ProjectTrajectory } from "@/components/frontier/project-trajectory";
+import "./project-intelligence.css";
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +18,11 @@ const SOURCE_LABEL: Record<string, string> = {
 
 const SCORE_LABEL: Record<string, string> = {
   freshness: "Freshness",
-  interest_relevance: "Domain Relevance",
+  interest_relevance: "Domain relevance",
   momentum: "Momentum",
-  project_health: "Project Health",
+  project_health: "Project health",
   novelty: "Novelty",
-  idea_spark: "Idea Spark",
+  idea_spark: "Idea spark",
   tryability: "Tryability",
 };
 
@@ -41,7 +30,17 @@ function formatDate(value: string | null): string | null {
   if (!value) return null;
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
-  return date.toLocaleDateString("zh-CN", { year: "numeric", month: "short", day: "numeric" });
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).toUpperCase();
+}
+
+function dateValue(value: string | null): number {
+  if (!value) return Number.MAX_SAFE_INTEGER;
+  const time = new Date(value).getTime();
+  return Number.isNaN(time) ? Number.MAX_SAFE_INTEGER : time;
 }
 
 function str(value: unknown): string | null {
@@ -55,7 +54,10 @@ function strArray(value: unknown): string[] {
 }
 
 function compactNumber(value: number): string {
-  return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
 }
 
 function momentumLines(source: string, history: MomentumHistory | null): string[] {
@@ -63,20 +65,55 @@ function momentumLines(source: string, history: MomentumHistory | null): string[
   const lines: string[] = [];
   const d24 = history.delta24h;
   const d7 = history.delta7d;
+
   if (source === "github") {
-    if (d24?.stars != null) lines.push(`24h 窗口 +${compactNumber(d24.stars)} stars`);
-    if (d7?.stars != null) lines.push(`7d 窗口 +${compactNumber(d7.stars)} stars`);
-    if (d24?.forks != null && d24.forks > 0) lines.push(`24h +${compactNumber(d24.forks)} forks`);
+    if (d24?.stars != null) lines.push(`+${compactNumber(d24.stars)} stars / 24h`);
+    if (d7?.stars != null) lines.push(`+${compactNumber(d7.stars)} stars / 7d`);
+    if (d24?.forks != null && d24.forks > 0) lines.push(`+${compactNumber(d24.forks)} forks / 24h`);
   } else if (source === "huggingface") {
-    if (d24?.downloads != null) lines.push(`24h 窗口 +${compactNumber(d24.downloads)} downloads`);
-    if (d7?.downloads != null) lines.push(`7d 窗口 +${compactNumber(d7.downloads)} downloads`);
-    if (d24?.likes != null && d24.likes > 0) lines.push(`24h +${compactNumber(d24.likes)} likes`);
+    if (d24?.downloads != null) lines.push(`+${compactNumber(d24.downloads)} downloads / 24h`);
+    if (d7?.downloads != null) lines.push(`+${compactNumber(d7.downloads)} downloads / 7d`);
+    if (d24?.likes != null && d24.likes > 0) lines.push(`+${compactNumber(d24.likes)} likes / 24h`);
   } else if (source === "hackernews") {
-    if (d24?.engagements != null) lines.push(`24h 窗口 +${compactNumber(d24.engagements)} HN points`);
-    if (d24?.comments != null) lines.push(`24h +${compactNumber(d24.comments)} comments`);
-    if (d7?.engagements != null) lines.push(`7d 窗口 +${compactNumber(d7.engagements)} HN points`);
+    if (d24?.engagements != null) lines.push(`+${compactNumber(d24.engagements)} HN points / 24h`);
+    if (d24?.comments != null) lines.push(`+${compactNumber(d24.comments)} comments / 24h`);
+    if (d7?.engagements != null) lines.push(`+${compactNumber(d7.engagements)} HN points / 7d`);
   }
+
   return lines;
+}
+
+function verdict(score: number | null, crossSource: boolean, evidenceCount: number): {
+  label: string;
+  note: string;
+} {
+  const value = score ?? 0;
+
+  if (crossSource && value >= 80) {
+    return {
+      label: "HIGH-CONVICTION / MULTI-SOURCE",
+      note: `${evidenceCount} evidence nodes support the signal across more than one source.`,
+    };
+  }
+
+  if (crossSource) {
+    return {
+      label: "CONFIRMED / MULTI-SOURCE",
+      note: `${evidenceCount} evidence nodes reduce the chance that this is only a single-feed anomaly.`,
+    };
+  }
+
+  if (value >= 80) {
+    return {
+      label: "HIGH-PRIORITY / EARLY",
+      note: "The radar score is strong, but cross-source confirmation is still limited.",
+    };
+  }
+
+  return {
+    label: "WATCH / EARLY SIGNAL",
+    note: "Worth tracking, with more evidence still needed before treating it as a confirmed frontier shift.",
+  };
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -89,170 +126,221 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const limitations = str(analysis?.limitations);
   const hypeRisk = str(analysis?.hypeRisk);
   const targetUsers = strArray(analysis?.targetUsers);
-  const possibleUses = item.possibleUses;
+  const possibleUses = item.possibleUses.slice(0, 5);
   const firstSeen = formatDate(entity.firstSeenAt);
+  const summary = item.summaryZh ?? item.description ?? "结构化分析仍在补全。";
+  const read = verdict(item.score, entity.crossSource, evidence.length);
+  const orderedEvidence = [...evidence].sort((a, b) =>
+    dateValue(a.publishedAt ?? a.updatedAt) - dateValue(b.publishedAt ?? b.updatedAt)
+  );
+
+  const caseBlocks = [
+    whyNow ? { label: "INFERENCE / WHY NOW", copy: whyNow } : null,
+    problem ? { label: "OBSERVED / PROBLEM", copy: problem } : null,
+    item.novelty ? { label: "INFERENCE / WHAT CHANGED", copy: item.novelty } : null,
+    item.whyItMatters ? { label: "INFERENCE / WHY IT MATTERS", copy: item.whyItMatters } : null,
+    targetUsers.length > 0 ? { label: "OBSERVED / WHO CAN USE IT", copy: targetUsers.join(" · ") } : null,
+    limitations ? { label: "OPEN QUESTION / LIMITS", copy: limitations } : null,
+    hypeRisk ? { label: "OPEN QUESTION / HYPE RISK", copy: hypeRisk } : null,
+  ].filter((entry): entry is { label: string; copy: string } => entry !== null);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-7 pb-12 md:space-y-9">
-      <div>
-        <Link href="/today" className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-cyan-200">
-          <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" /> Back to Daily Radar
+    <div className="project-intelligence-shell">
+      <div className="pi-frame">
+        <Link href="/today" className="pi-back">
+          <ArrowLeft className="h-3.5 w-3.5" /> Daily Radar
         </Link>
-      </div>
 
-      <header className="radar-panel-strong radar-grid relative overflow-hidden rounded-[1.75rem] px-5 py-6 sm:px-7 md:px-8 md:py-8">
-        <div aria-hidden className="absolute -right-24 -top-28 h-80 w-80 rounded-full bg-cyan-400/[0.045] blur-3xl" />
-        <div aria-hidden className="absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-violet-500/[0.035] blur-3xl" />
+        <header className="pi-hero">
+          <div className="pi-hero-main">
+            <div className="pi-kicker">
+              <strong>FR / PROJECT INTELLIGENCE</strong>
+              <span>{SOURCE_LABEL[item.source] ?? item.source}</span>
+              <span>{item.contentType}</span>
+              {firstSeen ? <span>FIRST SEEN {firstSeen}</span> : null}
+            </div>
 
-        <div className="relative space-y-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <SourceBadge source={item.source} />
-            <span className="radar-kicker">Project intelligence</span>
-            {entity.crossSource ? (
-              <span className="rounded-full border border-cyan-300/15 bg-cyan-300/[0.05] px-2.5 py-1 font-mono text-[9px] font-semibold tracking-[0.1em] text-cyan-200">
-                {entity.sources.length} sources
-              </span>
-            ) : null}
-            <span className="ml-auto"><ScoreBadge score={item.score} /></span>
+            <h1 className="pi-title">{item.title}</h1>
+            <p className="pi-deck">{summary}</p>
           </div>
 
-          <div className="max-w-4xl space-y-4">
-            <h1 className="text-balance text-3xl font-semibold leading-[1.03] tracking-[-0.035em] md:text-5xl">{item.title}</h1>
-            {item.summaryZh || item.description ? (
-              <p className="max-w-3xl text-[15px] leading-7 text-muted-foreground md:text-base">{item.summaryZh ?? item.description}</p>
-            ) : null}
-          </div>
+          <aside className="pi-hero-aside">
+            <span className="pi-label">FRONTIER VERDICT</span>
+            <p className="pi-verdict">{read.label}</p>
+            <p className="pi-verdict-note">{read.note}</p>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
-            {item.author ? <span className="text-foreground/70">{item.author}</span> : null}
-            {firstSeen ? <span>最早发现 {firstSeen}</span> : null}
-            {entity.hasCodeAnywhere ? <span className="inline-flex items-center gap-1"><Code className="h-3 w-3 text-cyan-300/80" /> Code</span> : null}
-            {entity.hasDemoAnywhere ? <span className="inline-flex items-center gap-1"><Play className="h-3 w-3 text-violet-300/80" /> Demo</span> : null}
-          </div>
+            <div className="pi-status" aria-label="project status">
+              <span>CODE {entity.hasCodeAnywhere ? "YES" : "—"}</span>
+              <span>DEMO {entity.hasDemoAnywhere ? "YES" : "—"}</span>
+              <span>SOURCES {entity.sources.length}</span>
+              <span>SCORE {item.score == null ? "—" : Math.round(item.score)}</span>
+            </div>
 
-          <div className="flex flex-wrap gap-2 border-t border-white/[0.06] pt-4">
-            <TrackedSourceLink
-              itemId={item.id}
-              href={item.canonicalUrl}
-              metadata={{ surface: "project_detail", source: item.source, content_type: item.contentType }}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.07] px-3 py-2 text-sm font-medium text-cyan-100 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/[0.1]"
-            >
-              打开主项目 <ArrowUpRight className="h-4 w-4" />
-            </TrackedSourceLink>
-            {evidence.filter((entry) => entry.source === "hackernews" && entry.externalUrl?.includes("news.ycombinator.com")).slice(0, 1).map((entry) => (
+            <div className="pi-cta-row">
               <TrackedSourceLink
-                key={entry.itemId}
-                itemId={entry.itemId}
-                href={entry.externalUrl!}
-                metadata={{ surface: "project_detail", source: entry.source, content_type: entry.contentType }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                itemId={item.id}
+                href={item.canonicalUrl}
+                metadata={{ surface: "project_intelligence", source: item.source, content_type: item.contentType }}
+                className="pi-cta"
               >
-                HN 讨论 <ExternalLink className="h-3.5 w-3.5" />
+                Open project <ArrowUpRight className="h-3.5 w-3.5" />
               </TrackedSourceLink>
-            ))}
-          </div>
-        </div>
-      </header>
-
-      {whyNow ? (
-        <section className="rounded-2xl border border-emerald-300/12 bg-emerald-300/[0.025] p-5 sm:p-6">
-          <p className="radar-kicker !text-emerald-300">Why now</p>
-          <p className="mt-2 max-w-4xl text-sm leading-7 text-foreground/88">{whyNow}</p>
-        </section>
-      ) : null}
-
-      <ProjectTrajectory evidence={evidence} />
-
-      <section className="space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="radar-kicker">Evidence</p>
-            <div className="mt-1.5 flex items-center gap-2">
-              <Radar className="h-4 w-4 text-cyan-300" />
-              <h2 className="text-lg font-semibold tracking-tight">Source evidence</h2>
+              <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pi-cta secondary">
+                Send to Idea Lab
+              </Link>
             </div>
-          </div>
-          <span className="text-[11px] text-muted-foreground">{evidence.length} evidence nodes</span>
-        </div>
+          </aside>
+        </header>
 
-        <div className="grid gap-3 md:grid-cols-2">
-          {evidence.map((entry) => {
-            const momentum = momentumLines(entry.source, entry.momentum);
-            const discussion = entry.source === "hackernews" && entry.externalUrl?.includes("news.ycombinator.com") ? entry.externalUrl : null;
-            return (
-              <div key={entry.itemId} className="radar-panel rounded-2xl p-4 transition-colors hover:border-cyan-300/15">
-                <div className="mb-2.5 flex items-center justify-between gap-3">
-                  <span className="text-sm font-medium text-foreground/90">{SOURCE_LABEL[entry.source] ?? entry.source}</span>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">{entry.contentType}</span>
-                </div>
-                <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">{entry.title}</p>
-                {momentum.length > 0 ? (
-                  <div className="mt-3 space-y-1 text-[11px] text-emerald-300/90">
-                    {momentum.map((line) => <p key={line}>{line}</p>)}
+        <section className="pi-section">
+          <div className="pi-section-rail">
+            <span className="pi-section-index">01 / EVIDENCE</span>
+            <h2 className="pi-section-title">Why the radar believes it.</h2>
+            <p className="pi-section-note">
+              Source nodes are shown as evidence, not decoration. Open any node to verify the original signal.
+            </p>
+          </div>
+
+          <div className="pi-evidence-list">
+            {orderedEvidence.map((entry) => {
+              const eventDate = formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A";
+              const momentum = momentumLines(entry.source, entry.momentum);
+              return (
+                <article key={entry.itemId} className="pi-evidence-row">
+                  <time className="pi-evidence-date">{eventDate}</time>
+                  <div>
+                    <div className="pi-source-meta">
+                      <span>{SOURCE_LABEL[entry.source] ?? entry.source}</span>
+                      <span>{entry.contentType}</span>
+                    </div>
+                    <h3 className="pi-evidence-title">{entry.title}</h3>
+                    <div className="pi-momentum">
+                      {momentum.length > 0 ? momentum.map((line) => <span key={line}>{line}</span>) : <span>momentum accumulating</span>}
+                    </div>
                   </div>
-                ) : (
-                  <p className="mt-3 text-[10px] text-muted-foreground/65">正在积累 24h / 7d Momentum 快照</p>
-                )}
-                <div className="mt-4 flex flex-wrap gap-3 border-t border-white/[0.05] pt-3">
-                  <TrackedSourceLink itemId={entry.itemId} href={entry.url} metadata={{ surface: "project_detail", source: entry.source, content_type: entry.contentType }} className="text-[11px] font-medium text-cyan-200 hover:text-cyan-100">打开来源 ↗</TrackedSourceLink>
-                  {discussion ? <TrackedSourceLink itemId={entry.itemId} href={discussion} metadata={{ surface: "project_detail", source: entry.source, content_type: entry.contentType }} className="text-[11px] text-muted-foreground hover:text-foreground">查看讨论</TrackedSourceLink> : null}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {scores.length > 0 ? (
-        <section className="space-y-4">
-          <div>
-            <p className="radar-kicker">Scoring</p>
-            <div className="mt-1.5 flex items-center gap-2"><BarChart3 className="h-4 w-4 text-emerald-300" /><h2 className="text-lg font-semibold tracking-tight">Discovery signals</h2></div>
+                  <TrackedSourceLink
+                    itemId={entry.itemId}
+                    href={entry.url}
+                    metadata={{ surface: "project_intelligence_evidence", source: entry.source, content_type: entry.contentType }}
+                    className="pi-evidence-link"
+                  >
+                    Verify ↗
+                  </TrackedSourceLink>
+                </article>
+              );
+            })}
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {scores.map((entry) => (
-              <div key={entry.dimension} className="radar-panel rounded-xl p-3.5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[11px] text-muted-foreground">{SCORE_LABEL[entry.dimension] ?? entry.dimension}</span>
-                  <span className="font-mono text-lg font-semibold tabular-nums text-foreground">{Math.round(entry.score)}</span>
+        </section>
+
+        <section className="pi-section">
+          <div className="pi-section-rail">
+            <span className="pi-section-index">02 / THE CASE</span>
+            <h2 className="pi-section-title">What actually matters.</h2>
+            <p className="pi-section-note">
+              Facts, inference and uncertainty are deliberately separated so the analysis can be challenged.
+            </p>
+          </div>
+
+          <div className="pi-case-stack">
+            {caseBlocks.length > 0 ? caseBlocks.map((entry) => (
+              <div key={entry.label} className="pi-case-block">
+                <span className="pi-label">{entry.label}</span>
+                <div className="pi-case-copy">{entry.copy}</div>
+              </div>
+            )) : (
+              <div className="pi-case-block">
+                <span className="pi-label">ANALYSIS STATUS</span>
+                <div className="pi-case-copy">The evidence is present, but the structured intelligence layer is still being generated.</div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="pi-section">
+          <div className="pi-section-rail">
+            <span className="pi-section-index">03 / RADAR READ</span>
+            <h2 className="pi-section-title">Why it entered the frontier set.</h2>
+            <p className="pi-section-note">
+              Scores stay secondary: they explain the pick, but they are not the story.
+            </p>
+          </div>
+
+          <div className="pi-score-strip">
+            {scores.slice(0, 7).map((entry) => (
+              <div key={entry.dimension} className="pi-score-cell">
+                <span className="pi-score-name">{SCORE_LABEL[entry.dimension] ?? entry.dimension}</span>
+                <div>
+                  <strong className="pi-score-value">{Math.round(entry.score)}</strong>
+                  {entry.rationale ? <p className="pi-score-rationale">{entry.rationale}</p> : null}
                 </div>
-                <div className="mt-2 h-px bg-gradient-to-r from-cyan-300/20 to-transparent" />
-                {entry.rationale ? <p className="mt-2 line-clamp-3 text-[10px] leading-relaxed text-muted-foreground/70">{entry.rationale}</p> : null}
               </div>
             ))}
           </div>
         </section>
-      ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <div className="radar-panel rounded-2xl p-5 sm:p-6">
-          <div className="mb-4 flex items-center gap-2"><Sparkles className="h-4 w-4 text-violet-300" /><h2 className="text-lg font-semibold tracking-tight">What matters</h2></div>
-          <div className="space-y-4 text-sm leading-7 text-muted-foreground">
-            {item.whyItMatters ? <p><span className="font-medium text-foreground/90">Why it matters：</span>{item.whyItMatters}</p> : null}
-            {problem ? <p><span className="font-medium text-foreground/90">解决什么：</span>{problem}</p> : null}
-            {item.novelty ? <p><span className="font-medium text-foreground/90">新在哪：</span>{item.novelty}</p> : null}
-            {targetUsers.length > 0 ? <p><span className="font-medium text-foreground/90">适合：</span>{targetUsers.join("、")}</p> : null}
-            {limitations ? <p><span className="font-medium text-foreground/90">限制：</span>{limitations}</p> : null}
-            {hypeRisk ? <p><span className="font-medium text-foreground/90">Hype Risk：</span>{hypeRisk}</p> : null}
+        <section className="pi-section">
+          <div className="pi-section-rail">
+            <span className="pi-section-index">04 / BUILD SURFACE</span>
+            <h2 className="pi-section-title">What this lets you build next.</h2>
+            <p className="pi-section-note">
+              These are starting surfaces, not startup slogans. The goal is to turn a signal into a testable next move.
+            </p>
           </div>
-        </div>
 
-        <div className="rounded-2xl border border-violet-300/12 bg-violet-300/[0.025] p-5 sm:p-6">
-          <p className="radar-kicker !text-violet-300">Build on this</p>
-          {possibleUses.length > 0 ? (
-            <div className="mt-4 space-y-3 text-sm leading-7 text-muted-foreground">
-              {possibleUses.slice(0, 5).map((idea, index) => (
-                <div key={idea} className="flex gap-3 border-b border-white/[0.045] pb-3 last:border-0 last:pb-0">
-                  <span className="font-mono text-[10px] font-semibold text-violet-300">{String(index + 1).padStart(2, "0")}</span>
-                  <p>{idea}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-muted-foreground">当前分析还没有生成可延展用法。</p>
-          )}
-        </div>
-      </section>
+          <div className="pi-build-list">
+            {possibleUses.length > 0 ? possibleUses.map((idea, index) => (
+              <div key={idea} className="pi-build-row">
+                <span className="pi-build-index">{String(index + 1).padStart(2, "0")}</span>
+                <p className="pi-build-copy">{idea}</p>
+                <span className="pi-build-tag">BUILD DIRECTION</span>
+              </div>
+            )) : (
+              <div className="pi-build-row">
+                <span className="pi-build-index">—</span>
+                <p className="pi-build-copy">Build directions have not been generated for this project yet.</p>
+                <span className="pi-build-tag">PENDING</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="pi-section">
+          <div className="pi-section-rail">
+            <span className="pi-section-index">05 / SOURCE LEDGER</span>
+            <h2 className="pi-section-title">The record underneath the judgment.</h2>
+            <p className="pi-section-note">
+              Every intelligence claim should remain traceable to an original project, post, paper or demo.
+            </p>
+          </div>
+
+          <div className="pi-ledger">
+            {orderedEvidence.map((entry) => (
+              <div key={entry.itemId} className="pi-ledger-row">
+                <span>{SOURCE_LABEL[entry.source] ?? entry.source}</span>
+                <span>{formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A"}</span>
+                <span className="pi-ledger-title">{entry.title}</span>
+                <TrackedSourceLink
+                  itemId={entry.itemId}
+                  href={entry.url}
+                  metadata={{ surface: "project_intelligence_ledger", source: entry.source, content_type: entry.contentType }}
+                  className="pi-evidence-link"
+                >
+                  Source ↗
+                </TrackedSourceLink>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <footer className="pi-footer">
+          <h2 className="pi-footer-title">Signal understood. Decide what to do with it.</h2>
+          <div className="pi-footer-meta">
+            <div>FR / PROJECT INTELLIGENCE</div>
+            <div>{entity.sources.length} SOURCES / {evidence.length} EVIDENCE NODES</div>
+            <div>DISCOVER → UNDERSTAND → BUILD</div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
