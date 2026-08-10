@@ -1,118 +1,9 @@
 "use client";
 
+import { flushSync } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const STAGES = ["CAPTURE", "EVIDENCE", "INTERROGATION", "RESOLUTION", "BUILD"] as const;
-
-const PERF_STYLE = `
-.project-intelligence-shell .pi-stage[data-active="true"]::after {
-  content: none !important;
-  display: none !important;
-  animation: none !important;
-}
-
-.project-intelligence-shell .pi-stage {
-  filter: none !important;
-  contain: paint;
-  backface-visibility: hidden;
-  will-change: transform, opacity;
-  transition:
-    opacity 260ms ease,
-    transform 700ms cubic-bezier(.16,1,.3,1),
-    visibility 0s linear 700ms !important;
-}
-
-.project-intelligence-shell .pi-stage[data-active="true"] {
-  animation: none !important;
-}
-
-.project-intelligence-shell .pi-hud-tag,
-.project-intelligence-shell .pi-capture-sheet-1 {
-  backdrop-filter: none !important;
-}
-
-.project-intelligence-shell .pi-hud-tag {
-  background: rgba(247,245,238,.84) !important;
-}
-
-.project-intelligence-shell .pi-pointer-field {
-  inset: auto !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: 520px !important;
-  height: 520px !important;
-  transform: translate3d(calc(var(--pi-mx) - 260px), calc(var(--pi-my) - 260px), 0);
-  will-change: transform;
-  contain: strict;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,.13), transparent 34%),
-    radial-gradient(circle at 50% 50%, rgba(118,205,255,.07), transparent 74%) !important;
-}
-
-.project-intelligence-shell[data-pi-stage="2"] .pi-pointer-field {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255,235,211,.20), transparent 32%),
-    radial-gradient(circle at 50% 50%, rgba(80,0,0,.13), transparent 72%) !important;
-}
-
-.project-intelligence-shell[data-pi-stage="4"] .pi-pointer-field {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,.18), transparent 34%),
-    radial-gradient(circle at 50% 50%, rgba(137,214,255,.12), transparent 76%) !important;
-}
-
-.project-intelligence-shell[data-pi-scrub="true"] .pi-stage-interrogation::after {
-  content: none !important;
-  display: none !important;
-  animation: none !important;
-}
-
-.project-intelligence-shell[data-pi-scrub="true"] .pi-interrogation-stack::after {
-  content: "";
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  top: 50%;
-  z-index: 40;
-  height: 2px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255,243,226,.76), transparent);
-  box-shadow: 0 0 18px rgba(255,230,190,.34);
-  animation: pi-perf-scrub-line .34s ease-out infinite alternate;
-}
-
-.project-intelligence-shell[data-pi-scrub="true"] .pi-interrogation-card[data-state="active"] {
-  animation: none !important;
-}
-
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-capture-object,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-capture-sheet,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-hud-orbit,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-hud-reticle,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-hud-tag,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-evidence::before,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-evidence-card,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-interrogation::before,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-interrogation-card,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-resolution::before,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-score-shard,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-resolution-core,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-stage-build::before,
-.project-intelligence-shell[data-pi-transitioning="true"] .pi-build-card {
-  animation-play-state: paused !important;
-}
-
-@keyframes pi-perf-scrub-line {
-  from { transform: scaleX(.58); opacity: .34; }
-  to { transform: scaleX(1); opacity: .9; }
-}
-
-@keyframes pi-v4-build-tunnel {
-  0% { transform: scale(.18) rotate(-8deg); opacity: 0; }
-  42% { transform: scale(.92) rotate(0deg); opacity: .95; }
-  100% { transform: scale(3.2) rotate(7deg); opacity: 0; }
-}
-`;
 
 type Props = {
   evidenceCount: number;
@@ -120,44 +11,41 @@ type Props = {
   buildCount: number;
 };
 
-type Cursor = {
-  stage: number;
-  step: number;
+type Cursor = { stage: number; step: number };
+
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (update: () => void | Promise<void>) => {
+    finished: Promise<void>;
+    ready: Promise<void>;
+    updateCallbackDone: Promise<void>;
+    skipTransition: () => void;
+  };
 };
 
-type MoveOptions = {
-  lockMs?: number;
-  transition?: boolean;
-};
-
-type PendingPointer = {
-  px: number;
-  py: number;
-  x: number;
-  y: number;
-  velocity: number;
-};
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount }: Props) {
-  const stageCounts = useMemo(
+  const counts = useMemo(
     () => [1, Math.max(1, evidenceCount), Math.max(1, caseCount), 1, Math.max(1, buildCount)],
     [evidenceCount, caseCount, buildCount]
   );
-  const stageStarts = useMemo(() => {
-    const starts: number[] = [];
-    let cursor = 0;
-    for (const count of stageCounts) {
-      starts.push(cursor);
-      cursor += count;
-    }
-    return starts;
-  }, [stageCounts]);
-  const totalPositions = stageCounts.reduce((sum, count) => sum + count, 0);
+
+  const starts = useMemo(() => {
+    const result: number[] = [];
+    let total = 0;
+    counts.forEach((count) => {
+      result.push(total);
+      total += count;
+    });
+    return result;
+  }, [counts]);
+
+  const total = counts.reduce((sum, count) => sum + count, 0);
 
   const decode = (position: number): Cursor => {
-    for (let stage = stageCounts.length - 1; stage >= 0; stage -= 1) {
-      if (position >= stageStarts[stage]!) {
-        return { stage, step: position - stageStarts[stage]! };
+    for (let stage = counts.length - 1; stage >= 0; stage -= 1) {
+      if (position >= (starts[stage] ?? 0)) {
+        return { stage, step: position - (starts[stage] ?? 0) };
       }
     }
     return { stage: 0, step: 0 };
@@ -165,64 +53,137 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
 
   const [position, setPosition] = useState(0);
   const positionRef = useRef(0);
-  const consumedRef = useRef(false);
   const lockedRef = useRef(false);
-  const accumulatedRef = useRef(0);
-  const interrogationDeltaRef = useRef(0);
+  const wheelAccumRef = useRef(0);
+  const gestureTimerRef = useRef<number | null>(null);
+  const gestureConsumedRef = useRef(false);
   const interrogationMovedRef = useRef(false);
-  const gestureEndTimer = useRef<number | null>(null);
-  const unlockTimer = useRef<number | null>(null);
-  const transitionTimer = useRef<number | null>(null);
-  const pointerVelocityTimer = useRef<number | null>(null);
+  const touchStartRef = useRef<number | null>(null);
   const pointerFrameRef = useRef<number | null>(null);
-  const pendingPointerRef = useRef<PendingPointer | null>(null);
-  const touchStartY = useRef<number | null>(null);
-  const directionRef = useRef(1);
-  const lastPointerRef = useRef({ x: 0, y: 0, ready: false });
+  const lastPointerRef = useRef({ x: 0, y: 0, time: 0, ready: false });
+  const pendingPointerRef = useRef({ x: 0, y: 0, nx: 0, ny: 0, velocity: 0 });
 
-  const cursor = decode(position);
+  const applyDomState = (nextPosition: number) => {
+    const shell = document.querySelector<HTMLElement>(".project-intelligence-shell");
+    if (!shell) return;
 
-  const moveTo = (next: number, direction: number, options: MoveOptions = {}) => {
-    const clamped = Math.max(0, Math.min(totalPositions - 1, next));
-    if (clamped === positionRef.current) return;
+    const cursor = decode(nextPosition);
+    shell.dataset.piStage = String(cursor.stage);
+    shell.dataset.piStep = String(cursor.step);
+    shell.style.setProperty("--pi-progress", String(nextPosition / Math.max(1, total - 1)));
+
+    const panels = Array.from(shell.querySelectorAll<HTMLElement>("[data-pi-stage-panel]"));
+    panels.forEach((panel, index) => {
+      const active = index === cursor.stage;
+      panel.dataset.active = active ? "true" : "false";
+      panel.setAttribute("aria-hidden", active ? "false" : "true");
+    });
+
+    const setItemStates = (selector: string, stage: number) => {
+      const items = Array.from(shell.querySelectorAll<HTMLElement>(selector));
+      items.forEach((item, index) => {
+        item.dataset.state = cursor.stage !== stage
+          ? "dormant"
+          : index === cursor.step
+            ? "active"
+            : index < cursor.step
+              ? "before"
+              : "after";
+      });
+    };
+
+    setItemStates("[data-pi-evidence]", 1);
+    setItemStates("[data-pi-case]", 2);
+    setItemStates("[data-pi-build]", 4);
+
+    const interrogation = shell.querySelector<HTMLElement>(".pi-stage-interrogation");
+    if (interrogation && cursor.stage === 2) {
+      const active = shell.querySelector<HTMLElement>("[data-pi-case][data-state='active']");
+      interrogation.dataset.activeLabel = active?.dataset.label ?? "INTERROGATION";
+    }
+  };
+
+  const commitPosition = (nextPosition: number) => {
+    positionRef.current = nextPosition;
+    flushSync(() => setPosition(nextPosition));
+    applyDomState(nextPosition);
+  };
+
+  const animateFallback = (from: Cursor, to: Cursor, update: () => void) => {
+    const shell = document.querySelector<HTMLElement>(".project-intelligence-shell");
+    if (!shell) {
+      update();
+      return;
+    }
+    const outgoing = shell.querySelector<HTMLElement>(`[data-pi-stage-panel='${from.stage}']`);
+    update();
+    const incoming = shell.querySelector<HTMLElement>(`[data-pi-stage-panel='${to.stage}']`);
+    incoming?.animate(
+      [
+        { opacity: 0, transform: `translate3d(${to.stage > from.stage ? 7 : -7}vw,0,0) scale(.985)` },
+        { opacity: 1, transform: "translate3d(0,0,0) scale(1)" },
+      ],
+      { duration: 720, easing: "cubic-bezier(.16,1,.3,1)" }
+    );
+    outgoing?.animate(
+      [
+        { opacity: 1, transform: "translate3d(0,0,0) scale(1)" },
+        { opacity: 0, transform: `translate3d(${to.stage > from.stage ? -5 : 5}vw,0,0) scale(.99)` },
+      ],
+      { duration: 520, easing: "cubic-bezier(.4,0,.2,1)" }
+    );
+  };
+
+  const moveTo = (target: number, direction: number, useTransition = true) => {
+    const next = clamp(target, 0, total - 1);
+    if (next === positionRef.current) return;
 
     const from = decode(positionRef.current);
-    const to = decode(clamped);
-    const root = document.querySelector<HTMLElement>(".project-intelligence-shell");
+    const to = decode(next);
+    const stageChanged = from.stage !== to.stage;
+    const shell = document.querySelector<HTMLElement>(".project-intelligence-shell");
+    const html = document.documentElement;
 
-    directionRef.current = direction;
-    positionRef.current = clamped;
-    setPosition(clamped);
-
-    if (root) {
-      root.dataset.piStage = String(to.stage);
-      root.dataset.piStep = String(to.step);
-      root.dataset.piDir = String(direction);
+    if (!stageChanged || !useTransition) {
+      commitPosition(next);
+      return;
     }
 
-    const lockMs = options.lockMs ?? 920;
-    lockedRef.current = lockMs > 0;
-    if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
-    if (lockMs > 0) {
-      unlockTimer.current = window.setTimeout(() => {
+    lockedRef.current = true;
+    const transitionKey = `${from.stage}-${to.stage}`;
+    shell?.setAttribute("data-pi-transition", transitionKey);
+    shell?.setAttribute("data-pi-direction", String(direction));
+    html.setAttribute("data-pi-transition", transitionKey);
+    html.setAttribute("data-pi-direction", String(direction));
+
+    const update = () => commitPosition(next);
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const vtDocument = document as ViewTransitionDocument;
+
+    if (!prefersReduced && vtDocument.startViewTransition) {
+      const transition = vtDocument.startViewTransition(update);
+      transition.finished.finally(() => {
         lockedRef.current = false;
-      }, lockMs);
-    }
-
-    if (root && options.transition !== false && from.stage !== to.stage) {
-      root.dataset.piTransition = `${from.stage}-${to.stage}`;
-      root.dataset.piTransitioning = "true";
-      root.style.setProperty("--pi-transition-dir", String(direction));
-      if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
-      transitionTimer.current = window.setTimeout(() => {
-        delete root.dataset.piTransitioning;
-      }, 980);
+        shell?.removeAttribute("data-pi-transition");
+        shell?.removeAttribute("data-pi-direction");
+        html.removeAttribute("data-pi-transition");
+        html.removeAttribute("data-pi-direction");
+      });
+    } else {
+      animateFallback(from, to, update);
+      window.setTimeout(() => {
+        lockedRef.current = false;
+        shell?.removeAttribute("data-pi-transition");
+        shell?.removeAttribute("data-pi-direction");
+        html.removeAttribute("data-pi-transition");
+        html.removeAttribute("data-pi-direction");
+      }, 760);
     }
   };
 
   useEffect(() => {
-    const root = document.querySelector<HTMLElement>(".project-intelligence-shell");
-    if (!root) return;
+    const shell = document.querySelector<HTMLElement>(".project-intelligence-shell");
+    if (!shell) return;
 
     const html = document.documentElement;
     const body = document.body;
@@ -232,297 +193,189 @@ export function ProjectIntelligenceMotion({ evidenceCount, caseCount, buildCount
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
     html.style.overscrollBehavior = "none";
+    applyDomState(0);
 
-    const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-stage-panel]"));
-    const evidence = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-evidence]"));
-    const cases = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-case]"));
-    const builds = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-build]"));
-    const interrogation = root.querySelector<HTMLElement>(".pi-stage-interrogation");
-
-    const applyStates = () => {
-      const current = decode(positionRef.current);
-      root.dataset.piStage = String(current.stage);
-      root.dataset.piStep = String(current.step);
-      root.dataset.piDir = String(directionRef.current);
-      root.style.setProperty("--pi-stage", String(current.stage));
-      root.style.setProperty("--pi-step", String(current.step));
-      root.style.setProperty("--pi-progress", String(positionRef.current / Math.max(1, totalPositions - 1)));
-
-      panels.forEach((panel, index) => {
-        const active = index === current.stage;
-        panel.dataset.active = active ? "true" : "false";
-        panel.setAttribute("aria-hidden", active ? "false" : "true");
-      });
-
-      const applyItemStates = (items: HTMLElement[], activeStep: number, activeStage: number) => {
-        items.forEach((item, index) => {
-          const state = current.stage !== activeStage
-            ? "dormant"
-            : index === activeStep
-              ? "active"
-              : index < activeStep
-                ? "before"
-                : "after";
-          item.dataset.state = state;
-        });
-      };
-
-      applyItemStates(evidence, current.step, 1);
-      applyItemStates(cases, current.step, 2);
-      applyItemStates(builds, current.step, 4);
-
-      if (interrogation && current.stage === 2) {
-        interrogation.dataset.activeLabel = cases[current.step]?.dataset.label ?? "INTERROGATION";
-      }
+    const endGesture = () => {
+      wheelAccumRef.current = 0;
+      gestureConsumedRef.current = false;
+      interrogationMovedRef.current = false;
+      shell.removeAttribute("data-pi-scrub");
     };
 
-    const rearmGesture = () => {
-      consumedRef.current = false;
-      accumulatedRef.current = 0;
-      interrogationDeltaRef.current = 0;
-      interrogationMovedRef.current = false;
-      delete root.dataset.piScrub;
+    const scheduleGestureEnd = () => {
+      if (gestureTimerRef.current) window.clearTimeout(gestureTimerRef.current);
+      gestureTimerRef.current = window.setTimeout(endGesture, 190);
     };
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
-      if (gestureEndTimer.current) window.clearTimeout(gestureEndTimer.current);
-      gestureEndTimer.current = window.setTimeout(rearmGesture, 280);
+      scheduleGestureEnd();
+      if (lockedRef.current) return;
 
-      const current = decode(positionRef.current);
+      const cursor = decode(positionRef.current);
+      wheelAccumRef.current += event.deltaY;
 
-      if (current.stage === 2) {
-        root.dataset.piScrub = "true";
-        interrogationDeltaRef.current += event.deltaY;
-        const threshold = 58;
-        if (Math.abs(interrogationDeltaRef.current) < threshold) return;
+      if (cursor.stage === 2) {
+        shell.dataset.piScrub = "true";
+        const threshold = 46;
+        while (Math.abs(wheelAccumRef.current) >= threshold) {
+          const direction = wheelAccumRef.current > 0 ? 1 : -1;
+          const stageStart = starts[2] ?? 0;
+          const stageEnd = stageStart + (counts[2] ?? 1) - 1;
+          const next = positionRef.current + direction;
+          const canMoveInside = next >= stageStart && next <= stageEnd;
 
-        const direction = interrogationDeltaRef.current > 0 ? 1 : -1;
-        const start = stageStarts[2] ?? 0;
-        const end = start + (stageCounts[2] ?? 1) - 1;
-        const canMoveInside = direction > 0
-          ? positionRef.current < end
-          : positionRef.current > start;
+          if (canMoveInside) {
+            moveTo(next, direction, false);
+            interrogationMovedRef.current = true;
+            wheelAccumRef.current -= direction * threshold;
+            continue;
+          }
 
-        if (canMoveInside) {
-          const steps = Math.max(1, Math.floor(Math.abs(interrogationDeltaRef.current) / threshold));
-          const target = Math.max(start, Math.min(end, positionRef.current + direction * steps));
-          interrogationDeltaRef.current -= direction * steps * threshold;
-          interrogationMovedRef.current = true;
-          moveTo(target, direction, { lockMs: 0, transition: false });
+          if (interrogationMovedRef.current || gestureConsumedRef.current) {
+            wheelAccumRef.current = 0;
+            return;
+          }
 
-          if (target === start || target === end) consumedRef.current = true;
+          gestureConsumedRef.current = true;
+          wheelAccumRef.current = 0;
+          moveTo(positionRef.current + direction, direction, true);
           return;
         }
-
-        if (interrogationMovedRef.current || consumedRef.current) {
-          consumedRef.current = true;
-          return;
-        }
-
-        interrogationDeltaRef.current = 0;
-        consumedRef.current = true;
-        moveTo(positionRef.current + direction, direction);
         return;
       }
 
-      if (lockedRef.current || consumedRef.current) return;
-
-      accumulatedRef.current += event.deltaY;
-      if (Math.abs(accumulatedRef.current) < 42) return;
-
-      const direction = accumulatedRef.current > 0 ? 1 : -1;
-      consumedRef.current = true;
-      accumulatedRef.current = 0;
-      moveTo(positionRef.current + direction, direction);
+      if (gestureConsumedRef.current || Math.abs(wheelAccumRef.current) < 38) return;
+      const direction = wheelAccumRef.current > 0 ? 1 : -1;
+      wheelAccumRef.current = 0;
+      gestureConsumedRef.current = true;
+      moveTo(positionRef.current + direction, direction, true);
     };
 
-    const onKeyDown = (event: KeyboardEvent) => {
+    const onKey = (event: KeyboardEvent) => {
+      if (lockedRef.current) return;
       if (["ArrowDown", "PageDown", " "].includes(event.key)) {
         event.preventDefault();
-        moveTo(positionRef.current + 1, 1);
+        moveTo(positionRef.current + 1, 1, true);
       } else if (["ArrowUp", "PageUp"].includes(event.key)) {
         event.preventDefault();
-        moveTo(positionRef.current - 1, -1);
+        moveTo(positionRef.current - 1, -1, true);
       } else if (event.key === "Home") {
         event.preventDefault();
-        moveTo(0, -1);
+        moveTo(0, -1, true);
       } else if (event.key === "End") {
         event.preventDefault();
-        moveTo(totalPositions - 1, 1);
+        moveTo(total - 1, 1, true);
       }
     };
 
     const onTouchStart = (event: TouchEvent) => {
-      touchStartY.current = event.touches[0]?.clientY ?? null;
+      touchStartRef.current = event.touches[0]?.clientY ?? null;
     };
 
     const onTouchEnd = (event: TouchEvent) => {
-      if (touchStartY.current == null) return;
-      const endY = event.changedTouches[0]?.clientY ?? touchStartY.current;
-      const delta = touchStartY.current - endY;
-      touchStartY.current = null;
-      if (Math.abs(delta) < 34 || lockedRef.current) return;
-
-      const current = decode(positionRef.current);
+      const start = touchStartRef.current;
+      touchStartRef.current = null;
+      if (start == null || lockedRef.current) return;
+      const end = event.changedTouches[0]?.clientY ?? start;
+      const delta = start - end;
+      if (Math.abs(delta) < 34) return;
       const direction = delta > 0 ? 1 : -1;
-      if (current.stage === 2) {
-        const start = stageStarts[2] ?? 0;
-        const end = start + (stageCounts[2] ?? 1) - 1;
-        const distance = Math.max(1, Math.round(Math.abs(delta) / 72));
-        const target = Math.max(start, Math.min(end, positionRef.current + direction * distance));
+      const cursor = decode(positionRef.current);
+
+      if (cursor.stage === 2) {
+        const stageStart = starts[2] ?? 0;
+        const stageEnd = stageStart + (counts[2] ?? 1) - 1;
+        const distance = Math.max(1, Math.round(Math.abs(delta) / 76));
+        const target = clamp(positionRef.current + direction * distance, stageStart, stageEnd);
         if (target !== positionRef.current) {
-          moveTo(target, direction, { lockMs: 0, transition: false });
+          moveTo(target, direction, false);
           return;
         }
       }
-      moveTo(positionRef.current + direction, direction);
+      moveTo(positionRef.current + direction, direction, true);
     };
 
     const flushPointer = () => {
       pointerFrameRef.current = null;
       const pending = pendingPointerRef.current;
-      if (!pending) return;
-
-      root.style.setProperty("--pi-px", pending.px.toFixed(3));
-      root.style.setProperty("--pi-py", pending.py.toFixed(3));
-      root.style.setProperty("--pi-mx", `${pending.x}px`);
-      root.style.setProperty("--pi-my", `${pending.y}px`);
-      root.style.setProperty("--pi-pointer-v", pending.velocity.toFixed(3));
-
-      if (pointerVelocityTimer.current) window.clearTimeout(pointerVelocityTimer.current);
-      pointerVelocityTimer.current = window.setTimeout(() => {
-        root.style.setProperty("--pi-pointer-v", "0");
-      }, 90);
+      shell.style.setProperty("--pi-px", pending.nx.toFixed(3));
+      shell.style.setProperty("--pi-py", pending.ny.toFixed(3));
+      shell.style.setProperty("--pi-mx", `${pending.x}px`);
+      shell.style.setProperty("--pi-my", `${pending.y}px`);
+      shell.style.setProperty("--pi-pointer-v", pending.velocity.toFixed(3));
     };
 
     const onPointerMove = (event: PointerEvent) => {
-      const px = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
-      const py = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
-      const last = lastPointerRef.current;
-      const velocity = last.ready
-        ? Math.min(1, Math.hypot(event.clientX - last.x, event.clientY - last.y) / 64)
-        : 0;
-      lastPointerRef.current = { x: event.clientX, y: event.clientY, ready: true };
-      pendingPointerRef.current = { px, py, x: event.clientX, y: event.clientY, velocity };
-
-      if (pointerFrameRef.current == null) {
-        pointerFrameRef.current = window.requestAnimationFrame(flushPointer);
+      const now = performance.now();
+      const previous = lastPointerRef.current;
+      let velocity = 0;
+      if (previous.ready) {
+        const dt = Math.max(16, now - previous.time);
+        velocity = Math.min(1, Math.hypot(event.clientX - previous.x, event.clientY - previous.y) / dt / 1.3);
       }
+      lastPointerRef.current = { x: event.clientX, y: event.clientY, time: now, ready: true };
+      pendingPointerRef.current = {
+        x: event.clientX,
+        y: event.clientY,
+        nx: event.clientX / Math.max(1, window.innerWidth) - 0.5,
+        ny: event.clientY / Math.max(1, window.innerHeight) - 0.5,
+        velocity,
+      };
+      if (pointerFrameRef.current == null) pointerFrameRef.current = window.requestAnimationFrame(flushPointer);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false, capture: true });
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKey);
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    applyStates();
 
     return () => {
       window.removeEventListener("wheel", onWheel, true);
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", onKey);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("pointermove", onPointerMove);
-      if (gestureEndTimer.current) window.clearTimeout(gestureEndTimer.current);
-      if (unlockTimer.current) window.clearTimeout(unlockTimer.current);
-      if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
-      if (pointerVelocityTimer.current) window.clearTimeout(pointerVelocityTimer.current);
-      if (pointerFrameRef.current != null) window.cancelAnimationFrame(pointerFrameRef.current);
+      if (gestureTimerRef.current) window.clearTimeout(gestureTimerRef.current);
+      if (pointerFrameRef.current) window.cancelAnimationFrame(pointerFrameRef.current);
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
       html.style.overscrollBehavior = previousOverscroll;
+      html.removeAttribute("data-pi-transition");
+      html.removeAttribute("data-pi-direction");
     };
-  }, [stageCounts, stageStarts, totalPositions]);
+  }, [counts, starts, total]);
 
-  useEffect(() => {
-    const root = document.querySelector<HTMLElement>(".project-intelligence-shell");
-    if (!root) return;
-    const current = decode(position);
-    root.dataset.piStage = String(current.stage);
-    root.dataset.piStep = String(current.step);
-
-    const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-stage-panel]"));
-    panels.forEach((panel, index) => {
-      const active = index === current.stage;
-      panel.dataset.active = active ? "true" : "false";
-      panel.setAttribute("aria-hidden", active ? "false" : "true");
-    });
-
-    const updateItems = (selector: string, stage: number) => {
-      const items = Array.from(root.querySelectorAll<HTMLElement>(selector));
-      items.forEach((item, index) => {
-        item.dataset.state = current.stage !== stage
-          ? "dormant"
-          : index === current.step
-            ? "active"
-            : index < current.step
-              ? "before"
-              : "after";
-      });
-    };
-
-    updateItems("[data-pi-evidence]", 1);
-    updateItems("[data-pi-case]", 2);
-    updateItems("[data-pi-build]", 4);
-
-    const interrogation = root.querySelector<HTMLElement>(".pi-stage-interrogation");
-    const cases = Array.from(root.querySelectorAll<HTMLElement>("[data-pi-case]"));
-    if (interrogation && current.stage === 2) {
-      interrogation.dataset.activeLabel = cases[current.step]?.dataset.label ?? "INTERROGATION";
-    }
-  }, [position]);
-
-  const jumpToStage = (stage: number) => {
-    const target = stageStarts[stage] ?? 0;
-    moveTo(target, target >= positionRef.current ? 1 : -1);
-  };
+  const cursor = decode(position);
 
   return (
-    <div className="pi-stage-ui" aria-label="Project Intelligence stages">
-      <style>{PERF_STYLE}</style>
-      <div className="pi-pointer-field" aria-hidden="true" />
-      <div className="pi-pointer-probe" aria-hidden="true">
-        <i />
-        <b />
-        <span>FR</span>
-      </div>
-
-      <div className="pi-capture-hud" aria-hidden="true">
-        <div className="pi-hud-orbit pi-hud-orbit-a" />
-        <div className="pi-hud-orbit pi-hud-orbit-b" />
-        <div className="pi-hud-reticle" />
-        <span className="pi-hud-tag pi-hud-tag-a">DOSSIER / ACTIVE</span>
-        <span className="pi-hud-tag pi-hud-tag-b">CURSOR / PROBE</span>
-        <span className="pi-hud-tag pi-hud-tag-c">TRACE / LIVE</span>
-      </div>
-
-      <div className="pi-transition-gate" aria-hidden="true">
-        <i className="pi-gate-blade pi-gate-blade-a" />
-        <i className="pi-gate-blade pi-gate-blade-b" />
-        <b className="pi-gate-core" />
-      </div>
-
-      <div className="pi-stage-counter">
-        <strong>{String(cursor.stage + 1).padStart(2, "0")}</strong>
-        <span>/ 05</span>
-      </div>
-      <div className="pi-stage-nav">
-        {STAGES.map((label, index) => (
-          <button
-            key={label}
-            type="button"
-            className={index === cursor.stage ? "active" : ""}
-            onClick={() => jumpToStage(index)}
-          >
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <strong>{label}</strong>
-          </button>
-        ))}
-      </div>
-      <div className="pi-stage-instruction">
-        <span>{cursor.step + 1} / {stageCounts[cursor.stage]}</span>
-        <strong>{cursor.stage === 2 ? "ONE GESTURE / SCRUB THE CASE" : "SCROLL / SWIPE TO ADVANCE"}</strong>
+    <div className="pi-ui" aria-label="Project Intelligence navigation">
+      <div className="pi-pointer" aria-hidden="true" />
+      <nav className="pi-trace" aria-label="Investigation stages">
+        {STAGES.map((label, stage) => {
+          const active = stage === cursor.stage;
+          return (
+            <button
+              key={label}
+              type="button"
+              className={active ? "active" : ""}
+              onClick={() => {
+                if (lockedRef.current) return;
+                const target = starts[stage] ?? 0;
+                moveTo(target, target >= positionRef.current ? 1 : -1, true);
+              }}
+            >
+              <i />
+              <span>{label}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <div className="pi-progress-note">
+        {cursor.stage === 2
+          ? `${cursor.step + 1} / ${counts[2]}  SCRUB TO INTERROGATE`
+          : `${cursor.stage + 1} / 5  SCROLL / SWIPE`}
       </div>
     </div>
   );
