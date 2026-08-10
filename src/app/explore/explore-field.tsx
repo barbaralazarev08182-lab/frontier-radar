@@ -86,34 +86,24 @@ export function ExploreField({
     [available, lens]
   );
 
-  useEffect(() => {
-    if (ordered.length === 0) {
-      setFocusId(null);
-      return;
-    }
-    if (!focusId || !ordered.some((candidate) => candidate.itemId === focusId)) {
-      setFocusId(ordered[0]!.itemId);
-    }
-  }, [focusId, ordered]);
+  const focus = ordered.find((candidate) => candidate.itemId === focusId) ?? ordered[0] ?? null;
 
   useEffect(() => {
-    const candidate = ordered.find((entry) => entry.itemId === focusId);
-    if (!candidate) return;
+    if (!focus) return;
     const startedAt = Date.now();
     return () => {
       const dwellMs = Date.now() - startedAt;
       if (dwellMs < 1200) return;
-      trackFeedback(candidate.itemId, "dwell", dwellMs, {
+      trackFeedback(focus.itemId, "dwell", dwellMs, {
         surface: "explore",
         algorithm_variant: `explore-frontier-field-v1:${lens}`,
-        source: candidate.source,
-        content_type: candidate.contentType,
+        source: focus.source,
+        content_type: focus.contentType,
         measurement: "focus_dwell",
       });
     };
-  }, [focusId, lens, ordered]);
+  }, [focus, lens]);
 
-  const focus = ordered.find((candidate) => candidate.itemId === focusId) ?? ordered[0] ?? null;
   const rankById = useMemo(() => new Map(ordered.map((candidate, index) => [candidate.itemId, index])), [ordered]);
 
   function chooseLens(next: ExploreLens) {
