@@ -12,9 +12,7 @@ import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
 import { ExploreField } from "./explore-field";
 import "./explore-field.css";
-import "./explore-refinement.css";
-import "./explore-bold-pass.css";
-import "./explore-composition-reset.css";
+import "./explore-v2.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
