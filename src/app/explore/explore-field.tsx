@@ -109,6 +109,8 @@ export function ExploreField({
   useEffect(() => {
     if (!searchOpen) return;
 
+    // Search is an instrument mode, not another vertical page section: freeze document scroll
+    // while the fixed-height dock filters the already-visible field beneath it.
     const root = document.documentElement;
     const body = document.body;
     const previousRootOverflow = root.style.overflow;
