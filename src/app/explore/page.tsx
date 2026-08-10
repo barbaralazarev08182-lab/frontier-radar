@@ -14,6 +14,7 @@ import { ExploreField } from "./explore-field";
 import "./explore-field.css";
 import "./explore-refinement.css";
 import "./explore-bold-pass.css";
+import "./explore-composition-reset.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
