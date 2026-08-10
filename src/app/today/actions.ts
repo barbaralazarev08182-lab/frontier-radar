@@ -24,7 +24,10 @@ function positiveNumber(value: string | undefined, fallback: number): number {
  * Resolve the synthesis for one server-selected Today set.
  * Intended to be bound to trusted server-generated signal inputs before being
  * handed to a client component. Repeated calls for the same ordered selection
- * hit the persisted selection-hash cache instead of calling the model again.
+ * hit the persisted selection-hash cache when it is available.
+ *
+ * Persistence is deliberately best-effort here: a transient Supabase/cache
+ * failure must not discard a valid synthesis that can still power Signal Weave.
  */
 export async function resolveTodaySynthesis(
   editionDate: string,
@@ -36,9 +39,10 @@ export async function resolveTodaySynthesis(
   if (new Set(signalIds).size !== signalIds.length) return null;
 
   const selectionHash = computeDailySelectionHash(signalIds);
-  const supabase = createAdminClient();
 
+  let supabase: ReturnType<typeof createAdminClient> | null = null;
   try {
+    supabase = createAdminClient();
     const cached = await findDailySynthesis(supabase, {
       editionDate,
       selectionHash,
@@ -46,8 +50,9 @@ export async function resolveTodaySynthesis(
     });
     if (cached) return cached;
   } catch {
-    // A missing rollout migration should not make /today unusable.
-    return null;
+    // Cache/persistence availability is not a prerequisite for rendering the
+    // current request. Continue to the model and return the validated snapshot
+    // directly if generation succeeds.
   }
 
   const baseUrl = process.env.AI_BASE_URL;
@@ -60,16 +65,18 @@ export async function resolveTodaySynthesis(
       !model ? "AI_MODEL" : null,
     ].filter(Boolean).join(", ");
 
-    await upsertDailySynthesisFailure(supabase, {
-      editionDate,
-      selectionHash,
-      signalIds,
-      provider: "tencent",
-      model: model ?? "unconfigured",
-      promptVersion: DAILY_SYNTHESIS_PROMPT_VERSION,
-      errorMessage: `Missing AI environment: ${missing}`,
-      latencyMs: 0,
-    }).catch(() => {});
+    if (supabase) {
+      await upsertDailySynthesisFailure(supabase, {
+        editionDate,
+        selectionHash,
+        signalIds,
+        provider: "tencent",
+        model: model ?? "unconfigured",
+        promptVersion: DAILY_SYNTHESIS_PROMPT_VERSION,
+        errorMessage: `Missing AI environment: ${missing}`,
+        latencyMs: 0,
+      }).catch(() => {});
+    }
     return null;
   }
 
@@ -85,27 +92,35 @@ export async function resolveTodaySynthesis(
   const started = Date.now();
   try {
     const output = await generateDailySynthesis(client, { editionDate, signals });
-    await upsertDailySynthesisSuccess(supabase, {
-      snapshot: output.snapshot,
-      provider: "tencent",
-      model,
-      promptVersion: output.promptVersion,
-      tokenUsage: output.tokenUsage?.totalTokens ?? null,
-      latencyMs: output.latencyMs,
-    });
+
+    if (supabase) {
+      await upsertDailySynthesisSuccess(supabase, {
+        snapshot: output.snapshot,
+        provider: "tencent",
+        model,
+        promptVersion: output.promptVersion,
+        tokenUsage: output.tokenUsage?.totalTokens ?? null,
+        latencyMs: output.latencyMs,
+      }).catch(() => {});
+    }
+
+    // A valid model result is sufficient for the live page even when its cache
+    // cannot be written. Do not turn a persistence outage into a missing chapter.
     return output.snapshot;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    await upsertDailySynthesisFailure(supabase, {
-      editionDate,
-      selectionHash,
-      signalIds,
-      provider: "tencent",
-      model,
-      promptVersion: DAILY_SYNTHESIS_PROMPT_VERSION,
-      errorMessage: message,
-      latencyMs: Date.now() - started,
-    }).catch(() => {});
+    if (supabase) {
+      await upsertDailySynthesisFailure(supabase, {
+        editionDate,
+        selectionHash,
+        signalIds,
+        provider: "tencent",
+        model,
+        promptVersion: DAILY_SYNTHESIS_PROMPT_VERSION,
+        errorMessage: message,
+        latencyMs: Date.now() - started,
+      }).catch(() => {});
+    }
     return null;
   }
 }
