@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 
 export function SiteNav() {
   const pathname = usePathname();
-  const editorial = pathname === "/today";
+  const editorial = pathname === "/today" || pathname.startsWith("/project/");
 
   return (
     <header
