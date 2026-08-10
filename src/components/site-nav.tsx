@@ -12,52 +12,62 @@ const NAV_ITEMS = [
 
 export function SiteNav() {
   const pathname = usePathname();
+  const today = pathname === "/today";
   const project = pathname.startsWith("/project/");
   const explore = pathname === "/explore" || pathname.startsWith("/explore/");
-  const editorial = pathname === "/today" || explore;
+  const immersive = today || project;
+  const lightEditorial = explore;
 
   return (
     <header
       className={[
-        "sticky top-0 z-50 border-b transition-colors",
-        project
-          ? "border-transparent bg-transparent text-white"
-          : editorial
-            ? "border-black/10 bg-[#f1eee5]/88 text-[#0b0b0b] backdrop-blur-xl"
-            : "border-white/[0.06] bg-background/82 text-foreground backdrop-blur-xl",
+        "inset-x-0 top-0 z-[120] transition-colors",
+        immersive
+          ? "pointer-events-none fixed border-transparent bg-transparent text-white mix-blend-difference"
+          : lightEditorial
+            ? "sticky border-b border-black/10 bg-[#f3f0e7]/92 text-[#111214] backdrop-blur-lg"
+            : "sticky border-b border-white/[0.06] bg-background/82 text-foreground backdrop-blur-xl",
       ].join(" ")}
     >
-      <div className="flex w-full items-center justify-between gap-4 px-4 py-2.5 sm:px-7 lg:px-10">
-        <Link href="/today" className="group flex min-w-0 items-center gap-2.5">
-          <span
-            className={[
-              "relative grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[8px] font-black tracking-tighter transition-transform duration-300 group-hover:rotate-12",
-              project ? "border-white/60" : editorial ? "border-black/50" : "border-white/35",
-            ].join(" ")}
+      <div
+        className={[
+          "relative flex w-full items-center justify-between gap-5 px-4 sm:px-7 lg:px-10",
+          today ? "min-h-0 justify-end pt-[3.35rem]" : "min-h-14 py-2.5",
+        ].join(" ")}
+      >
+        {!today ? (
+          <Link
+            href="/today"
+            className="pointer-events-auto group flex min-w-0 items-center gap-2.5"
+            aria-label="Frontier Radar Today"
           >
             <span
-              className={
-                project
-                  ? "h-1.5 w-1.5 rounded-full bg-white"
-                  : editorial
-                    ? "h-1.5 w-1.5 rounded-full bg-[#3150ff]"
-                    : "h-1.5 w-1.5 rounded-full bg-cyan-300"
-              }
-            />
-          </span>
-          <span className="truncate text-[11px] font-black tracking-[0.16em] sm:text-xs">
-            FRONTIER RADAR
-          </span>
-        </Link>
+              className={[
+                "relative grid h-5 w-5 shrink-0 place-items-center rounded-full border transition-transform duration-300 group-hover:rotate-12",
+                project ? "border-white/55" : lightEditorial ? "border-black/35" : "border-white/35",
+              ].join(" ")}
+            >
+              <span
+                className={[
+                  "h-1.5 w-1.5 rounded-full",
+                  project ? "bg-white" : lightEditorial ? "bg-[#3150ff]" : "bg-cyan-300",
+                ].join(" ")}
+              />
+            </span>
+            <span className="truncate font-mono text-[10px] font-black uppercase tracking-[0.16em] sm:text-[11px]">
+              Frontier Radar
+            </span>
+          </Link>
+        ) : null}
 
         <nav
           className={[
-            "flex items-center gap-0.5 rounded-full border p-1 shadow-sm backdrop-blur-xl sm:gap-1",
-            project
-              ? "border-white/20 bg-black/30"
-              : editorial
-                ? "border-black/10 bg-white/55"
-                : "border-white/10 bg-black/20",
+            "pointer-events-auto flex items-center gap-1 border-y px-1 py-1 font-mono uppercase backdrop-blur-[2px]",
+            immersive
+              ? "border-white/35"
+              : lightEditorial
+                ? "border-black/20"
+                : "border-white/15",
           ].join(" ")}
           aria-label="Primary navigation"
         >
@@ -71,28 +81,46 @@ export function SiteNav() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={[
-                  "relative inline-flex min-h-8 items-center justify-center rounded-full px-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] transition-all duration-200 sm:px-3.5 sm:text-[11px]",
+                  "group/nav relative inline-flex min-h-7 items-center justify-center gap-1.5 border border-transparent px-2.5 text-[9px] font-extrabold tracking-[0.12em] transition-all duration-180 sm:px-3 sm:text-[10px]",
                   active
-                    ? project
-                      ? "bg-white text-black shadow-sm"
-                      : editorial
-                        ? "bg-[#17181a] text-white shadow-sm"
-                        : "bg-white text-black shadow-sm"
+                    ? immersive
+                      ? "border-white/70 text-white"
+                      : lightEditorial
+                        ? "border-black/60 text-black"
+                        : "border-white/55 text-foreground"
                     : exploreEntry
-                      ? project
-                        ? "border border-white/25 bg-white/10 text-white opacity-100 hover:bg-white/18"
-                        : editorial
-                          ? "border border-[#3150ff]/25 bg-[#3150ff]/[0.06] text-[#1738d1] opacity-100 hover:bg-[#3150ff]/[0.11]"
-                          : "border border-cyan-300/25 bg-cyan-300/[0.06] text-cyan-100 opacity-100 hover:bg-cyan-300/[0.12]"
-                      : project
-                        ? "text-white/68 hover:bg-white/10 hover:text-white"
-                        : editorial
-                          ? "text-black/58 hover:bg-black/[0.05] hover:text-black"
-                          : "text-foreground/58 hover:bg-white/[0.06] hover:text-foreground",
+                      ? immersive
+                        ? "text-white opacity-90 hover:border-white/50"
+                        : lightEditorial
+                          ? "text-[#2147e8] opacity-100 hover:border-[#3150ff]/45"
+                          : "text-cyan-200 opacity-100 hover:border-cyan-300/35"
+                      : immersive
+                        ? "text-white opacity-58 hover:border-white/35 hover:opacity-100"
+                        : lightEditorial
+                          ? "text-black opacity-52 hover:border-black/25 hover:opacity-100"
+                          : "text-foreground opacity-55 hover:border-white/20 hover:opacity-100",
                 ].join(" ")}
               >
+                {exploreEntry && !active ? (
+                  <span
+                    className={[
+                      "h-1 w-1 rounded-full",
+                      immersive ? "bg-white" : lightEditorial ? "bg-[#3150ff]" : "bg-cyan-300",
+                    ].join(" ")}
+                    aria-hidden
+                  />
+                ) : null}
                 <span className="sm:hidden">{item.short}</span>
                 <span className="hidden sm:inline">{item.label}</span>
+                {active ? (
+                  <span
+                    className={[
+                      "absolute inset-x-2 -bottom-[5px] h-[2px]",
+                      immersive ? "bg-white" : lightEditorial ? "bg-[#3150ff]" : "bg-cyan-300",
+                    ].join(" ")}
+                    aria-hidden
+                  />
+                ) : null}
               </Link>
             );
           })}
