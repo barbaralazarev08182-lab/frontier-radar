@@ -221,36 +221,30 @@ export function TodayMotionProduction({
     };
   }, [resolveSynthesisAction, snapshot]);
 
-  useEffect(() => {
-    if (snapshot) return;
-    const root = document.querySelector<HTMLElement>(".motion-lab-shell");
-    const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
-    if (!root || !scroller) return;
-
-    const holdAtTodaySeven = () => {
-      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
-      const maxScrollTop = travel * 0.655;
-      if (scroller.scrollTop > maxScrollTop) scroller.scrollTop = maxScrollTop;
-    };
-
-    scroller.addEventListener("scroll", holdAtTodaySeven, { passive: true });
-    holdAtTodaySeven();
-    return () => scroller.removeEventListener("scroll", holdAtTodaySeven);
-  }, [snapshot]);
-
   return (
     <>
       <MotionLab />
-      <TodayStageScrollController canEnterWeave={Boolean(snapshot)} />
-      {snapshot ? <MotionLabDirectHandoff /> : null}
-      {stage && snapshot
+      <TodayStageScrollController canEnterWeave={true} />
+      <MotionLabDirectHandoff />
+      {stage
         ? createPortal(
             <div className="motion-lab-analysis today-production-analysis">
-              <TodaySignalWeave
-                signals={synthesisSignals}
-                initialSnapshot={snapshot}
-                resolveSynthesisAction={null}
-              />
+              {snapshot ? (
+                <TodaySignalWeave
+                  signals={synthesisSignals}
+                  initialSnapshot={snapshot}
+                  resolveSynthesisAction={null}
+                />
+              ) : (
+                <section className="today-synthesis-pending" aria-live="polite" aria-busy="true">
+                  <div className="today-synthesis-pending-grid" aria-hidden="true" />
+                  <div className="today-synthesis-pending-copy">
+                    <span>FR / TODAY&apos;S SYNTHESIS</span>
+                    <strong>{String(synthesisSignals.length).padStart(2, "0")} SIGNALS → SYNTHESIS</strong>
+                    <p>Preparing today&apos;s signal relationships…</p>
+                  </div>
+                </section>
+              )}
             </div>,
             stage
           )
