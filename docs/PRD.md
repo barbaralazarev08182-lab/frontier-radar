@@ -1,5 +1,7 @@
 # Frontier Radar — 产品需求文档（PRD）
 
+> **历史基线说明（2026-08-10）**：这份 PRD 是项目 Stage-0 / 早期 MVP 版本，保留用于理解最初约束与产品起点。项目当前已经扩展到 Show HN / Product Hunt、Project Intelligence、Today’s 7、Adjacent / Wildcard、Signal Weave 等方向。新协作者请先阅读 [`START-HERE.md`](START-HERE.md)，不要把本文件中的“仅 3 个数据源 / 仅 4 个页面 / 后续未开始”等表述当成当前真实进度。
+
 > 版本：0.1 · 阶段 0 草案 · 个人使用
 
 ## 1. 愿景
