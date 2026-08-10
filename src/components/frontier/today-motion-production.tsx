@@ -29,6 +29,9 @@ const SOURCE_LABEL: Record<string, string> = {
   arxiv: "ARXIV",
 };
 
+const SYNTHESIS_RETRY_DELAY_MS = 1_800;
+const SYNTHESIS_MAX_ATTEMPTS = 3;
+
 function topicLabel(signal: EditorialSignal) {
   if (signal.lane === "adjacent") return "OUTSIDE YOUR BUBBLE";
   if (signal.lane === "wildcard") return "WILDCARD";
@@ -157,26 +160,52 @@ export function TodayMotionProduction({
   }, [dataLabel, dateLabel, signals, totalDiscoveries]);
 
   useEffect(() => {
-    if (snapshot || !resolveSynthesisAction || requestedRef.current) return;
+    if (snapshot || !resolveSynthesisAction) return;
     const root = document.querySelector<HTMLElement>(".motion-lab-shell");
     const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
     if (!root || !scroller) return;
 
     let frame = 0;
+    let retryTimer = 0;
+    let attempts = 0;
+    let disposed = false;
+
     const maybeResolve = () => {
       frame = 0;
-      if (requestedRef.current) return;
+      if (disposed || requestedRef.current || attempts >= SYNTHESIS_MAX_ATTEMPTS) return;
+
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       const progress = scroller.scrollTop / travel;
       if (progress < 0.2) return;
 
       requestedRef.current = true;
+      attempts += 1;
+
       void resolveSynthesisAction()
         .then((result) => {
-          if (result) setSnapshot(result);
+          if (disposed) return;
+          requestedRef.current = false;
+
+          if (result) {
+            setSnapshot(result);
+            return;
+          }
+
+          if (attempts < SYNTHESIS_MAX_ATTEMPTS) {
+            window.clearTimeout(retryTimer);
+            retryTimer = window.setTimeout(maybeResolve, SYNTHESIS_RETRY_DELAY_MS);
+          }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (disposed) return;
+          requestedRef.current = false;
+          if (attempts < SYNTHESIS_MAX_ATTEMPTS) {
+            window.clearTimeout(retryTimer);
+            retryTimer = window.setTimeout(maybeResolve, SYNTHESIS_RETRY_DELAY_MS);
+          }
+        });
     };
+
     const onScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(maybeResolve);
     };
@@ -184,8 +213,11 @@ export function TodayMotionProduction({
     scroller.addEventListener("scroll", onScroll, { passive: true });
     maybeResolve();
     return () => {
+      disposed = true;
+      requestedRef.current = false;
       scroller.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
+      window.clearTimeout(retryTimer);
     };
   }, [resolveSynthesisAction, snapshot]);
 
