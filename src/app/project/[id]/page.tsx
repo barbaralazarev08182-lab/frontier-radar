@@ -136,65 +136,77 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   );
 
   const caseBlocks = [
-    whyNow ? { label: "INFERENCE / WHY NOW", copy: whyNow } : null,
-    problem ? { label: "OBSERVED / PROBLEM", copy: problem } : null,
-    item.novelty ? { label: "INFERENCE / WHAT CHANGED", copy: item.novelty } : null,
-    item.whyItMatters ? { label: "INFERENCE / WHY IT MATTERS", copy: item.whyItMatters } : null,
-    targetUsers.length > 0 ? { label: "OBSERVED / WHO CAN USE IT", copy: targetUsers.join(" · ") } : null,
-    limitations ? { label: "OPEN QUESTION / LIMITS", copy: limitations } : null,
-    hypeRisk ? { label: "OPEN QUESTION / HYPE RISK", copy: hypeRisk } : null,
-  ].filter((entry): entry is { label: string; copy: string } => entry !== null);
+    whyNow ? { label: "WHY NOW", kind: "INFERENCE", copy: whyNow } : null,
+    problem ? { label: "THE PROBLEM", kind: "OBSERVED", copy: problem } : null,
+    item.novelty ? { label: "WHAT CHANGED", kind: "INFERENCE", copy: item.novelty } : null,
+    item.whyItMatters ? { label: "WHY IT MATTERS", kind: "INFERENCE", copy: item.whyItMatters } : null,
+    targetUsers.length > 0 ? { label: "WHO CAN USE IT", kind: "OBSERVED", copy: targetUsers.join(" · ") } : null,
+    limitations ? { label: "LIMITS", kind: "OPEN QUESTION", copy: limitations } : null,
+    hypeRisk ? { label: "HYPE RISK", kind: "OPEN QUESTION", copy: hypeRisk } : null,
+  ].filter((entry): entry is { label: string; kind: string; copy: string } => entry !== null);
+
+  const evidenceNodes = orderedEvidence.length > 0 ? orderedEvidence : [null];
+  const interrogationNodes = caseBlocks.length > 0
+    ? caseBlocks
+    : [{ label: "ANALYSIS STATUS", kind: "OPEN QUESTION", copy: "The structured intelligence layer is still being generated." }];
+  const buildNodes = possibleUses.length > 0
+    ? possibleUses
+    : ["Build directions have not been generated for this project yet."];
 
   return (
-    <div className="project-intelligence-shell">
-      <ProjectIntelligenceMotion />
-      <div className="pi-frame">
-        <Link href="/today" className="pi-back">
-          <ArrowLeft className="h-3.5 w-3.5" /> Daily Radar
-        </Link>
+    <div className="project-intelligence-shell" data-pi-stage="0" data-pi-step="0">
+      <ProjectIntelligenceMotion
+        evidenceCount={evidenceNodes.length}
+        caseCount={interrogationNodes.length}
+        buildCount={buildNodes.length}
+      />
 
-        <header className="pi-hero" data-pi-motion data-pi-section="00">
-          <div className="pi-hero-main">
+      <Link href="/today" className="pi-back">
+        <ArrowLeft className="h-3.5 w-3.5" /> Daily Radar
+      </Link>
+
+      <main className="pi-stage-viewport">
+        <section className="pi-stage pi-stage-capture" data-pi-stage-panel="0" data-active="true">
+          <div className="pi-capture-noise" aria-hidden="true" />
+          <div className="pi-capture-copy">
             <div className="pi-kicker">
               <strong>FR / PROJECT INTELLIGENCE</strong>
               <span>{SOURCE_LABEL[item.source] ?? item.source}</span>
               <span>{item.contentType}</span>
               {firstSeen ? <span>FIRST SEEN {firstSeen}</span> : null}
             </div>
-
             <h1 className="pi-title">{item.title}</h1>
             <p className="pi-deck">{summary}</p>
           </div>
 
-          <div className="pi-hero-object" aria-hidden="true">
-            <div className="pi-object-sheet pi-object-sheet-back" />
-            <div className="pi-object-sheet pi-object-sheet-mid" />
-            <div className="pi-object-sheet pi-object-sheet-front">
-              <div className="pi-object-topline">
+          <div className="pi-capture-object" aria-hidden="true">
+            <div className="pi-capture-sheet pi-capture-sheet-4" />
+            <div className="pi-capture-sheet pi-capture-sheet-3" />
+            <div className="pi-capture-sheet pi-capture-sheet-2" />
+            <div className="pi-capture-sheet pi-capture-sheet-1">
+              <div className="pi-capture-topline">
                 <span>FR / EVIDENCE DOSSIER</span>
                 <span>{SOURCE_LABEL[item.source] ?? item.source}</span>
               </div>
               <strong>{String(evidence.length).padStart(2, "0")}</strong>
-              <div className="pi-object-bottomline">
+              <div className="pi-capture-bottomline">
                 <span>EVIDENCE NODES</span>
-                <span>{read.label}</span>
+                <span>{String(item.score == null ? "--" : Math.round(item.score))} / RADAR</span>
               </div>
             </div>
-            <div className="pi-object-scan" />
+            <div className="pi-capture-flare" />
           </div>
 
-          <aside className="pi-hero-aside">
+          <aside className="pi-capture-verdict">
             <span className="pi-label">FRONTIER VERDICT</span>
-            <p className="pi-verdict">{read.label}</p>
-            <p className="pi-verdict-note">{read.note}</p>
-
-            <div className="pi-status" aria-label="project status">
+            <p>{read.label}</p>
+            <small>{read.note}</small>
+            <div className="pi-status">
               <span>CODE {entity.hasCodeAnywhere ? "YES" : "—"}</span>
               <span>DEMO {entity.hasDemoAnywhere ? "YES" : "—"}</span>
               <span>SOURCES {entity.sources.length}</span>
               <span>SCORE {item.score == null ? "—" : Math.round(item.score)}</span>
             </div>
-
             <div className="pi-cta-row">
               <TrackedSourceLink
                 itemId={item.id}
@@ -205,37 +217,41 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 Open project <ArrowUpRight className="h-3.5 w-3.5" />
               </TrackedSourceLink>
               <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pi-cta secondary">
-                Send to Idea Lab
+                Idea Lab
               </Link>
             </div>
           </aside>
-        </header>
+        </section>
 
-        <section className="pi-section" data-pi-motion data-pi-section="01">
-          <div className="pi-section-rail">
-            <span className="pi-section-index">01 / EVIDENCE</span>
-            <h2 className="pi-section-title">Why the radar believes it.</h2>
-            <p className="pi-section-note">
-              Source nodes are shown as evidence, not decoration. Open any node to verify the original signal.
-            </p>
+        <section className="pi-stage pi-stage-evidence" data-pi-stage-panel="1" data-active="false" aria-hidden="true">
+          <div className="pi-stage-heading">
+            <span>02 / EVIDENCE CHAMBER</span>
+            <strong>WHY SHOULD<br />YOU BELIEVE IT?</strong>
+            <small>Each gesture advances one source node.</small>
           </div>
-
-          <div className="pi-evidence-list">
-            {orderedEvidence.map((entry) => {
-              const eventDate = formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A";
+          <div className="pi-vanishing-grid" aria-hidden="true" />
+          <div className="pi-evidence-tunnel">
+            {evidenceNodes.map((entry, index) => {
+              if (!entry) {
+                return (
+                  <article key="empty-evidence" className="pi-evidence-card" data-pi-evidence data-state={index === 0 ? "active" : "after"}>
+                    <span className="pi-evidence-seq">01</span>
+                    <div className="pi-source-meta">SOURCE PENDING</div>
+                    <h2>Evidence is still being collected.</h2>
+                  </article>
+                );
+              }
               const momentum = momentumLines(entry.source, entry.momentum);
               return (
-                <article key={entry.itemId} className="pi-evidence-row">
-                  <time className="pi-evidence-date">{eventDate}</time>
-                  <div>
-                    <div className="pi-source-meta">
-                      <span>{SOURCE_LABEL[entry.source] ?? entry.source}</span>
-                      <span>{entry.contentType}</span>
-                    </div>
-                    <h3 className="pi-evidence-title">{entry.title}</h3>
-                    <div className="pi-momentum">
-                      {momentum.length > 0 ? momentum.map((line) => <span key={line}>{line}</span>) : <span>momentum accumulating</span>}
-                    </div>
+                <article key={entry.itemId} className="pi-evidence-card" data-pi-evidence data-state={index === 0 ? "active" : "after"}>
+                  <span className="pi-evidence-seq">{String(index + 1).padStart(2, "0")}</span>
+                  <div className="pi-evidence-card-top">
+                    <span>{formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A"}</span>
+                    <span>{SOURCE_LABEL[entry.source] ?? entry.source} / {entry.contentType}</span>
+                  </div>
+                  <h2>{entry.title}</h2>
+                  <div className="pi-momentum">
+                    {momentum.length > 0 ? momentum.map((line) => <span key={line}>{line}</span>) : <span>momentum accumulating</span>}
                   </div>
                   <TrackedSourceLink
                     itemId={entry.itemId}
@@ -243,7 +259,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                     metadata={{ surface: "project_intelligence_evidence", source: entry.source, content_type: entry.contentType }}
                     className="pi-evidence-link"
                   >
-                    Verify ↗
+                    Verify source ↗
                   </TrackedSourceLink>
                 </article>
               );
@@ -251,115 +267,94 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           </div>
         </section>
 
-        <section className="pi-section" data-pi-motion data-pi-section="02">
-          <div className="pi-section-rail">
-            <span className="pi-section-index">02 / THE CASE</span>
-            <h2 className="pi-section-title">What actually matters.</h2>
-            <p className="pi-section-note">
-              Facts, inference and uncertainty are deliberately separated so the analysis can be challenged.
-            </p>
+        <section
+          className="pi-stage pi-stage-interrogation"
+          data-pi-stage-panel="2"
+          data-active="false"
+          data-active-label={interrogationNodes[0]?.label ?? "INTERROGATION"}
+          aria-hidden="true"
+        >
+          <div className="pi-interrogation-chrome">
+            <span>03 / INTERROGATION</span>
+            <strong>FR / QUESTION THE SIGNAL</strong>
           </div>
-
-          <div className="pi-case-stack">
-            {caseBlocks.length > 0 ? caseBlocks.map((entry) => (
-              <div key={entry.label} className="pi-case-block">
-                <span className="pi-label">{entry.label}</span>
-                <div className="pi-case-copy">{entry.copy}</div>
-              </div>
-            )) : (
-              <div className="pi-case-block">
-                <span className="pi-label">ANALYSIS STATUS</span>
-                <div className="pi-case-copy">The evidence is present, but the structured intelligence layer is still being generated.</div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="pi-section" data-pi-motion data-pi-section="03">
-          <div className="pi-section-rail">
-            <span className="pi-section-index">03 / RADAR READ</span>
-            <h2 className="pi-section-title">Why it entered the frontier set.</h2>
-            <p className="pi-section-note">
-              Scores stay secondary: they explain the pick, but they are not the story.
-            </p>
-          </div>
-
-          <div className="pi-score-strip">
-            {scores.slice(0, 7).map((entry) => (
-              <div key={entry.dimension} className="pi-score-cell">
-                <span className="pi-score-name">{SCORE_LABEL[entry.dimension] ?? entry.dimension}</span>
-                <div>
-                  <strong className="pi-score-value">{Math.round(entry.score)}</strong>
-                  {entry.rationale ? <p className="pi-score-rationale">{entry.rationale}</p> : null}
-                </div>
-              </div>
+          <div className="pi-interrogation-stack">
+            {interrogationNodes.map((entry, index) => (
+              <article
+                key={`${entry.label}-${index}`}
+                className="pi-interrogation-card"
+                data-pi-case
+                data-label={entry.label}
+                data-state={index === 0 ? "active" : "after"}
+              >
+                <span className="pi-interrogation-kind">{entry.kind}</span>
+                <h2>{entry.label}</h2>
+                <p>{entry.copy}</p>
+                <div className="pi-interrogation-stamp">FR / {String(index + 1).padStart(2, "0")}</div>
+              </article>
             ))}
           </div>
         </section>
 
-        <section className="pi-section" data-pi-motion data-pi-section="04">
-          <div className="pi-section-rail">
-            <span className="pi-section-index">04 / BUILD SURFACE</span>
-            <h2 className="pi-section-title">What this lets you build next.</h2>
-            <p className="pi-section-note">
-              These are starting surfaces, not startup slogans. The goal is to turn a signal into a testable next move.
-            </p>
+        <section className="pi-stage pi-stage-resolution" data-pi-stage-panel="3" data-active="false" aria-hidden="true">
+          <div className="pi-resolution-heading">
+            <span>04 / RADAR RESOLUTION</span>
+            <strong>THE SIGNAL<br />RESOLVES.</strong>
           </div>
-
-          <div className="pi-build-list">
-            {possibleUses.length > 0 ? possibleUses.map((idea, index) => (
-              <div key={idea} className="pi-build-row">
-                <span className="pi-build-index">{String(index + 1).padStart(2, "0")}</span>
-                <p className="pi-build-copy">{idea}</p>
-                <span className="pi-build-tag">BUILD DIRECTION</span>
-              </div>
-            )) : (
-              <div className="pi-build-row">
-                <span className="pi-build-index">—</span>
-                <p className="pi-build-copy">Build directions have not been generated for this project yet.</p>
-                <span className="pi-build-tag">PENDING</span>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="pi-section" data-pi-motion data-pi-section="05">
-          <div className="pi-section-rail">
-            <span className="pi-section-index">05 / SOURCE LEDGER</span>
-            <h2 className="pi-section-title">The record underneath the judgment.</h2>
-            <p className="pi-section-note">
-              Every intelligence claim should remain traceable to an original project, post, paper or demo.
-            </p>
-          </div>
-
-          <div className="pi-ledger">
-            {orderedEvidence.map((entry) => (
-              <div key={entry.itemId} className="pi-ledger-row">
-                <span>{SOURCE_LABEL[entry.source] ?? entry.source}</span>
-                <span>{formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A"}</span>
-                <span className="pi-ledger-title">{entry.title}</span>
-                <TrackedSourceLink
-                  itemId={entry.itemId}
-                  href={entry.url}
-                  metadata={{ surface: "project_intelligence_ledger", source: entry.source, content_type: entry.contentType }}
-                  className="pi-evidence-link"
-                >
-                  Source ↗
-                </TrackedSourceLink>
+          <div className="pi-score-orbit" aria-label="Radar scoring dimensions">
+            {scores.slice(0, 7).map((entry, index) => (
+              <div key={entry.dimension} className="pi-score-shard">
+                <span>{String(index + 1).padStart(2, "0")} / {SCORE_LABEL[entry.dimension] ?? entry.dimension}</span>
+                <strong>{Math.round(entry.score)}</strong>
               </div>
             ))}
           </div>
+          <div className="pi-resolution-core">
+            <span>FRONTIER VERDICT</span>
+            <strong>{read.label}</strong>
+            <p>{read.note}</p>
+            <div>
+              <span>{entity.sources.length} SOURCES</span>
+              <span>{evidence.length} EVIDENCE</span>
+              <span>{item.score == null ? "—" : Math.round(item.score)} RADAR</span>
+            </div>
+          </div>
         </section>
 
-        <footer className="pi-footer" data-pi-motion data-pi-section="06">
-          <h2 className="pi-footer-title">Signal understood. Decide what to do with it.</h2>
-          <div className="pi-footer-meta">
-            <div>FR / PROJECT INTELLIGENCE</div>
-            <div>{entity.sources.length} SOURCES / {evidence.length} EVIDENCE NODES</div>
-            <div>DISCOVER → UNDERSTAND → BUILD</div>
+        <section className="pi-stage pi-stage-build" data-pi-stage-panel="4" data-active="false" aria-hidden="true">
+          <div className="pi-build-heading">
+            <span>05 / BUILD LAUNCH</span>
+            <strong>DON&apos;T JUST<br />UNDERSTAND IT.</strong>
+            <small>Choose a direction and turn the signal into a move.</small>
           </div>
-        </footer>
-      </div>
+          <div className="pi-build-deck">
+            {buildNodes.map((idea, index) => (
+              <article key={`${idea}-${index}`} className="pi-build-card" data-pi-build data-state={index === 0 ? "active" : "after"}>
+                <span className="pi-build-number">{String(index + 1).padStart(2, "0")}</span>
+                <span className="pi-build-mode">{index === 0 ? "USE IT" : index === 1 ? "EXTEND IT" : index === 2 ? "COMBINE IT" : "BUILD DIRECTION"}</span>
+                <p>{idea}</p>
+                <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pi-build-action">
+                  Send to Idea Lab ↗
+                </Link>
+              </article>
+            ))}
+          </div>
+          <div className="pi-source-ribbon">
+            <span>TRACEABLE SOURCE LEDGER</span>
+            {orderedEvidence.slice(0, 5).map((entry) => (
+              <TrackedSourceLink
+                key={entry.itemId}
+                itemId={entry.itemId}
+                href={entry.url}
+                metadata={{ surface: "project_intelligence_ledger", source: entry.source, content_type: entry.contentType }}
+                className="pi-source-ribbon-link"
+              >
+                {SOURCE_LABEL[entry.source] ?? entry.source} ↗
+              </TrackedSourceLink>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
