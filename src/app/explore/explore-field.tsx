@@ -7,12 +7,12 @@ import { TrackedDetailLink } from "@/components/frontier/tracked-detail-link";
 import { trackFeedback } from "@/lib/personalization/browser";
 import type { ExploreCandidate, ExploreLens } from "@/lib/feed/explore-candidates";
 
-const LENSES: Array<{ id: ExploreLens; label: string; short: string }> = [
-  { id: "for-you", label: "FOR YOU", short: "YOU" },
-  { id: "adjacent", label: "ADJACENT", short: "ADJ" },
-  { id: "rising", label: "RISING", short: "RISE" },
-  { id: "new", label: "NEW", short: "NEW" },
-  { id: "wildcard", label: "WILDCARD", short: "WILD" },
+const LENSES: Array<{ id: ExploreLens; label: string; short: string; note: string }> = [
+  { id: "for-you", label: "FOR YOU", short: "YOU", note: "CORE MATCH" },
+  { id: "adjacent", label: "ADJACENT", short: "ADJ", note: "NEAR EDGE" },
+  { id: "rising", label: "RISING", short: "RISE", note: "MOMENTUM" },
+  { id: "new", label: "NEW", short: "NEW", note: "JUST SEEN" },
+  { id: "wildcard", label: "WILDCARD", short: "WILD", note: "OUTSIDE BUBBLE" },
 ];
 
 const POSITIONS = [
@@ -87,6 +87,7 @@ export function ExploreField({
   );
 
   const focus = ordered.find((candidate) => candidate.itemId === focusId) ?? ordered[0] ?? null;
+  const isSearching = searchOpen || query.trim().length > 0;
 
   useEffect(() => {
     if (!focus) return;
@@ -139,11 +140,16 @@ export function ExploreField({
     setSuppressed(new Set());
     setLiked(new Set());
     setQuery("");
+    setSearchOpen(false);
     setFocusId(candidates[0]?.itemId ?? null);
   }
 
   return (
-    <section className="explore-field-shell" data-lens={lens}>
+    <section
+      className="explore-field-shell"
+      data-lens={lens}
+      data-searching={isSearching ? "true" : "false"}
+    >
       <header className="explore-field-header">
         <div className="explore-field-kicker">
           <span>FRONTIER RADAR / EXPLORE</span>
@@ -154,19 +160,15 @@ export function ExploreField({
             <h1>CURRENT FRONTIER</h1>
             <p>Move from what you already care about toward what you did not know you should care about.</p>
           </div>
-          <button className="explore-search-trigger" type="button" onClick={() => setSearchOpen((open) => !open)}>
+          <button className="explore-search-trigger" type="button" onClick={() => setSearchOpen(true)}>
             <Search aria-hidden />
             SEARCH FRONTIER
           </button>
         </div>
         <div className="explore-field-stats" aria-label="Explore scan status">
-          <span><strong>{candidates.length}</strong> signals in this scan</span>
+          <span><strong>{ordered.length}</strong> active signals</span>
           <span><strong>{totalDiscoveries}</strong> discoveries in range</span>
           <span>{personalized ? "PERSONAL GRAVITY ACTIVE" : "COLD-START GRAVITY"}</span>
-        </div>
-        <div className="explore-interaction-cue" aria-label="Explore interaction hint">
-          <MousePointer2 aria-hidden />
-          <span><strong>CLICK A SIGNAL TO INSPECT</strong> · SWITCH THE RADAR LENS TO RETUNE THE FIELD</span>
         </div>
         {searchOpen ? (
           <div className="explore-search-panel">
@@ -184,6 +186,35 @@ export function ExploreField({
           </div>
         ) : null}
       </header>
+
+      <nav className="explore-lens-strip" aria-label="Discovery lens">
+        <div className="explore-lens-title">
+          <Radar aria-hidden />
+          <span>
+            <strong>RADAR LENS</strong>
+            <small>RETUNE HOW THE FIELD IS RANKED</small>
+          </span>
+        </div>
+        <div className="explore-lens-options">
+          {LENSES.map((entry) => (
+            <button
+              type="button"
+              key={entry.id}
+              onClick={() => chooseLens(entry.id)}
+              className={lens === entry.id ? "is-active" : ""}
+              aria-pressed={lens === entry.id}
+              title={`${entry.label} — ${entry.note}`}
+            >
+              <strong className="explore-lens-full">{entry.label}</strong>
+              <strong className="explore-lens-short">{entry.short}</strong>
+              <small>{entry.note}</small>
+            </button>
+          ))}
+        </div>
+        <button className="explore-lens-reset" type="button" onClick={resetField}>
+          RESET SCAN
+        </button>
+      </nav>
 
       <div className="explore-field-stage" aria-label="Frontier discovery field">
         <div className="explore-field-scan" aria-hidden />
@@ -293,36 +324,7 @@ export function ExploreField({
             <button type="button" onClick={resetField}>RESET FIELD</button>
           </div>
         ) : null}
-
-        <nav className="explore-lens-strip" aria-label="Discovery lens">
-          <span>RADAR LENS</span>
-          <div>
-            {LENSES.map((entry) => (
-              <button
-                type="button"
-                key={entry.id}
-                onClick={() => chooseLens(entry.id)}
-                className={lens === entry.id ? "is-active" : ""}
-                aria-pressed={lens === entry.id}
-                title={entry.label}
-              >
-                <span className="explore-lens-full">{entry.label}</span>
-                <span className="explore-lens-short">{entry.short}</span>
-              </button>
-            ))}
-          </div>
-          <span>{ordered.length} ACTIVE</span>
-        </nav>
       </div>
-
-      <footer className="explore-field-edge">
-        <div>
-          <span>EDGE OF CURRENT SCAN</span>
-          <strong>THIS SCAN STOPS HERE BY DESIGN.</strong>
-          <p>Reset the local field when you want to revisit hidden signals. A future scan can bring a different frontier back into range.</p>
-        </div>
-        <button type="button" onClick={resetField}>RESET SCAN</button>
-      </footer>
     </section>
   );
 }
