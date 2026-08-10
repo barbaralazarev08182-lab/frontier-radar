@@ -127,7 +127,7 @@ vec4 buildField(vec2 uv, vec2 p) {
 void main() {
   vec2 uv = v_uv;
   vec2 p = uv - .5;
-  p += u_pointer * vec2(.018, -.014);
+  p += u_pointer * vec2(.034, -.026);
 
   vec4 c;
   if (u_stage < .5) c = captureField(uv, p);
@@ -135,6 +135,18 @@ void main() {
   else if (u_stage < 2.5) c = interrogationField(uv, p);
   else if (u_stage < 3.5) c = resolutionField(uv, p);
   else c = buildField(uv, p);
+
+  vec2 mouseUv = vec2(u_pointer.x * .5 + .5, .5 - u_pointer.y * .5);
+  vec2 mouseDelta = uv - mouseUv;
+  mouseDelta.x *= u_resolution.x / max(1.0, u_resolution.y);
+  float mouseR = length(mouseDelta);
+  float mouseHalo = exp(-mouseR * 9.5);
+  float mouseRing = circleLine(mouseDelta, .075 + .012 * sin(u_time * 2.2), .0055);
+  vec3 mouseColor = u_stage < 1.5
+    ? vec3(.46, .80, 1.0)
+    : (u_stage < 2.5 ? vec3(1.0, .56, .26) : (u_stage < 3.5 ? vec3(.48, .55, 1.0) : vec3(.72, .90, 1.0)));
+  c.rgb += mouseColor * (mouseHalo * .22 + mouseRing * .34);
+  c.a += mouseHalo * .075 + mouseRing * .12;
 
   float vignette = smoothstep(.95, .28, length(p));
   c.a *= .72 + .28 * vignette;
@@ -231,8 +243,8 @@ export function ProjectIntelligenceField() {
 
     const render = (now: number) => {
       resize();
-      px += (targetX - px) * .045;
-      py += (targetY - py) * .045;
+      px += (targetX - px) * .072;
+      py += (targetY - py) * .072;
 
       const stageValue = Number(root.dataset.piStage ?? "0");
       const stepValue = Number(root.dataset.piStep ?? "0");
