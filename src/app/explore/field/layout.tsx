@@ -1,4 +1,5 @@
 import "./field-first.css";
+import "./kraft-material-pass.css";
 
 export default function ExploreFieldFirstLayout({
   children,
