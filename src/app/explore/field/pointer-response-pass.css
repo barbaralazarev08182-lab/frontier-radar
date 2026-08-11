@@ -1,6 +1,37 @@
 /* Gate 4.15 — pointer-driven spatial response QA pass.
    B route only. This layer reacts to real pointer position; it does not change field ranking/data. */
 
+/* The pointer bridge adds one DOM wrapper between `.explore-field-first` and the shell.
+   Re-establish the full-bleed field contract here so the bridge never exposes the dark
+   root background or clips the control rail. */
+html:has(.explore-field-first),
+body:has(.explore-field-first) {
+  background: #f2ede2 !important;
+}
+
+.explore-field-first .explore-field-motion-root {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100svh - 3.5rem);
+  overflow: clip;
+  background: var(--fr-paper);
+}
+
+.explore-field-first .explore-field-motion-root > .explore-field-shell {
+  position: relative;
+  width: 100% !important;
+  min-width: 0;
+  min-height: calc(100svh - 3.5rem);
+  margin: 0 !important;
+  overflow: clip;
+  color: var(--fr-ink);
+  background:
+    radial-gradient(circle at 66% 38%, rgba(57,76,255,.065), transparent 21%),
+    radial-gradient(circle at 10% 76%, rgba(255,255,255,.76), transparent 26%),
+    linear-gradient(135deg, #f8f4eb 0%, var(--fr-paper) 48%, #e9e2d6 100%);
+}
+
 .explore-field-first .explore-field-stage {
   --pointer-x: 50%;
   --pointer-y: 42%;
