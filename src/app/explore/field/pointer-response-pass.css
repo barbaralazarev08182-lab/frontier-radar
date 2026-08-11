@@ -1,0 +1,157 @@
+/* Gate 4.15 — pointer-driven spatial response QA pass.
+   B route only. This layer reacts to real pointer position; it does not change field ranking/data. */
+
+.explore-field-first .explore-field-stage {
+  --pointer-x: 50%;
+  --pointer-y: 42%;
+  --parallax-near-x: 0px;
+  --parallax-near-y: 0px;
+  --parallax-mid-x: 0px;
+  --parallax-mid-y: 0px;
+  --parallax-far-x: 0px;
+  --parallax-far-y: 0px;
+  --parallax-focus-x: 0px;
+  --parallax-focus-y: 0px;
+  --focus-tilt-x: 0deg;
+  --focus-tilt-y: 0deg;
+  --focus-shadow-x: 0px;
+  --focus-shadow-y: 16px;
+  isolation: isolate;
+}
+
+/* Pointer light lives behind paper objects and makes the field react to the user's hand. */
+.explore-field-first .explore-field-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  opacity: .18;
+  background:
+    radial-gradient(circle 20rem at var(--pointer-x) var(--pointer-y), rgba(57,76,255,.11), rgba(57,76,255,.035) 36%, transparent 72%),
+    radial-gradient(circle 11rem at var(--pointer-x) var(--pointer-y), rgba(255,246,225,.62), transparent 70%);
+  mix-blend-mode: multiply;
+  transition: opacity 360ms ease, background-position 90ms linear;
+}
+
+.explore-field-first .explore-field-stage[data-pointer-active="true"]::after {
+  opacity: .42;
+}
+
+/* Depth bands respond at different amplitudes, creating real parallax without disturbing rank geometry. */
+.explore-field-first .explore-field-stage .explore-signal-near:not(.is-focus) {
+  margin-left: var(--parallax-near-x);
+  margin-top: var(--parallax-near-y);
+}
+
+.explore-field-first .explore-field-stage .explore-signal-mid:not(.is-focus) {
+  margin-left: var(--parallax-mid-x);
+  margin-top: var(--parallax-mid-y);
+}
+
+.explore-field-first .explore-field-stage .explore-signal-far:not(.is-focus) {
+  margin-left: var(--parallax-far-x);
+  margin-top: var(--parallax-far-y);
+}
+
+.explore-field-first .explore-field-stage .explore-signal.is-focus {
+  margin-left: var(--parallax-focus-x);
+  margin-top: var(--parallax-focus-y);
+}
+
+.explore-field-first .explore-field-stage .explore-signal {
+  transition:
+    left 720ms cubic-bezier(.22,.82,.24,1) var(--field-delay),
+    top 720ms cubic-bezier(.22,.82,.24,1) var(--field-delay),
+    transform 720ms cubic-bezier(.22,.82,.24,1),
+    margin-left 120ms linear,
+    margin-top 120ms linear,
+    opacity 420ms ease,
+    filter 420ms ease !important;
+}
+
+/* Main dossier gets tiny pointer tilt + a shadow that moves opposite the virtual light source. */
+.explore-field-first .explore-field-stage .explore-signal.is-focus .explore-focus-card {
+  transform:
+    perspective(1300px)
+    rotateX(var(--focus-tilt-x))
+    rotateY(var(--focus-tilt-y)) !important;
+  box-shadow:
+    var(--focus-shadow-x) var(--focus-shadow-y) 48px -22px rgba(55,36,20,.52),
+    0 3.25rem 6.1rem -3rem rgba(55,36,20,.56),
+    inset 0 0 0 1px rgba(255,232,194,.10),
+    inset 0 0 1.7rem rgba(79,50,25,.075) !important;
+  transition: transform 115ms linear, box-shadow 140ms linear !important;
+}
+
+.explore-field-first .explore-field-stage[data-pointer-active="true"] .explore-signal.is-focus .explore-focus-card {
+  filter: saturate(1.025) contrast(1.012);
+}
+
+/* Peripheral notes subtly face the pointer light; hover remains the strongest interaction. */
+.explore-field-first .explore-field-stage[data-pointer-active="true"] .explore-signal-near:not(.is-focus) .explore-signal-button {
+  box-shadow:
+    calc(var(--focus-shadow-x) * .18) calc(var(--focus-shadow-y) * .35) 30px -20px rgba(59,39,22,.42),
+    inset 0 0 0 1px rgba(255,238,207,.09),
+    inset 0 0 1rem rgba(77,49,24,.055) !important;
+}
+
+/* Field lines and scan react gently while pointer is active. */
+.explore-field-first .explore-field-stage[data-pointer-active="true"] .explore-field-scan {
+  opacity: .66 !important;
+  filter: blur(.15px) saturate(1.08) !important;
+}
+
+.explore-field-first .explore-field-stage[data-pointer-active="true"] .explore-field-axis {
+  color: rgba(23,24,26,.39) !important;
+  transition: color 260ms ease;
+}
+
+/* Make card promotion feel less like a content swap and more like a physical settle. */
+.explore-field-first .explore-signal.is-focus .explore-focus-card {
+  animation: fr-focus-settle 520ms cubic-bezier(.16,.9,.22,1) both, fr-dossier-presence 8.5s 540ms ease-in-out infinite !important;
+  transform-origin: 50% 45%;
+}
+
+@keyframes fr-focus-settle {
+  0% {
+    opacity: .45;
+    scale: .965;
+    filter: blur(1.6px) saturate(.9);
+  }
+  58% {
+    opacity: 1;
+    scale: 1.012;
+    filter: blur(0) saturate(1.03);
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0) saturate(1);
+  }
+}
+
+/* Search focus subtly lowers the pointer light intensity instead of moving any cards. */
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-field-stage::after {
+  opacity: .24;
+}
+
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-field-stage[data-pointer-active="true"]::after {
+  opacity: .34;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-field-first .explore-field-stage::after {
+    display: none !important;
+  }
+
+  .explore-field-first .explore-field-stage .explore-signal {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .explore-field-first .explore-field-stage .explore-focus-card {
+    transform: none !important;
+    animation: none !important;
+  }
+}
