@@ -13,6 +13,7 @@ import { FeedErrorState } from "@/components/frontier/feed-error";
 import { ExploreField } from "./explore-field";
 import "./explore-field.css";
 import "./explore-v2.css";
+import "./explore-saved-integration.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
