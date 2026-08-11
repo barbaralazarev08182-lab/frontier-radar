@@ -19,6 +19,7 @@ import {
 } from "@/lib/saved/browser";
 import styles from "./idea-lab.module.css";
 import "./idea-lab-composition.css";
+import "./idea-lab-binding.css";
 
 const STATUS_LABELS: Record<IdeaStatus, { label: string; note: string }> = {
   seed: { label: "SEED", note: "capture the spark" },
