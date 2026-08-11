@@ -1,10 +1,13 @@
 .shell {
   --paper: #f1ede3;
   --paper-hi: #faf7ef;
-  --ink: #171717;
-  --muted: rgba(23, 23, 23, .5);
-  --line: rgba(23, 23, 23, .14);
-  --cobalt: #394cff;
+  --ink: #f2eee6;
+  --muted: rgba(242, 238, 230, .56);
+  --line: rgba(242, 238, 230, .13);
+  --card-ink: #171717;
+  --card-muted: rgba(23, 23, 23, .56);
+  --card-line: rgba(23, 23, 23, .14);
+  --cobalt: #5164ff;
   min-height: calc(100vh - 7rem);
   color: var(--ink);
 }
@@ -15,7 +18,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 2rem;
   align-items: end;
-  padding: clamp(2.5rem, 6vw, 6rem) 0 2.4rem;
+  padding: clamp(2rem, 4.8vw, 4.6rem) 0 2.2rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -39,6 +42,7 @@
 .title {
   max-width: 13ch;
   margin: 0;
+  color: var(--ink);
   font-size: clamp(3.6rem, 8vw, 8.4rem);
   font-weight: 630;
   line-height: .82;
@@ -59,6 +63,7 @@
   align-content: end;
   min-width: 9rem;
   padding-bottom: .4rem;
+  color: var(--ink);
 }
 
 .counter strong {
@@ -68,9 +73,13 @@
   letter-spacing: -.07em;
 }
 
-.counter span,
-.meta {
+.counter span {
   color: var(--muted);
+  font-size: .58rem;
+}
+
+.meta {
+  color: var(--card-muted);
   font-size: .58rem;
 }
 
@@ -83,8 +92,9 @@
   gap: 1rem;
   align-items: center;
   padding: .8rem 0;
-  background: color-mix(in srgb, var(--paper) 90%, transparent);
-  border-bottom: 1px solid var(--line);
+  color: var(--card-ink);
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  border-bottom: 1px solid var(--card-line);
   backdrop-filter: blur(14px);
 }
 
@@ -107,12 +117,12 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: var(--ink);
+  color: var(--card-ink);
   font: inherit;
   font-size: 1rem;
 }
 
-.search input::placeholder { color: rgba(23,23,23,.32); }
+.search input::placeholder { color: rgba(23,23,23,.38); }
 
 .clear {
   border: 0;
@@ -125,9 +135,9 @@
 .sort {
   min-height: 2.8rem;
   padding: 0 .9rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--card-line);
   background: rgba(255,255,255,.28);
-  color: var(--ink);
+  color: var(--card-ink);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: .62rem;
   letter-spacing: .1em;
@@ -149,6 +159,7 @@
   flex-direction: column;
   padding: clamp(1.4rem, 2.2vw, 2rem);
   overflow: hidden;
+  color: var(--card-ink);
   border: 1px solid rgba(57, 45, 31, .22);
   background:
     radial-gradient(circle at 22% 18%, rgba(255,255,255,.42), transparent 28%),
@@ -202,6 +213,7 @@
 
 .cardTitle {
   margin: 1.8rem 0 .9rem;
+  color: var(--card-ink);
   font-size: clamp(1.7rem, 3.1vw, 3.2rem);
   line-height: .98;
   letter-spacing: -.045em;
@@ -256,11 +268,12 @@
 .open svg { width: .85rem; }
 
 .empty {
-  min-height: 55vh;
+  min-height: 42vh;
   display: grid;
   place-items: center;
   text-align: center;
-  padding: 5rem 1rem;
+  padding: 3.5rem 1rem 4.5rem;
+  color: var(--ink);
 }
 
 .emptyInner {
@@ -273,7 +286,7 @@
   margin: 0 auto 2rem;
   border: 1px solid rgba(23,23,23,.24);
   background: linear-gradient(135deg, #e8d4ae, #cba771);
-  box-shadow: .4rem .5rem 0 rgba(57,76,255,.14), 0 1.8rem 3rem -2rem rgba(42,31,20,.46);
+  box-shadow: .4rem .5rem 0 rgba(81,100,255,.24), 0 1.8rem 3rem -2rem rgba(0,0,0,.58);
   transform: rotate(-4deg);
 }
 
@@ -284,6 +297,7 @@
 
 .empty h2 {
   margin: .8rem 0 .7rem;
+  color: var(--ink);
   font-size: clamp(2rem, 4vw, 3.6rem);
   font-weight: 580;
   letter-spacing: -.05em;
