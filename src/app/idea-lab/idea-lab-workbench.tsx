@@ -100,15 +100,15 @@ export function IdeaLabWorkbench() {
   }
 
   return (
-    <section className={styles.shell}>
+    <section className={`${styles.shell} fr-idea-lab-shell`}>
       <div className={styles.scanlines} aria-hidden />
 
-      <header className={styles.header}>
-        <div className={styles.identity}>
+      <header className={`${styles.header} fr-idea-lab-header`}>
+        <div className={`${styles.identity} fr-idea-lab-identity`}>
           <span>FR / IDEA LAB</span>
           <strong>TURN SIGNAL INTO DIRECTION.</strong>
         </div>
-        <div className={styles.counts} aria-label="Idea status counts">
+        <div className={`${styles.counts} fr-idea-lab-counts`} aria-label="Idea status counts">
           {(Object.keys(STATUS_LABELS) as IdeaStatus[]).map((status) => (
             <div key={status}>
               <span>{STATUS_LABELS[status].label}</span>
@@ -118,8 +118,8 @@ export function IdeaLabWorkbench() {
         </div>
       </header>
 
-      <div className={styles.workbench}>
-        <aside className={styles.sourceRack}>
+      <div className={`${styles.workbench} fr-idea-lab-workbench`}>
+        <aside className={`${styles.sourceRack} fr-idea-lab-source-rack`}>
           <div className={styles.panelHeading}>
             <BookOpen aria-hidden />
             <span>
@@ -129,14 +129,14 @@ export function IdeaLabWorkbench() {
           </div>
 
           {saved.length > 0 ? (
-            <div className={styles.sourceList}>
+            <div className={`${styles.sourceList} fr-idea-lab-source-list`}>
               {saved.slice(0, 12).map((item, index) => {
                 const active = item.id === selectedSource?.id;
                 return (
                   <button
                     type="button"
                     key={item.id}
-                    className={active ? styles.sourceActive : ""}
+                    className={`${active ? styles.sourceActive : ""} fr-idea-source-card${active ? " is-active" : ""}`}
                     onClick={() => setSelectedSourceId(item.id)}
                     aria-pressed={active}
                   >
@@ -156,10 +156,10 @@ export function IdeaLabWorkbench() {
           )}
         </aside>
 
-        <main className={styles.draftingTable}>
+        <main className={`${styles.draftingTable} fr-idea-lab-table`}>
           <div className={styles.tableGrid} aria-hidden />
           {selectedSource ? (
-            <div className={styles.sourceSlip}>
+            <div className={`${styles.sourceSlip} fr-idea-source-slip`}>
               <div>
                 <span>PINNED SIGNAL</span>
                 <strong>{selectedSource.title}</strong>
@@ -179,7 +179,7 @@ export function IdeaLabWorkbench() {
           ) : null}
 
           {activeIdea ? (
-            <article className={styles.ideaSheet}>
+            <article className={`${styles.ideaSheet} fr-idea-sheet`}>
               <div className={styles.sheetTape}>WORKING NOTE / {shortDate(activeIdea.updatedAt)}</div>
               <div className={styles.sheetMeta}>
                 <span>DERIVED FROM</span>
@@ -202,12 +202,12 @@ export function IdeaLabWorkbench() {
                 placeholder="What would you actually build, test, combine, or investigate from this signal?"
               />
 
-              <div className={styles.statusRail}>
+              <div className={`${styles.statusRail} fr-idea-status-rail`}>
                 {(Object.keys(STATUS_LABELS) as IdeaStatus[]).map((status) => (
                   <button
                     type="button"
                     key={status}
-                    className={activeIdea.status === status ? styles.statusActive : ""}
+                    className={`${activeIdea.status === status ? styles.statusActive : ""}${activeIdea.status === status ? " is-active" : ""}`}
                     onClick={() => patchIdea({ status })}
                     aria-pressed={activeIdea.status === status}
                   >
@@ -225,7 +225,7 @@ export function IdeaLabWorkbench() {
               </div>
             </article>
           ) : selectedSource ? (
-            <div className={styles.blankSheet}>
+            <div className={`${styles.blankSheet} fr-idea-blank-sheet`}>
               <Lightbulb aria-hidden />
               <span>ONE SIGNAL. ONE DIRECTION.</span>
               <strong>What can this become in your hands?</strong>
@@ -235,7 +235,7 @@ export function IdeaLabWorkbench() {
               </button>
             </div>
           ) : (
-            <div className={styles.blankSheet}>
+            <div className={`${styles.blankSheet} fr-idea-blank-sheet`}>
               <FlaskConical aria-hidden />
               <span>WORKBENCH IDLE</span>
               <strong>Nothing is pinned yet.</strong>
@@ -244,7 +244,7 @@ export function IdeaLabWorkbench() {
           )}
         </main>
 
-        <aside className={styles.ideaRack}>
+        <aside className={`${styles.ideaRack} fr-idea-lab-idea-rack`}>
           <div className={styles.panelHeading}>
             <FlaskConical aria-hidden />
             <span>
@@ -254,14 +254,14 @@ export function IdeaLabWorkbench() {
           </div>
 
           {ideas.length > 0 ? (
-            <div className={styles.ideaList}>
+            <div className={`${styles.ideaList} fr-idea-lab-idea-list`}>
               {ideas.map((idea, index) => {
                 const active = idea.id === activeIdea?.id;
                 return (
                   <button
                     type="button"
                     key={idea.id}
-                    className={active ? styles.ideaActive : ""}
+                    className={`${active ? styles.ideaActive : ""} fr-idea-card${active ? " is-active" : ""}`}
                     onClick={() => {
                       setSelectedIdeaId(idea.id);
                       if (saved.some((item) => item.id === idea.sourceItemId)) setSelectedSourceId(idea.sourceItemId);
