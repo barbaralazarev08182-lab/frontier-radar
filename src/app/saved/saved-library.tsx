@@ -19,12 +19,15 @@ import {
 } from "@/lib/saved/browser";
 import styles from "./saved-library.module.css";
 import "./saved-shelf-depth.css";
+import "./saved-interaction-polish.css";
 
 type SortMode = "recent" | "score" | "title";
+type SelectionDirection = "next" | "prev" | "direct";
 type ShelfStyle = CSSProperties & {
   "--book-x": string;
   "--book-rot": string;
   "--book-z": string;
+  "--book-delay": string;
 };
 
 const SORT_LABELS: Record<SortMode, string> = {
@@ -54,7 +57,12 @@ function signedShelfOffset(index: number, activeIndex: number, length: number): 
 
 function shelfStyle(offset: number): ShelfStyle {
   if (offset === 0) {
-    return { "--book-x": "0rem", "--book-rot": "0deg", "--book-z": "1" };
+    return {
+      "--book-x": "0rem",
+      "--book-rot": "0deg",
+      "--book-z": "1",
+      "--book-delay": "0ms",
+    };
   }
 
   const distance = Math.abs(offset);
@@ -66,7 +74,16 @@ function shelfStyle(offset: number): ShelfStyle {
     "--book-x": `${x}rem`,
     "--book-rot": `${rotation}deg`,
     "--book-z": String(z),
+    "--book-delay": `${Math.min(distance * 24, 96)}ms`,
   };
+}
+
+function matchesQuery(item: SavedItemSnapshot, needle: string): boolean {
+  if (!needle) return true;
+  return [item.title, item.summary ?? "", item.source, item.contentType, ...item.tags]
+    .join(" ")
+    .toLowerCase()
+    .includes(needle);
 }
 
 export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapshot[] }) {
@@ -75,6 +92,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("recent");
   const [selectedId, setSelectedId] = useState<string | null>(previewItems?.[0]?.id ?? null);
+  const [selectionDirection, setSelectionDirection] = useState<SelectionDirection>("direct");
 
   useEffect(() => {
     if (previewMode) return;
@@ -90,31 +108,45 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
     };
   }, [previewMode]);
 
-  const visible = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    const filtered = items.filter((item) => {
-      if (!needle) return true;
-      return [item.title, item.summary ?? "", item.source, item.contentType, ...item.tags]
-        .join(" ")
-        .toLowerCase()
-        .includes(needle);
-    });
-
-    return [...filtered].sort((a, b) => {
+  const ordered = useMemo(() => {
+    return [...items].sort((a, b) => {
       if (sort === "score") return (b.score ?? -1) - (a.score ?? -1);
       if (sort === "title") return a.title.localeCompare(b.title);
       return b.savedAt.localeCompare(a.savedAt);
     });
-  }, [items, query, sort]);
+  }, [items, sort]);
 
-  const activeIndex = Math.max(0, visible.findIndex((item) => item.id === selectedId));
-  const activeItem = visible[activeIndex] ?? visible[0] ?? null;
+  const needle = query.trim().toLowerCase();
+  const matchingIds = useMemo(
+    () => new Set(ordered.filter((item) => matchesQuery(item, needle)).map((item) => item.id)),
+    [needle, ordered]
+  );
+  const matchingItems = useMemo(
+    () => ordered.filter((item) => matchingIds.has(item.id)),
+    [matchingIds, ordered]
+  );
+
+  const selectedItem = ordered.find((item) => item.id === selectedId) ?? null;
+  const activeItem = needle
+    ? (selectedItem && matchingIds.has(selectedItem.id) ? selectedItem : matchingItems[0] ?? null)
+    : selectedItem ?? ordered[0] ?? null;
+  const activeIndex = activeItem ? Math.max(0, ordered.findIndex((item) => item.id === activeItem.id)) : 0;
 
   function selectOffset(delta: number) {
-    if (visible.length === 0) return;
-    const currentIndex = activeItem ? visible.findIndex((item) => item.id === activeItem.id) : 0;
-    const nextIndex = (currentIndex + delta + visible.length) % visible.length;
-    setSelectedId(visible[nextIndex]?.id ?? null);
+    const navigable = needle ? matchingItems : ordered;
+    if (navigable.length === 0) return;
+    const currentIndex = activeItem ? navigable.findIndex((item) => item.id === activeItem.id) : 0;
+    const safeIndex = currentIndex < 0 ? 0 : currentIndex;
+    const nextIndex = (safeIndex + delta + navigable.length) % navigable.length;
+    setSelectionDirection(delta >= 0 ? "next" : "prev");
+    setSelectedId(navigable[nextIndex]?.id ?? null);
+  }
+
+  function selectBook(itemId: string, index: number) {
+    if (itemId === activeItem?.id) return;
+    const offset = signedShelfOffset(index, activeIndex, ordered.length);
+    setSelectionDirection(offset < 0 ? "prev" : offset > 0 ? "next" : "direct");
+    setSelectedId(itemId);
   }
 
   function remove(itemId: string) {
@@ -143,7 +175,10 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
             <i />
             <i />
           </div>
-          <div className={styles.archivePanelCopy}>
+          <div
+            key={activeItem?.id ?? "archive-empty"}
+            className={`${styles.archivePanelCopy} fr-archive-panel-copy`}
+          >
             <span>PRIVATE RESEARCH SHELF</span>
             <strong>{activeItem?.title ?? "AWAITING FIRST SIGNAL"}</strong>
           </div>
@@ -153,7 +188,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
 
       {items.length > 0 ? (
         <>
-          <div className={styles.searchDock}>
+          <div className={`${styles.searchDock} ${needle ? "fr-search-dock-active" : ""}`}>
             <Search aria-hidden />
             <input
               value={query}
@@ -168,8 +203,13 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
             ) : null}
           </div>
 
-          {visible.length > 0 && activeItem ? (
-            <div className={`${styles.archiveStage} fr-archive-stage`} aria-live="polite">
+          {matchingItems.length > 0 && activeItem ? (
+            <div
+              className={`${styles.archiveStage} fr-archive-stage`}
+              data-direction={selectionDirection}
+              data-searching={needle ? "true" : "false"}
+              aria-live="polite"
+            >
               <div className={styles.gridWall} aria-hidden />
               <div className={styles.shelfGlow} aria-hidden />
 
@@ -182,18 +222,19 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                 <ChevronLeft aria-hidden />
               </button>
 
-              <div className={styles.bookshelf}>
+              <div className={`${styles.bookshelf} fr-bookshelf`}>
                 <div className={`${styles.bookRow} fr-book-row`}>
-                  {visible.map((item, index) => {
+                  {ordered.map((item, index) => {
                     const isActive = item.id === activeItem.id;
-                    const offset = signedShelfOffset(index, activeIndex, visible.length);
+                    const isMatch = matchingIds.has(item.id);
+                    const offset = signedShelfOffset(index, activeIndex, ordered.length);
                     return (
                       <button
                         type="button"
                         key={item.id}
-                        className={`${styles.book} fr-shelf-book ${isActive ? `${styles.bookActive} fr-shelf-book-active` : ""}`}
+                        className={`${styles.book} fr-shelf-book ${isActive ? `${styles.bookActive} fr-shelf-book-active` : ""} ${needle && !isMatch ? "fr-shelf-book-search-dim" : ""} ${needle && isMatch ? "fr-shelf-book-search-hit" : ""}`}
                         style={shelfStyle(offset)}
-                        onClick={() => setSelectedId(item.id)}
+                        onClick={() => selectBook(item.id, index)}
                         aria-pressed={isActive}
                         aria-label={`Inspect ${item.title}`}
                       >
@@ -209,7 +250,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
 
               <article
                 key={activeItem.id}
-                className={`${styles.featuredBook} fr-featured-book ${styles[`variant${activeIndex % 5}`]}`}
+                className={`${styles.featuredBook} fr-featured-book fr-featured-book-${selectionDirection} ${styles[`variant${activeIndex % 5}`]}`}
               >
                 <span className="fr-featured-page-edge" aria-hidden />
                 <div className={styles.featuredTape}>FR ARCHIVE · {String(activeIndex + 1).padStart(2, "0")}</div>
