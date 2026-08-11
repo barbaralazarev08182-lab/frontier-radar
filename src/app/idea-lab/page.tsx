@@ -1,4 +1,5 @@
 import { IdeaLabWorkbench } from "./idea-lab-workbench";
+import "./idea-lab-composition.css";
 
 export const metadata = {
   title: "Idea Lab · Frontier Radar",
