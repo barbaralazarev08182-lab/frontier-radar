@@ -18,6 +18,7 @@ import {
   type SavedItemSnapshot,
 } from "@/lib/saved/browser";
 import styles from "./idea-lab.module.css";
+import "./idea-lab-composition.css";
 
 const STATUS_LABELS: Record<IdeaStatus, { label: string; note: string }> = {
   seed: { label: "SEED", note: "capture the spark" },
@@ -48,12 +49,12 @@ export function IdeaLabWorkbench() {
     const syncSaved = () => {
       const next = readSavedItems();
       setSaved(next);
-      setSelectedSourceId((current) => current && next.some((item) => item.id === current) ? current : next[0]?.id ?? null);
+      setSelectedSourceId((current) =>
+        current && next.some((item) => item.id === current) ? current : next[0]?.id ?? null
+      );
     };
     const syncIdeas = () => {
-      const next = readIdeas();
-      setIdeas(next);
-      setSelectedIdeaId((current) => current && next.some((idea) => idea.id === current) ? current : next[0]?.id ?? null);
+      setIdeas(readIdeas());
     };
 
     syncSaved();
@@ -70,13 +71,38 @@ export function IdeaLabWorkbench() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!selectedSourceId) {
+      setSelectedIdeaId(null);
+      return;
+    }
+
+    setSelectedIdeaId((current) => {
+      const currentIdea = ideas.find((idea) => idea.id === current);
+      if (currentIdea?.sourceItemId === selectedSourceId) return current;
+      return ideas.find((idea) => idea.sourceItemId === selectedSourceId)?.id ?? null;
+    });
+  }, [ideas, selectedSourceId]);
+
   const selectedSource = saved.find((item) => item.id === selectedSourceId) ?? saved[0] ?? null;
-  const activeIdea = ideas.find((idea) => idea.id === selectedIdeaId) ?? null;
+  const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId) ?? null;
+  const activeIdea =
+    selectedIdea && selectedSource && selectedIdea.sourceItemId === selectedSource.id
+      ? selectedIdea
+      : null;
   const ideasByStatus = useMemo(() => {
     const counts: Record<IdeaStatus, number> = { seed: 0, shaping: 0, building: 0 };
-    ideas.forEach((idea) => { counts[idea.status] += 1; });
+    ideas.forEach((idea) => {
+      counts[idea.status] += 1;
+    });
     return counts;
   }, [ideas]);
+
+  function selectSource(sourceId: string) {
+    setSelectedSourceId(sourceId);
+    const sourceIdea = ideas.find((idea) => idea.sourceItemId === sourceId) ?? null;
+    setSelectedIdeaId(sourceIdea?.id ?? null);
+  }
 
   function startIdea() {
     if (!selectedSource) return;
@@ -92,11 +118,12 @@ export function IdeaLabWorkbench() {
   }
 
   function deleteActiveIdea() {
-    if (!activeIdea) return;
+    if (!activeIdea || !selectedSource) return;
     removeIdea(activeIdea.id);
     const next = readIdeas();
     setIdeas(next);
-    setSelectedIdeaId(next[0]?.id ?? null);
+    const nextForSource = next.find((idea) => idea.sourceItemId === selectedSource.id) ?? null;
+    setSelectedIdeaId(nextForSource?.id ?? null);
   }
 
   return (
@@ -137,7 +164,7 @@ export function IdeaLabWorkbench() {
                     type="button"
                     key={item.id}
                     className={`${active ? styles.sourceActive : ""} fr-idea-source-card${active ? " is-active" : ""}`}
-                    onClick={() => setSelectedSourceId(item.id)}
+                    onClick={() => selectSource(item.id)}
                     aria-pressed={active}
                   >
                     <span className={styles.sourceIndex}>{String(index + 1).padStart(2, "0")}</span>
@@ -263,8 +290,8 @@ export function IdeaLabWorkbench() {
                     key={idea.id}
                     className={`${active ? styles.ideaActive : ""} fr-idea-card${active ? " is-active" : ""}`}
                     onClick={() => {
+                      setSelectedSourceId(idea.sourceItemId);
                       setSelectedIdeaId(idea.id);
-                      if (saved.some((item) => item.id === idea.sourceItemId)) setSelectedSourceId(idea.sourceItemId);
                     }}
                     aria-pressed={active}
                   >
