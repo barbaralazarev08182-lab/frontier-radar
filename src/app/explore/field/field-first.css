@@ -1,46 +1,95 @@
-/* Gate 4.7 experimental B layout.
-   No traditional hero: controls float inside the Frontier Field.
-   This route is intentionally isolated at /explore/field for visual A/B only. */
+/* Gate 4.8 — Field-first contrast / effects push.
+   B version only. Composition first: one protected instrument belt, then the field.
+   Material system: paper + smoked optical glass + brushed aluminium + cobalt lacquer.
+   Orange is reserved for wildcard / exception energy. */
 
 .explore-field-first {
+  --fr-paper: #f4f0e6;
+  --fr-paper-hi: #fbf8f1;
+  --fr-paper-lo: #e6e0d4;
+  --fr-ink: #151619;
+  --fr-ink-soft: rgba(21,22,25,.58);
+  --fr-cobalt: #3b4fff;
+  --fr-cobalt-deep: #2536e8;
+  --fr-orange: #ff6437;
+  --fr-line: rgba(21,22,25,.13);
   width: 100%;
   min-width: 0;
   overflow: clip;
+  background: var(--fr-paper);
 }
 
 .explore-field-first > .explore-field-shell {
   position: relative;
   width: 100% !important;
-  margin: 0 !important;
+  min-width: 0;
   min-height: calc(100vh - 3.5rem);
+  margin: 0 !important;
+  overflow: clip;
+  color: var(--fr-ink);
   background:
-    radial-gradient(circle at 58% 39%, rgba(59,79,255,.07), transparent 22%),
-    radial-gradient(circle at 16% 18%, rgba(255,255,255,.78), transparent 27%),
-    linear-gradient(180deg, #f8f5ee 0%, #f0ede5 62%, #e9e5dc 100%);
+    radial-gradient(circle at 64% 34%, rgba(59,79,255,.085), transparent 20%),
+    radial-gradient(circle at 8% 78%, rgba(255,255,255,.92), transparent 25%),
+    radial-gradient(circle at 92% 80%, rgba(255,100,55,.032), transparent 22%),
+    linear-gradient(125deg, #faf7ef 0%, var(--fr-paper) 44%, #ebe6dc 100%);
 }
 
-/* Remove the header as a page section. It becomes a transparent overlay layer. */
+/* --------------------------------------------------------------------------
+   PROTECTED INSTRUMENT BELT
+   The accepted field begins below this belt. No signal may share this plane.
+   -------------------------------------------------------------------------- */
+
 .explore-field-first .explore-control-surface {
-  position: absolute;
-  z-index: 30;
-  inset: 0 0 auto;
-  height: 0;
+  position: relative;
+  z-index: 50;
+  height: 6rem;
   isolation: isolate;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
+  pointer-events: none;
+  border-bottom: 1px solid rgba(21,22,25,.15);
+  background:
+    repeating-linear-gradient(90deg, rgba(21,22,25,.018) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(236,231,222,.91));
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.95),
+    inset 0 -1px rgba(21,22,25,.04),
+    0 1.15rem 3rem -2.45rem rgba(21,22,25,.42);
+}
+
+.explore-field-first .explore-control-surface::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 49% -20%, rgba(255,255,255,.95), transparent 44%),
+    linear-gradient(90deg, transparent 0 18%, rgba(59,79,255,.045) 35%, transparent 54% 100%);
+  pointer-events: none;
+}
+
+.explore-field-first .explore-control-surface::after {
+  content: "";
+  position: absolute;
+  z-index: 7;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0 6%, var(--fr-cobalt) 22%, rgba(59,79,255,.12) 58%, var(--fr-orange) 94%, transparent);
+  opacity: .72;
+  filter: saturate(1.25);
   pointer-events: none;
 }
 
 .explore-field-first .explore-field-header {
   position: absolute;
+  z-index: 8;
   inset: 0;
-  height: 0;
+  height: 6rem;
   margin: 0;
   padding: 0;
   overflow: visible;
-  background: transparent;
   border: 0;
+  background: transparent;
   box-shadow: none;
   pointer-events: none;
 }
@@ -50,45 +99,47 @@
   display: none;
 }
 
-/* Small editorial locator replaces CURRENT FRONTIER as a hero. */
+/* Locator and scan telemetry live safely on the left. */
 .explore-field-first .explore-field-kicker {
   position: absolute;
-  z-index: 4;
+  z-index: 10;
   top: 1rem;
-  left: clamp(1.25rem, 4vw, 4rem);
+  left: clamp(1.25rem,3.2vw,3.5rem);
   display: flex;
   align-items: center;
-  gap: .8rem;
-  width: auto;
-  padding: .5rem .62rem;
-  border: 1px solid rgba(23,23,25,.12);
-  background: rgba(247,244,237,.72);
-  color: rgba(23,23,25,.58);
-  box-shadow: inset 0 1px rgba(255,255,255,.84);
-  backdrop-filter: blur(16px) saturate(1.03);
-  -webkit-backdrop-filter: blur(16px) saturate(1.03);
+  gap: .6rem;
+  width: 12rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(21,22,25,.44);
   font-size: .43rem;
-  letter-spacing: .14em;
+  letter-spacing: .15em;
   pointer-events: auto;
 }
 
 .explore-field-first .explore-field-kicker span:last-child {
-  position: relative;
-  padding-left: .75rem;
-  color: rgba(23,23,25,.42);
+  display: inline-flex;
+  align-items: center;
+  gap: .38rem;
+  color: var(--fr-cobalt);
 }
 
 .explore-field-first .explore-field-kicker span:last-child::before {
   content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: .34rem;
-  height: .34rem;
+  width: .32rem;
+  height: .32rem;
   border-radius: 50%;
-  background: #3b4fff;
-  box-shadow: 0 0 0 3px rgba(59,79,255,.08);
-  transform: translateY(-50%);
+  background: var(--fr-cobalt);
+  box-shadow:
+    0 0 0 4px rgba(59,79,255,.08),
+    0 0 1.2rem rgba(59,79,255,.32);
+  animation: fr-status-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes fr-status-pulse {
+  0%,100% { transform: scale(.82); opacity: .65; }
+  50% { transform: scale(1.08); opacity: 1; }
 }
 
 .explore-field-first .explore-field-heading-row {
@@ -101,87 +152,212 @@
   display: none !important;
 }
 
-/* Search becomes one floating optical tool, not a header block. */
+.explore-field-first .explore-field-stats {
+  position: absolute;
+  z-index: 9;
+  left: clamp(1.25rem,3.2vw,3.5rem);
+  top: 2.75rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: .25rem .7rem;
+  width: 12rem;
+  margin: 0;
+  padding: 0;
+  color: rgba(21,22,25,.36);
+  font-size: .38rem;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-field-stats span:nth-child(3) {
+  grid-column: 1 / -1;
+  color: rgba(21,22,25,.28);
+}
+
+.explore-field-first .explore-field-stats strong {
+  color: var(--fr-ink);
+  font-size: .58rem;
+}
+
+/* Compact optical search instrument on the right. */
 .explore-field-first .explore-search-trigger {
   position: absolute;
-  z-index: 5;
+  z-index: 12;
   top: .9rem;
-  right: clamp(1.25rem,4vw,4rem);
-  min-width: 10.75rem;
-  min-height: 2.7rem;
+  right: clamp(1.25rem,3.2vw,3.5rem);
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0,1fr);
+  align-items: center;
+  min-width: 12rem;
+  min-height: 4.1rem;
   margin: 0;
-  border-color: rgba(23,23,25,.14);
+  padding: .42rem .72rem .42rem .42rem;
+  border: 1px solid rgba(21,22,25,.22);
   background:
-    linear-gradient(110deg, rgba(255,255,255,.68), rgba(255,255,255,.30) 52%, rgba(59,79,255,.05)),
-    rgba(242,240,235,.66);
+    linear-gradient(112deg, rgba(13,15,20,.96), rgba(29,31,38,.91) 64%, rgba(18,19,23,.96)),
+    #17191e;
+  color: #f7f3e9;
   box-shadow:
-    inset 0 1px rgba(255,255,255,.9),
-    0 1rem 2.5rem -1.8rem rgba(23,23,25,.30);
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+    inset 0 1px rgba(255,255,255,.09),
+    inset 0 -1px rgba(0,0,0,.42),
+    0 .9rem 2.3rem -1.35rem rgba(21,22,25,.48),
+    .32rem .32rem 0 rgba(59,79,255,.18);
+  clip-path: polygon(0 0, calc(100% - .55rem) 0, 100% .55rem, 100% 100%, 0 100%);
+  overflow: hidden;
   pointer-events: auto;
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.explore-field-first .explore-search-trigger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, transparent 5%, rgba(255,255,255,.10) 24%, transparent 43%),
+    radial-gradient(circle at 80% 50%, rgba(59,79,255,.20), transparent 28%);
+  transform: translateX(-65%);
+  transition: transform 600ms cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+}
+
+.explore-field-first .explore-search-trigger::after {
+  content: "";
+  position: absolute;
+  left: .55rem;
+  right: .55rem;
+  bottom: .38rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--fr-cobalt), rgba(59,79,255,.08), var(--fr-orange));
+  opacity: .65;
+  pointer-events: none;
 }
 
 .explore-field-first .explore-search-trigger:hover,
 .explore-field-first .explore-search-trigger:focus-visible {
-  transform: translateY(-2px);
-  border-color: rgba(59,79,255,.34);
-  background:
-    linear-gradient(110deg, rgba(255,255,255,.86), rgba(255,255,255,.42) 52%, rgba(59,79,255,.08)),
-    rgba(245,243,238,.76);
+  transform: translateY(-3px) scale(1.015);
+  border-color: rgba(59,79,255,.72);
   box-shadow:
-    inset 0 1px rgba(255,255,255,.95),
-    0 1.25rem 2.8rem -1.7rem rgba(59,79,255,.20);
+    inset 0 1px rgba(255,255,255,.12),
+    0 1.4rem 2.8rem -1.25rem rgba(21,22,25,.62),
+    .45rem .45rem 0 rgba(59,79,255,.30),
+    0 0 2.2rem rgba(59,79,255,.10);
+  outline: none;
 }
 
-.explore-field-first .explore-field-stats {
-  position: absolute;
-  z-index: 3;
-  left: clamp(1.25rem,4vw,4rem);
-  top: 4.45rem;
-  bottom: auto;
-  right: auto;
-  display: flex;
-  gap: .8rem;
-  padding: .38rem .5rem;
-  margin: 0;
-  background: rgba(247,244,237,.44);
-  color: rgba(23,23,25,.38);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-size: .39rem;
-  pointer-events: none;
+.explore-field-first .explore-search-trigger:hover::before,
+.explore-field-first .explore-search-trigger:focus-visible::before {
+  transform: translateX(35%);
 }
 
-.explore-field-first .explore-field-stats strong {
+.explore-field-first .explore-search-trigger-icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(124,151,255,.42);
+  background: rgba(59,79,255,.10);
+  box-shadow:
+    inset 0 0 1rem rgba(59,79,255,.08),
+    0 0 1.4rem rgba(59,79,255,.10);
+}
+
+.explore-field-first .explore-search-trigger-icon svg {
+  width: 1rem;
+  height: 1rem;
+  color: #78a6ff;
+  filter: drop-shadow(0 0 .35rem rgba(83,112,255,.32));
+}
+
+.explore-field-first .explore-search-trigger-copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: start;
+  gap: .16rem;
+}
+
+.explore-field-first .explore-search-trigger-copy strong {
+  color: #fffaf0;
   font-size: .5rem;
+  letter-spacing: .13em;
 }
 
-/* A single floating glass rail controls the field. */
+.explore-field-first .explore-search-trigger-copy small {
+  color: #86a8ff;
+  font-size: .34rem;
+  letter-spacing: .13em;
+}
+
+.explore-field-first .explore-search-trigger-led {
+  display: block;
+  position: absolute;
+  top: .55rem;
+  right: .55rem;
+  width: .34rem;
+  height: .34rem;
+  border-radius: 50%;
+  background: #d9ff4a;
+  box-shadow: 0 0 .8rem rgba(217,255,74,.72);
+}
+
+/* --------------------------------------------------------------------------
+   SHARED LENS RAIL — brushed metal base + one moving optical cursor.
+   -------------------------------------------------------------------------- */
+
 .explore-field-first .explore-lens-strip {
   position: absolute !important;
-  z-index: 7;
-  top: 4.35rem;
-  left: 50%;
-  right: auto;
-  width: min(49rem, calc(100% - 24rem));
-  min-height: 2.55rem;
+  z-index: 11;
+  top: .82rem;
+  left: 15.3rem;
+  right: 15.3rem;
+  width: auto;
+  min-height: 4.25rem;
   display: grid !important;
   grid-template-columns: minmax(0,1fr) auto !important;
   align-items: center !important;
-  gap: .35rem !important;
-  padding: .24rem .32rem !important;
-  border: 1px solid rgba(23,23,25,.13) !important;
+  gap: .55rem !important;
+  padding: .42rem .45rem .42rem .55rem !important;
+  border: 1px solid rgba(21,22,25,.18) !important;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.56), rgba(234,231,224,.42)) !important;
+    repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, rgba(21,22,25,.018) 1px 4px),
+    linear-gradient(180deg, rgba(251,249,244,.92), rgba(219,215,206,.82)) !important;
   box-shadow:
-    inset 0 1px rgba(255,255,255,.86),
-    0 1rem 2.6rem -1.9rem rgba(23,23,25,.28) !important;
-  backdrop-filter: blur(18px) saturate(1.04) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(1.04) !important;
-  transform: translateX(-50%);
+    inset 0 1px rgba(255,255,255,.96),
+    inset 0 -1px rgba(21,22,25,.08),
+    0 .8rem 2rem -1.45rem rgba(21,22,25,.30) !important;
+  backdrop-filter: blur(16px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.04) !important;
+  transform: none;
   overflow: hidden;
   pointer-events: auto;
+}
+
+.explore-field-first .explore-lens-strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 10%, rgba(255,255,255,.72) 34%, transparent 55%);
+  transform: translateX(-100%);
+  animation: fr-rail-sheen 8s cubic-bezier(.2,.7,.2,1) infinite;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-lens-strip::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: .35rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,79,255,.34), rgba(59,79,255,.06), transparent);
+  pointer-events: none;
+}
+
+@keyframes fr-rail-sheen {
+  0%,54% { transform: translateX(-120%); opacity: 0; }
+  62% { opacity: .72; }
+  84% { transform: translateX(120%); opacity: .22; }
+  100% { transform: translateX(120%); opacity: 0; }
 }
 
 .explore-field-first .explore-lens-title {
@@ -189,142 +365,624 @@
 }
 
 .explore-field-first .explore-lens-options {
-  min-height: 2rem;
+  position: relative;
+  z-index: 3;
+  min-height: 3.2rem;
+  padding: .18rem;
+  border: 1px solid rgba(21,22,25,.08);
+  background: rgba(255,255,255,.20);
+  overflow: hidden;
 }
 
 .explore-field-first .explore-lens-options::before {
-  top: .12rem;
-  bottom: .12rem;
-  border-color: rgba(59,79,255,.22);
+  top: .18rem;
+  bottom: .18rem;
+  border: 1px solid rgba(59,79,255,.40);
   background:
-    linear-gradient(115deg, rgba(255,255,255,.72), rgba(59,79,255,.07)),
-    rgba(255,255,255,.28);
+    linear-gradient(118deg, rgba(255,255,255,.74), rgba(90,108,255,.14) 58%, rgba(255,255,255,.34)),
+    rgba(255,255,255,.34);
   box-shadow:
-    inset 0 1px rgba(255,255,255,.88),
-    0 .65rem 1.45rem -.95rem rgba(59,79,255,.22);
+    inset 0 1px rgba(255,255,255,.94),
+    inset 0 -1px rgba(59,79,255,.08),
+    0 .45rem 1rem -.62rem rgba(59,79,255,.36),
+    0 0 1.6rem rgba(59,79,255,.06);
+  backdrop-filter: blur(14px) saturate(1.18);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
 }
 
+.explore-field-first .explore-lens-options::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: .36rem;
+  bottom: .36rem;
+  left: 0;
+  width: 20%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.54), transparent);
+  mix-blend-mode: screen;
+  opacity: .8;
+  pointer-events: none;
+  transition: transform 460ms cubic-bezier(.2,.85,.2,1);
+}
+
+.explore-field-first .explore-field-shell[data-lens="for-you"] .explore-lens-options::after { transform: translateX(0); }
+.explore-field-first .explore-field-shell[data-lens="adjacent"] .explore-lens-options::after { transform: translateX(100%); }
+.explore-field-first .explore-field-shell[data-lens="rising"] .explore-lens-options::after { transform: translateX(200%); }
+.explore-field-first .explore-field-shell[data-lens="new"] .explore-lens-options::after { transform: translateX(300%); }
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options::after { transform: translateX(400%); }
+
 .explore-field-first .explore-lens-options button {
-  min-height: 2rem;
+  min-height: 2.85rem;
+  padding: .35rem .3rem !important;
+  color: rgba(21,22,25,.46) !important;
   font-size: .43rem;
+  letter-spacing: .12em;
+}
+
+.explore-field-first .explore-lens-options button:hover,
+.explore-field-first .explore-lens-options button:focus-visible {
+  color: var(--fr-ink) !important;
+  outline: none;
+}
+
+.explore-field-first .explore-lens-options button.is-active {
+  color: var(--fr-ink) !important;
+  text-shadow: 0 0 1rem rgba(59,79,255,.18);
+}
+
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options::before {
+  border-color: rgba(255,100,55,.40);
+  background:
+    linear-gradient(118deg, rgba(255,255,255,.72), rgba(255,100,55,.12) 58%, rgba(255,255,255,.32)),
+    rgba(255,255,255,.34);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.94),
+    0 .45rem 1rem -.62rem rgba(255,100,55,.28),
+    0 0 1.6rem rgba(255,100,55,.06);
 }
 
 .explore-field-first .explore-lens-reset {
-  min-height: 1.75rem !important;
-  padding-inline: .45rem !important;
-  white-space: nowrap;
+  position: relative;
+  z-index: 4;
+  min-width: 4.3rem;
+  min-height: 3rem !important;
+  padding: .42rem .58rem !important;
+  border: 1px solid rgba(21,22,25,.16) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.68), rgba(216,211,201,.74)) !important;
+  color: rgba(21,22,25,.48) !important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.88),
+    0 .35rem .85rem -.65rem rgba(21,22,25,.32) !important;
+  font-size: .36rem !important;
+  letter-spacing: .11em !important;
+  transition: transform 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 
-/* Search sheet replaces the floating tools without changing field geometry. */
+.explore-field-first .explore-lens-reset:hover,
+.explore-field-first .explore-lens-reset:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(255,100,55,.42) !important;
+  color: var(--fr-ink) !important;
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   SEARCH MODE — replaces the instrument belt in-place; no vertical movement.
+   -------------------------------------------------------------------------- */
+
 .explore-field-first .explore-search-panel {
   position: absolute;
-  z-index: 12;
-  top: .8rem;
-  left: clamp(1.25rem,4vw,4rem);
-  right: clamp(1.25rem,4vw,4rem);
-  height: 4.65rem;
+  z-index: 30;
+  top: .7rem;
+  left: clamp(1.25rem,3.2vw,3.5rem);
+  right: clamp(1.25rem,3.2vw,3.5rem);
+  height: 4.6rem;
+  display: grid;
+  grid-template-columns: auto auto minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  padding: .58rem .72rem;
+  border: 1px solid rgba(21,22,25,.24);
+  border-left: 3px solid var(--fr-cobalt);
+  background:
+    linear-gradient(112deg, rgba(255,255,255,.88), rgba(235,233,228,.72) 54%, rgba(59,79,255,.065)),
+    rgba(244,241,233,.84);
+  color: var(--fr-ink);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.97),
+    0 1.45rem 3.4rem -1.85rem rgba(21,22,25,.44),
+    .55rem .55rem 0 rgba(59,79,255,.11),
+    -.28rem .28rem 0 rgba(255,100,55,.045);
+  backdrop-filter: blur(28px) saturate(1.16);
+  -webkit-backdrop-filter: blur(28px) saturate(1.16);
+  overflow: hidden;
   pointer-events: auto;
+  animation: fr-search-enter 360ms cubic-bezier(.16,.84,.22,1) both;
+}
+
+@keyframes fr-search-enter {
+  from { opacity: 0; transform: translateY(-8px) scale(.985); filter: blur(3px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.explore-field-first .explore-search-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, transparent 2%, rgba(255,255,255,.50) 19%, transparent 38%),
+    radial-gradient(circle at 74% 50%, rgba(59,79,255,.08), transparent 26%);
+  transform: translateX(-70%);
+  animation: fr-search-refraction 5.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-search-panel::after {
+  content: "";
+  position: absolute;
+  left: .8rem;
+  right: .8rem;
+  top: .24rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--fr-cobalt), rgba(95,177,255,.48), rgba(217,255,74,.34), var(--fr-orange));
+  opacity: .86;
+  pointer-events: none;
+}
+
+@keyframes fr-search-refraction {
+  0%,28% { transform: translateX(-75%); opacity: .25; }
+  55% { opacity: .75; }
+  82%,100% { transform: translateX(75%); opacity: .18; }
+}
+
+.explore-field-first .explore-search-panel input {
+  position: relative;
+  z-index: 3;
+  font-size: clamp(1.35rem,2.4vw,2.35rem);
+  font-weight: 540;
+  letter-spacing: -.045em;
+}
+
+.explore-field-first .explore-search-panel input::placeholder {
+  color: rgba(21,22,25,.24);
+}
+
+.explore-field-first .explore-search-panel > svg,
+.explore-field-first .explore-search-panel-label,
+.explore-field-first .explore-search-readout,
+.explore-field-first .explore-search-close {
+  position: relative;
+  z-index: 3;
+}
+
+.explore-field-first .explore-search-close {
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.explore-field-first .explore-search-close:hover,
+.explore-field-first .explore-search-close:focus-visible {
+  transform: rotate(5deg) scale(1.08);
+  border-color: rgba(255,100,55,.46);
+  background: rgba(255,100,55,.08);
+  outline: none;
 }
 
 .explore-field-first .explore-field-shell[data-searching="true"] .explore-field-kicker,
 .explore-field-first .explore-field-shell[data-searching="true"] .explore-field-stats,
-.explore-field-first .explore-field-shell[data-searching="true"] .explore-search-trigger {
-  opacity: 0;
-  pointer-events: none;
-}
-
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-search-trigger,
 .explore-field-first .explore-field-shell[data-searching="true"] .explore-lens-strip {
-  opacity: .62;
-  filter: saturate(.75);
+  opacity: 0;
+  transform: translateY(-5px);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 180ms ease;
 }
 
-/* The accepted Field becomes the opening composition. */
+/* --------------------------------------------------------------------------
+   FRONTIER FIELD — deeper paper layers, stronger optical scan, controlled glow.
+   -------------------------------------------------------------------------- */
+
 .explore-field-first .explore-field-stage {
-  min-height: max(760px, calc(100vh - 3.5rem));
+  position: relative;
+  z-index: 1;
+  min-height: max(740px, calc(100vh - 9.5rem));
   padding-top: 0;
+  isolation: isolate;
   background:
-    linear-gradient(90deg, transparent 49.94%, rgba(23,23,25,.025) 50%, transparent 50.06%),
-    linear-gradient(0deg, transparent 49.94%, rgba(23,23,25,.025) 50%, transparent 50.06%),
-    radial-gradient(circle at 57% 47%, var(--explore-accent-soft), transparent 25%);
+    linear-gradient(90deg, transparent 49.94%, rgba(21,22,25,.032) 50%, transparent 50.06%),
+    linear-gradient(0deg, transparent 49.94%, rgba(21,22,25,.030) 50%, transparent 50.06%),
+    radial-gradient(circle at 57% 48%, rgba(59,79,255,.095), transparent 22%),
+    radial-gradient(circle at 14% 14%, rgba(255,255,255,.86), transparent 23%),
+    radial-gradient(circle at 91% 80%, rgba(255,100,55,.035), transparent 21%);
 }
 
 .explore-field-first .explore-field-stage::before {
   inset: 7% 4%;
-  border-color: rgba(23,23,25,.05);
+  border-color: rgba(21,22,25,.065);
+  box-shadow:
+    inset 0 0 5rem rgba(59,79,255,.012),
+    0 0 0 1px rgba(255,255,255,.28);
 }
 
 .explore-field-first .explore-field-stage::after {
   inset: 17% 18%;
-  border-color: rgba(23,23,25,.04);
+  border-color: rgba(59,79,255,.055);
+  box-shadow: 0 0 7rem rgba(59,79,255,.018);
 }
 
-/* Give the central intelligence object more breathing room under the floating tools. */
+.explore-field-first .explore-field-scan {
+  z-index: 1;
+  width: 24%;
+  opacity: .82;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(59,79,255,.00) 14%,
+      rgba(59,79,255,.07) 33%,
+      rgba(255,255,255,.58) 49%,
+      rgba(255,100,55,.035) 64%,
+      transparent 100%);
+  filter: blur(.4px);
+  transform: skewX(-11deg);
+  animation-duration: 9s;
+  mix-blend-mode: screen;
+}
+
+.explore-field-first .explore-field-axis {
+  color: rgba(21,22,25,.25);
+}
+
+/* Peripheral paper signals: more depth, stronger hover, quieter at rest. */
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button {
+  position: relative;
+  border: 1px solid rgba(21,22,25,.10);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.48), rgba(245,242,235,.20)),
+    rgba(255,255,255,.12);
+  padding: .58rem .62rem .54rem;
+  box-shadow:
+    0 .75rem 2.1rem -1.55rem rgba(21,22,25,.46),
+    inset 0 1px rgba(255,255,255,.72);
+  backdrop-filter: blur(3px) saturate(.88);
+  -webkit-backdrop-filter: blur(3px) saturate(.88);
+  transform-style: preserve-3d;
+  transition:
+    transform 220ms cubic-bezier(.2,.8,.2,1),
+    border-color 190ms ease,
+    background 190ms ease,
+    box-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: .45rem;
+  bottom: .45rem;
+  width: 2px;
+  background: var(--fr-cobalt);
+  opacity: .28;
+  transform: scaleY(.38);
+  transform-origin: center;
+  box-shadow: 0 0 .9rem rgba(59,79,255,.18);
+  transition: transform 190ms ease, opacity 190ms ease;
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(112deg, transparent 5%, rgba(255,255,255,.56) 35%, transparent 58%);
+  transform: translateX(-115%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:hover,
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:focus-visible {
+  transform: translate3d(0,-8px,0) rotateX(2deg) scale(1.035);
+  border-color: rgba(59,79,255,.34);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.93), rgba(244,241,234,.68)),
+    var(--fr-paper-hi);
+  box-shadow:
+    0 1.55rem 3.5rem -1.65rem rgba(21,22,25,.58),
+    .24rem .24rem 0 rgba(59,79,255,.085),
+    inset 0 1px rgba(255,255,255,.94);
+  filter: saturate(1.02);
+  outline: none;
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:hover::before,
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:focus-visible::before {
+  opacity: .9;
+  transform: scaleY(1);
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:hover::after,
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:focus-visible::after {
+  opacity: .75;
+  animation: fr-paper-sheen 620ms ease both;
+}
+
+@keyframes fr-paper-sheen {
+  from { transform: translateX(-115%); }
+  to { transform: translateX(115%); }
+}
+
+.explore-field-first .explore-signal-far {
+  opacity: .25;
+  filter: saturate(.3) blur(.2px);
+}
+
+.explore-field-first .explore-signal-mid {
+  opacity: .54;
+}
+
+.explore-field-first .explore-signal-near {
+  opacity: .86;
+}
+
+/* Central dossier: a real layered object, not a flat white rectangle. */
 .explore-field-first .explore-signal.is-focus {
-  top: 52% !important;
+  z-index: 12;
+  top: 51% !important;
+  width: min(45rem,46vw);
+  perspective: 1200px;
 }
 
 .explore-field-first .explore-focus-card {
+  isolation: isolate;
+  border: 1px solid rgba(21,22,25,.24);
+  border-top: 3px solid var(--fr-cobalt);
+  background:
+    linear-gradient(128deg, rgba(255,255,255,.94), rgba(247,244,237,.89)),
+    var(--fr-paper-hi);
   box-shadow:
-    0 3.2rem 8rem -4.4rem rgba(23,23,25,.52),
-    0 .55rem 1.5rem -.9rem rgba(23,23,25,.16);
+    0 4.1rem 9rem -4.15rem rgba(21,22,25,.70),
+    0 1rem 2.4rem -1.25rem rgba(21,22,25,.24),
+    .62rem .62rem 0 -.1rem rgba(59,79,255,.20),
+    1.02rem 1.02rem 0 -.18rem rgba(255,100,55,.105);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transform-origin: 50% 50%;
+  animation: fr-dossier-breathe 7s ease-in-out infinite;
 }
 
-@media (max-width: 1100px) {
+.explore-field-first .explore-focus-card::before {
+  inset: .55rem -.55rem -.55rem .55rem;
+  border: 1px solid rgba(59,79,255,.22);
+  background: transparent;
+  box-shadow: inset 0 0 2.5rem rgba(59,79,255,.018);
+}
+
+.explore-field-first .explore-focus-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 1.12rem;
+  right: -1.12rem;
+  top: 1.12rem;
+  bottom: -1.12rem;
+  border: 1px solid rgba(255,100,55,.12);
+  background: rgba(255,100,55,.025);
+  pointer-events: none;
+}
+
+@keyframes fr-dossier-breathe {
+  0%,100% { transform: translate3d(0,0,0) rotateX(0deg); }
+  50% { transform: translate3d(0,-5px,0) rotateX(.35deg); }
+}
+
+.explore-field-first .explore-focus-card h2 {
+  text-wrap: balance;
+}
+
+.explore-field-first .explore-focus-meta strong {
+  display: grid;
+  min-width: 2.3rem;
+  min-height: 2.3rem;
+  place-items: center;
+  padding: 0;
+  background: var(--fr-ink);
+  color: #fffaf0;
+  box-shadow:
+    .22rem .22rem 0 rgba(59,79,255,.20),
+    0 .45rem 1rem -.65rem rgba(21,22,25,.48);
+}
+
+.explore-field-first .explore-focus-reasons {
+  box-shadow: inset 0 1px rgba(255,255,255,.72);
+}
+
+.explore-field-first .explore-open-intelligence {
+  position: relative;
+  overflow: hidden;
+  border-color: var(--fr-cobalt);
+  background: var(--fr-cobalt);
+  box-shadow:
+    .22rem .22rem 0 rgba(37,54,232,.25),
+    0 .65rem 1.25rem -.8rem rgba(59,79,255,.45);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.explore-field-first .explore-open-intelligence::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 10%, rgba(255,255,255,.36) 42%, transparent 62%);
+  transform: translateX(-120%);
+  transition: transform 450ms ease;
+}
+
+.explore-field-first .explore-open-intelligence:hover,
+.explore-field-first .explore-open-intelligence:focus-visible {
+  transform: translateY(-2px);
+  background: #263af0;
+  box-shadow:
+    .32rem .32rem 0 rgba(255,100,55,.18),
+    0 .9rem 1.8rem -.75rem rgba(59,79,255,.56);
+  outline: none;
+}
+
+.explore-field-first .explore-open-intelligence:hover::before,
+.explore-field-first .explore-open-intelligence:focus-visible::before {
+  transform: translateX(120%);
+}
+
+/* Wildcard changes energy, not the whole palette. */
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-control-surface::after {
+  background: linear-gradient(90deg, transparent, rgba(59,79,255,.24), var(--fr-orange) 72%, transparent);
+}
+
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-focus-card {
+  border-top-color: var(--fr-orange);
+  box-shadow:
+    0 4.1rem 9rem -4.15rem rgba(21,22,25,.70),
+    0 1rem 2.4rem -1.25rem rgba(21,22,25,.24),
+    .62rem .62rem 0 -.1rem rgba(255,100,55,.18),
+    1.02rem 1.02rem 0 -.18rem rgba(59,79,255,.09);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1280px) {
   .explore-field-first .explore-lens-strip {
-    left: clamp(1.25rem,4vw,4rem);
-    right: clamp(1.25rem,4vw,4rem);
-    width: auto;
-    top: 4.55rem;
-    transform: none;
+    left: 13.5rem;
+    right: 13.5rem;
   }
 
+  .explore-field-first .explore-field-kicker,
   .explore-field-first .explore-field-stats {
-    display: none;
+    left: 1.25rem;
+    width: 10.6rem;
+  }
+
+  .explore-field-first .explore-search-trigger {
+    right: 1.25rem;
+    min-width: 11rem;
+  }
+}
+
+@media (max-width: 1040px) {
+  .explore-field-first .explore-control-surface,
+  .explore-field-first .explore-field-header {
+    height: 8.3rem;
+  }
+
+  .explore-field-first .explore-lens-strip {
+    top: 4.55rem;
+    left: 1rem;
+    right: 1rem;
+    min-height: 3rem;
+  }
+
+  .explore-field-first .explore-lens-options {
+    min-height: 2.2rem;
+  }
+
+  .explore-field-first .explore-lens-options button {
+    min-height: 2rem;
+  }
+
+  .explore-field-first .explore-lens-reset {
+    min-height: 2.2rem !important;
+  }
+
+  .explore-field-first .explore-field-stage {
+    min-height: max(760px, calc(100vh - 11.8rem));
   }
 }
 
 @media (max-width: 700px) {
-  .explore-field-first .explore-field-kicker {
-    left: .75rem;
-    top: .65rem;
+  .explore-field-first .explore-control-surface,
+  .explore-field-first .explore-field-header {
+    height: 7.5rem;
   }
 
-  .explore-field-first .explore-field-kicker span:first-child {
+  .explore-field-first .explore-field-kicker {
+    top: .65rem;
+    left: .75rem;
+    width: 7.5rem;
+  }
+
+  .explore-field-first .explore-field-kicker span:first-child,
+  .explore-field-first .explore-field-stats {
     display: none;
   }
 
   .explore-field-first .explore-search-trigger {
-    top: .6rem;
+    top: .55rem;
     right: .75rem;
-    width: 2.6rem;
-    min-width: 0;
+    min-width: 2.7rem;
+    width: 2.7rem;
+    min-height: 2.7rem;
+    grid-template-columns: 1fr;
+    padding: .3rem;
+    clip-path: none;
+  }
+
+  .explore-field-first .explore-search-trigger-copy,
+  .explore-field-first .explore-search-trigger-led {
+    display: none;
+  }
+
+  .explore-field-first .explore-search-trigger-icon {
+    width: 2rem;
+    height: 2rem;
   }
 
   .explore-field-first .explore-lens-strip {
+    top: 3.7rem;
     left: .75rem;
     right: .75rem;
-    top: 4rem;
     display: block !important;
+    min-height: 2.8rem;
+    padding: .28rem !important;
   }
 
   .explore-field-first .explore-lens-reset {
     display: none;
   }
 
+  .explore-field-first .explore-lens-options strong {
+    font-size: .38rem;
+  }
+
   .explore-field-first .explore-search-panel {
+    top: .55rem;
     left: .75rem;
     right: .75rem;
-    top: .6rem;
+    height: 5.7rem;
+    grid-template-columns: auto minmax(0,1fr) auto;
+  }
+
+  .explore-field-first .explore-search-panel-label,
+  .explore-field-first .explore-search-readout {
+    display: none;
   }
 
   .explore-field-first .explore-field-stage {
-    min-height: 830px;
+    min-height: 840px;
+  }
+
+  .explore-field-first .explore-signal.is-focus {
+    top: 50% !important;
+    width: min(92vw,40rem);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .explore-field-first .explore-lens-strip,
-  .explore-field-first .explore-search-trigger {
-    transition: none !important;
+  .explore-field-first *,
+  .explore-field-first *::before,
+  .explore-field-first *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
 }
