@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, Heart, MousePointer2, Radar, Search, Sparkles, ThumbsDown, X } from "lucide-react";
+import { SaveButton } from "@/components/frontier/save-button";
 import { TrackedDetailLink } from "@/components/frontier/tracked-detail-link";
 import { trackFeedback } from "@/lib/personalization/browser";
 import type { ExploreCandidate, ExploreLens } from "@/lib/feed/explore-candidates";
@@ -341,6 +342,18 @@ export function ExploreField({
                     <button type="button" onClick={() => feedback(candidate, "not_interested")}>
                       <ThumbsDown aria-hidden /> LESS LIKE THIS
                     </button>
+                    <SaveButton
+                      item={{
+                        id: candidate.itemId,
+                        title: candidate.title,
+                        source: candidate.source,
+                        contentType: candidate.contentType,
+                        summary: candidate.summary,
+                        score: candidate.score,
+                        tags: candidate.tags,
+                      }}
+                      className="explore-save-action"
+                    />
                     <TrackedDetailLink
                       itemId={candidate.itemId}
                       href={`/project/${candidate.itemId}`}
