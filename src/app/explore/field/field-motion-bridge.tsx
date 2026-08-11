@@ -95,7 +95,7 @@ export function FieldMotionBridge({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div ref={rootRef} className="explore-field-motion-root">
+    <div ref={rootRef} className="explore-field-first explore-field-motion-root">
       {children}
     </div>
   );
