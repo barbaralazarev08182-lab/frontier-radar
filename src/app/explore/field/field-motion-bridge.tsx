@@ -30,6 +30,8 @@ export function FieldMotionBridge({ children }: { children: ReactNode }) {
       stage.style.setProperty("--focus-tilt-y", "0deg");
       stage.style.setProperty("--focus-shadow-x", "0px");
       stage.style.setProperty("--focus-shadow-y", "16px");
+      stage.style.setProperty("--note-shadow-x", "0px");
+      stage.style.setProperty("--note-shadow-y", "6px");
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -68,6 +70,8 @@ export function FieldMotionBridge({ children }: { children: ReactNode }) {
         stage.style.setProperty("--focus-tilt-y", `${(nx * 0.9).toFixed(3)}deg`);
         stage.style.setProperty("--focus-shadow-x", `${(-nx * 9).toFixed(2)}px`);
         stage.style.setProperty("--focus-shadow-y", `${(16 - ny * 5).toFixed(2)}px`);
+        stage.style.setProperty("--note-shadow-x", `${(-nx * 3.2).toFixed(2)}px`);
+        stage.style.setProperty("--note-shadow-y", `${(6 - ny * 2).toFixed(2)}px`);
       });
 
       window.clearTimeout(idleTimer);
