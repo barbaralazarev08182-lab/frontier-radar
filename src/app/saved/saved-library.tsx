@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
@@ -17,8 +18,14 @@ import {
   type SavedItemSnapshot,
 } from "@/lib/saved/browser";
 import styles from "./saved-library.module.css";
+import "./saved-shelf-depth.css";
 
 type SortMode = "recent" | "score" | "title";
+type ShelfStyle = CSSProperties & {
+  "--book-x": string;
+  "--book-rot": string;
+  "--book-z": string;
+};
 
 const SORT_LABELS: Record<SortMode, string> = {
   recent: "RECENT",
@@ -34,6 +41,32 @@ function formattedDate(value: string): string {
     month: "short",
     day: "2-digit",
   }).format(date).toUpperCase();
+}
+
+function signedShelfOffset(index: number, activeIndex: number, length: number): number {
+  if (length <= 1) return 0;
+  let offset = index - activeIndex;
+  const half = length / 2;
+  if (offset > half) offset -= length;
+  if (offset < -half) offset += length;
+  return offset;
+}
+
+function shelfStyle(offset: number): ShelfStyle {
+  if (offset === 0) {
+    return { "--book-x": "0rem", "--book-rot": "0deg", "--book-z": "1" };
+  }
+
+  const distance = Math.abs(offset);
+  const direction = Math.sign(offset);
+  const x = direction * (12.4 + (distance - 1) * 6.25);
+  const rotation = direction * Math.min(3.6, 1.15 + distance * 0.55);
+  const z = Math.max(1, 7 - distance);
+  return {
+    "--book-x": `${x}rem`,
+    "--book-rot": `${rotation}deg`,
+    "--book-z": String(z),
+  };
 }
 
 export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapshot[] }) {
@@ -95,7 +128,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
   }
 
   return (
-    <section className={styles.shell}>
+    <section className={`${styles.shell} fr-saved-shell`}>
       <div className={styles.archiveHeader}>
         <div className={styles.archiveIdentity}>
           <span className={styles.eyebrow}>FR / SAVED ARCHIVES{previewMode ? " / QA" : ""}</span>
@@ -136,7 +169,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
           </div>
 
           {visible.length > 0 && activeItem ? (
-            <div className={styles.archiveStage} aria-live="polite">
+            <div className={`${styles.archiveStage} fr-archive-stage`} aria-live="polite">
               <div className={styles.gridWall} aria-hidden />
               <div className={styles.shelfGlow} aria-hidden />
 
@@ -150,26 +183,35 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
               </button>
 
               <div className={styles.bookshelf}>
-                <div className={styles.bookRow}>
-                  {visible.map((item, index) => (
-                    <button
-                      type="button"
-                      key={item.id}
-                      className={`${styles.book} ${item.id === activeItem.id ? styles.bookActive : ""}`}
-                      onClick={() => setSelectedId(item.id)}
-                      aria-pressed={item.id === activeItem.id}
-                      aria-label={`Inspect ${item.title}`}
-                    >
-                      <span className={styles.bookNumber}>{String(index + 1).padStart(2, "0")}</span>
-                      <span className={styles.bookSpineTitle}>{item.title}</span>
-                      <span className={styles.bookSpineMeta}>{item.source}</span>
-                    </button>
-                  ))}
+                <div className={`${styles.bookRow} fr-book-row`}>
+                  {visible.map((item, index) => {
+                    const isActive = item.id === activeItem.id;
+                    const offset = signedShelfOffset(index, activeIndex, visible.length);
+                    return (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className={`${styles.book} fr-shelf-book ${isActive ? `${styles.bookActive} fr-shelf-book-active` : ""}`}
+                        style={shelfStyle(offset)}
+                        onClick={() => setSelectedId(item.id)}
+                        aria-pressed={isActive}
+                        aria-label={`Inspect ${item.title}`}
+                      >
+                        <span className={styles.bookNumber}>{String(index + 1).padStart(2, "0")}</span>
+                        <span className={styles.bookSpineTitle}>{item.title}</span>
+                        <span className={styles.bookSpineMeta}>{item.source}</span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className={styles.shelfLip} aria-hidden />
               </div>
 
-              <article className={`${styles.featuredBook} ${styles[`variant${activeIndex % 5}`]}`}>
+              <article
+                key={activeItem.id}
+                className={`${styles.featuredBook} fr-featured-book ${styles[`variant${activeIndex % 5}`]}`}
+              >
+                <span className="fr-featured-page-edge" aria-hidden />
                 <div className={styles.featuredTape}>FR ARCHIVE · {String(activeIndex + 1).padStart(2, "0")}</div>
                 <div className={styles.featuredMeta}>
                   <span>{activeItem.source}</span>
@@ -213,7 +255,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
             </div>
           )}
 
-          <div className={styles.archiveRail} aria-label="Saved archive sorting">
+          <div className={`${styles.archiveRail} fr-archive-rail`} aria-label="Saved archive sorting">
             {(Object.keys(SORT_LABELS) as SortMode[]).map((mode) => (
               <button
                 type="button"
