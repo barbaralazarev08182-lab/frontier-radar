@@ -1,0 +1,272 @@
+/* Gate 4.14 — spatial motion + interaction depth QA pass.
+   B route only. No content/data changes. The accepted kraft composition stays intact;
+   this layer makes the field behave like a living instrument instead of a static slide. */
+
+/* Keep the browser scrollbar gutter reserved while Search temporarily locks document scroll.
+   This prevents the entire centered composition from shifting horizontally on open/close. */
+html:has(.explore-field-first) {
+  scrollbar-gutter: stable;
+}
+
+.explore-field-first {
+  --motion-ease: cubic-bezier(.16,.86,.2,1);
+  --motion-spring: cubic-bezier(.18,1.02,.22,1);
+  perspective: 1600px;
+}
+
+/* --------------------------------------------------------------------------
+   CONTROL MICRO-MOTION — quiet, but visibly interactive.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-lens-options button strong {
+  transition: color 180ms ease, letter-spacing 260ms var(--motion-ease), transform 260ms var(--motion-ease) !important;
+}
+
+.explore-field-first .explore-lens-options button:hover strong,
+.explore-field-first .explore-lens-options button:focus-visible strong {
+  letter-spacing: .145em !important;
+  transform: translateY(-1px);
+}
+
+.explore-field-first .explore-lens-options::before {
+  animation: fr-lens-marker-breathe 2.8s ease-in-out infinite;
+  transition: transform 620ms var(--motion-spring), filter 220ms ease !important;
+}
+
+@keyframes fr-lens-marker-breathe {
+  0%,100% { filter: drop-shadow(0 0 4px rgba(57,76,255,.18)); }
+  50% { filter: drop-shadow(0 0 9px rgba(57,76,255,.42)); }
+}
+
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options::before {
+  animation-name: fr-lens-marker-breathe-wild;
+}
+
+@keyframes fr-lens-marker-breathe-wild {
+  0%,100% { filter: drop-shadow(0 0 4px rgba(232,92,50,.16)); }
+  50% { filter: drop-shadow(0 0 9px rgba(232,92,50,.38)); }
+}
+
+.explore-field-first .explore-search-trigger {
+  overflow: hidden !important;
+  transition: transform 260ms var(--motion-ease), border-color 180ms ease, box-shadow 260ms ease, opacity 80ms linear !important;
+}
+
+.explore-field-first .explore-search-trigger::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(108deg, transparent 12%, rgba(255,255,255,.72) 42%, transparent 62%) !important;
+  transform: translateX(-140%);
+  opacity: .62;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-search-trigger:hover,
+.explore-field-first .explore-search-trigger:focus-visible {
+  transform: translateY(-2px) scale(1.018) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.96), 0 .95rem 1.8rem -.8rem rgba(42,34,24,.38), 0 0 0 4px rgba(57,76,255,.045) !important;
+}
+
+.explore-field-first .explore-search-trigger:hover::before,
+.explore-field-first .explore-search-trigger:focus-visible::before {
+  animation: fr-control-sheen 720ms var(--motion-ease) both;
+}
+
+@keyframes fr-control-sheen {
+  from { transform: translateX(-140%); }
+  to { transform: translateX(140%); }
+}
+
+/* The panel is absolutely positioned and opens from the exact right-hand anchor.
+   Clip reveal makes the separate DOM nodes read visually as one object morphing. */
+.explore-field-first .explore-search-panel {
+  overflow: hidden !important;
+  transform-origin: 100% 50% !important;
+  animation: fr-search-spatial-open 440ms var(--motion-spring) both !important;
+  will-change: clip-path, box-shadow;
+}
+
+@keyframes fr-search-spatial-open {
+  0% {
+    clip-path: inset(0 0 0 67% round 999px);
+    box-shadow: inset 0 1px rgba(255,255,255,.92), 0 .25rem .5rem -.35rem rgba(44,35,25,.14), 0 0 0 0 rgba(57,76,255,0);
+  }
+  58% {
+    clip-path: inset(0 0 0 -1.5% round 999px);
+  }
+  100% {
+    clip-path: inset(0 0 0 0 round 999px);
+    box-shadow: inset 0 1px rgba(255,255,255,.94), 0 .82rem 1.65rem -.76rem rgba(44,35,25,.32), 0 0 0 3px rgba(57,76,255,.04);
+  }
+}
+
+.explore-field-first .explore-search-panel input {
+  transition: color 180ms ease, letter-spacing 220ms ease !important;
+}
+
+.explore-field-first .explore-search-panel:focus-within {
+  border-color: rgba(57,76,255,.42) !important;
+}
+
+/* --------------------------------------------------------------------------
+   FIELD PRESENCE — the page enters as a spatial field, not a pasted composition.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-field-stage {
+  animation: fr-field-enter 760ms var(--motion-ease) both;
+}
+
+@keyframes fr-field-enter {
+  from { opacity: .35; filter: saturate(.72) blur(2px); }
+  to { opacity: 1; filter: saturate(1) blur(0); }
+}
+
+.explore-field-first .explore-field-scan {
+  opacity: .5 !important;
+  animation-duration: 9s !important;
+  filter: blur(.3px) !important;
+}
+
+/* Ambient paper motion is deliberately tiny. Individual transform `translate`
+   is used so the field's transform-based positioning/re-ranking remains untouched. */
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button {
+  will-change: translate, transform, box-shadow;
+  animation: fr-paper-drift-a 7.6s ease-in-out infinite;
+}
+
+.explore-field-first .explore-signal:nth-of-type(3n+2):not(.is-focus) .explore-signal-button {
+  animation-name: fr-paper-drift-b;
+  animation-duration: 9.2s;
+  animation-delay: -2.1s;
+}
+
+.explore-field-first .explore-signal:nth-of-type(3n):not(.is-focus) .explore-signal-button {
+  animation-name: fr-paper-drift-c;
+  animation-duration: 8.4s;
+  animation-delay: -4.3s;
+}
+
+@keyframes fr-paper-drift-a {
+  0%,100% { translate: 0 0; }
+  50% { translate: 0 -3px; }
+}
+
+@keyframes fr-paper-drift-b {
+  0%,100% { translate: 0 0; }
+  45% { translate: 2px -2px; }
+  72% { translate: 0 1px; }
+}
+
+@keyframes fr-paper-drift-c {
+  0%,100% { translate: 0 0; }
+  40% { translate: -2px -3px; }
+  70% { translate: 1px 0; }
+}
+
+/* Hover creates an attention cone: hovered note comes forward; the rest quietly recede. */
+.explore-field-first .explore-field-stage:has(.explore-signal:not(.is-focus):hover) .explore-signal:not(.is-focus):not(:hover) {
+  filter: saturate(.72) contrast(.94) !important;
+  opacity: .38 !important;
+  transition-duration: 320ms !important;
+}
+
+.explore-field-first .explore-signal:not(.is-focus):hover {
+  z-index: 22 !important;
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:hover,
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button:focus-visible {
+  translate: 0 -8px !important;
+  transform: perspective(700px) rotateX(2.4deg) rotateY(-2deg) scale(1.035) !important;
+  box-shadow: 0 1.9rem 3.8rem -1.5rem rgba(53,35,20,.56), .18rem .2rem 0 rgba(57,76,255,.13), inset 0 1px rgba(255,241,214,.38) !important;
+}
+
+.explore-field-first .explore-signal:not(.is-focus) .explore-signal-button::after {
+  transition: opacity 180ms ease !important;
+}
+
+/* Focus dossier is a stable physical anchor, but not dead. */
+.explore-field-first .explore-signal.is-focus .explore-focus-card {
+  will-change: translate, box-shadow;
+  animation: fr-dossier-presence 8.5s ease-in-out infinite !important;
+  transition: transform 420ms var(--motion-ease), box-shadow 420ms ease !important;
+}
+
+@keyframes fr-dossier-presence {
+  0%,100% { translate: 0 0; }
+  50% { translate: 0 -2px; }
+}
+
+.explore-field-first .explore-signal.is-focus .explore-focus-card:hover {
+  transform: perspective(1200px) rotateX(.35deg) rotateY(-.45deg) translateY(-2px);
+  box-shadow: 0 4rem 7.6rem -3.2rem rgba(55,36,20,.72), 0 1.2rem 2.3rem -1rem rgba(55,36,20,.38), inset 0 0 0 1px rgba(255,232,194,.12), inset 0 0 1.7rem rgba(79,50,25,.075) !important;
+}
+
+.explore-field-first .explore-open-intelligence {
+  position: relative;
+  overflow: hidden;
+  transition: transform 220ms var(--motion-ease), box-shadow 220ms ease, background 180ms ease !important;
+}
+
+.explore-field-first .explore-open-intelligence::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 14%, rgba(255,255,255,.4) 44%, transparent 64%);
+  transform: translateX(-135%);
+  pointer-events: none;
+}
+
+.explore-field-first .explore-open-intelligence:hover,
+.explore-field-first .explore-open-intelligence:focus-visible {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 .75rem 1.4rem -.72rem rgba(27,24,20,.52), .15rem .15rem 0 var(--fr-cobalt) !important;
+}
+
+.explore-field-first .explore-open-intelligence:hover::after,
+.explore-field-first .explore-open-intelligence:focus-visible::after {
+  animation: fr-control-sheen 620ms var(--motion-ease) both;
+}
+
+/* --------------------------------------------------------------------------
+   FILTER MODE — effects react to actual input, not merely opening Search.
+   This selector only becomes true once the input is non-empty.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-field-shell:has(.explore-search-panel input:not(:placeholder-shown)) .explore-field-scan {
+  opacity: .82 !important;
+  animation-duration: 4.2s !important;
+}
+
+.explore-field-first .explore-field-shell:has(.explore-search-panel input:not(:placeholder-shown)) .explore-field-stage::before {
+  border-color: rgba(57,76,255,.15) !important;
+  box-shadow: inset 0 0 7rem rgba(57,76,255,.035), 0 0 4rem rgba(57,76,255,.025) !important;
+  transition: border-color 320ms ease, box-shadow 420ms ease !important;
+}
+
+.explore-field-first .explore-field-shell:has(.explore-search-panel input:not(:placeholder-shown)) .explore-signal:not(.is-focus) .explore-signal-button {
+  animation-duration: 5.4s;
+}
+
+/* Lens changes should feel like a retune: field lines briefly become more present
+   through the existing ranking movement without changing the geometry contract. */
+.explore-field-first .explore-lens-options button:active {
+  transform: translateY(1px) scale(.98) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-field-first .explore-field-stage,
+  .explore-field-first .explore-lens-options::before,
+  .explore-field-first .explore-signal-button,
+  .explore-field-first .explore-focus-card,
+  .explore-field-first .explore-search-panel {
+    animation: none !important;
+  }
+
+  .explore-field-first .explore-signal-button,
+  .explore-field-first .explore-focus-card {
+    translate: 0 0 !important;
+  }
+}
