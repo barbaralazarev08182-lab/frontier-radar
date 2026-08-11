@@ -1,0 +1,39 @@
+.explore-focus-actions .explore-save-action {
+  position: relative;
+  border-color: color-mix(in srgb, var(--explore-accent) 38%, var(--explore-line));
+  background: rgba(255, 255, 255, .34);
+}
+
+.explore-focus-actions .explore-save-action::after {
+  content: "ARCHIVE";
+  position: absolute;
+  right: .55rem;
+  top: -.38rem;
+  padding: 0 .18rem;
+  background: var(--explore-paper);
+  color: var(--explore-muted);
+  font: 650 .38rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .11em;
+}
+
+.explore-focus-actions .explore-save-action:hover {
+  border-color: var(--explore-accent);
+  background: rgba(255, 255, 255, .58);
+}
+
+.explore-focus-actions .explore-save-action[aria-pressed="true"] {
+  border-color: var(--explore-ink);
+  background: var(--explore-ink);
+  color: var(--explore-paper);
+  box-shadow: inset 3px 0 0 var(--explore-accent);
+}
+
+.explore-focus-actions .explore-save-action[aria-pressed="true"]::after {
+  color: var(--explore-accent);
+}
+
+@media (max-width: 760px) {
+  .explore-focus-actions .explore-save-action {
+    order: 3;
+  }
+}
