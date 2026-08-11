@@ -1,3 +1,11 @@
+import "./field/field-first.css";
+import "./field/kraft-material-pass.css";
+import "./field/interaction-cohesion-pass.css";
+import "./field/final-polish-pass.css";
+import "./field/motion-depth-pass.css";
+import "./field/pointer-response-pass.css";
+import { FieldMotionBridge } from "./field/field-motion-bridge";
+
 export default function ExploreLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -15,13 +23,10 @@ export default function ExploreLayout({
           min-width: 0;
           overflow: clip;
         }
-
-        .explore-route-root > .explore-field-shell {
-          width: 100% !important;
-          margin: 0 !important;
-        }
       `}</style>
-      <div className="explore-route-root">{children}</div>
+      <div className="explore-route-root">
+        <FieldMotionBridge>{children}</FieldMotionBridge>
+      </div>
     </>
   );
 }
