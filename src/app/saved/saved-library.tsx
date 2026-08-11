@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Search, Trash2, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 import {
   SAVED_CHANGED_EVENT,
   readSavedItems,
@@ -12,6 +19,12 @@ import {
 import styles from "./saved-library.module.css";
 
 type SortMode = "recent" | "score" | "title";
+
+const SORT_LABELS: Record<SortMode, string> = {
+  recent: "RECENT",
+  score: "HIGH SCORE",
+  title: "A–Z",
+};
 
 function formattedDate(value: string): string {
   const date = new Date(value);
@@ -28,6 +41,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
   const [items, setItems] = useState<SavedItemSnapshot[]>(() => previewItems ?? []);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("recent");
+  const [selectedId, setSelectedId] = useState<string | null>(previewItems?.[0]?.id ?? null);
 
   useEffect(() => {
     if (previewMode) return;
@@ -60,116 +74,176 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
     });
   }, [items, query, sort]);
 
+  const activeIndex = Math.max(0, visible.findIndex((item) => item.id === selectedId));
+  const activeItem = visible[activeIndex] ?? visible[0] ?? null;
+
+  function selectOffset(delta: number) {
+    if (visible.length === 0) return;
+    const currentIndex = activeItem ? visible.findIndex((item) => item.id === activeItem.id) : 0;
+    const nextIndex = (currentIndex + delta + visible.length) % visible.length;
+    setSelectedId(visible[nextIndex]?.id ?? null);
+  }
+
   function remove(itemId: string) {
     if (previewMode) {
       setItems((current) => current.filter((item) => item.id !== itemId));
-      return;
+    } else {
+      removeSavedItem(itemId);
+      setItems(readSavedItems());
     }
-    removeSavedItem(itemId);
-    setItems(readSavedItems());
+    if (selectedId === itemId) setSelectedId(null);
   }
 
   return (
     <section className={styles.shell}>
-      <header className={styles.hero}>
-        <div>
-          <p className={styles.kicker}>FR / PRIVATE INDEX · SAVED{previewMode ? " · QA PREVIEW" : ""}</p>
-          <h1 className={styles.title}>KEEP THE SIGNAL.</h1>
-          <p className={styles.subtitle}>
-            A quiet research shelf for the projects worth returning to. Saving is explicit and local to this browser in v1; it does not train your Radar preferences.
-          </p>
+      <div className={styles.archiveHeader}>
+        <div className={styles.archiveIdentity}>
+          <span className={styles.eyebrow}>FR / SAVED ARCHIVES{previewMode ? " / QA" : ""}</span>
+          <strong>{String(items.length).padStart(2, "0")} SIGNALS</strong>
         </div>
-        <div className={styles.counter} aria-label={`${items.length} saved items`}>
-          <strong>{String(items.length).padStart(2, "0")}</strong>
-          <span>SAVED SIGNALS</span>
+
+        <div className={styles.archivePanel}>
+          <div className={styles.archiveGlyph} aria-hidden>
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </div>
+          <div className={styles.archivePanelCopy}>
+            <span>PRIVATE RESEARCH SHELF</span>
+            <strong>{activeItem?.title ?? "AWAITING FIRST SIGNAL"}</strong>
+          </div>
+          <span className={styles.archiveDots} aria-hidden>●●●</span>
         </div>
-      </header>
+      </div>
 
       {items.length > 0 ? (
         <>
-          <div className={styles.toolbar}>
-            <label className={styles.search}>
-              <Search aria-hidden />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search your saved research"
-                aria-label="Search saved research"
-              />
-              {query ? (
-                <button className={styles.clear} type="button" onClick={() => setQuery("")} aria-label="Clear search">
-                  <X aria-hidden />
-                </button>
-              ) : null}
-            </label>
-            <select
-              className={styles.sort}
-              value={sort}
-              onChange={(event) => setSort(event.target.value as SortMode)}
-              aria-label="Sort saved research"
-            >
-              <option value="recent">RECENTLY SAVED</option>
-              <option value="score">FRONTIER SCORE</option>
-              <option value="title">TITLE A–Z</option>
-            </select>
+          <div className={styles.searchDock}>
+            <Search aria-hidden />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="SEARCH ARCHIVE"
+              aria-label="Search saved research"
+            />
+            {query ? (
+              <button type="button" onClick={() => setQuery("")} aria-label="Clear search">
+                <X aria-hidden />
+              </button>
+            ) : null}
           </div>
 
-          <div className={styles.grid} aria-live="polite">
-            {visible.map((item, index) => (
-              <article className={styles.card} key={item.id}>
-                <div className={styles.cardTop}>
-                  <span className={styles.cardIndex}>{String(index + 1).padStart(2, "0")}</span>
+          {visible.length > 0 && activeItem ? (
+            <div className={styles.archiveStage} aria-live="polite">
+              <div className={styles.gridWall} aria-hidden />
+              <div className={styles.shelfGlow} aria-hidden />
+
+              <button
+                type="button"
+                className={`${styles.navArrow} ${styles.navPrev}`}
+                onClick={() => selectOffset(-1)}
+                aria-label="Previous saved signal"
+              >
+                <ChevronLeft aria-hidden />
+              </button>
+
+              <div className={styles.bookshelf}>
+                <div className={styles.bookRow}>
+                  {visible.map((item, index) => (
+                    <button
+                      type="button"
+                      key={item.id}
+                      className={`${styles.book} ${item.id === activeItem.id ? styles.bookActive : ""}`}
+                      onClick={() => setSelectedId(item.id)}
+                      aria-pressed={item.id === activeItem.id}
+                      aria-label={`Inspect ${item.title}`}
+                    >
+                      <span className={styles.bookNumber}>{String(index + 1).padStart(2, "0")}</span>
+                      <span className={styles.bookSpineTitle}>{item.title}</span>
+                      <span className={styles.bookSpineMeta}>{item.source}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className={styles.shelfLip} aria-hidden />
+              </div>
+
+              <article className={`${styles.featuredBook} ${styles[`variant${activeIndex % 5}`]}`}>
+                <div className={styles.featuredTape}>FR ARCHIVE · {String(activeIndex + 1).padStart(2, "0")}</div>
+                <div className={styles.featuredMeta}>
+                  <span>{activeItem.source}</span>
+                  <span>{activeItem.contentType}</span>
+                  <span>{formattedDate(activeItem.savedAt)}</span>
+                  {activeItem.score == null ? null : <span>SCORE {Math.round(activeItem.score)}</span>}
+                </div>
+                <h1>{activeItem.title}</h1>
+                {activeItem.summary ? <p>{activeItem.summary}</p> : null}
+                <div className={styles.featuredTags}>
+                  {activeItem.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+                </div>
+                <div className={styles.featuredActions}>
                   <button
-                    className={styles.remove}
                     type="button"
-                    onClick={() => remove(item.id)}
-                    aria-label={`Remove ${item.title} from Saved`}
-                    title="Remove from Saved"
+                    onClick={() => remove(activeItem.id)}
+                    className={styles.remove}
                   >
-                    <Trash2 aria-hidden />
+                    <Trash2 aria-hidden /> REMOVE
                   </button>
-                </div>
-
-                <div className={styles.meta}>
-                  {item.source} · {item.contentType} · SAVED {formattedDate(item.savedAt)}
-                  {item.score == null ? "" : ` · SCORE ${Math.round(item.score)}`}
-                </div>
-
-                <h2 className={styles.cardTitle}>{item.title}</h2>
-                {item.summary ? <p className={styles.summary}>{item.summary}</p> : null}
-
-                <div className={styles.cardBottom}>
-                  <div className={styles.tags}>
-                    {item.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
-                  </div>
-                  <Link className={styles.open} href={`/project/${item.id}`}>
+                  <Link href={`/project/${activeItem.id}`} className={styles.open}>
                     OPEN INTELLIGENCE <ArrowUpRight aria-hidden />
                   </Link>
                 </div>
               </article>
-            ))}
-          </div>
 
-          {visible.length === 0 ? (
-            <div className={styles.empty}>
-              <div className={styles.emptyInner}>
-                <div className={styles.emptyMark} aria-hidden />
-                <span className={styles.emptyLabel}>NO LOCAL MATCH</span>
-                <h2>Nothing on this shelf matches.</h2>
-                <p>Clear the search or try a broader term.</p>
-              </div>
+              <button
+                type="button"
+                className={`${styles.navArrow} ${styles.navNext}`}
+                onClick={() => selectOffset(1)}
+                aria-label="Next saved signal"
+              >
+                <ChevronRight aria-hidden />
+              </button>
             </div>
-          ) : null}
+          ) : (
+            <div className={styles.noMatch}>
+              <span>NO LOCAL MATCH</span>
+              <strong>Nothing on this shelf matches.</strong>
+              <button type="button" onClick={() => setQuery("")}>CLEAR SEARCH</button>
+            </div>
+          )}
+
+          <div className={styles.archiveRail} aria-label="Saved archive sorting">
+            {(Object.keys(SORT_LABELS) as SortMode[]).map((mode) => (
+              <button
+                type="button"
+                key={mode}
+                onClick={() => setSort(mode)}
+                className={sort === mode ? styles.railActive : ""}
+                aria-pressed={sort === mode}
+              >
+                {SORT_LABELS[mode]}
+              </button>
+            ))}
+            <span className={styles.railLocked}>FOLDERS · SOON</span>
+          </div>
         </>
       ) : (
-        <div className={styles.empty}>
-          <div className={styles.emptyInner}>
-            <div className={styles.emptyMark} aria-hidden />
-            <span className={styles.emptyLabel}>ARCHIVE EMPTY</span>
-            <h2>Your shelf starts with one signal.</h2>
-            <p>
-              Saved v1 keeps explicit bookmarks in this browser. The reusable save control is ready; entry points can be attached without changing recommendation semantics.
-            </p>
+        <div className={styles.emptyShelf}>
+          <div className={styles.gridWall} aria-hidden />
+          <div className={styles.emptyBookRow} aria-hidden>
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </div>
+          <div className={styles.shelfLip} aria-hidden />
+          <div className={styles.emptyMessage}>
+            <span>ARCHIVE EMPTY</span>
+            <strong>YOUR SHELF STARTS WITH ONE SIGNAL.</strong>
+            <p>Save something worth returning to. Your archive stays local to this browser in v1.</p>
           </div>
         </div>
       )}
