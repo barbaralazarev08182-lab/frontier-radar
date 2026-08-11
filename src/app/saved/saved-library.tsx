@@ -30,20 +30,18 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
   const [sort, setSort] = useState<SortMode>("recent");
 
   useEffect(() => {
-    if (previewMode) {
-      setItems(previewItems ?? []);
-      return;
-    }
+    if (previewMode) return;
 
     const sync = () => setItems(readSavedItems());
-    sync();
+    const frame = window.requestAnimationFrame(sync);
     window.addEventListener(SAVED_CHANGED_EVENT, sync);
     window.addEventListener("storage", sync);
     return () => {
+      window.cancelAnimationFrame(frame);
       window.removeEventListener(SAVED_CHANGED_EVENT, sync);
       window.removeEventListener("storage", sync);
     };
-  }, [previewItems, previewMode]);
+  }, [previewMode]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
