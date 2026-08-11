@@ -5,6 +5,7 @@ import { buildExploreUrl, parseFeedQuery, type SearchParamValue } from "@/lib/fe
 import type { FeedResult } from "@/lib/feed/types";
 import { FEED_PAGE_SIZE } from "@/lib/feed/types";
 import { ItemCard } from "@/components/frontier/item-card";
+import { SaveButton } from "@/components/frontier/save-button";
 import { DataModeBadge } from "@/components/frontier/data-mode-badge";
 import { FilterBar } from "@/components/frontier/filter-bar";
 import { EmptyState } from "@/components/frontier/empty-state";
@@ -94,7 +95,21 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {feed.items.map((item) => (
-            <ItemCard key={item.id} item={item} />
+            <div key={item.id} className="relative pt-3">
+              <SaveButton
+                item={{
+                  id: item.id,
+                  title: item.title,
+                  source: item.source,
+                  contentType: item.contentType,
+                  summary: item.summaryZh ?? item.description,
+                  score: item.score,
+                  tags: item.tags,
+                }}
+                className="absolute right-4 top-0 z-20 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-background/90 px-2.5 py-1.5 font-mono text-[10px] font-semibold tracking-[0.1em] text-muted-foreground shadow-lg backdrop-blur transition hover:border-cyan-300/30 hover:text-foreground data-[state=on]:text-cyan-200 [&>svg]:h-3.5 [&>svg]:w-3.5"
+              />
+              <ItemCard item={item} />
+            </div>
           ))}
         </div>
       )}
