@@ -72,25 +72,13 @@ export function IdeaLabWorkbench() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!selectedSourceId) {
-      setSelectedIdeaId(null);
-      return;
-    }
-
-    setSelectedIdeaId((current) => {
-      const currentIdea = ideas.find((idea) => idea.id === current);
-      if (currentIdea?.sourceItemId === selectedSourceId) return current;
-      return ideas.find((idea) => idea.sourceItemId === selectedSourceId)?.id ?? null;
-    });
-  }, [ideas, selectedSourceId]);
-
   const selectedSource = saved.find((item) => item.id === selectedSourceId) ?? saved[0] ?? null;
   const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId) ?? null;
-  const activeIdea =
-    selectedIdea && selectedSource && selectedIdea.sourceItemId === selectedSource.id
+  const activeIdea = selectedSource
+    ? selectedIdea?.sourceItemId === selectedSource.id
       ? selectedIdea
-      : null;
+      : ideas.find((idea) => idea.sourceItemId === selectedSource.id) ?? null
+    : null;
   const ideasByStatus = useMemo(() => {
     const counts: Record<IdeaStatus, number> = { seed: 0, shaping: 0, building: 0 };
     ideas.forEach((idea) => {
