@@ -16,6 +16,8 @@
   --focus-tilt-y: 0deg;
   --focus-shadow-x: 0px;
   --focus-shadow-y: 16px;
+  --note-shadow-x: 0px;
+  --note-shadow-y: 6px;
   isolation: isolate;
 }
 
@@ -88,10 +90,10 @@
   filter: saturate(1.025) contrast(1.012);
 }
 
-/* Peripheral notes subtly face the pointer light; hover remains the strongest interaction. */
+/* Peripheral notes pick up the same virtual light at a much smaller amplitude. */
 .explore-field-first .explore-field-stage[data-pointer-active="true"] .explore-signal-near:not(.is-focus) .explore-signal-button {
   box-shadow:
-    calc(var(--focus-shadow-x) * .18) calc(var(--focus-shadow-y) * .35) 30px -20px rgba(59,39,22,.42),
+    var(--note-shadow-x) var(--note-shadow-y) 30px -20px rgba(59,39,22,.42),
     inset 0 0 0 1px rgba(255,238,207,.09),
     inset 0 0 1rem rgba(77,49,24,.055) !important;
 }
