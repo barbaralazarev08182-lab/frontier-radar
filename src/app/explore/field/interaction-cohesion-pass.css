@@ -1,0 +1,367 @@
+/* Gate 4.11 — interaction + control-language QA pass.
+   Scope: B route only. One card = one sheet. The control rail and Search now share
+   the same archival/kraft + ink language as the field instead of metal + black glass. */
+
+.explore-field-first {
+  interpolate-size: allow-keywords;
+  --archive-ink: #211912;
+  --archive-ink-2: #34271c;
+  --archive-paper: #d1a66d;
+  --archive-paper-hi: #e0c18f;
+  --archive-paper-lo: #b98751;
+  --archive-rule: rgba(63,42,23,.34);
+}
+
+/* --------------------------------------------------------------------------
+   ONE FOCUS OBJECT — no stacked sheets, no fake backing boards.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::before,
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::after {
+  display: none !important;
+  content: none !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card {
+  overflow: hidden !important;
+  border: 1px solid rgba(68,44,23,.48) !important;
+  border-left: 3px solid var(--fr-cobalt) !important;
+  border-radius: .1rem !important;
+  box-shadow:
+    0 2.8rem 5.8rem -2.8rem rgba(54,34,18,.62),
+    0 .8rem 1.6rem -.82rem rgba(54,34,18,.28),
+    inset 0 1px rgba(255,239,210,.20) !important;
+  animation: fr-focus-sheet-arrive 520ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-signal.is-focus .explore-focus-card {
+  border-left-color: var(--fr-orange) !important;
+}
+
+@keyframes fr-focus-sheet-arrive {
+  0% {
+    opacity: .25;
+    transform: translate3d(0, 10px, 0) scale(.935);
+    filter: blur(2px);
+  }
+  58% {
+    opacity: 1;
+    transform: translate3d(0, -2px, 0) scale(1.008);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* The article itself now grows and travels as one continuous object. */
+.explore-field-first .explore-field-shell .explore-signal {
+  transition:
+    left 560ms cubic-bezier(.18,.82,.22,1) var(--field-delay),
+    top 560ms cubic-bezier(.18,.82,.22,1) var(--field-delay),
+    width 560ms cubic-bezier(.18,.82,.22,1),
+    transform 560ms cubic-bezier(.18,.82,.22,1),
+    opacity 300ms ease,
+    filter 300ms ease !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal.is-focus {
+  transform: translate(-50%, -50%) rotate(0deg) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button {
+  transition:
+    transform 360ms cubic-bezier(.18,.82,.22,1),
+    opacity 260ms ease,
+    box-shadow 300ms ease,
+    border-color 220ms ease,
+    background 220ms ease !important;
+}
+
+/* --------------------------------------------------------------------------
+   ARCHIVAL CONTROL LANGUAGE — remove the metallic capsule entirely.
+   One kraft index rail, one ink active tab, one matching Search tab.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-control-surface {
+  height: 4.65rem !important;
+  border-bottom: 1px solid rgba(55,37,20,.14) !important;
+  background:
+    radial-gradient(circle at 15% 40%, rgba(102,67,34,.035) 0 .5px, transparent .75px) 0 0 / 5px 5px,
+    linear-gradient(180deg, #f7f2e8 0%, #eee6d7 100%) !important;
+  box-shadow: 0 .7rem 1.5rem -1.35rem rgba(59,38,19,.28) !important;
+}
+
+.explore-field-first .explore-field-header {
+  height: 4.65rem !important;
+}
+
+.explore-field-first .explore-lens-strip {
+  top: .78rem !important;
+  left: 50% !important;
+  width: min(41rem, calc(100% - 34rem)) !important;
+  min-height: 3rem !important;
+  grid-template-columns: minmax(0,1fr) 2.8rem !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  border: 1px solid rgba(63,42,23,.45) !important;
+  border-radius: .16rem !important;
+  background:
+    radial-gradient(circle at 21% 30%, rgba(78,48,23,.08) 0 .45px, transparent .68px) 0 0 / 5px 5px,
+    linear-gradient(180deg, #d8b681 0%, #c99b61 100%) !important;
+  box-shadow:
+    0 .72rem 1.3rem -.86rem rgba(54,34,18,.30),
+    inset 0 1px rgba(255,239,209,.32) !important;
+  overflow: hidden !important;
+}
+
+.explore-field-first .explore-lens-strip::before {
+  display: none !important;
+  animation: none !important;
+}
+
+.explore-field-first .explore-lens-options {
+  min-height: 3rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+
+/* Active lens is a single ink tab sliding across the kraft index strip. */
+.explore-field-first .explore-lens-options::before {
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 20% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background:
+    radial-gradient(circle at 25% 35%, rgba(255,255,255,.045) 0 .5px, transparent .7px) 0 0 / 5px 5px,
+    linear-gradient(180deg, var(--archive-ink-2), var(--archive-ink)) !important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.055),
+    .14rem 0 0 rgba(57,76,255,.80) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: transform 460ms cubic-bezier(.16,.86,.2,1), box-shadow 220ms ease !important;
+}
+
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options::before {
+  background: linear-gradient(180deg, #3a281d, #241812) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.055), .14rem 0 0 var(--fr-orange) !important;
+}
+
+.explore-field-first .explore-lens-options button {
+  min-height: 3rem !important;
+  padding: .25rem .3rem !important;
+  border-right: 1px solid rgba(67,43,22,.18) !important;
+  border-radius: 0 !important;
+  color: rgba(51,34,18,.62) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.explore-field-first .explore-lens-options button:last-child {
+  border-right: 0 !important;
+}
+
+.explore-field-first .explore-lens-options button strong {
+  font-size: .43rem !important;
+  font-weight: 720;
+  letter-spacing: .13em !important;
+}
+
+.explore-field-first .explore-lens-options button.is-active,
+.explore-field-first .explore-lens-options button.is-active strong {
+  color: #f5dfb9 !important;
+}
+
+.explore-field-first .explore-lens-options button:hover:not(.is-active),
+.explore-field-first .explore-lens-options button:focus-visible:not(.is-active) {
+  color: #1f1710 !important;
+  background: rgba(255,239,208,.20) !important;
+}
+
+.explore-field-first .explore-lens-reset {
+  width: 2.8rem !important;
+  min-width: 2.8rem !important;
+  height: 3rem !important;
+  min-height: 3rem !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(63,42,23,.34) !important;
+  border-radius: 0 !important;
+  background: linear-gradient(180deg, #c69a62, #b98751) !important;
+  box-shadow: inset 0 1px rgba(255,239,209,.22) !important;
+}
+
+.explore-field-first .explore-lens-reset::after {
+  color: rgba(43,29,16,.68) !important;
+  font-size: .92rem !important;
+}
+
+.explore-field-first .explore-lens-reset:hover,
+.explore-field-first .explore-lens-reset:focus-visible {
+  transform: none !important;
+  background: #d5ad77 !important;
+  outline: 1px solid rgba(57,76,255,.38) !important;
+  outline-offset: -2px;
+}
+
+/* --------------------------------------------------------------------------
+   SEARCH — matching archival tab, not black glass.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-search-trigger {
+  top: .88rem !important;
+  right: clamp(1.15rem,2.8vw,3rem) !important;
+  min-width: 10rem !important;
+  min-height: 3rem !important;
+  grid-template-columns: 1.8rem auto !important;
+  gap: .55rem !important;
+  padding: .38rem .82rem .38rem .42rem !important;
+  border: 1px solid rgba(63,42,23,.46) !important;
+  border-radius: .16rem !important;
+  background:
+    radial-gradient(circle at 22% 30%, rgba(74,46,22,.08) 0 .45px, transparent .7px) 0 0 / 5px 5px,
+    linear-gradient(180deg, #d7b47f, #c29158) !important;
+  color: var(--archive-ink) !important;
+  box-shadow: 0 .72rem 1.25rem -.82rem rgba(54,34,18,.31), inset 0 1px rgba(255,239,209,.28) !important;
+}
+
+.explore-field-first .explore-search-trigger::before {
+  display: none !important;
+}
+
+.explore-field-first .explore-search-trigger::after {
+  left: .42rem !important;
+  right: auto !important;
+  top: .38rem !important;
+  bottom: .38rem !important;
+  width: 2px !important;
+  height: auto !important;
+  background: var(--fr-cobalt) !important;
+  opacity: .9 !important;
+}
+
+.explore-field-first .explore-search-trigger:hover,
+.explore-field-first .explore-search-trigger:focus-visible {
+  transform: translateY(-2px) !important;
+  border-color: rgba(63,42,23,.65) !important;
+  background: linear-gradient(180deg, #dfbf8d, #c99b61) !important;
+  box-shadow: 0 1rem 1.6rem -.85rem rgba(54,34,18,.38), inset 0 1px rgba(255,241,214,.34) !important;
+}
+
+.explore-field-first .explore-search-trigger-icon {
+  width: 1.72rem !important;
+  height: 1.72rem !important;
+  border: 1px solid rgba(58,39,21,.24) !important;
+  border-radius: 50% !important;
+  background: rgba(255,238,205,.26) !important;
+}
+
+.explore-field-first .explore-search-trigger-icon svg {
+  color: #2637e6 !important;
+}
+
+.explore-field-first .explore-search-trigger-copy strong {
+  color: #211912 !important;
+}
+
+.explore-field-first .explore-search-trigger-copy small {
+  color: rgba(51,34,18,.48) !important;
+}
+
+/* Search opens as one large archival index card from the same material family. */
+.explore-field-first .explore-search-panel {
+  top: 5.15rem !important;
+  width: min(44rem, calc(100% - 4rem)) !important;
+  height: 5.15rem !important;
+  grid-template-columns: auto auto minmax(0,1fr) auto auto !important;
+  gap: .8rem !important;
+  padding: .72rem 1rem !important;
+  border: 1px solid rgba(63,42,23,.48) !important;
+  border-left: 3px solid var(--fr-cobalt) !important;
+  border-radius: .14rem !important;
+  background:
+    radial-gradient(circle at 20% 28%, rgba(77,48,23,.09) 0 .48px, transparent .72px) 0 0 / 5px 5px,
+    linear-gradient(128deg, #d9b780, #c39258 72%, #b9824a) !important;
+  color: #211912 !important;
+  box-shadow:
+    0 2rem 3.4rem -1.6rem rgba(52,33,18,.48),
+    inset 0 1px rgba(255,239,208,.28) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: fr-archive-search-in 420ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+@keyframes fr-archive-search-in {
+  from { opacity: 0; transform: translate(-50%, -8px) scale(.97); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.explore-field-first .explore-search-panel::before {
+  display: none !important;
+  animation: none !important;
+}
+
+.explore-field-first .explore-search-panel::after {
+  left: 1rem !important;
+  right: 1rem !important;
+  bottom: .42rem !important;
+  background: linear-gradient(90deg, var(--fr-cobalt), rgba(57,76,255,.16) 72%, transparent) !important;
+}
+
+.explore-field-first .explore-search-panel-label {
+  border-right-color: rgba(63,42,23,.22) !important;
+}
+
+.explore-field-first .explore-search-panel-label span,
+.explore-field-first .explore-search-readout span {
+  color: rgba(52,34,18,.48) !important;
+}
+
+.explore-field-first .explore-search-panel-label strong,
+.explore-field-first .explore-search-readout strong {
+  color: #2637e6 !important;
+}
+
+.explore-field-first .explore-search-panel > svg {
+  color: #2637e6 !important;
+}
+
+.explore-field-first .explore-search-panel input {
+  color: #211912 !important;
+  caret-color: #2637e6 !important;
+  font-size: clamp(1.15rem,1.8vw,1.55rem) !important;
+}
+
+.explore-field-first .explore-search-panel input::placeholder {
+  color: rgba(51,34,18,.42) !important;
+}
+
+.explore-field-first .explore-search-close {
+  border-color: rgba(63,42,23,.28) !important;
+  background: rgba(255,238,205,.22) !important;
+  color: rgba(40,27,16,.66) !important;
+}
+
+.explore-field-first .explore-search-close:hover,
+.explore-field-first .explore-search-close:focus-visible {
+  border-color: rgba(232,106,61,.54) !important;
+  background: rgba(255,238,205,.40) !important;
+  color: #211912 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-field-first .explore-field-shell .explore-signal,
+  .explore-field-first .explore-field-shell .explore-focus-card,
+  .explore-field-first .explore-lens-options::before,
+  .explore-field-first .explore-search-panel {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+}
