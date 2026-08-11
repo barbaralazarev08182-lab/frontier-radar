@@ -67,7 +67,7 @@ function shelfStyle(offset: number): ShelfStyle {
 
   const distance = Math.abs(offset);
   const direction = Math.sign(offset);
-  const x = direction * (12.4 + (distance - 1) * 6.25);
+  const x = direction * (14.6 + (distance - 1) * 6.15);
   const rotation = direction * Math.min(3.6, 1.15 + distance * 0.55);
   const z = Math.max(1, 7 - distance);
   return {
