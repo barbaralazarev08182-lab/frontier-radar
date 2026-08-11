@@ -20,6 +20,7 @@ import {
 import styles from "./saved-library.module.css";
 import "./saved-shelf-depth.css";
 import "./saved-interaction-polish.css";
+import "./saved-archive-rail.css";
 
 type SortMode = "recent" | "score" | "title";
 type SelectionDirection = "next" | "prev" | "direct";
