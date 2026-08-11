@@ -1,0 +1,330 @@
+/* Gate 4.7 experimental B layout.
+   No traditional hero: controls float inside the Frontier Field.
+   This route is intentionally isolated at /explore/field for visual A/B only. */
+
+.explore-field-first {
+  width: 100%;
+  min-width: 0;
+  overflow: clip;
+}
+
+.explore-field-first > .explore-field-shell {
+  position: relative;
+  width: 100% !important;
+  margin: 0 !important;
+  min-height: calc(100vh - 3.5rem);
+  background:
+    radial-gradient(circle at 58% 39%, rgba(59,79,255,.07), transparent 22%),
+    radial-gradient(circle at 16% 18%, rgba(255,255,255,.78), transparent 27%),
+    linear-gradient(180deg, #f8f5ee 0%, #f0ede5 62%, #e9e5dc 100%);
+}
+
+/* Remove the header as a page section. It becomes a transparent overlay layer. */
+.explore-field-first .explore-control-surface {
+  position: absolute;
+  z-index: 30;
+  inset: 0 0 auto;
+  height: 0;
+  isolation: isolate;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-field-header {
+  position: absolute;
+  inset: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-field-header::before,
+.explore-field-first .explore-field-header::after {
+  display: none;
+}
+
+/* Small editorial locator replaces CURRENT FRONTIER as a hero. */
+.explore-field-first .explore-field-kicker {
+  position: absolute;
+  z-index: 4;
+  top: 1rem;
+  left: clamp(1.25rem, 4vw, 4rem);
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  width: auto;
+  padding: .5rem .62rem;
+  border: 1px solid rgba(23,23,25,.12);
+  background: rgba(247,244,237,.72);
+  color: rgba(23,23,25,.58);
+  box-shadow: inset 0 1px rgba(255,255,255,.84);
+  backdrop-filter: blur(16px) saturate(1.03);
+  -webkit-backdrop-filter: blur(16px) saturate(1.03);
+  font-size: .43rem;
+  letter-spacing: .14em;
+  pointer-events: auto;
+}
+
+.explore-field-first .explore-field-kicker span:last-child {
+  position: relative;
+  padding-left: .75rem;
+  color: rgba(23,23,25,.42);
+}
+
+.explore-field-first .explore-field-kicker span:last-child::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: .34rem;
+  height: .34rem;
+  border-radius: 50%;
+  background: #3b4fff;
+  box-shadow: 0 0 0 3px rgba(59,79,255,.08);
+  transform: translateY(-50%);
+}
+
+.explore-field-first .explore-field-heading-row {
+  position: static;
+  display: block !important;
+  margin: 0;
+}
+
+.explore-field-first .explore-field-heading-row > div {
+  display: none !important;
+}
+
+/* Search becomes one floating optical tool, not a header block. */
+.explore-field-first .explore-search-trigger {
+  position: absolute;
+  z-index: 5;
+  top: .9rem;
+  right: clamp(1.25rem,4vw,4rem);
+  min-width: 10.75rem;
+  min-height: 2.7rem;
+  margin: 0;
+  border-color: rgba(23,23,25,.14);
+  background:
+    linear-gradient(110deg, rgba(255,255,255,.68), rgba(255,255,255,.30) 52%, rgba(59,79,255,.05)),
+    rgba(242,240,235,.66);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.9),
+    0 1rem 2.5rem -1.8rem rgba(23,23,25,.30);
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  pointer-events: auto;
+}
+
+.explore-field-first .explore-search-trigger:hover,
+.explore-field-first .explore-search-trigger:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(59,79,255,.34);
+  background:
+    linear-gradient(110deg, rgba(255,255,255,.86), rgba(255,255,255,.42) 52%, rgba(59,79,255,.08)),
+    rgba(245,243,238,.76);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.95),
+    0 1.25rem 2.8rem -1.7rem rgba(59,79,255,.20);
+}
+
+.explore-field-first .explore-field-stats {
+  position: absolute;
+  z-index: 3;
+  left: clamp(1.25rem,4vw,4rem);
+  top: 4.45rem;
+  bottom: auto;
+  right: auto;
+  display: flex;
+  gap: .8rem;
+  padding: .38rem .5rem;
+  margin: 0;
+  background: rgba(247,244,237,.44);
+  color: rgba(23,23,25,.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: .39rem;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-field-stats strong {
+  font-size: .5rem;
+}
+
+/* A single floating glass rail controls the field. */
+.explore-field-first .explore-lens-strip {
+  position: absolute !important;
+  z-index: 7;
+  top: 4.35rem;
+  left: 50%;
+  right: auto;
+  width: min(49rem, calc(100% - 24rem));
+  min-height: 2.55rem;
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) auto !important;
+  align-items: center !important;
+  gap: .35rem !important;
+  padding: .24rem .32rem !important;
+  border: 1px solid rgba(23,23,25,.13) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.56), rgba(234,231,224,.42)) !important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.86),
+    0 1rem 2.6rem -1.9rem rgba(23,23,25,.28) !important;
+  backdrop-filter: blur(18px) saturate(1.04) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.04) !important;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.explore-field-first .explore-lens-title {
+  display: none !important;
+}
+
+.explore-field-first .explore-lens-options {
+  min-height: 2rem;
+}
+
+.explore-field-first .explore-lens-options::before {
+  top: .12rem;
+  bottom: .12rem;
+  border-color: rgba(59,79,255,.22);
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.72), rgba(59,79,255,.07)),
+    rgba(255,255,255,.28);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.88),
+    0 .65rem 1.45rem -.95rem rgba(59,79,255,.22);
+}
+
+.explore-field-first .explore-lens-options button {
+  min-height: 2rem;
+  font-size: .43rem;
+}
+
+.explore-field-first .explore-lens-reset {
+  min-height: 1.75rem !important;
+  padding-inline: .45rem !important;
+  white-space: nowrap;
+}
+
+/* Search sheet replaces the floating tools without changing field geometry. */
+.explore-field-first .explore-search-panel {
+  position: absolute;
+  z-index: 12;
+  top: .8rem;
+  left: clamp(1.25rem,4vw,4rem);
+  right: clamp(1.25rem,4vw,4rem);
+  height: 4.65rem;
+  pointer-events: auto;
+}
+
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-field-kicker,
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-field-stats,
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-search-trigger {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-lens-strip {
+  opacity: .62;
+  filter: saturate(.75);
+}
+
+/* The accepted Field becomes the opening composition. */
+.explore-field-first .explore-field-stage {
+  min-height: max(760px, calc(100vh - 3.5rem));
+  padding-top: 0;
+  background:
+    linear-gradient(90deg, transparent 49.94%, rgba(23,23,25,.025) 50%, transparent 50.06%),
+    linear-gradient(0deg, transparent 49.94%, rgba(23,23,25,.025) 50%, transparent 50.06%),
+    radial-gradient(circle at 57% 47%, var(--explore-accent-soft), transparent 25%);
+}
+
+.explore-field-first .explore-field-stage::before {
+  inset: 7% 4%;
+  border-color: rgba(23,23,25,.05);
+}
+
+.explore-field-first .explore-field-stage::after {
+  inset: 17% 18%;
+  border-color: rgba(23,23,25,.04);
+}
+
+/* Give the central intelligence object more breathing room under the floating tools. */
+.explore-field-first .explore-signal.is-focus {
+  top: 52% !important;
+}
+
+.explore-field-first .explore-focus-card {
+  box-shadow:
+    0 3.2rem 8rem -4.4rem rgba(23,23,25,.52),
+    0 .55rem 1.5rem -.9rem rgba(23,23,25,.16);
+}
+
+@media (max-width: 1100px) {
+  .explore-field-first .explore-lens-strip {
+    left: clamp(1.25rem,4vw,4rem);
+    right: clamp(1.25rem,4vw,4rem);
+    width: auto;
+    top: 4.55rem;
+    transform: none;
+  }
+
+  .explore-field-first .explore-field-stats {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .explore-field-first .explore-field-kicker {
+    left: .75rem;
+    top: .65rem;
+  }
+
+  .explore-field-first .explore-field-kicker span:first-child {
+    display: none;
+  }
+
+  .explore-field-first .explore-search-trigger {
+    top: .6rem;
+    right: .75rem;
+    width: 2.6rem;
+    min-width: 0;
+  }
+
+  .explore-field-first .explore-lens-strip {
+    left: .75rem;
+    right: .75rem;
+    top: 4rem;
+    display: block !important;
+  }
+
+  .explore-field-first .explore-lens-reset {
+    display: none;
+  }
+
+  .explore-field-first .explore-search-panel {
+    left: .75rem;
+    right: .75rem;
+    top: .6rem;
+  }
+
+  .explore-field-first .explore-field-stage {
+    min-height: 830px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-field-first .explore-lens-strip,
+  .explore-field-first .explore-search-trigger {
+    transition: none !important;
+  }
+}
