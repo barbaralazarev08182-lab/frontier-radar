@@ -23,12 +23,18 @@ function formattedDate(value: string): string {
   }).format(date).toUpperCase();
 }
 
-export function SavedLibrary() {
-  const [items, setItems] = useState<SavedItemSnapshot[]>([]);
+export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapshot[] }) {
+  const previewMode = Array.isArray(previewItems);
+  const [items, setItems] = useState<SavedItemSnapshot[]>(() => previewItems ?? []);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("recent");
 
   useEffect(() => {
+    if (previewMode) {
+      setItems(previewItems ?? []);
+      return;
+    }
+
     const sync = () => setItems(readSavedItems());
     sync();
     window.addEventListener(SAVED_CHANGED_EVENT, sync);
@@ -37,7 +43,7 @@ export function SavedLibrary() {
       window.removeEventListener(SAVED_CHANGED_EVENT, sync);
       window.removeEventListener("storage", sync);
     };
-  }, []);
+  }, [previewItems, previewMode]);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -57,6 +63,10 @@ export function SavedLibrary() {
   }, [items, query, sort]);
 
   function remove(itemId: string) {
+    if (previewMode) {
+      setItems((current) => current.filter((item) => item.id !== itemId));
+      return;
+    }
     removeSavedItem(itemId);
     setItems(readSavedItems());
   }
@@ -65,7 +75,7 @@ export function SavedLibrary() {
     <section className={styles.shell}>
       <header className={styles.hero}>
         <div>
-          <p className={styles.kicker}>FR / PRIVATE INDEX · SAVED</p>
+          <p className={styles.kicker}>FR / PRIVATE INDEX · SAVED{previewMode ? " · QA PREVIEW" : ""}</p>
           <h1 className={styles.title}>KEEP THE SIGNAL.</h1>
           <p className={styles.subtitle}>
             A quiet research shelf for the projects worth returning to. Saving is explicit and local to this browser in v1; it does not train your Radar preferences.
