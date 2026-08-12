@@ -35,6 +35,7 @@ const SYNTHESIS_POLL_INTERVAL_MS = 2_500;
 const SYNTHESIS_POLL_WINDOW_MS = 120_000;
 const SYNTHESIS_GENERATION_RETRY_DELAY_MS = 12_000;
 const SYNTHESIS_MAX_GENERATION_ATTEMPTS = 2;
+const SYNTHESIS_WARMUP_SCROLL_PROGRESS = 0;
 
 function topicLabel(signal: EditorialSignal) {
   if (signal.lane === "adjacent") return "OUTSIDE YOUR BUBBLE";
@@ -250,7 +251,7 @@ export function TodayMotionProduction({
 
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       const progress = scroller.scrollTop / travel;
-      if (progress < 0.2) return;
+      if (progress < SYNTHESIS_WARMUP_SCROLL_PROGRESS) return;
 
       started = true;
       pollStartedAt = Date.now();
