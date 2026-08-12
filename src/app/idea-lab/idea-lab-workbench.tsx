@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, BookOpen, FlaskConical, Lightbulb, Plus, Trash2 } from "lucide-react";
 import {
   IDEAS_CHANGED_EVENT,
@@ -41,20 +41,31 @@ function shortDate(value: string): string {
   return new Intl.DateTimeFormat("en", { month: "short", day: "2-digit" }).format(date).toUpperCase();
 }
 
-export function IdeaLabWorkbench() {
+interface IdeaLabWorkbenchProps {
+  initialSourceId?: string | null;
+}
+
+export function IdeaLabWorkbench({ initialSourceId = null }: IdeaLabWorkbenchProps) {
   const [saved, setSaved] = useState<SavedItemSnapshot[]>([]);
   const [ideas, setIdeas] = useState<IdeaDraft[]>([]);
   const [selectedSourceId, setSelectedSourceId] = useState<string | null>(null);
   const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>(null);
+  const initialSourceAppliedRef = useRef(false);
 
   useEffect(() => {
     const syncSaved = () => {
       const next = readSavedItems();
+      const nextIdeas = readIdeas();
       setSaved(next);
       setSelectedSourceId((current) => {
+        if (!initialSourceAppliedRef.current && initialSourceId) {
+          initialSourceAppliedRef.current = true;
+          return initialSourceId;
+        }
         if (!current) return next[0]?.id ?? null;
         if (next.some((item) => item.id === current)) return current;
-        if (readIdeas().some((idea) => idea.sourceItemId === current)) return current;
+        if (nextIdeas.some((idea) => idea.sourceItemId === current)) return current;
+        if (initialSourceId && current === initialSourceId) return current;
         return next[0]?.id ?? null;
       });
     };
@@ -74,7 +85,7 @@ export function IdeaLabWorkbench() {
       window.removeEventListener(IDEAS_CHANGED_EVENT, syncIdeas);
       window.removeEventListener("storage", syncIdeas);
     };
-  }, []);
+  }, [initialSourceId]);
 
   const selectedSource = saved.find((item) => item.id === selectedSourceId) ?? null;
   const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId) ?? null;
@@ -83,6 +94,12 @@ export function IdeaLabWorkbench() {
       ? selectedIdea
       : ideas.find((idea) => idea.sourceItemId === selectedSourceId) ?? null
     : null;
+  const requestedSourceMissing = Boolean(
+    initialSourceId &&
+    selectedSourceId === initialSourceId &&
+    !selectedSource &&
+    !activeIdea
+  );
   const ideasByStatus = useMemo(() => {
     const counts: Record<IdeaStatus, number> = { seed: 0, shaping: 0, building: 0 };
     ideas.forEach((idea) => {
@@ -273,6 +290,13 @@ export function IdeaLabWorkbench() {
               <button type="button" onClick={startIdea}>
                 <Plus aria-hidden /> START IDEA FROM THIS SIGNAL
               </button>
+            </div>
+          ) : requestedSourceMissing ? (
+            <div key={`missing-${initialSourceId}`} className={`${styles.blankSheet} fr-idea-blank-sheet`} data-source-missing="true">
+              <FlaskConical aria-hidden />
+              <span>SOURCE NOT IN SAVED</span>
+              <strong>This signal is not on your Saved shelf.</strong>
+              <p>Idea Lab only works from material you explicitly saved. No other saved signal was substituted.</p>
             </div>
           ) : (
             <div key="idle" className={`${styles.blankSheet} fr-idea-blank-sheet`}>
