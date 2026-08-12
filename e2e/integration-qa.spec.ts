@@ -28,9 +28,10 @@ test("Explore -> Saved -> Idea Lab persists the user's signal-to-direction chain
 
   try {
     await page.goto(route("/explore"));
-    await expect(page.getByRole("heading", { name: "CURRENT FRONTIER" })).toBeVisible();
 
+    const field = page.locator(".explore-field-shell");
     const focusCard = page.locator(".explore-focus-card");
+    await expect(field).toBeVisible();
     await expect(focusCard).toBeVisible();
 
     const sourceTitle = (await focusCard.locator("h2").innerText()).trim();
