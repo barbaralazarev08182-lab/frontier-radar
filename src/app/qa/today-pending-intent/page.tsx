@@ -8,7 +8,7 @@ export default function TodayPendingIntentQaPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setReady(true), 10_000);
+    const timer = window.setTimeout(() => setReady(true), 20_000);
     return () => window.clearTimeout(timer);
   }, []);
 
