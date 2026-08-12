@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const HERO_FREE_END = 0.275;
 const HERO_RETURN = 0.255;
@@ -54,6 +54,12 @@ interface TodayStageScrollControllerProps {
 }
 
 export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollControllerProps) {
+  const canEnterWeaveRef = useRef(canEnterWeave);
+
+  useEffect(() => {
+    canEnterWeaveRef.current = canEnterWeave;
+  }, [canEnterWeave]);
+
   useEffect(() => {
     const root = document.querySelector<HTMLElement>(".motion-lab-shell");
     const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
@@ -80,7 +86,7 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
     };
 
     const stageForProgress = (current: number): ScrollStage => {
-      if (canEnterWeave && current >= WEAVE_STAGE - STAGE_EPSILON) return "weave";
+      if (canEnterWeaveRef.current && current >= WEAVE_STAGE - STAGE_EPSILON) return "weave";
       if (current >= TODAY_STAGE - STAGE_EPSILON) return "today";
       if (current >= COMPRESSION_STAGE - STAGE_EPSILON) return "compression";
       return "hero";
@@ -126,7 +132,7 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
 
       if (currentStage === "today") {
         if (direction < 0) return { progress: COMPRESSION_STAGE, stage: "compression" };
-        return canEnterWeave
+        return canEnterWeaveRef.current
           ? { progress: WEAVE_STAGE, stage: "weave" }
           : null;
       }
@@ -185,7 +191,7 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
           ? current <= HERO_FREE_END
           : projected < HERO_FREE_END - HERO_APPROACH;
       const weaveIsContinuous =
-        canEnterWeave &&
+        canEnterWeaveRef.current &&
         (direction > 0
           ? current >= WEAVE_STAGE - STAGE_EPSILON
           : projected > WEAVE_STAGE + WEAVE_APPROACH);
@@ -241,7 +247,7 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
       root.removeAttribute("data-stage-snap");
       root.removeAttribute("data-scroll-stage");
     };
-  }, [canEnterWeave]);
+  }, []);
 
   return null;
 }
