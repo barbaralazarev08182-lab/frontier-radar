@@ -6,6 +6,14 @@ export const metadata = {
   description: "Turn saved frontier signals into working directions.",
 };
 
-export default function IdeaLabPage() {
-  return <IdeaLabWorkbench />;
+export default async function IdeaLabPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ from?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const rawFrom = Array.isArray(params.from) ? params.from[0] : params.from;
+  const initialSourceId = rawFrom?.trim() || null;
+
+  return <IdeaLabWorkbench initialSourceId={initialSourceId} />;
 }
