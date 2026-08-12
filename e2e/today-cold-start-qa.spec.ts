@@ -3,44 +3,24 @@ import { test, expect } from "@playwright/test";
 const visitorId = process.env.QA_VISITOR_ID;
 if (!visitorId) throw new Error("QA_VISITOR_ID is required");
 
-const productionCandidates = [
-  "https://frontier-radar.vercel.app",
-  "https://frontier-radar-barbaralazarev08182-3355s-projects.vercel.app",
-  "https://frontier-radar-git-main-barbaralazarev08182-3355s-projects.vercel.app",
-];
+const baseUrl = "https://frontier-radar-eosin.vercel.app";
 
 test("Today production cold start warms immediately and keeps Weave locked until snapshot", async ({ page, context }) => {
   test.setTimeout(200_000);
-
-  let baseUrl: string | null = null;
-  for (const candidate of productionCandidates) {
-    try {
-      const response = await page.goto(`${candidate}/today`, { waitUntil: "domcontentloaded", timeout: 15_000 });
-      const title = await page.title();
-      if ((response?.status() ?? 500) < 400 && title.includes("Frontier Radar") && new URL(page.url()).host.endsWith("vercel.app")) {
-        baseUrl = candidate;
-        break;
-      }
-    } catch {
-      // Try the next known Vercel project alias.
-    }
-  }
-
-  expect(baseUrl, "Could not resolve the production Frontier Radar alias").not.toBeNull();
-  console.log(`GATE7_PRODUCTION_BASE=${baseUrl}`);
 
   await context.clearCookies();
   await context.addCookies([
     {
       name: "frontier_radar_visitor_id",
       value: visitorId,
-      url: baseUrl!,
+      url: baseUrl,
       sameSite: "Lax",
     },
   ]);
 
   const startedAt = Date.now();
   const response = await page.goto(`${baseUrl}/today`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  console.log(`GATE7_PRODUCTION_BASE=${baseUrl}`);
   console.log(`GATE7_HTTP_STATUS=${response?.status() ?? "none"}`);
   console.log(`GATE7_FINAL_HOST=${new URL(page.url()).host}`);
   console.log(`GATE7_TITLE=${await page.title()}`);
