@@ -51,9 +51,12 @@ export function IdeaLabWorkbench() {
     const syncSaved = () => {
       const next = readSavedItems();
       setSaved(next);
-      setSelectedSourceId((current) =>
-        current && next.some((item) => item.id === current) ? current : next[0]?.id ?? null
-      );
+      setSelectedSourceId((current) => {
+        if (!current) return next[0]?.id ?? null;
+        if (next.some((item) => item.id === current)) return current;
+        if (readIdeas().some((idea) => idea.sourceItemId === current)) return current;
+        return next[0]?.id ?? null;
+      });
     };
     const syncIdeas = () => {
       setIdeas(readIdeas());
@@ -73,12 +76,12 @@ export function IdeaLabWorkbench() {
     };
   }, []);
 
-  const selectedSource = saved.find((item) => item.id === selectedSourceId) ?? saved[0] ?? null;
+  const selectedSource = saved.find((item) => item.id === selectedSourceId) ?? null;
   const selectedIdea = ideas.find((idea) => idea.id === selectedIdeaId) ?? null;
-  const activeIdea = selectedSource
-    ? selectedIdea?.sourceItemId === selectedSource.id
+  const activeIdea = selectedSourceId
+    ? selectedIdea?.sourceItemId === selectedSourceId
       ? selectedIdea
-      : ideas.find((idea) => idea.sourceItemId === selectedSource.id) ?? null
+      : ideas.find((idea) => idea.sourceItemId === selectedSourceId) ?? null
     : null;
   const ideasByStatus = useMemo(() => {
     const counts: Record<IdeaStatus, number> = { seed: 0, shaping: 0, building: 0 };
@@ -108,12 +111,17 @@ export function IdeaLabWorkbench() {
   }
 
   function deleteActiveIdea() {
-    if (!activeIdea || !selectedSource) return;
+    if (!activeIdea) return;
+    const sourceItemId = activeIdea.sourceItemId;
     removeIdea(activeIdea.id);
     const next = readIdeas();
     setIdeas(next);
-    const nextForSource = next.find((idea) => idea.sourceItemId === selectedSource.id) ?? null;
+    const nextForSource = next.find((idea) => idea.sourceItemId === sourceItemId) ?? null;
     setSelectedIdeaId(nextForSource?.id ?? null);
+
+    if (!nextForSource && !saved.some((item) => item.id === sourceItemId)) {
+      setSelectedSourceId(saved[0]?.id ?? null);
+    }
   }
 
   return (
@@ -192,6 +200,21 @@ export function IdeaLabWorkbench() {
               <div className={styles.sourceTags}>
                 {selectedSource.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
               </div>
+            </div>
+          ) : activeIdea ? (
+            <div
+              key={`orphan-${activeIdea.sourceItemId}`}
+              className={`${styles.sourceSlip} fr-idea-source-slip`}
+              data-orphan="true"
+            >
+              <div>
+                <span>PINNED SIGNAL</span>
+                <strong>{activeIdea.sourceTitle}</strong>
+              </div>
+              <div className={styles.sourceSlipMeta}>
+                <span>SOURCE NO LONGER SAVED</span>
+              </div>
+              <p>The original signal was removed from your Saved shelf. This direction is kept because it is your work.</p>
             </div>
           ) : null}
 
