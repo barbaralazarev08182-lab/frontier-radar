@@ -1,0 +1,114 @@
+/* Idea Lab Gate 3 — physical interaction polish only.
+   Layout and data contracts stay untouched. */
+
+@keyframes frIdeaSourceSettle {
+  0% { opacity: .66; translate: 0 -.42rem; filter: brightness(.95); }
+  58% { opacity: 1; translate: 0 .08rem; filter: brightness(1.025); }
+  100% { opacity: 1; translate: 0 0; filter: none; }
+}
+
+@keyframes frIdeaSheetSettle {
+  0% { opacity: .58; translate: 0 -.7rem; scale: .992; filter: blur(.7px) brightness(.96); }
+  62% { opacity: 1; translate: 0 .09rem; scale: 1.002; filter: blur(0) brightness(1.015); }
+  100% { opacity: 1; translate: 0 0; scale: 1; filter: none; }
+}
+
+@keyframes frIdeaBlankSettle {
+  0% { opacity: .52; translate: 0 -.48rem; scale: .995; }
+  65% { opacity: 1; translate: 0 .05rem; scale: 1.001; }
+  100% { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+@keyframes frIdeaCardSelect {
+  0% { filter: brightness(.91); }
+  45% { filter: brightness(1.085); }
+  100% { filter: none; }
+}
+
+@keyframes frIdeaStamp {
+  0% { scale: 1; filter: none; }
+  42% { scale: .978; filter: brightness(.96); }
+  72% { scale: 1.012; filter: brightness(1.025); }
+  100% { scale: 1; filter: none; }
+}
+
+.fr-idea-source-slip {
+  animation: frIdeaSourceSettle 320ms cubic-bezier(.2,.8,.2,1) both;
+  will-change: opacity, translate, filter;
+}
+
+.fr-idea-sheet {
+  animation: frIdeaSheetSettle 390ms cubic-bezier(.18,.82,.2,1) both;
+  will-change: opacity, translate, scale, filter;
+}
+
+.fr-idea-blank-sheet {
+  animation: frIdeaBlankSettle 330ms cubic-bezier(.2,.8,.2,1) both;
+  will-change: opacity, translate, scale;
+}
+
+.fr-idea-source-card.is-active,
+.fr-idea-card.is-active {
+  animation: frIdeaCardSelect 260ms ease-out;
+}
+
+.fr-idea-status-rail > button {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.fr-idea-status-rail > button:hover {
+  filter: brightness(1.025);
+}
+
+.fr-idea-status-rail > button:active {
+  scale: .985;
+}
+
+.fr-idea-status-rail > button.is-active {
+  animation: frIdeaStamp 230ms cubic-bezier(.22,.75,.25,1);
+}
+
+.fr-idea-sheet input[aria-label="Idea title"],
+.fr-idea-sheet textarea[aria-label="Idea working note"] {
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.fr-idea-sheet input[aria-label="Idea title"]:focus {
+  background: linear-gradient(180deg, transparent 84%, rgba(83,102,255,.08) 84%);
+}
+
+.fr-idea-sheet textarea[aria-label="Idea working note"]:focus {
+  box-shadow: inset .16rem 0 0 rgba(83,102,255,.42);
+  background: rgba(255,255,255,.035);
+}
+
+.fr-idea-card,
+.fr-idea-source-card {
+  transition:
+    transform 220ms cubic-bezier(.2,.75,.2,1),
+    border-color 180ms ease,
+    box-shadow 220ms ease,
+    filter 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-idea-source-slip,
+  .fr-idea-sheet,
+  .fr-idea-blank-sheet,
+  .fr-idea-source-card.is-active,
+  .fr-idea-card.is-active,
+  .fr-idea-status-rail > button.is-active {
+    animation: none !important;
+  }
+
+  .fr-idea-sheet input[aria-label="Idea title"],
+  .fr-idea-sheet textarea[aria-label="Idea working note"],
+  .fr-idea-status-rail > button {
+    transition: none !important;
+  }
+}
