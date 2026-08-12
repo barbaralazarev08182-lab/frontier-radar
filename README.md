@@ -16,12 +16,11 @@ Discover → Understand → Get Inspired → Build
 
 ## Current baseline — 2026-08-12
 
-Production source of truth:
+Current GitHub `main` at this checkpoint:
 
 ```text
-GitHub main
-c8a4628a715e83ff97f2e7754288a2811a0d6dc4
-Honor Project Intelligence source handoff in Idea Lab
+4293e5e9d1cf297651c624b266dbca2fcfedc038
+Gate 11A: isolate Preview runtime writes from production data
 ```
 
 Production URL:
@@ -29,6 +28,8 @@ Production URL:
 ```text
 https://frontier-radar-eosin.vercel.app
 ```
+
+As of **2026-08-12 16:58 SGT**, the Vercel deployment list had **not yet shown a Production deployment for merge commit `4293e5e9...`**. Do not interpret that as a deployment failure; it is simply not yet observed.
 
 Current product loop:
 
@@ -167,11 +168,11 @@ If a Saved source is later removed, an existing Idea remains and shows `SOURCE N
 
 ## Gate 11A — Preview / Production Data Isolation
 
-Branch / PR:
+Merged PR:
 
 ```text
-fix/gate11a-production-data-isolation
-PR #18 — Draft / not merged
+PR #18 — MERGED / CLOSED
+merge commit: 4293e5e9d1cf297651c624b266dbca2fcfedc038
 ```
 
 Goal:
@@ -196,7 +197,7 @@ CI PASS
 VERCEL PREVIEW ENVIRONMENT EXECUTION PASS
 PRODUCTION DB ZERO-DELTA PASS
 GATE 11A CLOSED
-PR #18 NOT MERGED
+PR #18 MERGED TO MAIN
 ```
 
 Final verification evidence:
@@ -216,8 +217,6 @@ Final verification evidence:
 - temporary QA probes were deleted immediately after verification; cleanup changed only those QA files.
 
 The connector could not complete a request-level fetch of the protected Preview because Vercel SSO intercepted it. This is recorded as a tooling limitation, not hidden as an HTTP runtime PASS. The write decision itself is a pure `VERCEL_ENV` boundary and was executed inside the real Vercel Preview environment with zero Production DB delta.
-
-**Do not merge PR #18 until the owner explicitly approves the merge.**
 
 ---
 
