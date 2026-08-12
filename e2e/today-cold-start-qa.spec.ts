@@ -57,6 +57,9 @@ test("Today production cold start warms immediately and keeps Weave locked until
   const snapshotReadyMs = Date.now() - startedAt;
   console.log(`GATE7_SNAPSHOT_READY_MS=${snapshotReadyMs}`);
 
+  await expect(root).toHaveAttribute("data-scroll-stage", "today");
+  console.log("GATE7_STAGE_PRESERVED=true");
+
   await page.mouse.wheel(0, 160);
   await page.waitForTimeout(1_150);
   await expect(root).toHaveAttribute("data-scroll-stage", "weave");
