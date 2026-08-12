@@ -1,0 +1,78 @@
+name: Integration QA
+
+on:
+  push:
+    branches:
+      - feat/idea-lab-v1
+  workflow_dispatch:
+
+concurrency:
+  group: integration-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-integration:
+    name: Explore / Saved / Idea Lab browser QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install Playwright test runner without changing lockfile
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build fixture-mode application
+        run: npm run build
+        env:
+          FRONTIER_DATA_MODE: fixture
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_OPTIONS: ""
+
+      - name: Start application and wait for Explore
+        shell: bash
+        run: |
+          FRONTIER_DATA_MODE=fixture NEXT_TELEMETRY_DISABLED=1 npm run start > /tmp/frontier-next.log 2>&1 &
+          echo $! > /tmp/frontier-next.pid
+
+          for attempt in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/explore > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat /tmp/frontier-next.log
+          exit 1
+
+      - name: Run browser integration gate
+        run: npx playwright test e2e/integration-qa.spec.ts --reporter=line
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+
+      - name: Upload browser QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-qa-screenshots
+          path: artifacts/integration-qa
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/frontier-next.log || true
