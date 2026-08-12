@@ -1,0 +1,137 @@
+/* Saved archive sorting rail — physical archive console, not a pill tab bar. */
+
+.fr-archive-rail {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  width: min(56rem, calc(100% - 5rem)) !important;
+  min-height: 3.7rem;
+  padding: .32rem !important;
+  overflow: hidden;
+  border: 1px solid rgba(237, 230, 216, .24) !important;
+  border-radius: 4px !important;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, #191d24 0%, #0d1117 58%, #080b10 100%) !important;
+  box-shadow:
+    0 1.15rem 2.6rem rgba(0,0,0,.34),
+    inset 0 1px rgba(255,255,255,.055),
+    inset 0 -1px rgba(0,0,0,.8) !important;
+}
+
+.fr-archive-rail::before {
+  content: "ARCHIVE SORT / 04";
+  position: absolute;
+  top: .34rem;
+  left: .55rem;
+  z-index: 3;
+  pointer-events: none;
+  color: rgba(234,228,215,.27);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .43rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+}
+
+.fr-archive-rail > button,
+.fr-archive-rail > span {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 3.05rem;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(240,235,225,.56) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .61rem !important;
+  font-weight: 760 !important;
+  letter-spacing: .105em !important;
+  transition:
+    color 180ms ease,
+    background 220ms ease,
+    transform 220ms cubic-bezier(.16,.84,.2,1),
+    box-shadow 220ms ease !important;
+}
+
+.fr-archive-rail > button + button::before,
+.fr-archive-rail > span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .7rem;
+  bottom: .55rem;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(238,232,220,.14) 28% 76%, transparent);
+}
+
+.fr-archive-rail > button {
+  cursor: pointer;
+}
+
+.fr-archive-rail > button:hover:not([aria-pressed="true"]) {
+  color: rgba(248,243,233,.88) !important;
+  background: rgba(255,255,255,.035) !important;
+}
+
+.fr-archive-rail > button[aria-pressed="true"] {
+  z-index: 2;
+  margin: .14rem .18rem .12rem;
+  color: #17191d !important;
+  border: 1px solid rgba(60,49,34,.28) !important;
+  background:
+    radial-gradient(circle at 20% 16%, rgba(255,255,255,.35), transparent 28%),
+    repeating-linear-gradient(92deg, rgba(74,51,27,.025) 0 1px, transparent 1px 6px),
+    linear-gradient(135deg, #e7d2aa 0%, #d3b784 62%, #c5a16c 100%) !important;
+  box-shadow:
+    .18rem .18rem 0 rgba(83,102,255,.68),
+    0 .55rem 1.1rem rgba(0,0,0,.22),
+    inset 0 1px rgba(255,255,255,.46) !important;
+  transform: translateY(-1px);
+}
+
+.fr-archive-rail > button[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  left: .6rem;
+  right: .6rem;
+  bottom: .35rem;
+  height: 2px;
+  background: #5366ff;
+  box-shadow: 0 0 .55rem rgba(83,102,255,.38);
+}
+
+.fr-archive-rail > span {
+  display: grid;
+  place-items: center;
+  color: rgba(240,235,225,.24) !important;
+  cursor: default;
+}
+
+@media (max-width: 780px) {
+  .fr-archive-rail {
+    width: calc(100% - 2rem) !important;
+    min-height: 3.3rem;
+    padding: .24rem !important;
+  }
+
+  .fr-archive-rail::before {
+    display: none;
+  }
+
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    min-height: 2.8rem;
+    font-size: .52rem !important;
+    letter-spacing: .07em !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    transition: none !important;
+  }
+}

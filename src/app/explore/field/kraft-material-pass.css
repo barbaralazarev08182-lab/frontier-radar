@@ -1,0 +1,269 @@
+/* Gate 4.10 — temporary material QA pass.
+   Scope: B route only. Lock all focus/peripheral signals into one kraft-paper family.
+   Lens state may change a narrow registration accent only; it must never recolor a card face. */
+
+.explore-field-first {
+  --kraft-main: #c79a60;
+  --kraft-main-hi: #d6b17e;
+  --kraft-main-lo: #ad7e49;
+  --kraft-sheet-2: #b88955;
+  --kraft-sheet-3: #d8b985;
+  --kraft-note-near: #d9bb8d;
+  --kraft-note-mid: #d1ad78;
+  --kraft-note-far: #dcc49d;
+  --kraft-ink: #1c1711;
+  --kraft-rule: rgba(73,48,25,.30);
+  --kraft-muted: rgba(58,40,24,.66);
+}
+
+/* --------------------------------------------------------------------------
+   PRIMARY DOSSIER — paper face is invariant across Lens states.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  border: 1px solid rgba(74,49,25,.42) !important;
+  border-top: 0 !important;
+  border-radius: .18rem !important;
+  color: var(--kraft-ink) !important;
+  background:
+    radial-gradient(circle at 17% 23%, rgba(70,43,20,.15) 0 .55px, transparent .78px) 0 0 / 4px 4px,
+    radial-gradient(circle at 73% 62%, rgba(255,246,224,.16) 0 .55px, transparent .8px) 1px 2px / 5px 5px,
+    repeating-linear-gradient(7deg, rgba(78,51,25,.020) 0 1px, transparent 1px 5px),
+    linear-gradient(128deg, var(--kraft-main-hi) 0%, var(--kraft-main) 47%, #bd8d54 77%, var(--kraft-main-lo) 100%) !important;
+  box-shadow:
+    0 3.8rem 7rem -3.05rem rgba(55,36,20,.72),
+    0 1rem 2.15rem -1rem rgba(55,36,20,.38),
+    .24rem .28rem 0 rgba(81,56,31,.22) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* thin cobalt registration spine — accent, not a backing board */
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: -2 !important;
+  inset: .46rem -.48rem -.48rem .46rem !important;
+  border: 1px solid rgba(74,49,25,.30) !important;
+  border-left: 3px solid var(--fr-cobalt) !important;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(72,45,22,.11) 0 .55px, transparent .78px) 0 0 / 4px 4px,
+    linear-gradient(135deg, #c0925c, var(--kraft-sheet-2)) !important;
+  box-shadow: 0 .75rem 1.25rem -.75rem rgba(55,36,20,.30) !important;
+  transform: rotate(.26deg) !important;
+  pointer-events: none !important;
+}
+
+/* third sheet gives tactile thickness without introducing a new material */
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: -3 !important;
+  inset: .82rem -.86rem -.86rem .82rem !important;
+  border: 1px solid rgba(74,49,25,.25) !important;
+  background:
+    radial-gradient(circle at 31% 22%, rgba(82,53,27,.09) 0 .5px, transparent .74px) 0 0 / 5px 5px,
+    linear-gradient(135deg, #dec090, var(--kraft-sheet-3)) !important;
+  box-shadow: 0 1.05rem 1.75rem -.9rem rgba(55,36,20,.30) !important;
+  transform: rotate(-.18deg) !important;
+  pointer-events: none !important;
+}
+
+/* prevent any dominant/lens rules from recoloring the face */
+.explore-field-first .explore-field-shell[data-lens] .explore-signal.is-focus .explore-focus-card,
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-signal.is-focus .explore-focus-card {
+  color: var(--kraft-ink) !important;
+  background:
+    radial-gradient(circle at 17% 23%, rgba(70,43,20,.15) 0 .55px, transparent .78px) 0 0 / 4px 4px,
+    radial-gradient(circle at 73% 62%, rgba(255,246,224,.16) 0 .55px, transparent .8px) 1px 2px / 5px 5px,
+    repeating-linear-gradient(7deg, rgba(78,51,25,.020) 0 1px, transparent 1px 5px),
+    linear-gradient(128deg, var(--kraft-main-hi) 0%, var(--kraft-main) 47%, #bd8d54 77%, var(--kraft-main-lo) 100%) !important;
+}
+
+/* Wildcard may change only the tiny spine. */
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-signal.is-focus .explore-focus-card::before {
+  border-left-color: var(--fr-orange) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-card h2 {
+  color: #17130f !important;
+  text-shadow: 0 1px rgba(255,244,220,.10) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-summary {
+  color: rgba(44,30,18,.78) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-meta {
+  color: rgba(55,37,22,.61) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-meta strong {
+  border: 1px solid rgba(35,25,16,.45) !important;
+  background: #1a1713 !important;
+  color: #f4dfbd !important;
+  box-shadow: .16rem .16rem 0 rgba(92,64,36,.32), 0 .42rem .9rem -.58rem rgba(45,29,16,.44) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-reasons {
+  border-color: var(--kraft-rule) !important;
+  background: rgba(111,74,38,.13) !important;
+  box-shadow: inset 0 1px rgba(255,238,205,.14) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-reasons > div {
+  background: rgba(232,202,155,.28) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-reasons > div + div {
+  border-left-color: var(--kraft-rule) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-reasons span {
+  color: #2637e6 !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-reasons p,
+.explore-field-first .explore-field-shell .explore-focus-evidence {
+  color: var(--kraft-muted) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-evidence {
+  border-bottom-color: rgba(73,48,25,.19) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-evidence svg {
+  color: #2637e6 !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-tags span {
+  border-color: rgba(73,48,25,.26) !important;
+  background: rgba(232,202,155,.27) !important;
+  color: rgba(55,37,22,.72) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-stepper,
+.explore-field-first .explore-field-shell .explore-focus-actions {
+  border-color: rgba(73,48,25,.26) !important;
+  color: rgba(55,37,22,.62) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-stepper button,
+.explore-field-first .explore-field-shell .explore-focus-actions button {
+  border-color: rgba(73,48,25,.27) !important;
+  background: rgba(229,197,148,.22) !important;
+  color: #241a12 !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-actions button:hover,
+.explore-field-first .explore-field-shell .explore-focus-actions button.is-active {
+  border-color: rgba(57,76,255,.50) !important;
+  background: rgba(57,76,255,.075) !important;
+}
+
+/* --------------------------------------------------------------------------
+   PERIPHERAL SIGNALS — same kraft family, lighter values by depth.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button {
+  position: relative;
+  border: 1px solid rgba(82,55,29,.25) !important;
+  border-radius: .13rem !important;
+  color: #231a12 !important;
+  background:
+    radial-gradient(circle at 20% 26%, rgba(82,52,24,.095) 0 .48px, transparent .72px) 0 0 / 4px 4px,
+    repeating-linear-gradient(8deg, rgba(82,52,24,.014) 0 1px, transparent 1px 5px),
+    linear-gradient(132deg, #ddc296, var(--kraft-note-near)) !important;
+  box-shadow:
+    0 .9rem 1.8rem -1.25rem rgba(59,39,22,.38),
+    inset 0 1px rgba(255,239,209,.28) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button::before {
+  background: var(--fr-cobalt) !important;
+  box-shadow: none !important;
+  opacity: .56 !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal[data-dominant="wildcard"]:not(.is-focus) .explore-signal-button::before {
+  background: var(--fr-orange) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button::after {
+  background: linear-gradient(110deg, transparent 8%, rgba(255,238,203,.30) 38%, transparent 59%) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button strong {
+  color: #20170f !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button > span:not(.explore-signal-index):not(.explore-signal-affordance) {
+  color: rgba(55,37,22,.69) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-index {
+  color: #394cff !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-affordance {
+  color: rgba(55,37,22,.42) !important;
+}
+
+/* depth is expressed by paper value + opacity, not a different material */
+.explore-field-first .explore-field-shell .explore-signal-near:not(.is-focus) {
+  opacity: .93 !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-near:not(.is-focus) .explore-signal-button {
+  background:
+    radial-gradient(circle at 20% 26%, rgba(82,52,24,.10) 0 .48px, transparent .72px) 0 0 / 4px 4px,
+    linear-gradient(132deg, #dfc49a, var(--kraft-note-near)) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-mid:not(.is-focus) {
+  opacity: .64 !important;
+  filter: saturate(.91) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-mid:not(.is-focus) .explore-signal-button {
+  background:
+    radial-gradient(circle at 20% 26%, rgba(82,52,24,.085) 0 .48px, transparent .72px) 0 0 / 4px 4px,
+    linear-gradient(132deg, #d8b782, var(--kraft-note-mid)) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-far:not(.is-focus) {
+  opacity: .34 !important;
+  filter: saturate(.78) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-far:not(.is-focus) .explore-signal-button {
+  background:
+    radial-gradient(circle at 20% 26%, rgba(82,52,24,.065) 0 .48px, transparent .72px) 0 0 / 5px 5px,
+    linear-gradient(132deg, #e2caa6, var(--kraft-note-far)) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button:hover,
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button:focus-visible {
+  transform: translate3d(0,-7px,0) rotateX(1.5deg) scale(1.028) !important;
+  border-color: rgba(82,55,29,.42) !important;
+  background:
+    radial-gradient(circle at 20% 26%, rgba(82,52,24,.10) 0 .48px, transparent .72px) 0 0 / 4px 4px,
+    linear-gradient(132deg, #e4c99d, #d5b27c) !important;
+  box-shadow:
+    0 1.45rem 2.8rem -1.3rem rgba(59,39,22,.51),
+    .14rem .16rem 0 rgba(57,76,255,.10),
+    inset 0 1px rgba(255,241,214,.36) !important;
+  outline: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-field-first .explore-field-shell .explore-focus-card,
+  .explore-field-first .explore-field-shell .explore-signal-button {
+    animation: none !important;
+  }
+}

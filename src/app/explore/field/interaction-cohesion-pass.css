@@ -1,0 +1,78 @@
+/* Gate 4.12 — One Surface / One Line / One Motion.
+   B route only. Lower kraft field stays frozen. The control layer is deliberately
+   dematerialized: ivory surface, ink typography, one optical marker, one inline Search morph. */
+
+.explore-field-first {
+  interpolate-size: allow-keywords;
+  --control-ink: #171717;
+  --control-muted: rgba(23,23,23,.46);
+  --control-rule: rgba(23,23,23,.16);
+  --control-paper: #f4f1e9;
+}
+
+/* KEEP THE ACCEPTED LOWER FIELD BEHAVIOR / SINGLE FOCUS SHEET. */
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::before,
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::after { display:none!important; content:none!important; }
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card {
+  overflow:hidden!important; border:1px solid rgba(68,44,23,.48)!important; border-left:3px solid var(--fr-cobalt)!important; border-radius:.1rem!important;
+  box-shadow:0 2.8rem 5.8rem -2.8rem rgba(54,34,18,.62),0 .8rem 1.6rem -.82rem rgba(54,34,18,.28),inset 0 1px rgba(255,239,210,.20)!important;
+  animation:fr-focus-sheet-arrive 520ms cubic-bezier(.16,.84,.2,1) both!important;
+}
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-signal.is-focus .explore-focus-card { border-left-color:var(--fr-orange)!important; }
+@keyframes fr-focus-sheet-arrive {0%{opacity:.25;transform:translate3d(0,10px,0) scale(.935);filter:blur(2px)}58%{opacity:1;transform:translate3d(0,-2px,0) scale(1.008);filter:blur(0)}100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}}
+.explore-field-first .explore-field-shell .explore-signal { transition:left 560ms cubic-bezier(.18,.82,.22,1) var(--field-delay),top 560ms cubic-bezier(.18,.82,.22,1) var(--field-delay),width 560ms cubic-bezier(.18,.82,.22,1),transform 560ms cubic-bezier(.18,.82,.22,1),opacity 300ms ease,filter 300ms ease!important; }
+.explore-field-first .explore-field-shell .explore-signal.is-focus { transform:translate(-50%,-50%) rotate(0deg)!important; }
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button { transition:transform 360ms cubic-bezier(.18,.82,.22,1),opacity 260ms ease,box-shadow 300ms ease,border-color 220ms ease,background 220ms ease!important; }
+
+/* ONE QUIET CONTROL SURFACE. */
+.explore-field-first .explore-control-surface { height:4.55rem!important; overflow:visible!important; border-bottom:1px solid rgba(23,23,23,.09)!important; background:radial-gradient(circle at 16% 42%,rgba(68,53,34,.028) 0 .45px,transparent .7px) 0 0/6px 6px,linear-gradient(180deg,#f8f6f0 0%,var(--control-paper) 100%)!important; box-shadow:0 .7rem 1.35rem -1.25rem rgba(52,42,29,.22)!important; }
+.explore-field-first .explore-field-header { height:4.55rem!important; padding:0!important; border:0!important; background:transparent!important; }
+.explore-field-first .explore-field-kicker { position:absolute!important; z-index:2; top:1rem!important; left:clamp(1.4rem,3vw,3rem)!important; display:flex!important; gap:.55rem!important; color:rgba(23,23,23,.52)!important; font-size:.46rem!important; letter-spacing:.13em!important; }
+.explore-field-first .explore-field-kicker span:last-child { color:var(--fr-cobalt)!important; }
+.explore-field-first .explore-field-stats { position:absolute!important; z-index:2; left:clamp(1.4rem,3vw,3rem)!important; top:2.25rem!important; display:flex!important; gap:.8rem!important; margin:0!important; color:rgba(23,23,23,.34)!important; font-size:.42rem!important; letter-spacing:.1em!important; }
+.explore-field-first .explore-field-stats strong { color:rgba(23,23,23,.70)!important; font-size:.5rem!important; }
+.explore-field-first .explore-field-heading-row>div:first-child,.explore-field-first .explore-lens-title { display:none!important; }
+
+/* LENS = TYPOGRAPHY + ONE RULE + ONE MOVING OPTICAL INDEX. */
+.explore-field-first .explore-lens-strip { position:absolute!important; z-index:12!important; top:.72rem!important; left:50%!important; transform:translateX(-50%)!important; width:min(35rem,calc(100% - 40rem))!important; min-height:3rem!important; display:grid!important; grid-template-columns:minmax(0,1fr) 1.8rem!important; align-items:stretch!important; gap:.35rem!important; padding:0!important; border:0!important; border-radius:0!important; background:transparent!important; box-shadow:none!important; overflow:visible!important; }
+.explore-field-first .explore-lens-strip::before { display:none!important; content:none!important; }
+.explore-field-first .explore-lens-options { position:relative!important; min-height:3rem!important; display:grid!important; grid-template-columns:repeat(5,minmax(0,1fr))!important; padding:0 0 .55rem!important; border:0!important; border-radius:0!important; background:transparent!important; box-shadow:none!important; overflow:visible!important; }
+.explore-field-first .explore-lens-options::after { content:""!important; position:absolute!important; left:0!important; right:0!important; bottom:.42rem!important; height:1px!important; background:linear-gradient(90deg,transparent 0,rgba(23,23,23,.18) 7%,rgba(23,23,23,.18) 93%,transparent)!important; pointer-events:none!important; }
+.explore-field-first .explore-lens-options::before { content:""!important; position:absolute!important; z-index:3!important; left:0!important; top:0!important; bottom:0!important; width:20%!important; border:0!important; border-radius:0!important; background:radial-gradient(circle at 50% calc(100% - .42rem),var(--fr-cobalt) 0 2.6px,rgba(57,76,255,.28) 2.7px 5px,transparent 5.2px)!important; box-shadow:none!important; backdrop-filter:none!important; transition:transform 500ms cubic-bezier(.16,.88,.2,1),filter 220ms ease!important; pointer-events:none!important; }
+.explore-field-first .explore-field-shell[data-lens="for-you"] .explore-lens-options::before{transform:translateX(0)!important}.explore-field-first .explore-field-shell[data-lens="adjacent"] .explore-lens-options::before{transform:translateX(100%)!important}.explore-field-first .explore-field-shell[data-lens="rising"] .explore-lens-options::before{transform:translateX(200%)!important}.explore-field-first .explore-field-shell[data-lens="new"] .explore-lens-options::before{transform:translateX(300%)!important}.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options::before{transform:translateX(400%)!important;background:radial-gradient(circle at 50% calc(100% - .42rem),var(--fr-orange) 0 2.6px,rgba(232,92,50,.25) 2.7px 5px,transparent 5.2px)!important}
+.explore-field-first .explore-lens-options button { position:relative!important; z-index:4!important; min-height:2.15rem!important; padding:.15rem .25rem .4rem!important; border:0!important; border-radius:0!important; background:transparent!important; box-shadow:none!important; color:rgba(23,23,23,.38)!important; transition:color 220ms ease,transform 220ms ease!important; }
+.explore-field-first .explore-lens-options button strong { font-size:.45rem!important; font-weight:680!important; letter-spacing:.14em!important; }
+.explore-field-first .explore-lens-options button small { display:none!important; }
+.explore-field-first .explore-lens-options button.is-active,.explore-field-first .explore-lens-options button.is-active strong { color:var(--control-ink)!important; }
+.explore-field-first .explore-lens-options button:hover,.explore-field-first .explore-lens-options button:focus-visible { color:var(--control-ink)!important; transform:translateY(-1px)!important; outline:none!important; }
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options button.is-active strong { color:#b64c2d!important; }
+.explore-field-first .explore-lens-reset { width:1.8rem!important; min-width:1.8rem!important; height:2.2rem!important; min-height:2.2rem!important; align-self:start!important; margin-top:.03rem!important; padding:0!important; border:0!important; border-radius:50%!important; background:transparent!important; box-shadow:none!important; color:rgba(23,23,23,.36)!important; transition:color 180ms ease,transform 260ms cubic-bezier(.16,.86,.2,1)!important; }
+.explore-field-first .explore-lens-reset::after { content:"↺"!important; color:currentColor!important; font-size:.86rem!important; line-height:1!important; }
+.explore-field-first .explore-lens-reset:hover,.explore-field-first .explore-lens-reset:focus-visible { color:var(--fr-cobalt)!important; transform:rotate(-28deg)!important; outline:none!important; }
+
+/* SEARCH = INLINE MORPH ON THE SAME SURFACE. */
+.explore-field-first .explore-search-trigger { position:absolute!important; z-index:14!important; top:.92rem!important; right:clamp(1.4rem,3vw,3rem)!important; width:auto!important; min-width:0!important; min-height:2.45rem!important; display:inline-grid!important; grid-template-columns:1.35rem auto!important; align-items:center!important; gap:.55rem!important; padding:0 0 .34rem!important; border:0!important; border-bottom:1px solid rgba(23,23,23,.22)!important; border-radius:0!important; background:transparent!important; color:var(--control-ink)!important; box-shadow:none!important; transform:none!important; transition:border-color 220ms ease,color 220ms ease,opacity 180ms ease!important; }
+.explore-field-first .explore-search-trigger::before,.explore-field-first .explore-search-trigger::after,.explore-field-first .explore-search-trigger-led { display:none!important; content:none!important; }
+.explore-field-first .explore-search-trigger-icon { width:1.35rem!important; height:1.35rem!important; border:0!important; border-radius:0!important; background:transparent!important; box-shadow:none!important; }
+.explore-field-first .explore-search-trigger-icon svg { width:.9rem!important; height:.9rem!important; color:var(--fr-cobalt)!important; transition:transform 280ms cubic-bezier(.16,.86,.2,1)!important; }
+.explore-field-first .explore-search-trigger-copy { display:flex!important; align-items:baseline!important; gap:.55rem!important; }
+.explore-field-first .explore-search-trigger-copy strong { color:var(--control-ink)!important; font-size:.49rem!important; letter-spacing:.14em!important; }
+.explore-field-first .explore-search-trigger-copy small { color:rgba(23,23,23,.31)!important; font-size:.37rem!important; letter-spacing:.1em!important; }
+.explore-field-first .explore-search-trigger:hover,.explore-field-first .explore-search-trigger:focus-visible { border-bottom-color:var(--fr-cobalt)!important; color:var(--fr-cobalt)!important; outline:none!important; }
+.explore-field-first .explore-search-trigger:hover .explore-search-trigger-icon svg,.explore-field-first .explore-search-trigger:focus-visible .explore-search-trigger-icon svg { transform:translateX(2px) rotate(-8deg)!important; }
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-search-trigger { opacity:0!important; pointer-events:none!important; }
+.explore-field-first .explore-search-panel { position:absolute!important; z-index:15!important; top:.73rem!important; right:clamp(1.4rem,3vw,3rem)!important; left:auto!important; transform:none!important; width:min(31rem,calc(100vw - 8rem))!important; height:3rem!important; display:grid!important; grid-template-columns:auto minmax(0,1fr) auto auto!important; align-items:center!important; gap:.62rem!important; padding:0 0 .15rem!important; border:0!important; border-bottom:1px solid rgba(23,23,23,.26)!important; border-radius:0!important; background:rgba(248,246,240,.92)!important; color:var(--control-ink)!important; box-shadow:none!important; backdrop-filter:blur(10px) saturate(.92)!important; animation:fr-inline-search-in 380ms cubic-bezier(.16,.86,.2,1) both!important; }
+@keyframes fr-inline-search-in { from{opacity:0;width:8.5rem;transform:translateX(8px)} to{opacity:1;width:min(31rem,calc(100vw - 8rem));transform:translateX(0)} }
+.explore-field-first .explore-search-panel::before,.explore-field-first .explore-search-panel::after,.explore-field-first .explore-search-panel-label { display:none!important; content:none!important; }
+.explore-field-first .explore-search-panel>svg { width:.95rem!important; height:.95rem!important; color:var(--fr-cobalt)!important; }
+.explore-field-first .explore-search-panel input { min-width:0!important; height:2.5rem!important; padding:0!important; border:0!important; outline:0!important; background:transparent!important; color:var(--control-ink)!important; caret-color:var(--fr-cobalt)!important; font-size:clamp(.92rem,1.25vw,1.12rem)!important; font-weight:520!important; letter-spacing:-.02em!important; }
+.explore-field-first .explore-search-panel input::placeholder { color:rgba(23,23,23,.34)!important; }
+.explore-field-first .explore-search-readout { display:grid!important; gap:.08rem!important; justify-items:end!important; min-width:3.5rem!important; padding:0!important; }
+.explore-field-first .explore-search-readout span { color:rgba(23,23,23,.34)!important; font-size:.36rem!important; letter-spacing:.1em!important; }
+.explore-field-first .explore-search-readout strong { color:var(--fr-cobalt)!important; font-size:.4rem!important; letter-spacing:.1em!important; }
+.explore-field-first .explore-search-close { width:1.75rem!important; height:1.75rem!important; min-width:1.75rem!important; min-height:1.75rem!important; border:0!important; border-radius:50%!important; background:rgba(23,23,23,.045)!important; color:rgba(23,23,23,.56)!important; transition:background 180ms ease,color 180ms ease,transform 220ms ease!important; }
+.explore-field-first .explore-search-close:hover,.explore-field-first .explore-search-close:focus-visible { background:rgba(232,92,50,.11)!important; color:#a8452a!important; transform:rotate(8deg)!important; outline:none!important; }
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-field-stage::before { border-color:rgba(57,76,255,.11)!important; box-shadow:inset 0 0 5rem rgba(57,76,255,.018)!important; }
+
+@media (max-width:1100px) { .explore-field-first .explore-field-kicker,.explore-field-first .explore-field-stats{display:none!important}.explore-field-first .explore-lens-strip{left:1rem!important;transform:none!important;width:min(34rem,calc(100% - 12rem))!important}.explore-field-first .explore-search-panel{width:min(26rem,calc(100vw - 4rem))!important} }
+@media (prefers-reduced-motion:reduce) { .explore-field-first .explore-field-shell .explore-signal,.explore-field-first .explore-field-shell .explore-focus-card,.explore-field-first .explore-lens-options::before,.explore-field-first .explore-search-panel,.explore-field-first .explore-search-trigger-icon svg{transition-duration:.01ms!important;animation:none!important} }

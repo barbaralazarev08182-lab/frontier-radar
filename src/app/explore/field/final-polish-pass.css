@@ -1,0 +1,286 @@
+/* Gate 4.13 — readability + Search morph + kraft-material polish.
+   B route only. Keep the accepted composition and field layout frozen.
+   This is a temporary visual-QA layer to be folded back after visual PASS. */
+
+.explore-field-first {
+  --kraft-main: #c39a63;
+  --kraft-main-hi: #d7b57f;
+  --kraft-main-lo: #a97d4d;
+  --kraft-note-near: #d8b986;
+  --kraft-note-mid: #cfae78;
+  --kraft-note-far: #dcc59f;
+  --kraft-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.095'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------------------------
+   CONTROL READABILITY — same quiet composition, now actually legible.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-lens-strip {
+  width: min(37.5rem, calc(100% - 39rem)) !important;
+}
+
+.explore-field-first .explore-lens-options button {
+  color: rgba(23,23,23,.52) !important;
+}
+
+.explore-field-first .explore-lens-options button strong {
+  font-size: .58rem !important;
+  font-weight: 720 !important;
+  letter-spacing: .115em !important;
+  line-height: 1 !important;
+}
+
+.explore-field-first .explore-lens-options button.is-active,
+.explore-field-first .explore-lens-options button.is-active strong {
+  color: rgba(18,18,18,.94) !important;
+}
+
+.explore-field-first .explore-lens-options::after {
+  background: linear-gradient(90deg, transparent 0, rgba(23,23,23,.22) 6%, rgba(23,23,23,.22) 94%, transparent) !important;
+}
+
+.explore-field-first .explore-lens-options::before {
+  background: radial-gradient(circle at 50% calc(100% - .42rem), var(--fr-cobalt) 0 3px, rgba(57,76,255,.25) 3.2px 6px, transparent 6.3px) !important;
+  filter: drop-shadow(0 0 5px rgba(57,76,255,.22));
+}
+
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-lens-options::before {
+  background: radial-gradient(circle at 50% calc(100% - .42rem), var(--fr-orange) 0 3px, rgba(232,92,50,.23) 3.2px 6px, transparent 6.3px) !important;
+  filter: drop-shadow(0 0 5px rgba(232,92,50,.18));
+}
+
+/* --------------------------------------------------------------------------
+   SEARCH — one compact button that visually stretches into the input.
+   Both states share geometry, surface, border and anchor so the swap reads as morph.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-search-trigger {
+  top: .84rem !important;
+  right: clamp(1.4rem,3vw,3rem) !important;
+  width: 10.2rem !important;
+  min-width: 10.2rem !important;
+  height: 2.75rem !important;
+  min-height: 2.75rem !important;
+  grid-template-columns: 1.35rem minmax(0,1fr) !important;
+  gap: .52rem !important;
+  padding: 0 .8rem !important;
+  border: 1px solid rgba(23,23,23,.24) !important;
+  border-radius: 999px !important;
+  background: rgba(248,246,240,.94) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.92), 0 .52rem 1.15rem -.72rem rgba(44,35,25,.28) !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 220ms cubic-bezier(.16,.86,.2,1), opacity 90ms linear !important;
+}
+
+.explore-field-first .explore-search-trigger::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: .8rem !important;
+  right: .8rem !important;
+  bottom: .28rem !important;
+  width: auto !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, var(--fr-cobalt), rgba(57,76,255,.10) 58%, transparent) !important;
+  opacity: .72 !important;
+}
+
+.explore-field-first .explore-search-trigger-copy strong {
+  font-size: .56rem !important;
+  font-weight: 720 !important;
+  letter-spacing: .115em !important;
+}
+
+.explore-field-first .explore-search-trigger-copy small {
+  display: none !important;
+}
+
+.explore-field-first .explore-search-trigger:hover,
+.explore-field-first .explore-search-trigger:focus-visible {
+  border-color: rgba(57,76,255,.46) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.94), 0 .7rem 1.35rem -.68rem rgba(44,35,25,.32), 0 0 0 3px rgba(57,76,255,.045) !important;
+  transform: translateY(-1px) !important;
+}
+
+.explore-field-first .explore-search-panel {
+  top: .84rem !important;
+  right: clamp(1.4rem,3vw,3rem) !important;
+  left: auto !important;
+  width: min(31rem, calc(100vw - 8rem)) !important;
+  height: 2.75rem !important;
+  grid-template-columns: auto minmax(0,1fr) auto auto !important;
+  gap: .58rem !important;
+  padding: 0 .42rem 0 .78rem !important;
+  border: 1px solid rgba(23,23,23,.24) !important;
+  border-radius: 999px !important;
+  background: rgba(248,246,240,.96) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.92), 0 .72rem 1.4rem -.72rem rgba(44,35,25,.30), 0 0 0 3px rgba(57,76,255,.035) !important;
+  backdrop-filter: blur(10px) saturate(.94) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(.94) !important;
+  transform: none !important;
+  transform-origin: 100% 50% !important;
+  animation: fr-search-button-morph 360ms cubic-bezier(.16,.86,.2,1) both !important;
+}
+
+@keyframes fr-search-button-morph {
+  0% {
+    width: 10.2rem;
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 999px);
+  }
+  100% {
+    width: min(31rem, calc(100vw - 8rem));
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 999px);
+  }
+}
+
+.explore-field-first .explore-search-panel::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: .82rem !important;
+  right: 3rem !important;
+  bottom: .28rem !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, var(--fr-cobalt), rgba(57,76,255,.09) 72%, transparent) !important;
+  opacity: .72 !important;
+}
+
+.explore-field-first .explore-search-panel > svg {
+  width: .95rem !important;
+  height: .95rem !important;
+}
+
+.explore-field-first .explore-search-panel input {
+  height: 2.35rem !important;
+  font-size: 1.02rem !important;
+  font-weight: 520 !important;
+}
+
+.explore-field-first .explore-search-readout span {
+  font-size: .39rem !important;
+}
+
+.explore-field-first .explore-search-readout strong {
+  font-size: .43rem !important;
+}
+
+.explore-field-first .explore-search-close {
+  width: 1.85rem !important;
+  height: 1.85rem !important;
+  min-width: 1.85rem !important;
+  min-height: 1.85rem !important;
+}
+
+/* Opening Search must not touch the field geometry before a query exists. */
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-signal.is-focus {
+  top: 52% !important;
+}
+
+.explore-field-first .explore-field-shell[data-searching="true"] .explore-lens-strip {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   KRAFT — richer natural grain: random fiber noise, cross-fibers, mottled pulp,
+   slightly darker cut edges. No fake backing sheet is introduced.
+   -------------------------------------------------------------------------- */
+
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card,
+.explore-field-first .explore-field-shell[data-lens] .explore-signal.is-focus .explore-focus-card,
+.explore-field-first .explore-field-shell[data-lens="wildcard"] .explore-signal.is-focus .explore-focus-card {
+  background-image:
+    var(--kraft-grain),
+    radial-gradient(ellipse at 14% 17%, rgba(82,52,26,.115) 0 .7px, transparent 1.05px),
+    radial-gradient(ellipse at 68% 42%, rgba(75,47,23,.075) 0 .55px, transparent .9px),
+    radial-gradient(ellipse at 78% 76%, rgba(255,233,193,.13) 0 .65px, transparent 1px),
+    repeating-linear-gradient(7deg, rgba(68,43,22,.024) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(94deg, rgba(255,236,203,.018) 0 1px, transparent 1px 8px),
+    radial-gradient(ellipse at 44% 36%, rgba(226,191,137,.22), transparent 44%),
+    linear-gradient(128deg, var(--kraft-main-hi) 0%, var(--kraft-main) 47%, #bc8f58 77%, var(--kraft-main-lo) 100%) !important;
+  background-size:
+    180px 180px,
+    7px 9px,
+    11px 13px,
+    13px 11px,
+    auto,
+    auto,
+    auto,
+    auto !important;
+  background-blend-mode: multiply, multiply, multiply, screen, multiply, soft-light, soft-light, normal !important;
+  box-shadow:
+    0 3.35rem 6.4rem -3rem rgba(55,36,20,.66),
+    0 .9rem 1.9rem -.92rem rgba(55,36,20,.34),
+    inset 0 0 0 1px rgba(255,232,194,.10),
+    inset 0 0 1.7rem rgba(79,50,25,.085) !important;
+}
+
+/* one-sheet texture veil; it sits inside the paper face, not behind it */
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::before {
+  display: none !important;
+  content: none !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal.is-focus .explore-focus-card::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  inset: 0 !important;
+  border: 0 !important;
+  background:
+    linear-gradient(90deg, rgba(71,45,23,.055), transparent 1.6%, transparent 98.4%, rgba(71,45,23,.075)),
+    linear-gradient(180deg, rgba(255,235,201,.055), transparent 2.4%, transparent 97%, rgba(66,42,21,.065)) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.explore-field-first .explore-field-shell .explore-focus-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.explore-field-first .explore-field-shell .explore-signal:not(.is-focus) .explore-signal-button {
+  background-image:
+    var(--kraft-grain),
+    radial-gradient(ellipse at 18% 23%, rgba(78,50,25,.09) 0 .6px, transparent .95px),
+    radial-gradient(ellipse at 72% 64%, rgba(255,235,201,.105) 0 .6px, transparent .95px),
+    repeating-linear-gradient(8deg, rgba(76,49,25,.020) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(96deg, rgba(255,239,211,.015) 0 1px, transparent 1px 9px),
+    linear-gradient(132deg, #ddc091, var(--kraft-note-near)) !important;
+  background-size: 180px 180px, 9px 11px, 12px 13px, auto, auto, auto !important;
+  background-blend-mode: multiply, multiply, screen, multiply, soft-light, normal !important;
+  box-shadow:
+    0 .92rem 1.85rem -1.23rem rgba(59,39,22,.37),
+    inset 0 0 0 1px rgba(255,238,207,.09),
+    inset 0 0 1rem rgba(77,49,24,.055) !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-mid:not(.is-focus) .explore-signal-button {
+  background-image:
+    var(--kraft-grain),
+    radial-gradient(ellipse at 18% 23%, rgba(78,50,25,.08) 0 .55px, transparent .9px),
+    repeating-linear-gradient(8deg, rgba(76,49,25,.018) 0 1px, transparent 1px 6px),
+    linear-gradient(132deg, #d7b681, var(--kraft-note-mid)) !important;
+  background-size: 180px 180px, 10px 12px, auto, auto !important;
+  background-blend-mode: multiply, multiply, multiply, normal !important;
+}
+
+.explore-field-first .explore-field-shell .explore-signal-far:not(.is-focus) .explore-signal-button {
+  background-image:
+    var(--kraft-grain),
+    radial-gradient(ellipse at 22% 28%, rgba(78,50,25,.06) 0 .5px, transparent .85px),
+    repeating-linear-gradient(8deg, rgba(76,49,25,.014) 0 1px, transparent 1px 7px),
+    linear-gradient(132deg, #e0c79f, var(--kraft-note-far)) !important;
+  background-size: 180px 180px, 12px 14px, auto, auto !important;
+  background-blend-mode: multiply, multiply, multiply, normal !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explore-field-first .explore-search-panel {
+    animation-duration: .01ms !important;
+  }
+}

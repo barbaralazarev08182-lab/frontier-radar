@@ -1,0 +1,232 @@
+/* Saved Gate 3 — interaction polish only.
+   Geometry and material hierarchy remain owned by the base + shelf-depth layers. */
+
+.fr-shelf-book {
+  transition:
+    transform 620ms cubic-bezier(.18,.9,.22,1.08),
+    filter 320ms ease,
+    opacity 320ms ease,
+    box-shadow 380ms ease !important;
+  transition-delay: var(--book-delay, 0ms) !important;
+}
+
+.fr-shelf-book::after {
+  content: "";
+  position: absolute;
+  inset: -8% -35%;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    108deg,
+    transparent 34%,
+    rgba(255,255,255,.03) 45%,
+    rgba(255,255,255,.24) 50%,
+    rgba(143,157,255,.12) 53%,
+    transparent 65%
+  );
+  transform: translateX(-58%);
+  transition: transform 560ms cubic-bezier(.16,.84,.2,1), opacity 180ms ease;
+}
+
+.fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+  z-index: 14 !important;
+  filter: brightness(1.16) saturate(1.06) !important;
+  transform:
+    translateX(calc(-50% + var(--book-x, 0rem)))
+    translateY(-1.22rem)
+    scaleX(1.035)
+    rotate(calc(var(--book-rot, 0deg) * .28)) !important;
+  box-shadow:
+    inset -8px 0 16px rgba(0,0,0,.2),
+    inset 2px 0 rgba(255,255,255,.1),
+    0 2rem 3.4rem rgba(0,0,0,.46),
+    0 0 0 1px rgba(126,142,255,.16) !important;
+}
+
+.fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim)::after {
+  opacity: 1;
+  transform: translateX(58%);
+}
+
+.fr-shelf-book-search-dim {
+  opacity: .13 !important;
+  filter: grayscale(.45) saturate(.18) brightness(.55) blur(.3px) !important;
+}
+
+.fr-shelf-book-search-hit:not(.fr-shelf-book-active) {
+  box-shadow:
+    inset -8px 0 16px rgba(0,0,0,.24),
+    inset 2px 0 rgba(255,255,255,.08),
+    0 1.2rem 2rem rgba(0,0,0,.3),
+    0 0 0 1px rgba(106,124,255,.18) !important;
+}
+
+.fr-search-dock-active {
+  border-color: rgba(121,139,255,.42) !important;
+  box-shadow:
+    0 .8rem 2rem rgba(0,0,0,.24),
+    inset 2px 0 0 rgba(103,123,255,.8),
+    0 0 2.2rem rgba(69,88,219,.08) !important;
+}
+
+.fr-bookshelf {
+  transform-style: preserve-3d;
+}
+
+.fr-archive-panel-copy {
+  animation: frArchivePanelSwap 280ms cubic-bezier(.16,.84,.2,1) both;
+}
+
+.fr-featured-book-next {
+  animation: frBookPullNext 620ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+.fr-featured-book-prev {
+  animation: frBookPullPrev 620ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+.fr-featured-book-direct {
+  animation: frBookPullDirect 560ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+.fr-featured-book:hover {
+  box-shadow:
+    .52rem .42rem 0 #d7c9aa,
+    .78rem .7rem 0 #756852,
+    -1rem 1.4rem 0 rgba(8,10,15,.3),
+    1.9rem 3.6rem 5.6rem rgba(0,0,0,.66),
+    inset .24rem 0 rgba(255,255,255,.13),
+    inset -.55rem 0 .9rem rgba(0,0,0,.12) !important;
+}
+
+@keyframes frArchivePanelSwap {
+  0% {
+    opacity: .18;
+    transform: translateY(.4rem);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes frBookPullNext {
+  0% {
+    opacity: .24;
+    filter: blur(3px) saturate(.75);
+    transform:
+      translateX(calc(-50% + 3.5rem))
+      translateY(2rem)
+      scale(.9)
+      rotateZ(1.8deg)
+      rotateY(-1deg)
+      rotateX(0deg);
+  }
+  72% {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform:
+      translateX(calc(-50% - .35rem))
+      translateY(-.72rem)
+      scale(1.015)
+      rotateZ(-4.6deg)
+      rotateY(-5.6deg)
+      rotateX(1.7deg);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform:
+      translateX(-50%)
+      translateY(-.45rem)
+      scale(1)
+      rotateZ(-4deg)
+      rotateY(-5deg)
+      rotateX(1.5deg);
+  }
+}
+
+@keyframes frBookPullPrev {
+  0% {
+    opacity: .24;
+    filter: blur(3px) saturate(.75);
+    transform:
+      translateX(calc(-50% - 3.5rem))
+      translateY(2rem)
+      scale(.9)
+      rotateZ(-8deg)
+      rotateY(-9deg)
+      rotateX(0deg);
+  }
+  72% {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform:
+      translateX(calc(-50% + .35rem))
+      translateY(-.72rem)
+      scale(1.015)
+      rotateZ(-3.5deg)
+      rotateY(-4.4deg)
+      rotateX(1.7deg);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform:
+      translateX(-50%)
+      translateY(-.45rem)
+      scale(1)
+      rotateZ(-4deg)
+      rotateY(-5deg)
+      rotateX(1.5deg);
+  }
+}
+
+@keyframes frBookPullDirect {
+  0% {
+    opacity: .2;
+    filter: blur(3px);
+    transform:
+      translateX(-50%)
+      translateY(2.6rem)
+      scale(.88)
+      rotateZ(-1deg)
+      rotateY(-1deg)
+      rotateX(0deg);
+  }
+  74% {
+    opacity: 1;
+    filter: blur(0);
+    transform:
+      translateX(-50%)
+      translateY(-.72rem)
+      scale(1.018)
+      rotateZ(-4.5deg)
+      rotateY(-5.5deg)
+      rotateX(1.7deg);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform:
+      translateX(-50%)
+      translateY(-.45rem)
+      scale(1)
+      rotateZ(-4deg)
+      rotateY(-5deg)
+      rotateX(1.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-shelf-book,
+  .fr-shelf-book::after,
+  .fr-featured-book,
+  .fr-archive-panel-copy {
+    animation: none !important;
+    transition: none !important;
+  }
+}
