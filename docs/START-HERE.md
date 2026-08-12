@@ -1,7 +1,7 @@
 # Frontier Radar — START HERE
 
 > 更新时间：**2026-08-12**  
-> 当前状态：**核心产品链已形成；Explore / Saved / Idea Lab 已冻结；Gate 11A 已完成 Preview→Production runtime write isolation 验收，PR #18 尚未 merge。**
+> 当前状态：**核心产品链已形成；Explore / Saved / Idea Lab 已冻结；Gate 11A 已完成 Preview→Production runtime write isolation 验收并通过 PR #18 合并到 `main`。**
 
 ---
 
@@ -19,11 +19,11 @@
 7. older checkpoints and historical PR notes
 ```
 
-当前 `main`：
+当前 `main`（本 checkpoint）：
 
 ```text
-c8a4628a715e83ff97f2e7754288a2811a0d6dc4
-Honor Project Intelligence source handoff in Idea Lab
+4293e5e9d1cf297651c624b266dbca2fcfedc038
+Gate 11A: isolate Preview runtime writes from production data
 ```
 
 Production：
@@ -31,6 +31,8 @@ Production：
 ```text
 https://frontier-radar-eosin.vercel.app
 ```
+
+截至 **2026-08-12 16:58 SGT**，Vercel deployment list 尚未观察到 merge commit `4293e5e9...` 对应的新 Production deployment。该状态只能写作“尚未观察到”，不能写成 deployment failure，也不能写成 Production 已完成更新。
 
 旧 `proto/*` 只用于设计考古，不是新任务默认基线。
 
@@ -230,19 +232,19 @@ Exact-source behavior：
 ## 9. Gate 9 / Gate 10
 
 - Gate 9: Today → Project exact ID handoff structurally/functionally closed.
-- Gate 10: Project → Idea Lab exact source handoff merged to `main`.
+- Gate 10: Project → Idea Lab exact source handoff merged to `main` in `c8a4628a...`.
 
 Do not convert structural/machine evidence into visual PASS without browser evidence.
 
 ---
 
-## 10. Gate 11A — CLOSED, not merged
+## 10. Gate 11A — CLOSED / MERGED
 
-Branch / PR：
+Merged PR：
 
 ```text
-fix/gate11a-production-data-isolation
-PR #18 — Draft / not merged
+PR #18 — MERGED / CLOSED
+merge commit = 4293e5e9d1cf297651c624b266dbca2fcfedc038
 ```
 
 Goal：
@@ -267,6 +269,7 @@ CI PASS
 VERCEL PREVIEW ENVIRONMENT EXECUTION PASS
 PRODUCTION DB ZERO-DELTA PASS
 GATE 11A CLOSED
+PR #18 MERGED TO MAIN
 ```
 
 Real Vercel Preview execution produced：
@@ -293,8 +296,6 @@ user_semantic_profiles = 0
 Temporary QA probes were removed after verification; the cleanup diff contained only those QA file deletions.
 
 Tooling caveat：Vercel SSO prevented the connector from completing a request-level HTTP fetch of the protected Preview. Do **not** describe that specific HTTP/browser request as verified. The write policy itself is pure `VERCEL_ENV` logic and was executed inside the real Preview environment with Production DB zero delta.
-
-**Do not merge PR #18 until owner explicitly approves.**
 
 ---
 
@@ -344,7 +345,7 @@ Personalization identity is currently browser visitor UUID, so profiles can frag
 
 - stale `collection_runs` can remain `running` indefinitely; later Gate should add timeout/reconciliation/terminalization
 - Gate 9 / Gate 10 deterministic handoffs should live permanently in main CI
-- Supabase security hardening should be a separate Gate, not silently folded into Gate 11A
+- Supabase security hardening is the proposed next Gate after this post-merge documentation correction
 
 ---
 
