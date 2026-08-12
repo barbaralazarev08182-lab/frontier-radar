@@ -1,0 +1,68 @@
+name: Gate 10 Idea Lab Source Handoff QA
+
+on:
+  push:
+    branches:
+      - qa/gate10-idea-lab-from-source
+  workflow_dispatch:
+
+concurrency:
+  group: gate10-idea-lab-from-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install Playwright test runner
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build fixture-mode application
+        run: npm run build
+        env:
+          FRONTIER_DATA_MODE: fixture
+
+      - name: Start application
+        run: |
+          (npm start -- --hostname 127.0.0.1 --port 3000 > /tmp/gate10.log 2>&1 &)
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000/idea-lab >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/gate10.log
+          exit 1
+
+      - name: Run Gate 10 browser check
+        run: npx playwright test e2e/gate10-idea-lab-from-source.spec.ts --reporter=line
+
+      - name: Upload Gate 10 screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate10-idea-lab-from-source-screenshots
+          path: artifacts/gate10
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/gate10.log || true
