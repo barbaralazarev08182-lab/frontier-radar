@@ -1,7 +1,7 @@
 # Frontier Radar — START HERE
 
 > 更新时间：**2026-08-12**  
-> 当前状态：**核心产品链已形成；Explore / Saved / Idea Lab 已冻结；Gate 11A 已完成 Preview→Production runtime write isolation 验收并通过 PR #18 合并到 `main`。**
+> 当前状态：**核心产品链已形成；Explore / Saved / Idea Lab 等接受面保持冻结；Gate 11 — Production Integrity Hardening 已完成全部实现、Production 验证与 main CI 固化，本次只同步最终 closure 文档。**
 
 ---
 
@@ -19,11 +19,11 @@
 7. older checkpoints and historical PR notes
 ```
 
-当前 `main`（本 checkpoint）：
+当前 `main`（最终文档 PR 建立前）：
 
 ```text
-4293e5e9d1cf297651c624b266dbca2fcfedc038
-Gate 11A: isolate Preview runtime writes from production data
+3fe4977b72084b0dca9232e69b84151ae7a1e205
+Gate 11D: lock Today Project Idea Lab handoffs in CI
 ```
 
 Production：
@@ -32,7 +32,15 @@ Production：
 https://frontier-radar-eosin.vercel.app
 ```
 
-截至 **2026-08-12 16:58 SGT**，Vercel deployment list 尚未观察到 merge commit `4293e5e9...` 对应的新 Production deployment。该状态只能写作“尚未观察到”，不能写成 deployment failure，也不能写成 Production 已完成更新。
+Supabase Production：
+
+```text
+project: frontier-radar
+ref: grnorpdbdrmfrdjeorvz
+region: ap-southeast-1
+status: ACTIVE_HEALTHY
+Postgres: 17.6.1
+```
 
 旧 `proto/*` 只用于设计考古，不是新任务默认基线。
 
@@ -72,27 +80,9 @@ Frontier Intelligence × Physical Archive × Research Instrument
 
 ---
 
-## 3. Discovery / ranking
+## 3. Protected product contracts
 
-Sources：
-
-- GitHub
-- Hugging Face（Spaces-first）
-- Show HN
-- Product Hunt
-- arXiv
-
-Today 默认：
-
-```text
-5 Core + 1 Adjacent + 1 Wildcard
-```
-
-Personal Match 是用户级重排，不等于公共 Discovery Score。
-
----
-
-## 4. Today / Signal Weave — protected contract
+### Today / Signal Weave
 
 ```text
 Hero continuous
@@ -120,9 +110,7 @@ Signal Weave：
 7 Daily Signals → 3 higher-level patterns → Final Take
 ```
 
----
-
-## 5. Project Intelligence — protected contract
+### Project Intelligence
 
 ```text
 01 CAPTURE
@@ -134,25 +122,11 @@ Signal Weave：
 
 不要随手重做已接受的 visual / transition，尤其 03 Interrogation。
 
-Project → Idea Lab：
-
-```text
-/idea-lab?from=<source-item-id>
-```
-
-必须 honor exact source；不得 silently fallback 到其他 Saved signal。
-
----
-
-## 6. Explore — FROZEN
-
-Formal direction：
+### Explore — FROZEN
 
 ```text
 B Version / Field-first Explore / CURRENT FRONTIER FIELD
 ```
-
-Actions：
 
 ```text
 MORE LIKE THIS
@@ -163,51 +137,21 @@ OPEN INTELLIGENCE
 
 `MORE LIKE THIS` 是 personalization signal，不等于 SAVE。
 
----
-
-## 7. Saved — VISUAL PASS + INTERACTION PASS + FROZEN
-
-Metaphor：
+### Saved — VISUAL PASS + INTERACTION PASS + FROZEN
 
 ```text
 PRIVATE RESEARCH SHELF
-```
-
-Current v1 persistence：
-
-```text
 browser localStorage
 frontier_radar_saved_items_v1
 src/lib/saved/browser.ts
 ```
 
-不要未经 scope reopening 改为 Supabase sync。
-
----
-
-## 8. Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
-
-Metaphor：
+### Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
 
 ```text
 Signal-to-Direction Workbench
-```
-
-Flow：
-
-```text
 Saved Signal → Pinned Signal → Working Note → Personal Direction
-```
-
-Statuses：
-
-```text
 SEED / SHAPING / BUILDING
-```
-
-Current persistence：
-
-```text
 browser localStorage
 frontier_radar_ideas_v1
 src/lib/ideas/browser.ts
@@ -229,127 +173,176 @@ Exact-source behavior：
 
 ---
 
-## 9. Gate 9 / Gate 10
+## 4. Gate 9 / Gate 10 handoff contract
 
-- Gate 9: Today → Project exact ID handoff structurally/functionally closed.
-- Gate 10: Project → Idea Lab exact source handoff merged to `main` in `c8a4628a...`.
+Gate 9 Today → Project：
+
+```text
+signal.id → /project/<same-id>
+```
+
+Gate 10 Project → Idea Lab：
+
+```text
+item.id → /idea-lab?from=<same-id>
+```
+
+These exact-ID contracts are now protected by `src/lib/feed/handoff-regression.test.ts` and run inside the existing `npm test` main-CI step.
 
 Do not convert structural/machine evidence into visual PASS without browser evidence.
 
 ---
 
-## 10. Gate 11A — CLOSED / MERGED
+## 5. Gate 11 — Production Integrity Hardening — CLOSED
 
-Merged PR：
+Gate 11 did not redesign product surfaces. It hardened runtime/data boundaries and made critical handoffs regression-safe.
 
-```text
-PR #18 — MERGED / CLOSED
-merge commit = 4293e5e9d1cf297651c624b266dbca2fcfedc038
-```
-
-Goal：
+### 11A — Preview / Production Data Isolation — CLOSED
 
 ```text
-Preview / Development may read realistic Production data,
-but must not persist runtime state into Production Supabase.
+PR #18
+merge: 4293e5e9d1cf297651c624b266dbca2fcfedc038
 ```
 
-Covered write umbrellas：
-
-1. Today synthesis persistence
-2. `/api/feedback` + personalization rebuild
-3. `/api/cron/*` ingestion / analysis / scoring / materialization
-
-Verification result：
+Policy：
 
 ```text
-WRITE-PATH AUDIT PASS
-IMPLEMENTATION PASS
-CI PASS
-VERCEL PREVIEW ENVIRONMENT EXECUTION PASS
-PRODUCTION DB ZERO-DELTA PASS
-GATE 11A CLOSED
-PR #18 MERGED TO MAIN
+VERCEL_ENV=production → runtime writes allowed
+VERCEL_ENV=preview/development/other non-empty → Production runtime writes blocked
+no VERCEL_ENV → local/operator historical behavior preserved
 ```
 
-Real Vercel Preview execution produced：
+Covered write umbrellas：Today synthesis persistence, `/api/feedback` + profile rebuild, and `/api/cron/*` ingestion/analysis/scoring/materialization.
+
+Accepted evidence included real Vercel Preview execution, `canWriteRuntimeData() = false`, feedback `persisted=false`, cron `403 non_production_write_blocked`, forced Today failure branch with no persistence, and exact Production DB zero delta.
+
+### 11B-A — Function Privilege Hardening — CLOSED
 
 ```text
-VERCEL_ENV = preview
-canWriteRuntimeData() = false
-feedback = { ok: true, persisted: false }
-cron = 403 non_production_write_blocked
-Today missing-AI failure branch = no persistence
+migration: 20260812091807_gate11b_function_privilege_hardening
+PR #20
 ```
 
-Production DB before / after remained exactly unchanged：
+- removed browser-role execution of `rls_auto_enable()`
+- fixed trigger helper `search_path` to `pg_catalog`
+- four prior Security Advisor WARN findings removed
+
+### 11B-B — Public Feed Boundary — CLOSED
 
 ```text
-daily_synthesis_snapshots = 9
-user_events = 180
-collection_runs = 66
-item_feature_vectors = 12
-user_interest_vectors = 4
-user_semantic_profiles = 0
+migration: 20260812095600_gate11b_public_feed_boundary
+PR #21 + PR #22
 ```
 
-Temporary QA probes were removed after verification; the cleanup diff contained only those QA file deletions.
+Current feed architecture：
 
-Tooling caveat：Vercel SSO prevented the connector from completing a request-level HTTP fetch of the protected Preview. Do **not** describe that specific HTTP/browser request as verified. The write policy itself is pure `VERCEL_ENV` logic and was executed inside the real Preview environment with Production DB zero delta.
+```text
+Browser
+→ Server Component
+→ server-only service-role client
+→ security-invoker frontier_feed_v1
+→ locked base tables
+```
+
+- view `security_invoker=true`
+- anon/authenticated SELECT on view revoked
+- service_role SELECT preserved
+- browser-role base-table access remains denied
+- prior Security Definer View ERROR removed
+
+### 11B-C1 — Application Role ACL Hardening — CLOSED
+
+```text
+migration: 20260812121709_gate11b_application_role_acl_hardening
+PR #23
+merge: d68e96c991e2da597ff3a009f0d52ec743d85fe3
+```
+
+After validation：
+
+- anon public relation objects with any privilege = 0
+- authenticated = 0
+- anon/authenticated public sequence privileges = 0
+- public-function direct EXECUTE removed for browser roles
+- service-role trigger-helper access preserved where required
+- future `postgres`-owned public objects no longer regain browser-facing default grants
+- controlled future-object probe passed and was deleted
+
+`supabase_admin` default ACL was intentionally non-scope; do not silently reopen it.
+
+### 11C — Stale Collection Run Terminalization — CLOSED
+
+```text
+migration: 20260812134208_gate11c_stale_collection_run_terminalization
+PR #24
+merge: 636a174b46fd3b04bd1c1f0c4ba77ed491a63459
+```
+
+- eight Aug-07 orphan `running` rows repaired to terminal `failed`
+- new `collection_runs` inserts globally sweep prior `running` rows older than one hour
+- helper is `SECURITY INVOKER` with `search_path=pg_catalog`
+- controlled service-role stale/fresh probe passed
+- probe rows removed
+- current fix requires no new `pg_cron` infrastructure
+
+### 11D — Permanent Gate 9 / Gate 10 Regression Coverage — CLOSED
+
+```text
+src/lib/feed/handoff-regression.test.ts
+PR #25
+merge: 3fe4977b72084b0dca9232e69b84151ae7a1e205
+CI #354 PASS
+```
+
+Protected contracts：
+
+1. Today exact `signal.id` → Project
+2. Project exact `item.id` → Idea Lab `from`
+3. requested source cannot silently fallback
+4. orphan Idea remains bound to original `sourceItemId`
+
+The tests run inside existing `npm test`; no Playwright dependency, external API, Supabase secret, or Production write is required.
+
+### Gate 11 security end state
+
+Security Advisor after the hardening migrations：
+
+```text
+ERROR: 0
+WARN: 0
+INFO: RLS Enabled No Policy on intentionally locked tables
+```
+
+The INFO findings are not a Gate 11 failure; they describe tables with RLS enabled and no browser policies by design.
 
 ---
 
-## 11. Production Supabase access model
+## 6. Remaining product / data decisions
 
-Effective model：
+These are deferred follow-on work, not incomplete Gate 11 acceptance items.
 
-```text
-locked base tables + intentionally public frontier_feed_v1 read view
-```
-
-Verified：
-
-- application base tables have RLS enabled
-- anon/authenticated have no base-table SELECT/INSERT/UPDATE/DELETE
-- anon can SELECT `frontier_feed_v1`
-- anon direct SELECT `public.items` is denied
-- admin Supabase secret stays server-side
-
-Later hardening backlog：
-
-1. `frontier_feed_v1` Security Definer View
-2. `rls_auto_enable()` public execute privilege
-3. legacy/default ACL broader than necessary
-4. mutable search_path on trigger functions
-
-These are defense-in-depth items, not evidence of a current anonymous base-table leak.
-
----
-
-## 12. Personal-state reality
+### Gate 12 candidate — Personal Memory Durability
 
 Saved / Ideas are browser-local v1, not cross-device durable memory.
 
-Future scope must explicitly choose：
+Before changing the frozen contract, explicitly choose：
 
 ```text
 A. browser-local + export / backup / import
 B. Supabase-synced personal state
 ```
 
-Personalization identity is currently browser visitor UUID, so profiles can fragment across browsers/devices.
+### Gate 13 candidate — Personalization Integrity
+
+Current identity is browser visitor UUID, so profiles can fragment across browsers/devices. Future scope may cover durable identity, QA/test event quarantine, feedback abuse/rate integrity, and proof that More/Less meaningfully changes ranking.
+
+### Semantic layer
+
+`item_semantic_embeddings` / `user_semantic_profiles` are not yet populated in the audited state; current feature-vector / rules fallback remains valid.
 
 ---
 
-## 13. Known operational debt
-
-- stale `collection_runs` can remain `running` indefinitely; later Gate should add timeout/reconciliation/terminalization
-- Gate 9 / Gate 10 deterministic handoffs should live permanently in main CI
-- Supabase security hardening is the proposed next Gate after this post-merge documentation correction
-
----
-
-## 14. Development discipline
+## 7. Development discipline
 
 ```text
 latest main
