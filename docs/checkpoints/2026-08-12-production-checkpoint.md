@@ -72,7 +72,7 @@ Design language:
 Frontier Intelligence × Physical Archive × Research Instrument
 ```
 
-### Frozen/protected surfaces
+Frozen/protected surfaces:
 
 - Explore — FROZEN
 - Saved — VISUAL PASS + INTERACTION PASS + FROZEN
@@ -236,6 +236,17 @@ src/app/qa/gate11a-build/page.tsx
 
 No business/runtime implementation changed in cleanup.
 
+### Final cleanup CI
+
+After QA removal and documentation synchronization, GitHub CI run **#339** on head `1703d8b83b3b0865811f3991e98431cf38460e0b` passed:
+
+```text
+TypeCheck PASS
+ESLint PASS
+Tests PASS
+Next Build PASS
+```
+
 ### Tooling caveat
 
 Vercel SSO prevented the available connector from completing a request-level HTTP fetch of the protected Preview deployment. Do not claim that specific protected HTTP/browser request as verified.
@@ -273,7 +284,7 @@ Verified:
 - anon direct SELECT `public.items` is denied
 - admin Supabase secret remains server-side
 
-### Later security-hardening backlog
+Later security-hardening backlog:
 
 1. `frontier_feed_v1` — Security Definer View
 2. `public.rls_auto_enable()` — SECURITY DEFINER executable by anon/authenticated
@@ -306,7 +317,7 @@ Current identity is browser visitor UUID, so profiles can fragment across browse
 
 ## 9. Next Gate discipline
 
-Do not start a new Gate until Gate 11A closure is recorded and PR #18 merge handling is explicitly decided by the owner.
+Do not start a new Gate until PR #18 merge handling is explicitly decided by the owner.
 
 No automatic merge.
 No destructive cleanup.
