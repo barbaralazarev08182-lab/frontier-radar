@@ -7,7 +7,13 @@ test("Today cold start warms immediately and keeps Weave locked until snapshot",
   test.setTimeout(150_000);
   const startedAt = Date.now();
 
-  await page.goto(`${baseUrl}/today`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  const response = await page.goto(`${baseUrl}/today`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  console.log(`GATE7_HTTP_STATUS=${response?.status() ?? "none"}`);
+  console.log(`GATE7_FINAL_URL=${page.url()}`);
+  console.log(`GATE7_TITLE=${await page.title()}`);
+  console.log(`GATE7_BODY=${(await page.locator("body").innerText()).slice(0, 500).replace(/\s+/g, " ")}`);
+  await page.screenshot({ path: "artifacts/gate7/00-initial-response.png", fullPage: true });
+
   const root = page.locator(".motion-lab-shell");
   await expect(root).toBeVisible({ timeout: 20_000 });
 
