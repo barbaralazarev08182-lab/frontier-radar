@@ -1,0 +1,68 @@
+name: Today Pending Intent QA
+
+on:
+  push:
+    branches:
+      - qa/today-weave-pending-intent
+  workflow_dispatch:
+
+concurrency:
+  group: today-pending-intent-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pending-intent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install Playwright test runner
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build QA production app
+        run: npm run build
+        env:
+          FRONTIER_DATA_MODE: fixture
+
+      - name: Start QA production app
+        run: |
+          (npm start -- --hostname 127.0.0.1 --port 3000 > /tmp/frontier-pending-intent.log 2>&1 & echo $! > /tmp/frontier-pending-intent.pid)
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000/qa/today-pending-intent >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/frontier-pending-intent.log
+          exit 1
+
+      - name: Run pending-intent browser check
+        run: npx playwright test e2e/today-pending-intent-qa.spec.ts --reporter=line
+
+      - name: Upload pending-intent screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: today-pending-intent-screenshots
+          path: artifacts/pending-intent
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/frontier-pending-intent.log || true
