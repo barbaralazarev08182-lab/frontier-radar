@@ -1,5 +1,6 @@
 /* Idea Lab Gate 3 — physical interaction polish only.
-   Layout and data contracts stay untouched. */
+   Layout and data contracts stay untouched.
+   This file is intentionally isolated so the interaction layer can be reviewed independently. */
 
 @keyframes frIdeaSourceSettle {
   0% { opacity: .66; translate: 0 -.42rem; filter: brightness(.95); }
