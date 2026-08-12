@@ -98,6 +98,48 @@ test("Explore -> Saved -> Idea Lab persists the user's signal-to-direction chain
     await expectNoHorizontalOverflow(page);
     await page.screenshot({ path: `${artifactDir}/04-idea-lab-reloaded.png`, fullPage: true });
 
+    // Gate 2: removing the bookmark must not delete the user's derived direction.
+    await page.goto(route("/saved"));
+    await expect(page.locator(".fr-featured-book h1")).toHaveText(sourceTitle);
+    await page.getByRole("button", { name: /REMOVE/ }).click();
+    await expect(page.getByText("ARCHIVE EMPTY", { exact: true })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/05-saved-source-removed.png`, fullPage: true });
+
+    await page.goto(route("/idea-lab"));
+    await expect(page.getByText("NO SOURCE MATERIAL", { exact: true })).toBeVisible();
+
+    const orphanDirection = page.locator(".fr-idea-card").filter({ hasText: ideaTitle }).first();
+    await expect(orphanDirection).toBeVisible();
+    await orphanDirection.click();
+
+    const orphanSlip = page.locator('.fr-idea-source-slip[data-orphan="true"]');
+    await expect(orphanSlip).toBeVisible();
+    await expect(orphanSlip).toContainText(sourceTitle);
+    await expect(orphanSlip).toContainText("SOURCE NO LONGER SAVED");
+    await expect(page.getByRole("textbox", { name: "Idea title" })).toHaveValue(ideaTitle);
+    await expect(page.getByRole("textbox", { name: "Idea working note" })).toHaveValue(ideaNote);
+    await expect(
+      page.locator(".fr-idea-status-rail").getByRole("button", { name: /SHAPING/ })
+    ).toHaveAttribute("aria-pressed", "true");
+
+    const orphanNote = `${ideaNote} It remains editable after the source bookmark is removed.`;
+    await page.getByRole("textbox", { name: "Idea working note" }).fill(orphanNote);
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/06-orphan-idea-preserved.png`, fullPage: true });
+
+    await page.reload();
+    const reloadedOrphanDirection = page.locator(".fr-idea-card").filter({ hasText: ideaTitle }).first();
+    await expect(reloadedOrphanDirection).toBeVisible();
+    await reloadedOrphanDirection.click();
+    await expect(page.locator('.fr-idea-source-slip[data-orphan="true"]')).toContainText("SOURCE NO LONGER SAVED");
+    await expect(page.getByRole("textbox", { name: "Idea working note" })).toHaveValue(orphanNote);
+    await expect(
+      page.locator(".fr-idea-status-rail").getByRole("button", { name: /SHAPING/ })
+    ).toHaveAttribute("aria-pressed", "true");
+    await expectNoHorizontalOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/07-orphan-idea-reloaded.png`, fullPage: true });
+
     expect(pageErrors, `uncaught browser page errors: ${pageErrors.join(" | ")}`).toEqual([]);
   } catch (error) {
     await page.screenshot({
