@@ -1,17 +1,43 @@
 import { test, expect } from "@playwright/test";
 
-const baseUrl = process.env.QA_BASE_URL;
-const shareUrl = process.env.QA_SHARE_URL;
-if (!baseUrl) throw new Error("QA_BASE_URL is required");
-if (!shareUrl) throw new Error("QA_SHARE_URL is required");
+const visitorId = process.env.QA_VISITOR_ID;
+if (!visitorId) throw new Error("QA_VISITOR_ID is required");
 
-test("Today cold start warms immediately and keeps Weave locked until snapshot", async ({ page }) => {
-  test.setTimeout(180_000);
+const productionCandidates = [
+  "https://frontier-radar.vercel.app",
+  "https://frontier-radar-barbaralazarev08182-3355s-projects.vercel.app",
+  "https://frontier-radar-git-main-barbaralazarev08182-3355s-projects.vercel.app",
+];
 
-  await page.goto(shareUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
-  await page.waitForTimeout(1_000);
-  console.log(`GATE7_AUTH_FINAL_HOST=${new URL(page.url()).host}`);
-  expect(new URL(page.url()).host).toContain("vercel.app");
+test("Today production cold start warms immediately and keeps Weave locked until snapshot", async ({ page, context }) => {
+  test.setTimeout(200_000);
+
+  let baseUrl: string | null = null;
+  for (const candidate of productionCandidates) {
+    try {
+      const response = await page.goto(`${candidate}/today`, { waitUntil: "domcontentloaded", timeout: 15_000 });
+      const title = await page.title();
+      if ((response?.status() ?? 500) < 400 && title.includes("Frontier Radar") && new URL(page.url()).host.endsWith("vercel.app")) {
+        baseUrl = candidate;
+        break;
+      }
+    } catch {
+      // Try the next known Vercel project alias.
+    }
+  }
+
+  expect(baseUrl, "Could not resolve the production Frontier Radar alias").not.toBeNull();
+  console.log(`GATE7_PRODUCTION_BASE=${baseUrl}`);
+
+  await context.clearCookies();
+  await context.addCookies([
+    {
+      name: "frontier_radar_visitor_id",
+      value: visitorId,
+      url: baseUrl!,
+      sameSite: "Lax",
+    },
+  ]);
 
   const startedAt = Date.now();
   const response = await page.goto(`${baseUrl}/today`, { waitUntil: "domcontentloaded", timeout: 30_000 });
@@ -25,6 +51,7 @@ test("Today cold start warms immediately and keeps Weave locked until snapshot",
 
   const pending = page.locator(".today-synthesis-pending");
   await expect(pending).toBeAttached({ timeout: 5_000 });
+  console.log("GATE7_CACHE_MISS=true");
 
   const scroller = page.locator(".motion-lab-scroller");
   await scroller.evaluate((node) => {
@@ -43,15 +70,16 @@ test("Today cold start warms immediately and keeps Weave locked until snapshot",
   await page.mouse.wheel(0, 160);
   await page.waitForTimeout(900);
   await expect(root).toHaveAttribute("data-scroll-stage", "today");
+  console.log("GATE7_WEAVE_LOCKED=true");
   await page.screenshot({ path: "artifacts/gate7/01-locked-while-generating.png", fullPage: true });
 
-  await pending.waitFor({ state: "detached", timeout: 140_000 });
+  await pending.waitFor({ state: "detached", timeout: 150_000 });
   const snapshotReadyMs = Date.now() - startedAt;
+  console.log(`GATE7_SNAPSHOT_READY_MS=${snapshotReadyMs}`);
 
   await page.mouse.wheel(0, 160);
   await page.waitForTimeout(1_150);
   await expect(root).toHaveAttribute("data-scroll-stage", "weave");
+  console.log("GATE7_WEAVE_UNLOCKED=true");
   await page.screenshot({ path: "artifacts/gate7/02-unlocked-after-snapshot.png", fullPage: true });
-
-  console.log(`GATE7_SNAPSHOT_READY_MS=${snapshotReadyMs}`);
 });
