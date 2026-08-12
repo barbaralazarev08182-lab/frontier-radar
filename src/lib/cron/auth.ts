@@ -7,9 +7,11 @@
  *  - 不接受 query parameter 中的密钥；
  *  - 不接受空密钥；
  *  - 鉴权失败返回 401，响应不泄露期望密钥；
+ *  - Vercel Preview / Development 即使拿到正确密钥也不得执行写任务；
  *  - 生产环境无免鉴权绕过。
  */
 import { timingSafeEqual } from "node:crypto";
+import { canWriteRuntimeData } from "@/lib/env/runtime-write-policy";
 
 export interface CronAuthResult {
   authorized: boolean;
@@ -17,8 +19,18 @@ export interface CronAuthResult {
   response?: Response;
 }
 
-/** 检查请求是否携带正确 Cron 密钥。 */
+/** 检查请求是否携带正确 Cron 密钥，并处于允许写入的运行环境。 */
 export function checkCronAuth(request: Request, secret?: string): CronAuthResult {
+  if (!canWriteRuntimeData()) {
+    return {
+      authorized: false,
+      response: Response.json(
+        { error: "non_production_write_blocked" },
+        { status: 403 }
+      ),
+    };
+  }
+
   const cronSecret = secret ?? process.env.CRON_SECRET;
   if (!cronSecret) {
     return {
