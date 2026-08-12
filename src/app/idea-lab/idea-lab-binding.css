@@ -1,0 +1,14 @@
+/* Idea Lab Gate 2.1 — source/idea binding layout guard.
+   Reserve physical room for the selected source card to pull forward
+   without expanding the source list scroll width. */
+
+@media (min-width: 761px) {
+  .fr-idea-lab-source-list {
+    justify-items: start;
+  }
+
+  .fr-idea-source-card {
+    width: calc(100% - 1rem) !important;
+    max-width: calc(100% - 1rem) !important;
+  }
+}
