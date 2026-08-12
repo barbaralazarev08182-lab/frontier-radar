@@ -40,6 +40,30 @@
   outline-offset: 5px;
 }
 
+/* A blocked attempt to enter the final chapter should never feel like a dead wheel. */
+.motion-lab-shell[data-production="true"][data-scroll-stage="today"][data-weave-intent="pending"]::after {
+  content: "SYNTHESIS PREPARING · WILL OPEN WHEN READY";
+  position: fixed;
+  left: 50%;
+  bottom: 1.35rem;
+  z-index: 58;
+  transform: translateX(-50%);
+  padding: .48rem .7rem .42rem;
+  border-top: 1px solid rgba(17,23,28,.22);
+  border-bottom: 1px solid rgba(17,23,28,.12);
+  background: rgba(241,238,229,.88);
+  box-shadow: 0 7px 24px rgba(17,23,28,.07);
+  color: rgba(17,23,28,.62);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .55rem;
+  font-weight: 850;
+  letter-spacing: .12em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 /* The approved Signal Weave remains the only final chapter. */
 .today-production-analysis.motion-lab-analysis {
   position: absolute;
@@ -123,6 +147,13 @@
 @media (max-width: 760px), (pointer: coarse) {
   .motion-lab-shell[data-production="true"] .motion-lab-meta {
     top: 1rem;
+  }
+
+  .motion-lab-shell[data-production="true"][data-scroll-stage="today"][data-weave-intent="pending"]::after {
+    bottom: 1rem;
+    max-width: calc(100vw - 2rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .today-production-analysis.motion-lab-analysis,
