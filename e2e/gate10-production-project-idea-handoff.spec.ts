@@ -41,8 +41,8 @@ test("Project Intelligence CTA pins the matching saved source in Idea Lab", asyn
   await expect(page.locator("h1.pi-title")).toHaveText(targetTitle);
   await page.screenshot({ path: "artifacts/gate10-production/01-project-before-handoff.png" });
 
-  const ideaLab = page.getByRole("link", { name: "Idea Lab", exact: true });
-  await expect(ideaLab).toHaveAttribute("href", `/idea-lab?from=${targetId}`);
+  const ideaLab = page.locator(`a.pi-cta.secondary[href="/idea-lab?from=${targetId}"]`);
+  await expect(ideaLab).toHaveCount(1);
   await ideaLab.click();
   await expect(page).toHaveURL(`${baseUrl}/idea-lab?from=${targetId}`);
 
