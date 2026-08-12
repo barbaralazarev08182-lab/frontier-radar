@@ -1,0 +1,68 @@
+name: Today Synthesis Terminal Failure QA
+
+on:
+  push:
+    branches:
+      - qa/today-synthesis-terminal-failure
+  workflow_dispatch:
+
+concurrency:
+  group: today-synthesis-terminal-failure-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terminal-failure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install Playwright test runner
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build QA production app
+        run: npm run build
+        env:
+          FRONTIER_DATA_MODE: fixture
+
+      - name: Start QA production app
+        run: |
+          (npm start -- --hostname 127.0.0.1 --port 3000 > /tmp/frontier-synthesis-failure.log 2>&1 & echo $! > /tmp/frontier-synthesis-failure.pid)
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000/today/qa-synthesis-failure >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/frontier-synthesis-failure.log
+          exit 1
+
+      - name: Run terminal-failure browser check
+        run: npx playwright test e2e/today-synthesis-terminal-failure-qa.spec.ts --reporter=line
+
+      - name: Upload terminal-failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: today-synthesis-terminal-failure-screenshots
+          path: artifacts/synthesis-failure
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/frontier-synthesis-failure.log || true
