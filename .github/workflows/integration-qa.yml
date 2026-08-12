@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - feat/idea-lab-v1
+      - feat/explore-saved-integration
+      - main
   workflow_dispatch:
 
 concurrency:
