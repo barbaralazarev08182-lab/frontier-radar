@@ -33,8 +33,7 @@ jobs:
       - name: Run Gate 7 browser check
         run: npx playwright test e2e/today-cold-start-qa.spec.ts --reporter=line
         env:
-          QA_BASE_URL: https://frontier-radar-git-qa-f6fc37-barbaralazarev08182-3355s-projects.vercel.app
-          QA_SHARE_URL: https://frontier-radar-git-qa-f6fc37-barbaralazarev08182-3355s-projects.vercel.app?_vercel_share=bK1Xs090ymNpEYHiFfHtRgtSTa8jteI4
+          QA_VISITOR_ID: e8e0f46d-c97d-4023-a2e9-f5d8559fe790
 
       - name: Upload Gate 7 screenshots
         if: always()
