@@ -37,7 +37,8 @@ export interface DailySynthesisSnapshot {
 }
 
 export function computeDailySelectionHash(signalIds: string[]): string {
-  return sha256Hex(signalIds.join("\n"));
+  const qaSalt = process.env.VERCEL_ENV === "preview" ? "gate-7-cold-start-v1\n" : "";
+  return sha256Hex(`${qaSalt}${signalIds.join("\n")}`);
 }
 
 function isFiniteNumber(value: unknown): value is number {
