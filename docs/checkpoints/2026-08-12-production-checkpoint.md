@@ -17,11 +17,11 @@
 7. older checkpoints / historical PR notes
 ```
 
-Current `main`:
+Current `main` at this checkpoint:
 
 ```text
-c8a4628a715e83ff97f2e7754288a2811a0d6dc4
-Honor Project Intelligence source handoff in Idea Lab
+4293e5e9d1cf297651c624b266dbca2fcfedc038
+Gate 11A: isolate Preview runtime writes from production data
 ```
 
 Production:
@@ -29,6 +29,8 @@ Production:
 ```text
 https://frontier-radar-eosin.vercel.app
 ```
+
+As of **2026-08-12 16:58 SGT**, the Vercel deployment list had **not yet shown a Production deployment for merge commit `4293e5e9...`**. This is an observation gap, not a deployment-failure claim and not evidence that Production already contains Gate 11A.
 
 Supabase Production:
 
@@ -143,18 +145,20 @@ Do not confuse structural/machine PASS with a new visual PASS unless browser evi
 
 ---
 
-## 6. Gate 11A — CLOSED / PR #18 not merged
+## 6. Gate 11A — CLOSED / MERGED
 
-Branch:
+Original branch:
 
 ```text
 fix/gate11a-production-data-isolation
 ```
 
-PR:
+PR / merge:
 
 ```text
-#18 — Draft / not merged
+PR #18 — MERGED / CLOSED
+merged_at: 2026-08-12 16:57:47 SGT
+merge commit: 4293e5e9d1cf297651c624b266dbca2fcfedc038
 ```
 
 Goal:
@@ -236,9 +240,9 @@ src/app/qa/gate11a-build/page.tsx
 
 No business/runtime implementation changed in cleanup.
 
-### Final cleanup CI
+### Final pre-merge CI
 
-After QA removal and documentation synchronization, GitHub CI run **#339** on head `1703d8b83b3b0865811f3991e98431cf38460e0b` passed:
+GitHub CI run **#340** on final PR head `e30d44b7c09f82174b75c6589d12486a8d31893d` passed:
 
 ```text
 TypeCheck PASS
@@ -262,9 +266,8 @@ CI PASS
 VERCEL PREVIEW ENVIRONMENT EXECUTION PASS
 PRODUCTION DB ZERO-DELTA PASS
 GATE 11A CLOSED
+PR #18 MERGED TO MAIN
 ```
-
-**PR #18 is not merged. Explicit owner approval is still required before merge.**
 
 ---
 
@@ -313,11 +316,17 @@ Saved / Ideas remain browser-local v1. Future scope must explicitly choose brows
 
 Current identity is browser visitor UUID, so profiles can fragment across browsers/devices.
 
+### Supabase security hardening
+
+The next proposed Gate is a dedicated Supabase access-boundary hardening Gate based on the already-audited backlog. It must remain separate from Gate 11A and must not alter frozen visuals.
+
 ---
 
 ## 9. Next Gate discipline
 
-Do not start a new Gate until PR #18 merge handling is explicitly decided by the owner.
+Gate 11A is merged and closed. This post-merge documentation correction does **not** start Gate 11B.
+
+Before opening Gate 11B, keep the unresolved Production deployment observation explicit: the merge commit exists on GitHub `main`, while its corresponding Production deployment has not yet been observed in the Vercel deployment list as of 2026-08-12 16:58 SGT.
 
 No automatic merge.
 No destructive cleanup.
