@@ -1,0 +1,45 @@
+name: Gate 7 Cold Start QA
+
+on:
+  push:
+    branches:
+      - qa/today-cold-start
+  workflow_dispatch:
+
+jobs:
+  cold-start:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install Playwright test runner
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Gate 7 browser check
+        run: npx playwright test e2e/today-cold-start-qa.spec.ts --reporter=line
+        env:
+          QA_BASE_URL: https://frontier-radar-git-qa-f6fc37-barbaralazarev08182-3355s-projects.vercel.app
+
+      - name: Upload Gate 7 screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate7-cold-start-screenshots
+          path: artifacts/gate7
+          if-no-files-found: warn
+          retention-days: 7
