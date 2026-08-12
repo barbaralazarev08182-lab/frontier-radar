@@ -1,12 +1,13 @@
 /**
  * Supabase Feed Provider（阶段 1.6）。
  *
- * 只读查询 frontier_feed_v1 View（服务端执行，anon key，不触达 service role）。
+ * 只读查询 frontier_feed_v1 View（仅服务端执行，使用 Secret/service-role key）。
+ * 公开页面通过 Server Component 获取 Feed，不要求 anon/authenticated 直接读取数据库 View。
  * 缺配置时抛 FeedUnconfiguredError（页面显示清晰错误，不悄悄回退 fixture）。
  */
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { FeedQueryError, FeedUnconfiguredError, type FeedProvider } from "./provider";
-import { resolvePublishableKey, resolveSupabaseUrl } from "@/lib/env/supabase-keys";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   FeedContentType,
   FeedQuery,
@@ -105,16 +106,14 @@ export function mapFeedRow(row: FeedViewRow): FrontierFeedItem {
 }
 
 function buildSupabaseClient(): SupabaseClient {
-  const url = resolveSupabaseUrl();
-  const publishableKey = resolvePublishableKey();
-  if (!url || !publishableKey) {
+  try {
+    return createAdminClient();
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     throw new FeedUnconfiguredError(
-      "数据模式为 supabase，但未配置 NEXT_PUBLIC_SUPABASE_URL 与 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY（或旧变量 NEXT_PUBLIC_SUPABASE_ANON_KEY）。请配置环境变量，或在开发环境设置 FRONTIER_DATA_MODE=fixture。"
+      `数据模式为 supabase，但服务端 Feed 读取未配置完整的 Supabase URL 与 Secret/service-role key：${message}`
     );
   }
-  return createClient(url, publishableKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
 }
 
 export class SupabaseFeedProvider implements FeedProvider {
