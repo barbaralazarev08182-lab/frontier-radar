@@ -59,10 +59,11 @@ test("Today production cold start warms immediately and keeps Weave locked until
 
   await expect(root).toHaveAttribute("data-scroll-stage", "today");
   console.log("GATE7_STAGE_PRESERVED=true");
+  await page.screenshot({ path: "artifacts/gate7/02-ready-stage-preserved.png", fullPage: true });
 
   await page.mouse.wheel(0, 160);
   await page.waitForTimeout(1_150);
   await expect(root).toHaveAttribute("data-scroll-stage", "weave");
   console.log("GATE7_WEAVE_UNLOCKED=true");
-  await page.screenshot({ path: "artifacts/gate7/02-unlocked-after-snapshot.png", fullPage: true });
+  await page.screenshot({ path: "artifacts/gate7/03-unlocked-after-snapshot.png", fullPage: true });
 });
