@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { canWriteRuntimeData } from "@/lib/env/runtime-write-policy";
 import { VISITOR_COOKIE, VISITOR_MAX_AGE_SECONDS } from "@/lib/personalization/constants";
 import { rebuildUserInterestVector } from "@/lib/personalization/profile";
 import { rebuildUserSemanticProfile } from "@/lib/personalization/semantic-profile";
@@ -51,6 +52,17 @@ function sanitizeMetadata(value: unknown): Record<string, string | number | bool
   return output;
 }
 
+function feedbackResponse(visitorId: string, persisted: boolean): NextResponse {
+  const response = NextResponse.json({ ok: true, persisted });
+  response.cookies.set(VISITOR_COOKIE, visitorId, {
+    path: "/",
+    sameSite: "lax",
+    maxAge: VISITOR_MAX_AGE_SECONDS,
+    secure: process.env.NODE_ENV === "production",
+  });
+  return response;
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as Record<string, unknown>;
@@ -75,6 +87,13 @@ export async function POST(request: Request) {
       safeDwellMs = Math.max(0, Math.min(3_600_000, Math.round(dwellMs)));
     }
 
+    // Preview/development deployments may exercise the real UI and read the
+    // production feed, but their QA behavior must not train the production
+    // personalization profile.
+    if (!canWriteRuntimeData()) {
+      return feedbackResponse(visitorId, false);
+    }
+
     const supabase = createAdminClient();
     const { error } = await supabase.from("user_events").insert({
       visitor_id: visitorId,
@@ -97,14 +116,7 @@ export async function POST(request: Request) {
       ]);
     }
 
-    const response = NextResponse.json({ ok: true });
-    response.cookies.set(VISITOR_COOKIE, visitorId, {
-      path: "/",
-      sameSite: "lax",
-      maxAge: VISITOR_MAX_AGE_SECONDS,
-      secure: process.env.NODE_ENV === "production",
-    });
-    return response;
+    return feedbackResponse(visitorId, true);
   } catch {
     return NextResponse.json({ error: "invalid_request" }, { status: 400 });
   }
