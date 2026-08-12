@@ -30,6 +30,15 @@ jobs:
       - name: Install application dependencies
         run: npm ci
 
+      - name: TypeCheck
+        run: npm run typecheck
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
       - name: Install Playwright test runner without changing lockfile
         run: npm install --no-save --package-lock=false @playwright/test@1.55.0
 
