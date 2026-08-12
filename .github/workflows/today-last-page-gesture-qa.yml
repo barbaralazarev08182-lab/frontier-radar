@@ -1,0 +1,43 @@
+name: Today Final Page Gesture QA
+
+on:
+  push:
+    branches:
+      - qa/today-last-page-gesture
+  workflow_dispatch:
+
+jobs:
+  gesture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Install Playwright test runner
+        run: npm install --no-save --package-lock=false @playwright/test@1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run final-page gesture reproduction
+        run: npx playwright test e2e/today-last-page-gesture-qa.spec.ts --reporter=line
+
+      - name: Upload gesture screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: today-last-page-gesture-screenshots
+          path: artifacts/gate7r
+          if-no-files-found: warn
+          retention-days: 7
