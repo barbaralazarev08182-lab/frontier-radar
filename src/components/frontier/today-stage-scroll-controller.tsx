@@ -55,6 +55,8 @@ interface TodayStageScrollControllerProps {
 
 export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollControllerProps) {
   const canEnterWeaveRef = useRef(canEnterWeave);
+  const pendingWeaveIntentRef = useRef(false);
+  const snapToWeaveRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const wasReady = canEnterWeaveRef.current;
@@ -63,12 +65,25 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
 
     const root = document.querySelector<HTMLElement>(".motion-lab-shell");
     const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
-    if (!root || !scroller || root.dataset.scrollStage !== "today") return;
+    if (!root || !scroller) return;
+
+    if (root.dataset.scrollStage !== "today") {
+      pendingWeaveIntentRef.current = false;
+      root.removeAttribute("data-weave-intent");
+      return;
+    }
 
     // Mounting the resolved Weave can change the scroller's total height.
-    // Re-anchor the existing logical Today stage against the new travel so
-    // visual progress does not jump backward while readiness unlocks.
+    // If the user already tried to enter Weave, honor that blocked intent as
+    // soon as readiness arrives. Otherwise preserve the existing Today frame.
     const frame = window.requestAnimationFrame(() => {
+      if (pendingWeaveIntentRef.current && snapToWeaveRef.current) {
+        pendingWeaveIntentRef.current = false;
+        root.removeAttribute("data-weave-intent");
+        snapToWeaveRef.current();
+        return;
+      }
+
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       scroller.scrollTop = TODAY_STAGE * travel;
     });
@@ -91,6 +106,11 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
     let cooldownUntil = 0;
     let currentStage: ScrollStage = "hero";
 
+    const clearWeaveIntent = () => {
+      pendingWeaveIntentRef.current = false;
+      root.removeAttribute("data-weave-intent");
+    };
+
     const progress = () => {
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       return clamp(scroller.scrollTop / travel);
@@ -99,6 +119,7 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
     const setStage = (stage: ScrollStage) => {
       currentStage = stage;
       root.dataset.scrollStage = stage;
+      if (stage !== "today") clearWeaveIntent();
     };
 
     const stageForProgress = (current: number): ScrollStage => {
@@ -192,6 +213,12 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
       animationFrame = window.requestAnimationFrame(tick);
     };
 
+    snapToWeaveRef.current = () => {
+      if (currentStage !== "today" || !canEnterWeaveRef.current) return;
+      clearWeaveIntent();
+      animateTo({ progress: WEAVE_STAGE, stage: "weave" });
+    };
+
     const onWheel = (event: WheelEvent) => {
       if (root.dataset.mode !== "run" || event.ctrlKey) return;
 
@@ -239,6 +266,8 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
       event.stopImmediatePropagation();
       noteWheel();
 
+      if (currentStage === "today" && direction < 0) clearWeaveIntent();
+
       if (accumulatedDirection !== 0 && accumulatedDirection !== direction) {
         accumulated = 0;
       }
@@ -246,6 +275,13 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
       accumulated += delta;
 
       if (Math.abs(accumulated) < WHEEL_THRESHOLD) return;
+
+      if (currentStage === "today" && direction > 0 && !canEnterWeaveRef.current) {
+        pendingWeaveIntentRef.current = true;
+        root.dataset.weaveIntent = "pending";
+        resetIntent();
+        return;
+      }
 
       const target = targetFor(direction);
       resetIntent();
@@ -262,6 +298,9 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
       scroller.removeEventListener("wheel", onWheel, { capture: true });
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       window.clearTimeout(releaseTimer);
+      snapToWeaveRef.current = null;
+      pendingWeaveIntentRef.current = false;
+      root.removeAttribute("data-weave-intent");
       root.removeAttribute("data-stage-snap");
       root.removeAttribute("data-scroll-stage");
     };
