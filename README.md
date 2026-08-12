@@ -1,10 +1,8 @@
 # Frontier Radar
 
-**A personalized discovery engine for things being built at the frontier of technology.**
+**A personalized frontier intelligence system for discovering what is becoming worth attention — and turning it into research or product directions.**
 
-Frontier Radar 不是普通 AI 新闻聚合器，也不是简单的 GitHub 热榜。它每天从多个技术来源发现正在变得值得关注的项目、Demo、模型、论文和工具，通过评分、个性化和跨来源证据筛出 **Today’s 7**，再把这些信号综合成趋势、判断和可行动方向。
-
-核心产品链路：
+Frontier Radar 不是普通 AI 新闻聚合器，也不是 GitHub 热榜。它从多个技术来源发现正在变得值得关注的项目、Demo、模型、论文和工具，通过评分、个性化、跨来源证据与 synthesis 形成一条完整链路：
 
 ```text
 Discover → Understand → Get Inspired → Build
@@ -14,31 +12,60 @@ Discover → Understand → Get Inspired → Build
 >
 > Coding agent / Codex 还应阅读 [`AGENTS.md`](AGENTS.md)。
 >
-> 当前体验冻结记录：[`docs/checkpoints/2026-08-10-experience-freeze.md`](docs/checkpoints/2026-08-10-experience-freeze.md)。
+> 最新 Production 状态：[`docs/checkpoints/2026-08-12-production-checkpoint.md`](docs/checkpoints/2026-08-12-production-checkpoint.md)。
 >
-> 主干整合记录：[`docs/checkpoints/2026-08-10-main-integration.md`](docs/checkpoints/2026-08-10-main-integration.md)。
+> 2026-08-10 体验冻结与主干整合记录仍保留为历史背景，不再代表最新状态。
 
 ---
 
 ## 当前正式基线
 
-截至 2026-08-10：
+截至 **2026-08-12**：
 
 ```text
-main = 当前正式代码基线 / 后续开发起点
+main = production source of truth / 新任务默认起点
 ```
 
-Today、Signal Weave、Project Intelligence 已通过一次干净整合进入 `main`。
-
-这次整合没有把约 181 个 prototype 历史提交直接倒入主干，而是从原 `main` 出发，只装配最终认可的代码和必要数据支持，最后通过 PR #3 squash merge。
-
-当前主干整合 commit：
+当前 `main`：
 
 ```text
-225cf8dd5c412f9fbf45bd9cbfdbb4a249fe225a
+c8a4628a715e83ff97f2e7754288a2811a0d6dc4
+Honor Project Intelligence source handoff in Idea Lab
 ```
 
-旧 `proto/*` 分支现在仅用于历史参考 / 设计考古，**不要作为新任务默认开发基线**。
+Production：
+
+```text
+https://frontier-radar-eosin.vercel.app
+```
+
+当前产品主体验：
+
+```text
+candidate pool
+  ↓
+Today’s 7
+  ↓
+Signal Weave
+  ↓
+Project Intelligence
+  ↓
+Saved / Idea Lab / Build
+```
+
+Global nav：
+
+```text
+TODAY / EXPLORE / SAVED / IDEA LAB
+```
+
+设计语言：
+
+```text
+Frontier Intelligence × Physical Archive × Research Instrument
+```
+
+旧 `proto/*` 分支只用于设计考古，**不要作为新任务默认开发基线**。
 
 ---
 
@@ -68,13 +95,13 @@ Today 默认保留探索结构：
 5 × Core + 1 × Adjacent + 1 × Wildcard
 ```
 
-Adjacent / Wildcard 是防止个性化越学越窄的产品机制。
+Adjacent / Wildcard 用于避免个性化越学越窄。
 
 ---
 
 ## 2. `/today` — Daily Radar
 
-Today 是滚动驱动的 editorial / motion experience：
+Today 的正式状态机：
 
 ```text
 Hero                 continuous
@@ -88,76 +115,191 @@ Signal Weave         continuous synthesis scene
 
 关键约束：
 
-- Hero 允许连续滚动。
-- Compression / Today’s 7 是稳定章节，不是偶然中间帧。
 - 一个真实 wheel / trackpad gesture 最多推进一个中间章节。
-- 触控板惯性不能跳过章节。
-- 反向滚动严格对称。
+- 惯性不能跳 stage。
+- transition 期间锁输入。
+- 正反向对称。
+- Signal Weave 进入后恢复连续内部滚动。
+- synthesis 数据尚未准备好时，synthesis scene 仍可进入。
 - `06 / Adjacent` = cobalt blue。
 - `07 / Wildcard` = saturated orange。
-- Production 视觉由原始 LAB-03–06 系统拥有。
-- Signal Weave 保持 `7 signals → 3 patterns → Final Take` 的统一场景。
-- synthesis 数据尚未准备好时，最后 synthesis chapter 仍必须可进入。
+- LAB-03–06 是 production 视觉 owner。
 
 已经退出 production 的实验层不要重新加载：
 
 - foil renderer
 - spectral renderer
 - standalone compression artifact renderer
-- 用来对抗上述实验的 restore / override CSS
+
+Signal Weave 保持：
+
+```text
+7 Daily Signals → 3 higher-level patterns → Final Take
+```
 
 ---
 
 ## 3. `/project/[id]` — Project Intelligence
 
-当前认可的五阶段结构：
+五阶段合同：
 
 ```text
 01 CAPTURE
-   ↓
 02 EVIDENCE
-   ↓
 03 INTERROGATION
-   ↓
 04 RESOLUTION
-   ↓
 05 BUILD
 ```
 
-阶段语义：
+已认可视觉与转场不要无目的重构，尤其不要随手重做 03 Interrogation。
 
-- **Capture**：让用户产生“这个项目值得继续看”的兴趣；强 hero、dossier、扫描/材质交互。
-- **Evidence**：解释 Radar 为什么相信它，强调来源和可验证证据。
-- **Interrogation**：连续审问关键判断；橙色场 + 半透明黑 analysis sheets 是视觉锚点。
-- **Resolution**：把证据和判断压缩成最终 verdict；不是单纯分数 dashboard。
-- **Build**：把理解转成下一步行动 / Idea Lab 入口。
-
-冻结约束：
-
-- 01–05 当前版式和主转场不做无目的重构。
-- 五幕在用户不滚动、不移动鼠标时也持续有各自 idle motion。
-- Interrogation 黑片约 `rgba(8,8,8,.65)`。
-- Resolution score label 保持当前更大的可读尺寸。
-- Project Intelligence 顶部站点导航保持透明整合。
-- 不要为了“更高级”重新改成完整 3D world。
-
-核心文件：
+Project Intelligence → Idea Lab 通过：
 
 ```text
-src/app/project/[id]/page.tsx
-src/app/project/[id]/layout.tsx
-src/app/project/[id]/project-intelligence.css
-src/app/project/[id]/project-intelligence-effects.css
-src/app/project/[id]/project-intelligence-capture.css
-src/app/project/[id]/project-intelligence-refinements.css
-src/components/frontier/project-intelligence-motion.tsx
+/idea-lab?from=<source-item-id>
 ```
+
+当前 `main` 已修复 exact source handoff：不得偷偷 fallback 到另一个 Saved signal。
 
 ---
 
-## 4. 分支与发布策略
+## 4. `/explore` — FROZEN
 
-默认规则：
+正式方向：
+
+```text
+B Version / Field-first Explore / CURRENT FRONTIER FIELD
+```
+
+核心语义：
+
+```text
+MORE LIKE THIS
+LESS LIKE THIS
+ARCHIVE · SAVE / SAVED
+OPEN INTELLIGENCE
+```
+
+`MORE LIKE THIS` 是 personalization signal，**不等于 SAVE**。
+
+当前 Explore 已 FROZEN。除非用户明确 reopen scope 或出现 integration bug，不要重新设计。
+
+---
+
+## 5. `/saved` — VISUAL PASS + INTERACTION PASS + FROZEN
+
+Metaphor：
+
+```text
+PRIVATE RESEARCH SHELF
+```
+
+当前 v1 使用浏览器 localStorage：
+
+```text
+key: frontier_radar_saved_items_v1
+file: src/lib/saved/browser.ts
+```
+
+这是当前明确接受的 v1 存储合同，不要未经 scope reopening 改成 Supabase。
+
+---
+
+## 6. `/idea-lab` — VISUAL PASS + INTERACTION PASS + FROZEN
+
+Metaphor：
+
+```text
+Signal-to-Direction Workbench
+```
+
+Flow：
+
+```text
+Saved Signal → Pinned Signal → Working Note → Personal Direction
+```
+
+状态：
+
+```text
+SEED / SHAPING / BUILDING
+```
+
+当前 v1 同样使用 browser localStorage：
+
+```text
+key: frontier_radar_ideas_v1
+file: src/lib/ideas/browser.ts
+```
+
+关键 binding：
+
+```text
+activeIdea.sourceItemId === selectedSource.id
+```
+
+若 Saved source 被移除但 Idea 已存在：
+
+- Idea 保留。
+- Pinned source 显示 `SOURCE NO LONGER SAVED`。
+- 用户工作不能被删除。
+
+---
+
+## 7. Gate 11A — Preview / Production Data Isolation
+
+当前工作：
+
+```text
+branch: fix/gate11a-production-data-isolation
+PR #18: Draft / not merged
+```
+
+目标：Preview / Development 可以读取真实 production 数据用于 QA，但不能把运行时状态写回 Production Supabase。
+
+目前已覆盖三类 runtime write ingress：
+
+1. Today daily synthesis
+2. `/api/feedback` + personalization rebuild
+3. `/api/cron/*` ingestion / analysis / scoring / materialization
+
+当前状态：
+
+```text
+WRITE-PATH AUDIT PASS
+IMPLEMENTATION PASS
+CI PASS
+LATEST PREVIEW RUNTIME CHECK BLOCKED
+```
+
+阻塞原因是 Vercel Free plan 当日 deployment quota，**不是代码失败**。
+
+PR #18 在完成 latest Preview runtime verification 且 owner 明确批准之前不得 merge。
+
+---
+
+## 8. Production Supabase access model
+
+当前实际模型：
+
+```text
+locked base tables + intentionally public frontier_feed_v1 read view
+```
+
+已验证当前 application base tables 对 anon/authenticated 没有 SELECT/INSERT/UPDATE/DELETE；公开读入口是 `frontier_feed_v1`。
+
+后续 hardening backlog：
+
+- `frontier_feed_v1` Security Definer View
+- `rls_auto_enable()` public execute privilege
+- legacy/default ACL 过宽
+- trigger function mutable search_path
+
+这些是防御纵深工作，不等于当前存在匿名底表读写漏洞。
+
+---
+
+## 9. 分支与发布策略
 
 ```text
 main
@@ -170,19 +312,17 @@ proto/*
   └─ historical experiments only
 ```
 
-新任务从最新 `main` 拉分支，不要继续向旧 prototype 分支堆代码。
-
 推荐发布链：
 
 ```text
-feature branch → Preview → PR + CI → main → Production
+latest main → short-lived branch → Preview → PR + CI → explicit approval → main → Production
 ```
 
 不要长期依赖手动 Promote 某个 Preview 作为正式版本来源。
 
 ---
 
-## 5. 技术栈
+## 10. 技术栈
 
 - Next.js 16 / App Router
 - React 19
@@ -195,7 +335,7 @@ feature branch → Preview → PR + CI → main → Production
 
 ---
 
-## 6. 本地启动与检查
+## 11. 本地启动与检查
 
 要求：Node.js ≥ 20。
 
@@ -208,7 +348,9 @@ npm run dev
 
 ```text
 http://localhost:3000/today
-http://localhost:3000/qa/motion-lab
+http://localhost:3000/explore
+http://localhost:3000/saved
+http://localhost:3000/idea-lab
 http://localhost:3000/project/<id>
 ```
 
@@ -225,52 +367,55 @@ npm run build
 
 ---
 
-## 7. 环境变量
+## 12. 环境变量
 
 复制 `.env.example` 为 `.env.local`。
 
 - 不提交 `.env.local`。
 - 真实 key 不写入 Git、Markdown、issue、测试 fixture 或截图。
 - 只有 `NEXT_PUBLIC_*` 可暴露给浏览器。
-- Service role / GitHub token / AI key 只能在服务端使用。
+- Secret / service role / GitHub token / AI key 只能在服务端使用。
 
 主要变量：
 
 | 变量 | 用途 |
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase public URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | 服务端数据库权限 |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | 浏览器/公开只读 Supabase key |
+| `SUPABASE_SECRET_KEY` | 服务端数据库权限 |
+| `SUPABASE_SERVICE_ROLE_KEY` | 旧 service-role fallback |
 | `GITHUB_TOKEN` | GitHub collector |
-| `AI_PROVIDER` | AI provider 标识 |
 | `AI_BASE_URL` / `AI_API_KEY` / `AI_MODEL` | AI provider 配置 |
+| `CRON_SECRET` | Cron 鉴权 |
 
 ---
 
-## 8. 主要路由
+## 13. 主要路由
 
 | 路径 | 说明 |
 | --- | --- |
 | `/` | 重定向到 `/today` |
 | `/today` | Daily Radar / Today’s 7 / Signal Weave |
-| `/explore` | 历史发现与筛选 |
-| `/saved` | 收藏与笔记 |
-| `/idea-lab` | 灵感 / Build 工作区 |
+| `/explore` | CURRENT FRONTIER FIELD |
+| `/saved` | Private Research Shelf |
+| `/idea-lab` | Signal-to-Direction Workbench |
 | `/project/[id]` | Project Intelligence |
 | `/qa/motion-lab` | Today motion / visual QA fixture |
 | `/api/health` | 健康检查 |
 
 ---
 
-## 9. 协作红线
+## 14. 协作红线
 
-1. 先确认 branch / HEAD，再改代码。
-2. 不通过不断追加高 specificity / `!important` 解决架构冲突。
-3. 不复活已退出 production 的 renderer。
-4. 视觉、滚动、数据尽量分层修改。
-5. 不把机器 PASS 说成浏览器视觉 PASS。
-6. 不 force-push，除非仓库 owner 明确要求。
-7. 不从旧 `proto/*` 默认继续开发。
-8. 无法验证的状态明确写“未验证”。
+1. 一次一个 Gate。
+2. 先确认 branch / HEAD，再改代码。
+3. 不无目的 reopen FROZEN surfaces。
+4. 不复活已退出 production 的 renderer。
+5. 视觉、滚动、数据尽量分层修改。
+6. 不把机器 PASS 说成浏览器视觉 PASS。
+7. 不 force-push，除非 owner 明确要求。
+8. 不自动 merge。
+9. destructive cleanup 必须先获得 owner 明确批准。
+10. 无法验证的状态明确写“未验证 / blocked”。
 
-更完整规则见 [`docs/START-HERE.md`](docs/START-HERE.md) 和 [`AGENTS.md`](AGENTS.md)。
+更完整规则见 [`docs/START-HERE.md`](docs/START-HERE.md)、[`AGENTS.md`](AGENTS.md) 和最新 Production Checkpoint。
