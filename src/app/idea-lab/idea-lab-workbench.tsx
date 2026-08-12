@@ -20,6 +20,7 @@ import {
 import styles from "./idea-lab.module.css";
 import "./idea-lab-composition.css";
 import "./idea-lab-binding.css";
+import "./idea-lab-interaction.css";
 
 const STATUS_LABELS: Record<IdeaStatus, { label: string; note: string }> = {
   seed: { label: "SEED", note: "capture the spark" },
@@ -175,7 +176,7 @@ export function IdeaLabWorkbench() {
         <main className={`${styles.draftingTable} fr-idea-lab-table`}>
           <div className={styles.tableGrid} aria-hidden />
           {selectedSource ? (
-            <div className={`${styles.sourceSlip} fr-idea-source-slip`}>
+            <div key={selectedSource.id} className={`${styles.sourceSlip} fr-idea-source-slip`}>
               <div>
                 <span>PINNED SIGNAL</span>
                 <strong>{selectedSource.title}</strong>
@@ -195,7 +196,7 @@ export function IdeaLabWorkbench() {
           ) : null}
 
           {activeIdea ? (
-            <article className={`${styles.ideaSheet} fr-idea-sheet`}>
+            <article key={activeIdea.id} className={`${styles.ideaSheet} fr-idea-sheet`}>
               <div className={styles.sheetTape}>WORKING NOTE / {shortDate(activeIdea.updatedAt)}</div>
               <div className={styles.sheetMeta}>
                 <span>DERIVED FROM</span>
@@ -241,7 +242,7 @@ export function IdeaLabWorkbench() {
               </div>
             </article>
           ) : selectedSource ? (
-            <div className={`${styles.blankSheet} fr-idea-blank-sheet`}>
+            <div key={`blank-${selectedSource.id}`} className={`${styles.blankSheet} fr-idea-blank-sheet`}>
               <Lightbulb aria-hidden />
               <span>ONE SIGNAL. ONE DIRECTION.</span>
               <strong>What can this become in your hands?</strong>
@@ -251,7 +252,7 @@ export function IdeaLabWorkbench() {
               </button>
             </div>
           ) : (
-            <div className={`${styles.blankSheet} fr-idea-blank-sheet`}>
+            <div key="idle" className={`${styles.blankSheet} fr-idea-blank-sheet`}>
               <FlaskConical aria-hidden />
               <span>WORKBENCH IDLE</span>
               <strong>Nothing is pinned yet.</strong>
