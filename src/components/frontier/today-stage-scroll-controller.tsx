@@ -187,10 +187,12 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
       const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
       const projected = clamp(current + delta / travel);
       const heroIsContinuous =
-        direction < 0
+        currentStage === "hero" &&
+        (direction < 0
           ? current <= HERO_FREE_END
-          : projected < HERO_FREE_END - HERO_APPROACH;
+          : projected < HERO_FREE_END - HERO_APPROACH);
       const weaveIsContinuous =
+        currentStage === "weave" &&
         canEnterWeaveRef.current &&
         (direction > 0
           ? current >= WEAVE_STAGE - STAGE_EPSILON
