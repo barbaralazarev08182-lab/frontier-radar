@@ -72,7 +72,8 @@ test("Explore -> Saved -> Idea Lab persists the user's signal-to-direction chain
     await page.getByRole("textbox", { name: "Idea title" }).fill(ideaTitle);
     await page.getByRole("textbox", { name: "Idea working note" }).fill(ideaNote);
 
-    const shapingButton = page.getByRole("button", { name: /SHAPING/ });
+    const statusRail = page.locator(".fr-idea-status-rail");
+    const shapingButton = statusRail.getByRole("button", { name: /SHAPING/ });
     await shapingButton.click();
     await expect(shapingButton).toHaveAttribute("aria-pressed", "true");
     await expectNoHorizontalOverflow(page);
@@ -81,7 +82,9 @@ test("Explore -> Saved -> Idea Lab persists the user's signal-to-direction chain
     await page.reload();
     await expect(page.getByRole("textbox", { name: "Idea title" })).toHaveValue(ideaTitle);
     await expect(page.getByRole("textbox", { name: "Idea working note" })).toHaveValue(ideaNote);
-    await expect(page.getByRole("button", { name: /SHAPING/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(
+      page.locator(".fr-idea-status-rail").getByRole("button", { name: /SHAPING/ })
+    ).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator(".fr-idea-source-slip")).toContainText(sourceTitle);
 
     const directionCard = page.locator(".fr-idea-card").filter({ hasText: ideaTitle }).first();
