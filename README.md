@@ -9,27 +9,26 @@ Discover → Understand → Get Inspired → Build
 ```
 
 > 新协作者先读 [`docs/START-HERE.md`](docs/START-HERE.md)。  
-> 最新生产状态见 [`docs/checkpoints/2026-08-12-production-checkpoint.md`](docs/checkpoints/2026-08-12-production-checkpoint.md)。  
+> 2026-08-12 Production / Gate 11 完整状态见 [`docs/checkpoints/2026-08-12-production-checkpoint.md`](docs/checkpoints/2026-08-12-production-checkpoint.md)。  
 > `AGENTS.md` 保存 coding-agent 协作规则。
 
 ---
 
 ## Current baseline — 2026-08-12
 
-Current GitHub `main` at this checkpoint:
+Current GitHub `main` before this documentation closure record is merged:
 
 ```text
-4293e5e9d1cf297651c624b266dbca2fcfedc038
-Gate 11A: isolate Preview runtime writes from production data
+3fe4977b72084b0dca9232e69b84151ae7a1e205
+Gate 11D: lock Today Project Idea Lab handoffs in CI
 ```
 
-Production URL:
+Production:
 
 ```text
 https://frontier-radar-eosin.vercel.app
+Supabase: grnorpdbdrmfrdjeorvz / ap-southeast-1 / ACTIVE_HEALTHY
 ```
-
-As of **2026-08-12 16:58 SGT**, the Vercel deployment list had **not yet shown a Production deployment for merge commit `4293e5e9...`**. Do not interpret that as a deployment failure; it is simply not yet observed.
 
 Current product loop:
 
@@ -58,6 +57,45 @@ Frontier Intelligence × Physical Archive × Research Instrument
 ```
 
 Avoid generic SaaS dashboards, bento-grid defaults, PPT-style heroes, heavy glassmorphism, or motion without information/state meaning.
+
+---
+
+## Gate 11 — Production Integrity Hardening — CLOSED
+
+Gate 11 established the Production integrity boundary without reopening frozen product surfaces.
+
+```text
+Gate 11A    Preview / Production runtime write isolation       CLOSED
+Gate 11B-A  Function privilege hardening                       CLOSED
+Gate 11B-B  Public feed boundary hardening                     CLOSED
+Gate 11B-C1 Application-role ACL hardening                     CLOSED
+Gate 11C    Stale collection-run terminalization               CLOSED
+Gate 11D    Gate 9 / Gate 10 deterministic CI regressions      CLOSED
+```
+
+Current integrity invariants:
+
+- Vercel Production may persist runtime data; Preview / Development / unexpected Vercel environments are blocked before Production Supabase writes.
+- Public feed reads are server-side through the service-role client and a `security_invoker` feed view.
+- `anon` / `authenticated` have no direct privileges on current public relations or sequences and no direct public-function EXECUTE path.
+- Security Advisor has no Gate-11 ERROR/WARN findings; remaining `RLS Enabled No Policy` findings are INFO on intentionally locked tables.
+- Any new `collection_runs` insert sweeps prior `running` rows older than one hour to terminal `failed`; the eight historical Aug-07 orphan runs were repaired.
+- Gate 9 Today → Project exact-ID and Gate 10 Project → Idea Lab exact-`from` contracts now run permanently inside the existing `npm test` CI step.
+- No Gate 11 integrity subgate changed frozen visuals.
+
+Key merged PRs:
+
+```text
+#18  Gate 11A
+#20  Gate 11B-A
+#21  Gate 11B-B application boundary
+#22  Gate 11B-B migration record
+#23  Gate 11B-C1
+#24  Gate 11C
+#25  Gate 11D
+```
+
+See the checkpoint for exact migrations, CI runs, runtime probes, Production validations, and non-scope decisions.
 
 ---
 
@@ -122,42 +160,20 @@ OPEN INTELLIGENCE
 
 ### Saved — VISUAL PASS + INTERACTION PASS + FROZEN
 
-Metaphor:
-
 ```text
 PRIVATE RESEARCH SHELF
-```
-
-Current v1 persistence is browser-local:
-
-```text
 frontier_radar_saved_items_v1
 src/lib/saved/browser.ts
 ```
 
-### Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
+Current v1 persistence is browser-local.
 
-Metaphor:
+### Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
 
 ```text
 Signal-to-Direction Workbench
-```
-
-Flow:
-
-```text
 Saved Signal → Pinned Signal → Working Note → Personal Direction
-```
-
-Statuses:
-
-```text
 SEED / SHAPING / BUILDING
-```
-
-Current v1 persistence:
-
-```text
 frontier_radar_ideas_v1
 src/lib/ideas/browser.ts
 ```
@@ -166,99 +182,26 @@ If a Saved source is later removed, an existing Idea remains and shows `SOURCE N
 
 ---
 
-## Gate 11A — Preview / Production Data Isolation
+## Remaining product-integrity decisions
 
-Merged PR:
+These were explicitly deferred from Gate 11 rather than left accidentally unfinished.
 
-```text
-PR #18 — MERGED / CLOSED
-merge commit: 4293e5e9d1cf297651c624b266dbca2fcfedc038
-```
+### Gate 12 candidate — Personal Memory Durability
 
-Goal:
-
-```text
-Preview / Development may read realistic Production data,
-but must not persist runtime state into Production Supabase.
-```
-
-Covered runtime write umbrellas:
-
-1. Today synthesis success/failure persistence
-2. `/api/feedback` + personalization rebuild
-3. `/api/cron/*` ingestion / analysis / scoring / materialization
-
-### Status
-
-```text
-WRITE-PATH AUDIT PASS
-IMPLEMENTATION PASS
-CI PASS
-VERCEL PREVIEW ENVIRONMENT EXECUTION PASS
-PRODUCTION DB ZERO-DELTA PASS
-GATE 11A CLOSED
-PR #18 MERGED TO MAIN
-```
-
-Final verification evidence:
-
-- Vercel Preview executed with `VERCEL_ENV="preview"`.
-- `canWriteRuntimeData()` returned `false`.
-- feedback returned `{ ok: true, persisted: false }`.
-- cron returned `403 non_production_write_blocked` before secret validation.
-- Today was forced through the missing-AI failure persistence branch and returned no snapshot without writing a failure row.
-- Production DB before/after was exactly unchanged for:
-  - `daily_synthesis_snapshots` = 9
-  - `user_events` = 180
-  - `collection_runs` = 66
-  - `item_feature_vectors` = 12
-  - `user_interest_vectors` = 4
-  - `user_semantic_profiles` = 0
-- temporary QA probes were deleted immediately after verification; cleanup changed only those QA files.
-
-The connector could not complete a request-level fetch of the protected Preview because Vercel SSO intercepted it. This is recorded as a tooling limitation, not hidden as an HTTP runtime PASS. The write decision itself is a pure `VERCEL_ENV` boundary and was executed inside the real Vercel Preview environment with zero Production DB delta.
-
----
-
-## Production Supabase access model
-
-Current effective model:
-
-```text
-locked base tables + intentionally public frontier_feed_v1 read view
-```
-
-Verified:
-
-- current application base tables have RLS enabled
-- anon/authenticated do not have base-table SELECT/INSERT/UPDATE/DELETE
-- anon can read `frontier_feed_v1`
-- anon direct `public.items` SELECT is denied
-- admin Supabase secrets stay server-side
-
-Security hardening backlog for a later Gate:
-
-- `frontier_feed_v1` Security Definer View
-- `public.rls_auto_enable()` public EXECUTE privilege
-- legacy/default ACLs broader than needed
-- mutable `search_path` on trigger functions
-
-These are defense-in-depth items, not evidence of a current anonymous base-table read/write leak.
-
----
-
-## Personal-state reality
-
-Saved and Idea Lab are intentionally browser-local in v1. They are not cross-device durable memory yet.
-
-Future scope must explicitly choose between:
+Saved and Idea Lab remain intentionally browser-local in v1. Before changing this frozen contract, explicitly choose:
 
 ```text
 A. browser-local + export / backup / import
 B. Supabase-synced personal state
 ```
 
-Personalization is real, but identity is currently browser visitor UUID, so profiles can fragment across browsers/devices.
+### Gate 13 candidate — Personalization Integrity
+
+Current identity is browser visitor UUID, so profiles can fragment across browsers/devices. Future work may address durable identity, QA/test-event quarantine, and ranking-effect proof.
+
+Semantic embeddings are not yet populated; current feature-vector / rules fallback remains valid.
+
+`supabase_admin` default ACL was intentionally outside Gate 11B-C1 because current Frontier Radar public objects are `postgres`-owned and changing Supabase internal-role defaults carries platform-compatibility risk.
 
 ---
 
