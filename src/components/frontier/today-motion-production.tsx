@@ -277,7 +277,9 @@ export function TodayMotionProduction({
   return (
     <>
       <MotionLab />
-      <TodayStageScrollController canEnterWeave={true} />
+      <TodayStageScrollController
+        canEnterWeave={Boolean(snapshot) || (!resolveSynthesisAction && !loadSynthesisAction)}
+      />
       <MotionLabDirectHandoff />
       {stage
         ? createPortal(
