@@ -59,6 +59,7 @@ export function TodayMotionProduction({
 }: TodayMotionProductionProps) {
   const [stage, setStage] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<DailySynthesisSnapshot | null>(initialSnapshot);
+  const [synthesisUnavailable, setSynthesisUnavailable] = useState(false);
   const requestedRef = useRef(false);
 
   useEffect(() => {
@@ -179,9 +180,18 @@ export function TodayMotionProduction({
     let started = false;
     let disposed = false;
 
+    const markUnavailable = () => {
+      if (!disposed) setSynthesisUnavailable(true);
+    };
+
     const schedulePoll = () => {
       if (disposed || !loadSynthesisAction) return;
-      if (Date.now() - pollStartedAt >= SYNTHESIS_POLL_WINDOW_MS) return;
+      if (Date.now() - pollStartedAt >= SYNTHESIS_POLL_WINDOW_MS) {
+        if (!resolveSynthesisAction || generationAttempts >= SYNTHESIS_MAX_GENERATION_ATTEMPTS) {
+          markUnavailable();
+        }
+        return;
+      }
       window.clearTimeout(pollTimer);
       pollTimer = window.setTimeout(pollPersistedSnapshot, SYNTHESIS_POLL_INTERVAL_MS);
     };
@@ -192,6 +202,7 @@ export function TodayMotionProduction({
         .then((result) => {
           if (disposed) return;
           if (result) {
+            setSynthesisUnavailable(false);
             setSnapshot(result);
             return;
           }
@@ -220,6 +231,7 @@ export function TodayMotionProduction({
           if (disposed) return;
           requestedRef.current = false;
           if (result) {
+            setSynthesisUnavailable(false);
             setSnapshot(result);
             return;
           }
@@ -230,7 +242,10 @@ export function TodayMotionProduction({
               launchGeneration,
               SYNTHESIS_GENERATION_RETRY_DELAY_MS
             );
+            return;
           }
+
+          markUnavailable();
         })
         .catch(() => {
           if (disposed) return;
@@ -241,7 +256,10 @@ export function TodayMotionProduction({
               launchGeneration,
               SYNTHESIS_GENERATION_RETRY_DELAY_MS
             );
+            return;
           }
+
+          markUnavailable();
         });
     };
 
@@ -275,12 +293,13 @@ export function TodayMotionProduction({
     };
   }, [loadSynthesisAction, resolveSynthesisAction, snapshot]);
 
+  const synthesisActionsDisabled = !resolveSynthesisAction && !loadSynthesisAction;
+  const canEnterWeave = Boolean(snapshot) || synthesisUnavailable || synthesisActionsDisabled;
+
   return (
     <>
       <MotionLab />
-      <TodayStageScrollController
-        canEnterWeave={Boolean(snapshot) || (!resolveSynthesisAction && !loadSynthesisAction)}
-      />
+      <TodayStageScrollController canEnterWeave={canEnterWeave} />
       <MotionLabDirectHandoff />
       {stage
         ? createPortal(
@@ -291,8 +310,26 @@ export function TodayMotionProduction({
                   initialSnapshot={snapshot}
                   resolveSynthesisAction={null}
                 />
+              ) : synthesisUnavailable ? (
+                <section
+                  className="today-synthesis-pending"
+                  data-synthesis-state="unavailable"
+                  aria-live="polite"
+                >
+                  <div className="today-synthesis-pending-grid" aria-hidden="true" />
+                  <div className="today-synthesis-pending-copy">
+                    <span>FR / TODAY&apos;S SYNTHESIS</span>
+                    <strong>SYNTHESIS UNAVAILABLE</strong>
+                    <p>Today&apos;s 7 remain the record. Open any signal to investigate it; synthesis can retry on a later visit.</p>
+                  </div>
+                </section>
               ) : (
-                <section className="today-synthesis-pending" aria-live="polite" aria-busy="true">
+                <section
+                  className="today-synthesis-pending"
+                  data-synthesis-state="pending"
+                  aria-live="polite"
+                  aria-busy="true"
+                >
                   <div className="today-synthesis-pending-grid" aria-hidden="true" />
                   <div className="today-synthesis-pending-copy">
                     <span>FR / TODAY&apos;S SYNTHESIS</span>
