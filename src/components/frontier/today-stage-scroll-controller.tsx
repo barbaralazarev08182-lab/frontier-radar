@@ -57,7 +57,23 @@ export function TodayStageScrollController({ canEnterWeave }: TodayStageScrollCo
   const canEnterWeaveRef = useRef(canEnterWeave);
 
   useEffect(() => {
+    const wasReady = canEnterWeaveRef.current;
     canEnterWeaveRef.current = canEnterWeave;
+    if (wasReady || !canEnterWeave) return;
+
+    const root = document.querySelector<HTMLElement>(".motion-lab-shell");
+    const scroller = root?.querySelector<HTMLElement>(".motion-lab-scroller");
+    if (!root || !scroller || root.dataset.scrollStage !== "today") return;
+
+    // Mounting the resolved Weave can change the scroller's total height.
+    // Re-anchor the existing logical Today stage against the new travel so
+    // visual progress does not jump backward while readiness unlocks.
+    const frame = window.requestAnimationFrame(() => {
+      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+      scroller.scrollTop = TODAY_STAGE * travel;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [canEnterWeave]);
 
   useEffect(() => {
