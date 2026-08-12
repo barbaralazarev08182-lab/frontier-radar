@@ -42,3 +42,22 @@ test("正确 Bearer 密钥允许执行，不接受 query parameter 密钥", () =
   assert.equal(ok.authorized, true);
   assert.equal(ok.response, undefined);
 });
+
+// ---------------------------------------------------------------------------
+// 3. Preview / Development 永远不进入写任务
+// ---------------------------------------------------------------------------
+
+test("Vercel Preview 在密钥校验前拒绝 cron 写任务", async () => {
+  const previous = process.env.VERCEL_ENV;
+  process.env.VERCEL_ENV = "preview";
+
+  try {
+    const result = checkCronAuth(req({ authorization: "Bearer correct-secret" }), "correct-secret");
+    assert.equal(result.authorized, false);
+    assert.equal(result.response!.status, 403);
+    assert.deepEqual(await result.response!.json(), { error: "non_production_write_blocked" });
+  } finally {
+    if (previous === undefined) delete process.env.VERCEL_ENV;
+    else process.env.VERCEL_ENV = previous;
+  }
+});

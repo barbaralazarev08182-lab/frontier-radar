@@ -1,67 +1,78 @@
 # Frontier Radar — START HERE
 
-> 给第一次接触这个仓库的协作者。
->
-> 更新时间：2026-08-10  
-> 当前状态：**Today + Signal Weave + Project Intelligence 已整合进 `main`。**
-
-## 1. 先记住这一条
-
-```text
-main = 当前正式代码基线 / 新任务默认起点
-```
-
-不要看到 `proto/*` 分支提交更多就默认它更新。那些分支主要保留设计实验和历史过程。
-
-2026-08-10 主干整合通过 PR #3 完成，squash merge commit：
-
-```text
-225cf8dd5c412f9fbf45bd9cbfdbb4a249fe225a
-```
-
-整合没有把约 181 个 prototype 历史提交硬 merge 到主干，而是只搬入最终认可代码。
+> 更新时间：**2026-08-12**  
+> 当前状态：**核心产品链已形成；Explore / Saved / Idea Lab 已冻结；Gate 11A 已完成 Preview→Production runtime write isolation 验收，PR #18 尚未 merge。**
 
 ---
 
-## 2. 一句话理解产品
+## 1. Source of truth
 
-**Frontier Radar 是一个个人化前沿技术发现引擎。**
+优先级：
 
-它不是普通 AI 新闻聚合器，也不是热门项目榜单。核心循环：
+```text
+1. live GitHub main
+2. live Vercel Production
+3. live Supabase Production
+4. recent CI / runtime / browser QA evidence
+5. docs/checkpoints/2026-08-12-production-checkpoint.md
+6. this file / README
+7. older checkpoints and historical PR notes
+```
+
+当前 `main`：
+
+```text
+c8a4628a715e83ff97f2e7754288a2811a0d6dc4
+Honor Project Intelligence source handoff in Idea Lab
+```
+
+Production：
+
+```text
+https://frontier-radar-eosin.vercel.app
+```
+
+旧 `proto/*` 只用于设计考古，不是新任务默认基线。
+
+---
+
+## 2. 产品一句话
+
+**Frontier Radar 是一个个人 Frontier Intelligence 系统。**
 
 ```text
 Discover → Understand → Get Inspired → Build
 ```
 
-当前主体验：
+当前体验：
 
 ```text
-大量候选
-  ↓
-Today’s 7
-  ↓
-Signal Weave
-  ↓
-Project Intelligence
-  ↓
-Build / Idea Lab
+candidate pool
+→ Today’s 7
+→ Signal Weave
+→ Project Intelligence
+→ Saved / Idea Lab / Build
 ```
 
-产品原则：
+Global nav：
 
-- Discovery > Search
-- Rising > Popular
-- Idea Spark > 纯热度
-- Projects / demos > 被动内容（质量相近时）
-- 保留 Adjacent / Wildcard，避免推荐越学越窄
-- AI 用于解释、综合和判断，不用于堆“聪明文案”
-- 动画必须表达信息状态或阶段语义
+```text
+TODAY / EXPLORE / SAVED / IDEA LAB
+```
+
+设计语言：
+
+```text
+Frontier Intelligence × Physical Archive × Research Instrument
+```
+
+避免 generic SaaS dashboard、bento grid、PPT hero、重玻璃拟态和没有信息语义的 motion。
 
 ---
 
-## 3. 数据与推荐链路
+## 3. Discovery / ranking
 
-当前来源：
+Sources：
 
 - GitHub
 - Hugging Face（Spaces-first）
@@ -69,127 +80,47 @@ Build / Idea Lab
 - Product Hunt
 - arXiv
 
-大致数据流：
-
-```text
-Collectors
-  ↓
-raw_items / items
-  ↓
-metrics snapshots + AI analysis
-  ↓
-Discovery Score
-  ↓
-Project Entity / cross-source evidence
-  ↓
-Personalized Daily Mix
-  ↓
-Today’s 7
-  ↓
-Daily Synthesis / Signal Weave
-```
-
-公共 Discovery Score：
-
-1. Freshness
-2. Domain Relevance
-3. Momentum
-4. Project Health
-5. Novelty
-6. Idea Spark
-7. Tryability
-
 Today 默认：
 
 ```text
 5 Core + 1 Adjacent + 1 Wildcard
 ```
 
-Personal Match 属于用户级重排，不等于公共 Discovery Score。
+Personal Match 是用户级重排，不等于公共 Discovery Score。
 
 ---
 
-## 4. `/today` 当前合同
-
-章节状态机：
+## 4. Today / Signal Weave — protected contract
 
 ```text
-Hero                 continuous
-  ↓
-Compression          locked stable stage
-  ↓ one physical gesture
-Today’s 7            locked stable stage
-  ↓ one physical gesture
-Signal Weave         continuous synthesis scene
+Hero continuous
+→ Compression locked
+→ Today’s 7 locked
+→ Signal Weave continuous
 ```
 
 必须保持：
 
-- Hero 可以连续 scrub。
-- Compression / Today’s 7 是稳定终点。
-- 一个真实 wheel / trackpad gesture 最多推进一个中间 stage。
-- 惯性不能跳 stage。
-- transition 期间锁输入。
-- 正反向对称。
-- Signal Weave 进入后恢复连续内部滚动。
-- synthesis 数据加载中时，最终 synthesis chapter 仍然存在并可进入。
+- one physical gesture max one intermediate stage
+- inertia cannot jump stages
+- transition locks input
+- reverse behavior symmetric
+- Signal Weave restores continuous internal scroll
+- synthesis scene remains enterable while synthesis prepares
+- `06 Adjacent` cobalt blue
+- `07 Wildcard` saturated orange
+- LAB-03–06 owns production visual baseline
+- do not resurrect foil / spectral / standalone compression artifact renderers
 
-### Today 视觉基线
-
-- editorial asymmetric composition
-- `06 / Adjacent` = cobalt blue
-- `07 / Wildcard` = saturated orange
-- LAB-03–06 是 production 视觉 owner
-
-不要重新引入：
-
-- foil renderer
-- spectral renderer
-- standalone compression artifact renderer
-- 用来对抗这些实验的 restore / override CSS
-
-历史上这些层同时加载会造成透明 card、06/07 颜色丢失、反向滚动 ghost 和 specificity 冲突。
-
-核心文件：
-
-```text
-src/app/today/
-src/components/frontier/today-motion-production.tsx
-src/components/frontier/today-stage-scroll-controller.tsx
-src/components/frontier/today-signal-weave.tsx
-src/components/frontier/motion-lab/
-src/app/qa/motion-lab/
-```
-
----
-
-## 5. Signal Weave 当前合同
-
-Signal Weave 的作用是让用户看到：
+Signal Weave：
 
 ```text
 7 Daily Signals → 3 higher-level patterns → Final Take
 ```
 
-保留：
-
-- 一个统一 synthesis field
-- signal ribbon/thread 的关系可读性
-- hover / pin 后强调关系但不完全删除上下文
-- Final Take 在同一 scene 内收束
-
-不要回到：
-
-- 三张普通 pattern card
-- Pattern 01/02/03 分页
-- 黑色 cyberpunk dashboard
-- 用巨大 typography 代替关系结构
-
 ---
 
-## 6. `/project/[id]` 当前合同
-
-五阶段：
+## 5. Project Intelligence — protected contract
 
 ```text
 01 CAPTURE
@@ -199,147 +130,237 @@ Signal Weave 的作用是让用户看到：
 05 BUILD
 ```
 
-### 01 Capture
+不要随手重做已接受的 visual / transition，尤其 03 Interrogation。
 
-目标：第一眼就让用户想继续调查。
-
-当前认可：
-
-- 大型 editorial headline
-- dossier / evidence stack
-- foil / paper / cobalt / orange material language
-- cursor / parallax / scanning response
-- 用户完全不动时也持续 idle motion
-- 顶部 nav 透明融入页面
-
-### 02 Evidence
-
-目标：回答“Radar 为什么相信这个项目”。
-
-- 强调 source / evidence traceability
-- 可检视，而不是文章列表或 dashboard
-
-### 03 Interrogation
-
-保护级视觉锚点：
-
-- saturated orange field
-- giant background typography
-- 连续 analysis sheets
-- 黑片约 `rgba(8,8,8,.65)`
-- 背景应透过黑片可见
-- 内部连续 scrub
-- idle motion 持续
-
-不要随手重做这一幕。
-
-### 04 Resolution
-
-目标：把 Evidence + Interrogation 压缩成决策。
-
-- 7 个 score dimension
-- central Frontier Verdict
-- score label 当前已放大，保持可读
-- attraction / pulse / convergence idle motion
-
-它不是“再看一遍分数”的 dashboard，而是落锤页。
-
-### 05 Build
-
-目标：从理解进入行动。
-
-- action direction
-- Idea Lab path
-- idle directional energy
-
-核心文件：
+Project → Idea Lab：
 
 ```text
-src/app/project/[id]/page.tsx
-src/app/project/[id]/layout.tsx
-src/app/project/[id]/project-intelligence.css
-src/app/project/[id]/project-intelligence-effects.css
-src/app/project/[id]/project-intelligence-capture.css
-src/app/project/[id]/project-intelligence-refinements.css
-src/components/frontier/project-intelligence-motion.tsx
+/idea-lab?from=<source-item-id>
 ```
+
+必须 honor exact source；不得 silently fallback 到其他 Saved signal。
 
 ---
 
-## 7. 已明确放弃的视觉方向
+## 6. Explore — FROZEN
 
-这些分支可以研究，但不是当前 baseline：
-
-```text
-proto/project-intelligence-spatial-v1
-proto/project-intelligence-kinetic-v1
-```
-
-### Spatial / full R3F world
-
-放弃原因：
-
-- 变成 3D technical demo
-- 浮动几何体取代了产品的 editorial identity
-- 技术复杂度增加，但信息意义没有同步增加
-
-### Kinetic / transition bridge
-
-放弃原因：
-
-- fake transition object 变成肉眼可见的“中间页”
-- 大色块破坏连续性
-- 继续修补会重新形成 CSS patch stack
-
-当前偏好：
+Formal direction：
 
 ```text
-real content + shared continuity + restrained 2.5D + meaningful idle motion
+B Version / Field-first Explore / CURRENT FRONTIER FIELD
 ```
+
+Actions：
+
+```text
+MORE LIKE THIS
+LESS LIKE THIS
+ARCHIVE · SAVE / SAVED
+OPEN INTELLIGENCE
+```
+
+`MORE LIKE THIS` 是 personalization signal，不等于 SAVE。
 
 ---
 
-## 8. Supabase / Daily Synthesis
+## 7. Saved — VISUAL PASS + INTERACTION PASS + FROZEN
 
-Production 已存在 migration：
+Metaphor：
 
 ```text
-20260808144951_daily_synthesis_snapshots
+PRIVATE RESEARCH SHELF
 ```
 
-仓库 migration history 已在主干整合前与 production 对齐。
+Current v1 persistence：
 
-不要重新创建另一个 `0016_daily_synthesis_snapshots` 版本造成 migration drift。
+```text
+browser localStorage
+frontier_radar_saved_items_v1
+src/lib/saved/browser.ts
+```
+
+不要未经 scope reopening 改为 Supabase sync。
 
 ---
 
-## 9. 开发流程
+## 8. Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
 
-新任务：
-
-```text
-git checkout main
-git pull
-# create a short-lived feature/fix/docs branch
-```
-
-建议发布：
+Metaphor：
 
 ```text
-feature branch
-  ↓
-Vercel Preview
-  ↓
-PR + CI
-  ↓
-main
-  ↓
-Production
+Signal-to-Direction Workbench
 ```
 
-不要长期把某个手动 Promote 的 Preview 当正式 source of truth。
+Flow：
 
-### 提交前
+```text
+Saved Signal → Pinned Signal → Working Note → Personal Direction
+```
+
+Statuses：
+
+```text
+SEED / SHAPING / BUILDING
+```
+
+Current persistence：
+
+```text
+browser localStorage
+frontier_radar_ideas_v1
+src/lib/ideas/browser.ts
+```
+
+Binding：
+
+```text
+activeIdea.sourceItemId === selectedSource.id
+```
+
+Exact-source behavior：
+
+- source in Saved → select exact source
+- removed from Saved but Idea exists → preserve orphan Idea
+- missing and no Idea → `SOURCE NOT IN SAVED`
+- no auto-save
+- no fallback
+
+---
+
+## 9. Gate 9 / Gate 10
+
+- Gate 9: Today → Project exact ID handoff structurally/functionally closed.
+- Gate 10: Project → Idea Lab exact source handoff merged to `main`.
+
+Do not convert structural/machine evidence into visual PASS without browser evidence.
+
+---
+
+## 10. Gate 11A — CLOSED, not merged
+
+Branch / PR：
+
+```text
+fix/gate11a-production-data-isolation
+PR #18 — Draft / not merged
+```
+
+Goal：
+
+```text
+Preview / Development may read realistic Production data,
+but must not persist runtime state into Production Supabase.
+```
+
+Covered write umbrellas：
+
+1. Today synthesis persistence
+2. `/api/feedback` + personalization rebuild
+3. `/api/cron/*` ingestion / analysis / scoring / materialization
+
+Verification result：
+
+```text
+WRITE-PATH AUDIT PASS
+IMPLEMENTATION PASS
+CI PASS
+VERCEL PREVIEW ENVIRONMENT EXECUTION PASS
+PRODUCTION DB ZERO-DELTA PASS
+GATE 11A CLOSED
+```
+
+Real Vercel Preview execution produced：
+
+```text
+VERCEL_ENV = preview
+canWriteRuntimeData() = false
+feedback = { ok: true, persisted: false }
+cron = 403 non_production_write_blocked
+Today missing-AI failure branch = no persistence
+```
+
+Production DB before / after remained exactly unchanged：
+
+```text
+daily_synthesis_snapshots = 9
+user_events = 180
+collection_runs = 66
+item_feature_vectors = 12
+user_interest_vectors = 4
+user_semantic_profiles = 0
+```
+
+Temporary QA probes were removed after verification; the cleanup diff contained only those QA file deletions.
+
+Tooling caveat：Vercel SSO prevented the connector from completing a request-level HTTP fetch of the protected Preview. Do **not** describe that specific HTTP/browser request as verified. The write policy itself is pure `VERCEL_ENV` logic and was executed inside the real Preview environment with Production DB zero delta.
+
+**Do not merge PR #18 until owner explicitly approves.**
+
+---
+
+## 11. Production Supabase access model
+
+Effective model：
+
+```text
+locked base tables + intentionally public frontier_feed_v1 read view
+```
+
+Verified：
+
+- application base tables have RLS enabled
+- anon/authenticated have no base-table SELECT/INSERT/UPDATE/DELETE
+- anon can SELECT `frontier_feed_v1`
+- anon direct SELECT `public.items` is denied
+- admin Supabase secret stays server-side
+
+Later hardening backlog：
+
+1. `frontier_feed_v1` Security Definer View
+2. `rls_auto_enable()` public execute privilege
+3. legacy/default ACL broader than necessary
+4. mutable search_path on trigger functions
+
+These are defense-in-depth items, not evidence of a current anonymous base-table leak.
+
+---
+
+## 12. Personal-state reality
+
+Saved / Ideas are browser-local v1, not cross-device durable memory.
+
+Future scope must explicitly choose：
+
+```text
+A. browser-local + export / backup / import
+B. Supabase-synced personal state
+```
+
+Personalization identity is currently browser visitor UUID, so profiles can fragment across browsers/devices.
+
+---
+
+## 13. Known operational debt
+
+- stale `collection_runs` can remain `running` indefinitely; later Gate should add timeout/reconciliation/terminalization
+- Gate 9 / Gate 10 deterministic handoffs should live permanently in main CI
+- Supabase security hardening should be a separate Gate, not silently folded into Gate 11A
+
+---
+
+## 14. Development discipline
+
+```text
+latest main
+→ short-lived feature/fix branch
+→ Preview
+→ PR + CI
+→ explicit owner approval
+→ main
+→ Production
+```
+
+Before code submission：
 
 ```bash
 npm run typecheck
@@ -348,51 +369,12 @@ npm run test
 npm run build
 ```
 
-对于 motion / visual 工作：
+Red lines：
 
-**机器 PASS ≠ Visual PASS。**
-
-必须在真实浏览器检查对应路径、正反向滚动、慢滚和快速触控板惯性。
-
----
-
-## 10. Scope discipline
-
-- 先找状态 owner，再加代码。
-- 优先删除冲突 owner，不要继续叠高 specificity CSS。
-- 视觉任务不要顺手重写推荐逻辑。
-- 滚动任务不要顺手重画视觉。
-- 不复活已冻结的实验 renderer。
-- 不 force-push，除非 owner 明确要求。
-- 无法验证的场景明确写“未验证”。
-
----
-
-## 11. 主要路由
-
-| 路径 | 用途 |
-| --- | --- |
-| `/` | 重定向 `/today` |
-| `/today` | Daily Radar / Today’s 7 / Signal Weave |
-| `/explore` | 历史发现 |
-| `/saved` | 收藏与笔记 |
-| `/idea-lab` | Build / 灵感工作区 |
-| `/project/[id]` | Project Intelligence |
-| `/qa/motion-lab` | Today motion QA fixture |
-| `/api/health` | 健康检查 |
-
----
-
-## 12. 文档优先级
-
-如果旧文档与当前状态冲突：
-
-```text
-main 当前代码
-+ docs/START-HERE.md
-+ 最新 checkpoint
-  > README.md / AGENTS.md
-  > 历史 PRD / PHASES / prototype branch notes
-```
-
-历史文档不会因为过时就全部删除，它们用于保留设计和架构决策背景。
+- one Gate at a time
+- do not reopen FROZEN surfaces without explicit scope reopening
+- do not force-push unless explicitly requested
+- do not auto-merge
+- destructive cleanup requires explicit approval
+- machine / runtime / production / visual PASS must remain separate claims
+- clearly label anything unverified or tool-blocked

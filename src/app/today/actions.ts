@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { canWriteRuntimeData } from "@/lib/env/runtime-write-policy";
 import {
   DAILY_SYNTHESIS_PROMPT_VERSION,
   computeDailySelectionHash,
@@ -38,6 +39,8 @@ export async function loadTodaySynthesis(
  *
  * Persistence is deliberately best-effort here: a transient Supabase/cache
  * failure must not discard a valid synthesis that can still power Signal Weave.
+ * Vercel Preview/Development may read the shared cache for realistic QA, but
+ * must never write success/failure snapshots back into production data.
  */
 export async function resolveTodaySynthesis(
   editionDate: string,
@@ -49,6 +52,7 @@ export async function resolveTodaySynthesis(
   if (new Set(signalIds).size !== signalIds.length) return null;
 
   const selectionHash = computeDailySelectionHash(signalIds);
+  const allowPersistence = canWriteRuntimeData();
 
   let supabase: ReturnType<typeof createAdminClient> | null = null;
   try {
@@ -75,7 +79,7 @@ export async function resolveTodaySynthesis(
       !model ? "AI_MODEL" : null,
     ].filter(Boolean).join(", ");
 
-    if (supabase) {
+    if (supabase && allowPersistence) {
       await upsertDailySynthesisFailure(supabase, {
         editionDate,
         selectionHash,
@@ -103,7 +107,7 @@ export async function resolveTodaySynthesis(
   try {
     const output = await generateDailySynthesis(client, { editionDate, signals });
 
-    if (supabase) {
+    if (supabase && allowPersistence) {
       await upsertDailySynthesisSuccess(supabase, {
         snapshot: output.snapshot,
         provider: "tencent",
@@ -119,7 +123,7 @@ export async function resolveTodaySynthesis(
     return output.snapshot;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (supabase) {
+    if (supabase && allowPersistence) {
       await upsertDailySynthesisFailure(supabase, {
         editionDate,
         selectionHash,
