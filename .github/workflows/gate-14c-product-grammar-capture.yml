@@ -80,28 +80,31 @@ jobs:
               const brandVisible = await page.locator('.fr-brand__label').isVisible();
               const links = await page.locator('.fr-primary-nav__link').allTextContents();
               const viewportWidth = await page.evaluate(() => window.innerWidth);
+              const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
               const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-              report.push({ name, route, nav, brandVisible, links, viewportWidth, documentWidth });
+              const entry = { name, route, nav, brandVisible, links, viewportWidth, layoutWidth, documentWidth };
+              report.push(entry);
               await page.screenshot({ path: path.join(out, `${name}.png`), fullPage });
+              return entry;
             }
 
             await capture('01-today', '/today', false);
             await capture('02-explore', '/explore');
 
-            await page.goto('http://127.0.0.1:3000/today', { waitUntil: 'networkidle', timeout: 60000 });
-            const projectId = await page.locator('.motion-lab-signal[data-item-id]').first().getAttribute('data-item-id').catch(() => null);
-            if (projectId) await capture('03-project', '/project/' + encodeURIComponent(projectId));
+            const projectHref = await page.locator('a[href^="/project/"]').first().getAttribute('href').catch(() => null);
+            if (projectHref) await capture('03-project', projectHref);
 
             await capture('04-saved', '/saved');
             await capture('05-idea-lab', '/idea-lab');
 
+            fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(report, null, 2));
+
             for (const entry of report) {
               if (!entry.brandVisible) throw new Error(`Brand hidden on ${entry.name}`);
-              if (entry.documentWidth > entry.viewportWidth + 1) throw new Error(`Horizontal overflow on ${entry.name}`);
-              if (entry.nav.width !== 1440) throw new Error(`Nav width mismatch on ${entry.name}: ${entry.nav.width}`);
+              if (entry.documentWidth > entry.layoutWidth + 1) throw new Error(`Horizontal overflow on ${entry.name}`);
+              if (Math.abs(entry.nav.width - entry.layoutWidth) > 1) throw new Error(`Nav width mismatch on ${entry.name}: ${entry.nav.width} vs ${entry.layoutWidth}`);
             }
 
-            fs.writeFileSync(path.join(out, 'report.json'), JSON.stringify(report, null, 2));
             await browser.close();
           })().catch((error) => { console.error(error); process.exit(1); });
           NODE
