@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { IDEA_STORAGE_KEY } from "../ideas/browser";
-import { SAVED_STORAGE_KEY } from "../saved/browser";
+import { IDEA_STORAGE_KEY, type IdeaDraft } from "../ideas/browser";
+import { SAVED_STORAGE_KEY, type SavedItemSnapshot } from "../saved/browser";
 import { commitPersonalMemoryState, type PersonalMemoryStorage } from "./browser";
 import {
   PERSONAL_MEMORY_BACKUP_FORMAT,
@@ -18,32 +18,38 @@ const older = "2026-08-10T00:00:00.000Z";
 const newer = "2026-08-12T00:00:00.000Z";
 const newest = "2026-08-13T00:00:00.000Z";
 
+function savedItem(overrides: Partial<SavedItemSnapshot> = {}): SavedItemSnapshot {
+  return {
+    id: "saved-1",
+    title: "Signal One",
+    source: "GitHub",
+    contentType: "repository",
+    summary: "A saved signal",
+    score: 91,
+    tags: ["agents", "tools"],
+    savedAt: newer,
+    ...overrides,
+  };
+}
+
+function ideaDraft(overrides: Partial<IdeaDraft> = {}): IdeaDraft {
+  return {
+    id: "idea-1",
+    sourceItemId: "saved-1",
+    sourceTitle: "Signal One",
+    title: "Direction One",
+    note: "Investigate this direction.",
+    status: "shaping",
+    createdAt: older,
+    updatedAt: newer,
+    ...overrides,
+  };
+}
+
 function state(): PersonalMemoryState {
   return {
-    savedItems: [
-      {
-        id: "saved-1",
-        title: "Signal One",
-        source: "GitHub",
-        contentType: "repository",
-        summary: "A saved signal",
-        score: 91,
-        tags: ["agents", "tools"],
-        savedAt: newer,
-      },
-    ],
-    ideas: [
-      {
-        id: "idea-1",
-        sourceItemId: "saved-1",
-        sourceTitle: "Signal One",
-        title: "Direction One",
-        note: "Investigate this direction.",
-        status: "shaping",
-        createdAt: older,
-        updatedAt: newer,
-      },
-    ],
+    savedItems: [savedItem()],
+    ideas: [ideaDraft()],
   };
 }
 
@@ -85,7 +91,7 @@ test("Gate 12A contract: duplicate ids and malformed records are rejected", () =
   const valid = createPersonalMemoryBackup(state(), newest);
   const duplicate = {
     ...valid,
-    savedItems: [valid.savedItems[0], valid.savedItems[0]],
+    savedItems: [savedItem(), savedItem()],
   };
   assert.throws(
     () => parsePersonalMemoryBackup(JSON.stringify(duplicate)),
@@ -94,7 +100,7 @@ test("Gate 12A contract: duplicate ids and malformed records are rejected", () =
 
   const malformed = {
     ...valid,
-    ideas: [{ ...valid.ideas[0], status: "done" }],
+    ideas: [{ ...ideaDraft(), status: "done" }],
   };
   assert.throws(
     () => parsePersonalMemoryBackup(JSON.stringify(malformed)),
@@ -106,7 +112,7 @@ test("Gate 12A contract: orphan ideas remain valid backup records", () => {
   const backup = createPersonalMemoryBackup(
     {
       savedItems: [],
-      ideas: [{ ...state().ideas[0], sourceItemId: "removed-source" }],
+      ideas: [ideaDraft({ sourceItemId: "removed-source" })],
     },
     newest
   );
@@ -119,22 +125,18 @@ test("Gate 12A contract: orphan ideas remain valid backup records", () => {
 test("Gate 12A merge: newer local records win, newer imported records update, missing records are added", () => {
   const current: PersonalMemoryState = {
     savedItems: [
-      { ...state().savedItems[0], title: "Local newer", savedAt: newest },
-      { ...state().savedItems[0], id: "local-only", title: "Local only", savedAt: older },
+      savedItem({ title: "Local newer", savedAt: newest }),
+      savedItem({ id: "local-only", title: "Local only", savedAt: older }),
     ],
-    ideas: [
-      { ...state().ideas[0], title: "Local older idea", updatedAt: older },
-    ],
+    ideas: [ideaDraft({ title: "Local older idea", updatedAt: older })],
   };
   const incoming = createPersonalMemoryBackup(
     {
       savedItems: [
-        { ...state().savedItems[0], title: "Backup older", savedAt: newer },
-        { ...state().savedItems[0], id: "backup-only", title: "Backup only", savedAt: newer },
+        savedItem({ title: "Backup older", savedAt: newer }),
+        savedItem({ id: "backup-only", title: "Backup only", savedAt: newer }),
       ],
-      ideas: [
-        { ...state().ideas[0], title: "Backup newer idea", updatedAt: newest },
-      ],
+      ideas: [ideaDraft({ title: "Backup newer idea", updatedAt: newest })],
     },
     newest
   );
@@ -151,8 +153,8 @@ test("Gate 12A replace: imported backup becomes the exact next personal-memory s
   const incoming = createPersonalMemoryBackup(state(), newest);
   const replaced = planPersonalMemoryImport(
     {
-      savedItems: [{ ...state().savedItems[0], id: "discard-me" }],
-      ideas: [{ ...state().ideas[0], id: "discard-me" }],
+      savedItems: [savedItem({ id: "discard-me" })],
+      ideas: [ideaDraft({ id: "discard-me" })],
     },
     incoming,
     "replace"
