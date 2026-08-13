@@ -1,0 +1,2 @@
+Trigger desktop recapture for Gate 14C visible workspace identity.
+Product branch under test: agent/gate-14c-product-grammar
