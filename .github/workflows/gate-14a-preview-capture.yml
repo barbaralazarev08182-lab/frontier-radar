@@ -1,3 +1,4 @@
+# Visual probe target: Gate 14A latest branch after disclosure-placement refinement.
 name: Gate 14A Explore Fixture Visual Capture
 
 on:
