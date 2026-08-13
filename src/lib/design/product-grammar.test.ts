@@ -5,6 +5,7 @@ import test from "node:test";
 const nav = readFileSync("src/components/site-nav.tsx", "utf8");
 const layout = readFileSync("src/app/layout.tsx", "utf8");
 const grammar = readFileSync("src/app/product-grammar.css", "utf8");
+const projectCss = readFileSync("src/app/project/[id]/project-intelligence.css", "utf8");
 
 test("global layout loads the shared Frontier Radar product grammar", () => {
   assert.match(layout, /import "\.\/product-grammar\.css"/);
@@ -40,6 +41,12 @@ test("shared grammar defines stable semantic design tokens", () => {
   ]) {
     assert.ok(grammar.includes(token), `missing ${token}`);
   }
+});
+
+test("shared header height stays aligned with the protected Project shell", () => {
+  assert.match(grammar, /--fr-header-h:\s*3rem;/);
+  assert.match(grammar, /height:\s*var\(--fr-header-h\);/);
+  assert.match(projectCss, /\.project-intelligence-shell\s*\{[\s\S]*?inset:\s*3rem 0 0;/);
 });
 
 test("shared action grammar has primary, secondary, and tertiary roles", () => {
