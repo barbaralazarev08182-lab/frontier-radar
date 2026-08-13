@@ -1,0 +1,107 @@
+name: Gate 15A Lieflat Explore Capture
+
+on:
+  push:
+    branches:
+      - agent/strict-design-audit-capture
+
+jobs:
+  capture-lieflat-explore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Gate 15A branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/gate-15a-lieflat-explore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install app and browser tooling
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Verify app
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+          npm run build
+        env:
+          FRONTIER_DATA_MODE: fixture
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_OPTIONS: ""
+
+      - name: Start app
+        shell: bash
+        run: |
+          FRONTIER_DATA_MODE=fixture NEXT_TELEMETRY_DISABLED=1 npm run start > /tmp/frontier-g15a.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/explore > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/frontier-g15a.log
+          exit 1
+
+      - name: Capture Explore desktop
+        shell: bash
+        run: |
+          mkdir -p artifacts/gate-15a
+          node <<'NODE'
+          const { chromium } = require('@playwright/test');
+          const fs = require('fs');
+          const path = require('path');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({ viewport: { width: 1440, height: 1024 }, reducedMotion: 'reduce' });
+            await context.route('**/api/feedback', (route) => route.abort('blockedbyclient'));
+            const page = await context.newPage();
+            await page.goto('http://127.0.0.1:3000/explore', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.waitForTimeout(500);
+
+            const body = await page.locator('body').innerText();
+            const facts = {
+              title: await page.title(),
+              hasLieflat: body.includes('L1 LAUNCH FAN'),
+              hasTruthContract: body.includes('Global Score stays unchanged'),
+              hasOldSemanticAxis: body.includes('SEMANTIC DISTANCE'),
+              hasOldPressureAxis: body.includes('SIGNAL PRESSURE'),
+              viewportWidth: await page.evaluate(() => window.innerWidth),
+              documentWidth: await page.evaluate(() => document.documentElement.scrollWidth),
+              svgBox: await page.locator('.lf-launch-fan').boundingBox(),
+              detailBox: await page.locator('.lf-explore-detail').boundingBox(),
+            };
+
+            if (!facts.hasLieflat || !facts.hasTruthContract || facts.hasOldSemanticAxis || facts.hasOldPressureAxis || facts.documentWidth > facts.viewportWidth + 1) {
+              throw new Error('Gate 15A browser contract failed: ' + JSON.stringify(facts));
+            }
+
+            const out = path.join(process.cwd(), 'artifacts/gate-15a');
+            await page.screenshot({ path: path.join(out, 'explore-desktop.png'), fullPage: true });
+            fs.writeFileSync(path.join(out, 'facts.json'), JSON.stringify(facts, null, 2));
+            await browser.close();
+          })().catch((error) => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-15a-lieflat-explore-visual
+          path: artifacts/gate-15a
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/frontier-g15a.log || true
