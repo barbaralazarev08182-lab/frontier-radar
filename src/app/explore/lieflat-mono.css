@@ -1,0 +1,55 @@
+/* Gate 15A — strict Lieflat Mono refinement.
+   The chart itself stays monochrome; Frontier semantic colors remain small UI signals only. */
+.lf-explore-hero h1 {
+  font-weight: 700;
+}
+
+.lf-fan-signal,
+.lf-fan-signal[data-lens="for-you"],
+.lf-fan-signal[data-lens="adjacent"],
+.lf-fan-signal[data-lens="rising"],
+.lf-fan-signal[data-lens="new"],
+.lf-fan-signal[data-lens="wildcard"] {
+  color: #9b9a94;
+}
+
+.lf-fan-signal:nth-of-type(3n) { color: #85847f; }
+.lf-fan-signal:nth-of-type(4n) { color: #b3b2ac; }
+
+.lf-fan-signal.is-focus,
+.lf-fan-signal:hover,
+.lf-fan-signal:focus-visible {
+  color: #1c1c1a;
+}
+
+.lf-fan-signal.is-focus .lf-fan-launch {
+  fill: #1c1c1a;
+}
+
+.lf-explore-ranking li.is-active button {
+  box-shadow: inset 2px 0 0 #1c1c1a;
+}
+
+.lf-explore-ranking li.is-active button strong,
+.lf-explore-ranking li.is-active button em {
+  color: #1c1c1a;
+}
+
+.lf-lens-dot {
+  box-shadow: none !important;
+}
+
+.lf-explore-lenses button.is-active .lf-lens-dot {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+.lf-open-intelligence {
+  background: #1c1c1a !important;
+  border-color: #1c1c1a !important;
+  color: #f0efeb !important;
+}
+
+.lf-detail-tags span {
+  background: transparent;
+}
