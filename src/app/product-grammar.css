@@ -80,6 +80,13 @@
   padding-inline: var(--fr-page-x);
 }
 
+.fr-nav-context {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 1rem;
+}
+
 .fr-brand {
   display: inline-flex;
   min-width: 0;
@@ -126,11 +133,48 @@
   text-transform: uppercase;
 }
 
+.fr-surface-identity {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.55rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--fr-nav-line);
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fr-surface-identity__index {
+  display: inline-grid;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  background: var(--fr-nav-accent);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.fr-surface-identity strong {
+  color: var(--fr-nav-fg);
+  font-size: 0.6rem;
+  font-weight: 900;
+}
+
+.fr-surface-identity__descriptor {
+  color: var(--fr-nav-muted);
+  font-size: 0.54rem;
+  font-weight: 700;
+}
+
 .fr-primary-nav {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: clamp(0.9rem, 2vw, 1.8rem);
+  gap: clamp(0.45rem, 1vw, 0.85rem);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   text-transform: uppercase;
 }
@@ -153,22 +197,30 @@
   transition: color 160ms ease, opacity 160ms ease;
 }
 
+.fr-primary-nav__link {
+  min-height: 1.75rem;
+  padding-inline: 0.68rem;
+  border: 1px solid transparent;
+}
+
 .fr-primary-nav__link:hover,
 .fr-nav-tool:hover {
   color: var(--fr-nav-fg);
 }
 
 .fr-primary-nav__link[aria-current="page"] {
-  color: var(--fr-nav-fg);
+  border-color: var(--fr-nav-fg);
+  background: var(--fr-nav-fg);
+  color: var(--fr-nav-bg);
 }
 
 .fr-primary-nav__link[aria-current="page"]::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0.18rem;
-  height: 2px;
-  background: var(--fr-nav-accent);
+  display: none;
+}
+
+.fr-site-nav[data-fr-tone="dark"] .fr-primary-nav__link[aria-current="page"],
+.fr-site-nav[data-fr-tone="overlay"] .fr-primary-nav__link[aria-current="page"] {
+  color: #111214;
 }
 
 .fr-nav-tools {
@@ -242,16 +294,38 @@
   opacity: 1;
 }
 
+@media (max-width: 980px) {
+  .fr-surface-identity__descriptor {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
   .fr-site-nav__inner {
-    gap: 1rem;
+    gap: 0.75rem;
+    padding-inline: 0.85rem;
   }
 
-  .fr-brand__label {
+  .fr-nav-context {
+    gap: 0.6rem;
+  }
+
+  .fr-brand__label,
+  .fr-surface-identity strong,
+  .fr-surface-identity__descriptor {
     display: none;
   }
 
+  .fr-surface-identity {
+    padding-left: 0.6rem;
+  }
+
   .fr-primary-nav {
-    gap: 0.75rem;
+    gap: 0.2rem;
+  }
+
+  .fr-primary-nav__link {
+    min-width: 1.8rem;
+    padding-inline: 0.4rem;
   }
 }
