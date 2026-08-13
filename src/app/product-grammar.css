@@ -15,7 +15,7 @@
   --fr-wildcard: #ff5b21;
 
   --fr-page-x: clamp(1.5rem, 3vw, 3.25rem);
-  --fr-header-h: 3.5rem;
+  --fr-header-h: 3rem;
   --fr-content-max: 90rem;
   --fr-control-h: 2rem;
 
@@ -35,6 +35,8 @@
   --fr-nav-line: var(--fr-line-light);
   --fr-nav-accent: var(--fr-cobalt);
 
+  box-sizing: border-box;
+  height: var(--fr-header-h);
   inset-inline: 0;
   top: 0;
   z-index: 120;
@@ -70,7 +72,7 @@
 .fr-site-nav__inner {
   box-sizing: border-box;
   display: flex;
-  min-height: var(--fr-header-h);
+  height: 100%;
   width: 100%;
   align-items: center;
   justify-content: space-between;
