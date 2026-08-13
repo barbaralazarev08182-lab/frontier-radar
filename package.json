@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test \"src/lib/collectors/**/*.test.ts\" \"src/lib/db/repositories/**/*.test.ts\" \"src/lib/ai/**/*.test.ts\" \"src/lib/scoring/**/*.test.ts\" \"src/lib/feed/**/*.test.ts\" \"src/lib/cron/**/*.test.ts\" \"src/lib/jobs/**/*.test.ts\" \"src/lib/env/**/*.test.ts\"",
+    "test": "tsx --test \"src/lib/collectors/**/*.test.ts\" \"src/lib/db/repositories/**/*.test.ts\" \"src/lib/ai/**/*.test.ts\" \"src/lib/scoring/**/*.test.ts\" \"src/lib/feed/**/*.test.ts\" \"src/lib/cron/**/*.test.ts\" \"src/lib/jobs/**/*.test.ts\" \"src/lib/env/**/*.test.ts\" \"src/lib/personal-memory/**/*.test.ts\"",
     "collect:github": "tsx scripts/collect-github.ts",
     "collect:github:dry": "tsx scripts/collect-github.ts --dry-run",
     "collect:github:smoke": "tsx scripts/collect-github.ts --dry-run --max-groups=1 --max-search-requests=2 --pages-per-query=1 --enrich-limit=2",
