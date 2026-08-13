@@ -17,7 +17,8 @@ const LENSES: Array<{ id: ExploreLens; label: string; short: string; note: strin
   { id: "wildcard", label: "WILDCARD", short: "WILD", note: "OUTSIDE BUBBLE" },
 ];
 
-const POSITIONS = [
+// Editorial placement only. Ranking is driven by lensScores; these are not metric coordinates.
+const EDITORIAL_POSITIONS = [
   [12, 18, -5], [28, 12, 3], [76, 16, -2], [90, 28, 5], [14, 43, 2],
   [88, 52, -4], [22, 68, -2], [72, 72, 4], [42, 82, 2], [92, 78, -3],
   [8, 84, 4], [42, 18, -2], [64, 8, 2], [6, 58, -4], [60, 88, 3],
@@ -201,8 +202,8 @@ export function ExploreField({
             >
               <span className="explore-search-trigger-icon"><Search aria-hidden /></span>
               <span className="explore-search-trigger-copy">
-                <strong>SEARCH FRONTIER</strong>
-                <small>LIVE SCAN</small>
+                <strong>SEARCH THIS SCAN</strong>
+                <small>CURRENT CANDIDATES</small>
               </span>
               <span className="explore-search-trigger-led" aria-hidden />
             </button>
@@ -212,6 +213,7 @@ export function ExploreField({
             <span><strong>{ordered.length}</strong> active signals</span>
             <span><strong>{totalDiscoveries}</strong> discoveries in range</span>
             <span>{personalized ? "PERSONAL GRAVITY ACTIVE" : "COLD-START GRAVITY"}</span>
+            <span>EXPLORATORY LAYOUT · RANKED BY {activeLens.label}</span>
           </div>
 
           {searchOpen ? (
@@ -270,15 +272,16 @@ export function ExploreField({
         </nav>
       </div>
 
-      <div className="explore-field-stage" aria-label="Frontier discovery field">
+      <div
+        className="explore-field-stage"
+        aria-label={`Frontier discovery field. Exploratory layout; ranking follows ${activeLens.label} lens scores.`}
+      >
         <div className="explore-field-scan" aria-hidden />
-        <div className="explore-field-axis explore-field-axis-x" aria-hidden>SEMANTIC DISTANCE →</div>
-        <div className="explore-field-axis explore-field-axis-y" aria-hidden>SIGNAL PRESSURE</div>
 
         {ordered.map((candidate) => {
           const rank = rankById.get(candidate.itemId) ?? 99;
           const isFocus = candidate.itemId === focus?.itemId;
-          const preset = POSITIONS[rank % POSITIONS.length]!;
+          const preset = EDITORIAL_POSITIONS[rank % EDITORIAL_POSITIONS.length]!;
           const tier = rank < 5 ? "near" : rank < 12 ? "mid" : "far";
           const style: FieldStyle = {
             "--field-x": isFocus ? "57%" : `${preset[0]}%`,
