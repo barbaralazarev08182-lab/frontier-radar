@@ -10,9 +10,8 @@ import { personalizeFeed } from "@/lib/personalization/server";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
-import { ExploreField } from "./explore-field";
-import "./lieflat-explore.css";
-import "./lieflat-mono.css";
+import { ExploreFieldV3 } from "./explore-field-v3";
+import "./lieflat-v3.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
@@ -93,7 +92,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   }
 
   return (
-    <ExploreField
+    <ExploreFieldV3
       candidates={candidates}
       totalDiscoveries={totalDiscoveries}
       dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
