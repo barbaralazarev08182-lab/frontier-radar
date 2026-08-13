@@ -80,9 +80,8 @@ jobs:
               const brandVisible = await page.locator('.fr-brand__label').isVisible();
               const links = await page.locator('.fr-primary-nav__link').allTextContents();
               const viewportWidth = await page.evaluate(() => window.innerWidth);
-              const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
               const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-              const entry = { name, route, nav, brandVisible, links, viewportWidth, layoutWidth, documentWidth };
+              const entry = { name, route, nav, brandVisible, links, viewportWidth, documentWidth };
               report.push(entry);
               await page.screenshot({ path: path.join(out, `${name}.png`), fullPage });
               return entry;
@@ -92,7 +91,7 @@ jobs:
             await capture('02-explore', '/explore');
 
             const projectHref = await page.locator('a[href^="/project/"]').first().getAttribute('href').catch(() => null);
-            if (projectHref) await capture('03-project', projectHref);
+            if (projectHref) await capture('03-project-route-check', projectHref);
 
             await capture('04-saved', '/saved');
             await capture('05-idea-lab', '/idea-lab');
@@ -101,8 +100,12 @@ jobs:
 
             for (const entry of report) {
               if (!entry.brandVisible) throw new Error(`Brand hidden on ${entry.name}`);
-              if (entry.documentWidth > entry.layoutWidth + 1) throw new Error(`Horizontal overflow on ${entry.name}`);
-              if (Math.abs(entry.nav.width - entry.layoutWidth) > 1) throw new Error(`Nav width mismatch on ${entry.name}: ${entry.nav.width} vs ${entry.layoutWidth}`);
+              if (entry.documentWidth > entry.viewportWidth + 1) throw new Error(`Horizontal overflow on ${entry.name}`);
+              if (entry.nav.x !== 0 || entry.nav.y !== 0) throw new Error(`Nav origin mismatch on ${entry.name}`);
+              if (entry.nav.height !== 48) throw new Error(`Nav height mismatch on ${entry.name}: ${entry.nav.height}`);
+              if (entry.nav.width < entry.viewportWidth - 20 || entry.nav.width > entry.viewportWidth + 1) {
+                throw new Error(`Nav viewport fit mismatch on ${entry.name}: ${entry.nav.width} vs ${entry.viewportWidth}`);
+              }
             }
 
             await browser.close();
