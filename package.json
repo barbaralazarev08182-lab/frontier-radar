@@ -19,7 +19,7 @@
     "collect:huggingface:smoke": "tsx scripts/collect-huggingface.ts --dry-run --limit-per-type=5 --enrich-limit=2 --skip-cards",
     "doctor:huggingface": "tsx scripts/doctor-huggingface.ts",
     "collect:arxiv": "tsx scripts/collect-arxiv.ts",
-    "collect:arxiv:dry": "tsx scripts/collect-arxiv.ts --dry-run --max-groups=1 --max-results=5",
+    "collect:arxiv:dry": "tsx scripts/collect-arxiv.ts --dry-run",
     "collect:arxiv:smoke": "tsx scripts/collect-arxiv.ts --dry-run --max-groups=1 --max-results=5",
     "doctor:arxiv": "tsx scripts/doctor-arxiv.ts",
     "doctor:ai": "tsx scripts/doctor-ai.ts",
