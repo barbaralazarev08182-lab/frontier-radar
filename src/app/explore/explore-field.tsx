@@ -1,49 +1,61 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Heart, MousePointer2, Radar, Search, Sparkles, ThumbsDown, X } from "lucide-react";
+import { ArrowUpRight, Heart, Search, ThumbsDown, X } from "lucide-react";
 import { SaveButton } from "@/components/frontier/save-button";
 import { TrackedDetailLink } from "@/components/frontier/tracked-detail-link";
 import { trackFeedback } from "@/lib/personalization/browser";
 import { observeQualifiedDwell } from "@/lib/personalization/qualified-dwell";
 import type { ExploreCandidate, ExploreLens } from "@/lib/feed/explore-candidates";
 
-const LENSES: Array<{ id: ExploreLens; label: string; short: string; note: string }> = [
-  { id: "for-you", label: "FOR YOU", short: "YOU", note: "CORE MATCH" },
-  { id: "adjacent", label: "ADJACENT", short: "ADJ", note: "NEAR EDGE" },
-  { id: "rising", label: "RISING", short: "RISE", note: "MOMENTUM" },
-  { id: "new", label: "NEW", short: "NEW", note: "JUST SEEN" },
-  { id: "wildcard", label: "WILDCARD", short: "WILD", note: "OUTSIDE BUBBLE" },
+const LENSES: Array<{ id: ExploreLens; label: string; note: string }> = [
+  { id: "for-you", label: "FOR YOU", note: "Personal match" },
+  { id: "adjacent", label: "ADJACENT", note: "Near your edge" },
+  { id: "rising", label: "RISING", note: "Public momentum" },
+  { id: "new", label: "NEW", note: "Recently surfaced" },
+  { id: "wildcard", label: "WILDCARD", note: "Outside your center" },
 ];
 
-const POSITIONS = [
-  [12, 18, -5], [28, 12, 3], [76, 16, -2], [90, 28, 5], [14, 43, 2],
-  [88, 52, -4], [22, 68, -2], [72, 72, 4], [42, 82, 2], [92, 78, -3],
-  [8, 84, 4], [42, 18, -2], [64, 8, 2], [6, 58, -4], [60, 88, 3],
-  [34, 58, 4], [80, 90, -3], [52, 10, 1], [96, 62, 3], [18, 92, -2],
-] as const;
+const WINDOW_DAYS = 90;
+const WINDOW_WEEKS = WINDOW_DAYS / 7;
+const MAX_PLOTTED = 16;
+const FAN = {
+  cx: 62,
+  cy: 506,
+  minR: 78,
+  maxR: 760,
+  startAngle: -68,
+  endAngle: -5,
+};
 
-type FieldStyle = CSSProperties & Record<`--${string}`, string | number>;
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function dateMs(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function ageDays(value: string | null | undefined): number {
+  const parsed = dateMs(value);
+  if (parsed === null) return WINDOW_DAYS / 2;
+  return Math.max(0, (Date.now() - parsed) / 86_400_000);
+}
+
+function firstSeenLabel(value: string | null | undefined): string {
+  const parsed = dateMs(value);
+  if (parsed === null) return "UNKNOWN";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(new Date(parsed)).toUpperCase();
+}
 
 function scoreLabel(score: number | null): string {
   return score == null ? "—" : Math.round(score).toString();
-}
-
-function lensFallback(kind: "now" | "you", lens: ExploreLens, personalized: boolean): string {
-  if (kind === "now") {
-    if (lens === "adjacent") return "它正好位于核心兴趣与新方向的交界，适合现在跨出去一步。";
-    if (lens === "rising") return "公共 Frontier Score 与近期信号把它推到了这一轮扫描前排。";
-    if (lens === "new") return "它仍处在较新的发现窗口，适合现在检查，而不是等它变成共识。";
-    if (lens === "wildcard") return "它的质量与新颖性已经越过探索门槛，值得打破一次惯性。";
-    return "它目前同时满足质量、时效与可行动性的基础门槛。";
-  }
-
-  if (lens === "adjacent") return "它与你的兴趣仍有语义连接，但已经开始把 Radar 推向外侧。";
-  if (lens === "wildcard") return "它被刻意放在兴趣中心之外，用来防止 Radar 越学越窄。";
-  return personalized
-    ? "你的历史行为已经影响排序，它目前靠近你的兴趣中心。"
-    : "当前仍是冷启动，Radar 主要依据公共质量、时效与可行动性排序。";
 }
 
 function sourceLabel(source: string): string {
@@ -51,6 +63,45 @@ function sourceLabel(source: string): string {
   if (source === "hackernews") return "SHOW HN";
   if (source === "producthunt") return "PRODUCT HUNT";
   return source.toUpperCase();
+}
+
+function polar(radius: number, angle: number): [number, number] {
+  const radians = (angle * Math.PI) / 180;
+  return [FAN.cx + radius * Math.cos(radians), FAN.cy + radius * Math.sin(radians)];
+}
+
+function radiusForWeek(week: number): number {
+  const progress = clamp(week / WINDOW_WEEKS, 0, 1);
+  return FAN.minR + progress * (FAN.maxR - FAN.minR);
+}
+
+function lensFallback(kind: "now" | "you", lens: ExploreLens, personalized: boolean): string {
+  if (kind === "now") {
+    if (lens === "adjacent") return "Close enough to connect with your current interests, far enough to expand them.";
+    if (lens === "rising") return "Its public Frontier Score and recency place it near the front of this scan.";
+    if (lens === "new") return "It has surfaced inside the recent discovery window and is worth checking before consensus forms.";
+    if (lens === "wildcard") return "Its quality and novelty clear the exploration threshold despite sitting outside your center.";
+    return "It currently clears the quality, freshness, and actionability threshold for this scan.";
+  }
+
+  if (lens === "adjacent") return "It still connects to your interest profile, but pushes toward an adjacent topic.";
+  if (lens === "wildcard") return "It is deliberately surfaced outside your center to keep the Radar from becoming narrow.";
+  return personalized
+    ? "Your prior interactions contribute to this ranking, so it currently sits close to your interest center."
+    : "This scan is still in cold start, so ranking is driven mainly by public quality, freshness, and actionability.";
+}
+
+interface FanPoint {
+  candidate: ExploreCandidate;
+  rank: number;
+  angle: number;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  currentRadius: number;
+  weekMarks: Array<{ x: number; y: number; week: number }>;
+  clampedToWindow: boolean;
 }
 
 export function ExploreField({
@@ -88,50 +139,54 @@ export function ExploreField({
     [available, lens]
   );
 
-  const focus = ordered.find((candidate) => candidate.itemId === focusId) ?? ordered[0] ?? null;
-  const isSearching = searchOpen || query.trim().length > 0;
+  const plotted = ordered.slice(0, MAX_PLOTTED);
+  const focus = plotted.find((candidate) => candidate.itemId === focusId) ?? plotted[0] ?? null;
   const activeLens = LENSES.find((entry) => entry.id === lens) ?? LENSES[0]!;
+
+  const fanPoints = useMemo<FanPoint[]>(() => {
+    const denominator = Math.max(1, plotted.length - 1);
+    return plotted.map((candidate, rank) => {
+      const angle = FAN.startAngle + (FAN.endAngle - FAN.startAngle) * (rank / denominator);
+      const daysSinceSeen = ageDays(candidate.firstSeenAt);
+      const clampedAge = Math.min(WINDOW_DAYS, daysSinceSeen);
+      const launchWeek = (WINDOW_DAYS - clampedAge) / 7;
+      const startRadius = radiusForWeek(launchWeek);
+      const [startX, startY] = polar(startRadius, angle);
+      const [endX, endY] = polar(FAN.maxR, angle);
+      const score = clamp(candidate.score ?? 35, 0, 100);
+      const currentRadius = 4.2 + Math.sqrt(score) * 0.72;
+      const weekMarks: Array<{ x: number; y: number; week: number }> = [];
+      const firstWholeWeek = Math.ceil(launchWeek + 0.001);
+      for (let week = firstWholeWeek; week <= Math.floor(WINDOW_WEEKS); week++) {
+        const [x, y] = polar(radiusForWeek(week), angle);
+        weekMarks.push({ x, y, week });
+      }
+      return {
+        candidate,
+        rank,
+        angle,
+        startX,
+        startY,
+        endX,
+        endY,
+        currentRadius,
+        weekMarks,
+        clampedToWindow: daysSinceSeen > WINDOW_DAYS,
+      };
+    });
+  }, [plotted]);
 
   useEffect(() => {
     if (!focus) return;
-    const node = document.querySelector<HTMLElement>(".explore-signal.is-focus .explore-focus-card");
+    const node = document.querySelector<HTMLElement>(".lf-explore-detail");
     if (!node) return;
     return observeQualifiedDwell(node, focus.itemId, {
       surface: "explore",
-      algorithm_variant: `explore-frontier-field-v1:${lens}`,
+      algorithm_variant: `explore-lieflat-l1:${lens}`,
       source: focus.source,
       content_type: focus.contentType,
     });
   }, [focus, lens]);
-
-  useEffect(() => {
-    if (!searchOpen) return;
-
-    // Search is an instrument mode, not another vertical page section: freeze document scroll
-    // while the fixed-height dock filters the already-visible field beneath it.
-    const root = document.documentElement;
-    const body = document.body;
-    const previousRootOverflow = root.style.overflow;
-    const previousBodyOverflow = body.style.overflow;
-
-    root.style.overflow = "hidden";
-    body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setQuery("");
-      setSearchOpen(false);
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      root.style.overflow = previousRootOverflow;
-      body.style.overflow = previousBodyOverflow;
-    };
-  }, [searchOpen]);
-
-  const rankById = useMemo(() => new Map(ordered.map((candidate, index) => [candidate.itemId, index])), [ordered]);
 
   function chooseLens(next: ExploreLens) {
     setLens(next);
@@ -142,7 +197,7 @@ export function ExploreField({
   function feedback(candidate: ExploreCandidate, eventType: "interested" | "not_interested") {
     trackFeedback(candidate.itemId, eventType, undefined, {
       surface: "explore",
-      algorithm_variant: `explore-frontier-field-v1:${lens}`,
+      algorithm_variant: `explore-lieflat-l1:${lens}`,
       source: candidate.source,
       content_type: candidate.contentType,
     });
@@ -155,14 +210,7 @@ export function ExploreField({
     setSuppressed((current) => new Set(current).add(candidate.itemId));
   }
 
-  function stepFocus(delta: number) {
-    if (!focus || ordered.length < 2) return;
-    const index = ordered.findIndex((candidate) => candidate.itemId === focus.itemId);
-    const next = (index + delta + ordered.length) % ordered.length;
-    setFocusId(ordered[next]!.itemId);
-  }
-
-  function resetField() {
+  function resetScan() {
     setSuppressed(new Set());
     setLiked(new Set());
     setQuery("");
@@ -170,227 +218,298 @@ export function ExploreField({
     setFocusId(candidates[0]?.itemId ?? null);
   }
 
-  function closeSearch() {
-    setQuery("");
-    setSearchOpen(false);
-  }
-
   return (
-    <section
-      className="explore-field-shell"
-      data-lens={lens}
-      data-searching={isSearching ? "true" : "false"}
-    >
-      <div className="explore-control-surface">
-        <header className="explore-field-header">
-          <div className="explore-field-kicker">
-            <span>FRONTIER RADAR / EXPLORE</span>
+    <section className="lf-explore" data-lens={lens}>
+      <header className="lf-explore-hero">
+        <div>
+          <div className="lf-explore-kicker">
+            <span>02 EXPLORE</span>
+            <span>L1 LAUNCH FAN</span>
             <span>{dataLabel}</span>
           </div>
+          <h1>THE FRONTIER IS MOVING.</h1>
+          <p>
+            Each signal starts where it first surfaced. Time runs outward. Node size is today&apos;s Global Score.
+          </p>
+        </div>
 
-          <div className="explore-field-heading-row">
-            <div>
-              <h1>CURRENT FRONTIER</h1>
-              <p>Move from what you already care about toward what you did not know you should care about.</p>
-            </div>
+        <div className="lf-explore-hero-meta" aria-label="Explore scan metadata">
+          <strong>{ordered.length}</strong>
+          <span>CURRENT CANDIDATES</span>
+          <strong>{totalDiscoveries}</strong>
+          <span>DISCOVERIES IN RANGE</span>
+        </div>
+      </header>
+
+      <div className="lf-explore-controls">
+        <div className="lf-explore-lenses" aria-label="Discovery lens">
+          {LENSES.map((entry) => (
             <button
-              className="explore-search-trigger"
               type="button"
-              onClick={() => setSearchOpen(true)}
-              aria-expanded={searchOpen}
+              key={entry.id}
+              className={lens === entry.id ? "is-active" : ""}
+              onClick={() => chooseLens(entry.id)}
+              aria-pressed={lens === entry.id}
+              title={entry.note}
             >
-              <span className="explore-search-trigger-icon"><Search aria-hidden /></span>
-              <span className="explore-search-trigger-copy">
-                <strong>SEARCH FRONTIER</strong>
-                <small>LIVE SCAN</small>
-              </span>
-              <span className="explore-search-trigger-led" aria-hidden />
+              <span className="lf-lens-dot" aria-hidden />
+              {entry.label}
             </button>
-          </div>
+          ))}
+        </div>
 
-          <div className="explore-field-stats" aria-label="Explore scan status">
-            <span><strong>{ordered.length}</strong> active signals</span>
-            <span><strong>{totalDiscoveries}</strong> discoveries in range</span>
-            <span>{personalized ? "PERSONAL GRAVITY ACTIVE" : "COLD-START GRAVITY"}</span>
-          </div>
-
+        <div className="lf-explore-search-wrap">
           {searchOpen ? (
-            <div className="explore-search-panel" role="search" aria-label="Search current frontier scan">
-              <div className="explore-search-panel-label">
-                <span>FRONTIER SCAN</span>
-                <strong>{String(ordered.length).padStart(2, "0")}</strong>
-              </div>
+            <label className="lf-explore-search">
               <Search aria-hidden />
               <input
                 autoFocus
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search this frontier scan"
-                aria-label="Search this frontier scan"
+                placeholder="Search this scan"
+                aria-label="Search this scan"
               />
-              <div className="explore-search-readout" aria-hidden>
-                <span>{activeLens.label}</span>
-                <strong>{query.trim() ? "FILTERING" : "READY"}</strong>
-              </div>
-              <button className="explore-search-close" type="button" onClick={closeSearch} aria-label="Close search">
-                <X aria-hidden />
-              </button>
-            </div>
-          ) : null}
-        </header>
-
-        <nav className="explore-lens-strip" aria-label="Discovery lens">
-          <div className="explore-lens-title">
-            <Radar aria-hidden />
-            <span>
-              <strong>RADAR LENS</strong>
-              <small>RETUNE HOW THE FIELD IS RANKED</small>
-            </span>
-          </div>
-          <div className="explore-lens-options">
-            {LENSES.map((entry) => (
               <button
                 type="button"
-                key={entry.id}
-                data-lens-id={entry.id}
-                onClick={() => chooseLens(entry.id)}
-                className={lens === entry.id ? "is-active" : ""}
-                aria-pressed={lens === entry.id}
-                title={`${entry.label} — ${entry.note}`}
+                onClick={() => {
+                  setQuery("");
+                  setSearchOpen(false);
+                }}
+                aria-label="Close search"
               >
-                <strong className="explore-lens-full">{entry.label}</strong>
-                <strong className="explore-lens-short">{entry.short}</strong>
-                <small>{entry.note}</small>
+                <X aria-hidden />
               </button>
-            ))}
-          </div>
-          <button className="explore-lens-reset" type="button" onClick={resetField}>
-            RESET SCAN
-          </button>
-        </nav>
+            </label>
+          ) : (
+            <button className="lf-search-trigger" type="button" onClick={() => setSearchOpen(true)}>
+              <Search aria-hidden /> SEARCH THIS SCAN
+            </button>
+          )}
+          <button className="lf-reset-trigger" type="button" onClick={resetScan}>RESET</button>
+        </div>
       </div>
 
-      <div className="explore-field-stage" aria-label="Frontier discovery field">
-        <div className="explore-field-scan" aria-hidden />
-        <div className="explore-field-axis explore-field-axis-x" aria-hidden>SEMANTIC DISTANCE →</div>
-        <div className="explore-field-axis explore-field-axis-y" aria-hidden>SIGNAL PRESSURE</div>
+      <div className="lf-explore-layout">
+        <aside className="lf-explore-ranking" aria-label="Top signals in current lens">
+          <div className="lf-section-label">TOP SIGNALS · {activeLens.label}</div>
+          <ol>
+            {plotted.slice(0, 8).map((candidate, index) => (
+              <li key={candidate.itemId} className={candidate.itemId === focus?.itemId ? "is-active" : ""}>
+                <button type="button" onClick={() => setFocusId(candidate.itemId)}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{candidate.title}</strong>
+                  <em>{scoreLabel(candidate.score)}</em>
+                </button>
+              </li>
+            ))}
+          </ol>
+          <p className="lf-ranking-note">
+            Ranked by the selected lens. Global Score stays unchanged.
+          </p>
+        </aside>
 
-        {ordered.map((candidate) => {
-          const rank = rankById.get(candidate.itemId) ?? 99;
-          const isFocus = candidate.itemId === focus?.itemId;
-          const preset = POSITIONS[rank % POSITIONS.length]!;
-          const tier = rank < 5 ? "near" : rank < 12 ? "mid" : "far";
-          const style: FieldStyle = {
-            "--field-x": isFocus ? "57%" : `${preset[0]}%`,
-            "--field-y": isFocus ? "47%" : `${preset[1]}%`,
-            "--field-tilt": isFocus ? "-1deg" : `${preset[2]}deg`,
-            "--field-delay": `${Math.min(rank, 12) * 18}ms`,
-            "--field-strength": `${Math.round(candidate.lensScores[lens]) / 100}`,
-          };
+        <figure className="lf-explore-figure">
+          <div className="lf-figure-head">
+            <div>
+              <strong>Signals, fanned out by emergence</strong>
+              <span>90-day window · one spoke per signal · weekly time marks</span>
+            </div>
+            <div className="lf-time-direction" aria-hidden>
+              <span>EARLIER</span><i /><span>NOW</span>
+            </div>
+          </div>
 
-          return (
-            <article
-              key={candidate.itemId}
-              className={`explore-signal explore-signal-${tier}${isFocus ? " is-focus" : ""}${liked.has(candidate.itemId) ? " is-liked" : ""}`}
-              style={style}
-              data-dominant={candidate.dominantLens}
-            >
-              {isFocus ? (
-                <div className="explore-focus-card">
-                  <div className="explore-focus-meta">
-                    <span>{sourceLabel(candidate.source)}</span>
-                    <span>{candidate.contentType.toUpperCase()}</span>
-                    <span>{candidate.crossSource ? `${candidate.sourceCount} SOURCES` : "SINGLE SIGNAL"}</span>
-                    <strong>{scoreLabel(candidate.score)}</strong>
-                  </div>
-                  <h2>{candidate.title}</h2>
-                  <p className="explore-focus-summary">{candidate.summary}</p>
-                  <div className="explore-focus-reasons">
-                    <div>
-                      <span>WHY NOW</span>
-                      <p>{candidate.whyNow ?? lensFallback("now", lens, personalized)}</p>
-                    </div>
-                    <div>
-                      <span>WHY YOU</span>
-                      <p>{candidate.whyYou ?? lensFallback("you", lens, personalized)}</p>
-                    </div>
-                  </div>
-                  <div className="explore-focus-evidence">
-                    <Radar aria-hidden />
-                    <span>{candidate.sourceEvidence.map(sourceLabel).join(" · ")}</span>
-                    {candidate.metricLabel ? <span>{candidate.metricLabel}</span> : null}
-                  </div>
-                  <div className="explore-focus-tags">
-                    {candidate.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
-                  </div>
-                  <div className="explore-focus-stepper">
-                    <button type="button" onClick={() => stepFocus(-1)}>← PREVIOUS SIGNAL</button>
-                    <span>{String((rankById.get(candidate.itemId) ?? 0) + 1).padStart(2, "0")} / {String(ordered.length).padStart(2, "0")}</span>
-                    <button type="button" onClick={() => stepFocus(1)}>NEXT SIGNAL →</button>
-                  </div>
-                  <div className="explore-focus-actions">
-                    <button
-                      type="button"
-                      className={liked.has(candidate.itemId) ? "is-active" : ""}
-                      onClick={() => feedback(candidate, "interested")}
-                    >
-                      <Heart aria-hidden /> MORE LIKE THIS
-                    </button>
-                    <button type="button" onClick={() => feedback(candidate, "not_interested")}>
-                      <ThumbsDown aria-hidden /> LESS LIKE THIS
-                    </button>
-                    <SaveButton
-                      item={{
-                        id: candidate.itemId,
-                        title: candidate.title,
-                        source: candidate.source,
-                        contentType: candidate.contentType,
-                        summary: candidate.summary,
-                        score: candidate.score,
-                        tags: candidate.tags,
-                      }}
-                      className="explore-save-action"
+          <svg
+            className="lf-launch-fan"
+            viewBox="0 0 980 560"
+            role="img"
+            aria-label="Lieflat Launch Fan showing when current frontier signals emerged over the last 90 days"
+          >
+            {[0, 4.3, 8.6, WINDOW_WEEKS].map((week, index) => {
+              const radius = radiusForWeek(week);
+              const [x1, y1] = polar(radius, FAN.startAngle);
+              const [x2, y2] = polar(radius, FAN.endAngle);
+              const bigArc = FAN.endAngle - FAN.startAngle > 180 ? 1 : 0;
+              const labels = ["90D AGO", "60D", "30D", "TODAY"];
+              return (
+                <g key={week} className="lf-week-guide">
+                  <path
+                    d={`M${x1} ${y1} A${radius} ${radius} 0 ${bigArc} 1 ${x2} ${y2}`}
+                    fill="none"
+                  />
+                  <text x={x1} y={y1 - 10}>{labels[index]}</text>
+                </g>
+              );
+            })}
+
+            {fanPoints.map((point) => {
+              const isFocus = point.candidate.itemId === focus?.itemId;
+              const score = scoreLabel(point.candidate.score);
+              return (
+                <g
+                  key={point.candidate.itemId}
+                  className={`lf-fan-signal${isFocus ? " is-focus" : ""}`}
+                  data-lens={point.candidate.dominantLens}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Inspect ${point.candidate.title}`}
+                  onClick={() => setFocusId(point.candidate.itemId)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setFocusId(point.candidate.itemId);
+                    }
+                  }}
+                >
+                  <line
+                    className="lf-fan-spoke"
+                    x1={point.startX}
+                    y1={point.startY}
+                    x2={point.endX}
+                    y2={point.endY}
+                    pathLength={1}
+                    style={{ animationDelay: `${point.rank * 45}ms` }}
+                  />
+
+                  {point.weekMarks.map((mark, index) => (
+                    <circle
+                      key={`${point.candidate.itemId}-${mark.week}`}
+                      className="lf-fan-tick"
+                      cx={mark.x}
+                      cy={mark.y}
+                      r={1.45 + ((point.rank + index) % 3) * 0.35}
+                      style={{ animationDelay: `${180 + point.rank * 45 + index * 24}ms` }}
                     />
-                    <TrackedDetailLink
-                      itemId={candidate.itemId}
-                      href={`/project/${candidate.itemId}`}
-                      className="explore-open-intelligence"
-                      metadata={{
-                        surface: "explore",
-                        algorithm_variant: `explore-frontier-field-v1:${lens}`,
-                        source: candidate.source,
-                        content_type: candidate.contentType,
-                      }}
-                    >
-                      OPEN INTELLIGENCE <ArrowUpRight aria-hidden />
-                    </TrackedDetailLink>
-                  </div>
-                </div>
-              ) : (
+                  ))}
+
+                  <circle
+                    className="lf-fan-launch"
+                    cx={point.startX}
+                    cy={point.startY}
+                    r={point.currentRadius}
+                    style={{ animationDelay: `${120 + point.rank * 55}ms` }}
+                  >
+                    <title>{`${point.candidate.title} · first seen ${firstSeenLabel(point.candidate.firstSeenAt)} · Global Score ${score}`}</title>
+                  </circle>
+
+                  {point.clampedToWindow ? (
+                    <circle className="lf-fan-before-window" cx={point.startX} cy={point.startY} r={point.currentRadius + 3.5} />
+                  ) : null}
+
+                  <circle className="lf-fan-now" cx={point.endX} cy={point.endY} r={isFocus ? 4.8 : 2.4} />
+
+                  {point.rank < 7 ? (
+                    <g className="lf-fan-label" transform={`translate(${point.endX + 10} ${point.endY})`}>
+                      <text>{point.candidate.title}</text>
+                      <text className="lf-fan-score" x="158">{score}</text>
+                    </g>
+                  ) : null}
+                </g>
+              );
+            })}
+          </svg>
+
+          <figcaption>
+            <span>L1 LAUNCH FAN · ADAPTED DIRECTLY FROM LIEFLAT CHARTS</span>
+            <span>Position = first seen · node area = Global Score · dots = weekly time marks</span>
+          </figcaption>
+        </figure>
+
+        {focus ? (
+          <aside className="lf-explore-detail" aria-label={`Selected signal: ${focus.title}`}>
+            <div className="lf-section-label">SELECTED SIGNAL</div>
+            <div className="lf-detail-source-row">
+              <span>{sourceLabel(focus.source)}</span>
+              <span>{focus.contentType.toUpperCase()}</span>
+              {focus.crossSource ? <span>{focus.sourceCount} SOURCES</span> : null}
+            </div>
+
+            <h2>{focus.title}</h2>
+            <p className="lf-detail-summary">{focus.summary}</p>
+
+            <dl className="lf-detail-stats">
+              <div><dt>FIRST SEEN</dt><dd>{firstSeenLabel(focus.firstSeenAt)}</dd></div>
+              <div><dt>GLOBAL SCORE</dt><dd>{scoreLabel(focus.score)} / 100</dd></div>
+              <div><dt>{activeLens.label} MATCH</dt><dd>{Math.round(focus.lensScores[lens])} / 100</dd></div>
+              {focus.metricLabel ? <div><dt>CURRENT METRIC</dt><dd>{focus.metricLabel}</dd></div> : null}
+            </dl>
+
+            <div className="lf-detail-reason">
+              <span>WHY NOW</span>
+              <p>{focus.whyNow ?? lensFallback("now", lens, personalized)}</p>
+            </div>
+            <div className="lf-detail-reason">
+              <span>WHY YOU</span>
+              <p>{focus.whyYou ?? lensFallback("you", lens, personalized)}</p>
+            </div>
+
+            <div className="lf-detail-tags">
+              {focus.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+            </div>
+
+            <div className="lf-detail-actions">
+              <TrackedDetailLink
+                itemId={focus.itemId}
+                href={`/project/${focus.itemId}`}
+                className="lf-open-intelligence"
+                metadata={{
+                  surface: "explore",
+                  algorithm_variant: `explore-lieflat-l1:${lens}`,
+                  source: focus.source,
+                  content_type: focus.contentType,
+                }}
+              >
+                OPEN INTELLIGENCE <ArrowUpRight aria-hidden />
+              </TrackedDetailLink>
+
+              <div className="lf-detail-secondary-actions">
+                <SaveButton
+                  item={{
+                    id: focus.itemId,
+                    title: focus.title,
+                    source: focus.source,
+                    contentType: focus.contentType,
+                    summary: focus.summary,
+                    score: focus.score,
+                    tags: focus.tags,
+                  }}
+                  className="lf-save-action"
+                />
                 <button
                   type="button"
-                  className="explore-signal-button"
-                  onClick={() => setFocusId(candidate.itemId)}
-                  aria-label={`Inspect ${candidate.title}`}
+                  className={liked.has(focus.itemId) ? "is-active" : ""}
+                  onClick={() => feedback(focus, "interested")}
                 >
-                  <span className="explore-signal-index">{String(rank + 1).padStart(2, "0")}</span>
-                  <strong>{candidate.title}</strong>
-                  <span>{Math.round(candidate.lensScores[lens])} / {sourceLabel(candidate.source)}</span>
-                  <span className="explore-signal-affordance"><MousePointer2 aria-hidden /> INSPECT</span>
+                  <Heart aria-hidden /> MORE LIKE THIS
                 </button>
-              )}
-            </article>
-          );
-        })}
-
-        {ordered.length === 0 ? (
-          <div className="explore-field-empty">
-            <Sparkles aria-hidden />
-            <strong>No signals match this local scan.</strong>
-            <button type="button" onClick={resetField}>RESET FIELD</button>
-          </div>
-        ) : null}
+                <button type="button" onClick={() => feedback(focus, "not_interested")}>
+                  <ThumbsDown aria-hidden /> LESS LIKE THIS
+                </button>
+              </div>
+            </div>
+          </aside>
+        ) : (
+          <aside className="lf-explore-detail lf-explore-detail-empty">
+            <strong>No signal matches this scan.</strong>
+            <button type="button" onClick={resetScan}>RESET</button>
+          </aside>
+        )}
       </div>
+
+      <footer className="lf-explore-footer">
+        <div>
+          <span>READING KEY</span>
+          <p>Farther outward = later in the 90-day window. Larger launch node = stronger Global Score today.</p>
+        </div>
+        <div>
+          <span>DATA CONTRACT</span>
+          <p>No semantic coordinates. No decorative pressure axis. Lens changes ranking; it never mutates Global Score.</p>
+        </div>
+        <div>
+          <span>LICENSE</span>
+          <p>Lieflat Charts L1 Launch Fan · PolyForm Noncommercial 1.0.0 · adapted for this experiment.</p>
+        </div>
+      </footer>
     </section>
   );
 }
