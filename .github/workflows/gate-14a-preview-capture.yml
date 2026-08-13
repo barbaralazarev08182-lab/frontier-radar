@@ -1,4 +1,4 @@
-name: Gate 14A Explore Preview Capture
+name: Gate 14A Explore Fixture Visual Capture
 
 on:
   push:
@@ -8,60 +8,102 @@ on:
 jobs:
   capture-explore:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout Gate 14A branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/gate-14a-explore-integrity
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install isolated Playwright
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install app and browser tooling
         run: |
-          mkdir -p /tmp/fr-g14a
-          cd /tmp/fr-g14a
-          npm init -y
-          npm install playwright@1.55.0
+          npm ci
+          npm install --no-save --package-lock=false @playwright/test@1.55.0
           npx playwright install --with-deps chromium
-      - name: Capture Explore preview
+
+      - name: Build fixture-mode app
+        run: npm run build
         env:
-          BASE_URL: https://frontier-radar-git-ag-6ee0ab-barbaralazarev08182-3355s-projects.vercel.app
+          FRONTIER_DATA_MODE: fixture
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_OPTIONS: ""
+
+      - name: Start app
+        shell: bash
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/artifacts/gate-14a"
-          cd /tmp/fr-g14a
+          FRONTIER_DATA_MODE=fixture NEXT_TELEMETRY_DISABLED=1 npm run start > /tmp/frontier-g14a.log 2>&1 &
+          for attempt in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/explore > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/frontier-g14a.log
+          exit 1
+
+      - name: Capture and assert Explore desktop integrity
+        shell: bash
+        run: |
+          mkdir -p artifacts/gate-14a
           node <<'NODE'
-          const { chromium } = require('playwright');
+          const { chromium } = require('@playwright/test');
           const fs = require('fs');
           const path = require('path');
+
           (async () => {
             const browser = await chromium.launch({ headless: true });
             const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
             await context.route('**/api/feedback', (route) => route.abort('blockedbyclient'));
             const page = await context.newPage();
-            await page.goto(process.env.BASE_URL + '/explore', { waitUntil: 'networkidle', timeout: 60000 });
-            await page.waitForTimeout(900);
+            await page.goto('http://127.0.0.1:3000/explore', { waitUntil: 'networkidle', timeout: 60000 });
+            await page.waitForTimeout(700);
+
             const body = await page.locator('body').innerText();
+            const statsMetrics = await page.locator('.explore-field-stats').evaluate((el) => ({
+              text: el.textContent,
+              clientWidth: el.clientWidth,
+              scrollWidth: el.scrollWidth,
+            }));
             const facts = {
-              url: page.url(),
               title: await page.title(),
               hasExploratoryDisclosure: body.includes('EXPLORATORY LAYOUT'),
               hasRankDriver: body.includes('RANKED BY FOR YOU'),
               hasOldSemanticAxis: body.includes('SEMANTIC DISTANCE'),
               hasOldPressureAxis: body.includes('SIGNAL PRESSURE'),
               hasScopedSearch: body.includes('SEARCH THIS SCAN'),
-              statsText: await page.locator('.explore-field-stats').innerText().catch(() => null),
+              statsFits: statsMetrics.scrollWidth <= statsMetrics.clientWidth + 1,
+              statsMetrics,
+              viewportWidth: await page.evaluate(() => window.innerWidth),
+              documentWidth: await page.evaluate(() => document.documentElement.scrollWidth),
             };
-            if (!facts.hasExploratoryDisclosure || !facts.hasRankDriver || facts.hasOldSemanticAxis || facts.hasOldPressureAxis || !facts.hasScopedSearch) {
-              throw new Error('Gate 14A preview integrity contract failed: ' + JSON.stringify(facts));
+
+            if (!facts.hasExploratoryDisclosure || !facts.hasRankDriver || facts.hasOldSemanticAxis || facts.hasOldPressureAxis || !facts.hasScopedSearch || !facts.statsFits || facts.documentWidth > facts.viewportWidth + 1) {
+              throw new Error('Gate 14A browser contract failed: ' + JSON.stringify(facts));
             }
-            const out = path.join(process.env.GITHUB_WORKSPACE, 'artifacts/gate-14a');
+
+            const out = path.join(process.cwd(), 'artifacts/gate-14a');
             await page.screenshot({ path: path.join(out, 'explore-desktop.png'), fullPage: true });
             fs.writeFileSync(path.join(out, 'facts.json'), JSON.stringify(facts, null, 2));
             await browser.close();
           })().catch((error) => { console.error(error); process.exit(1); });
           NODE
+
       - name: Upload evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gate-14a-explore-preview
+          name: gate-14a-explore-fixture-visual
           path: artifacts/gate-14a
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
+
+      - name: Print server log on failure
+        if: failure()
+        run: cat /tmp/frontier-g14a.log || true
