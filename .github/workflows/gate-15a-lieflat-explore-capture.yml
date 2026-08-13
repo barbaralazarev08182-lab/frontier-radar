@@ -73,17 +73,19 @@ jobs:
             const facts = {
               title: await page.title(),
               hasLieflat: body.includes('L1 LAUNCH FAN'),
-              hasTruthContract: body.includes('Global Score stays unchanged'),
+              hasAdaptiveWindow: body.includes('ADAPTIVE WINDOW'),
+              hasTruthContract: body.includes('Global Score stays fixed') || body.includes('GLOBAL SCORE UNCHANGED BY LENS'),
               hasOldSemanticAxis: body.includes('SEMANTIC DISTANCE'),
               hasOldPressureAxis: body.includes('SIGNAL PRESSURE'),
               viewportWidth: await page.evaluate(() => window.innerWidth),
               documentWidth: await page.evaluate(() => document.documentElement.scrollWidth),
-              svgBox: await page.locator('.lf-launch-fan').boundingBox(),
-              detailBox: await page.locator('.lf-explore-detail').boundingBox(),
+              svgBox: await page.locator('.lf3-fan').boundingBox(),
+              detailBox: await page.locator('.lf3-detail').boundingBox(),
+              heroBox: await page.locator('.lf3-hero').boundingBox(),
             };
 
-            if (!facts.hasLieflat || !facts.hasTruthContract || facts.hasOldSemanticAxis || facts.hasOldPressureAxis || facts.documentWidth > facts.viewportWidth + 1) {
-              throw new Error('Gate 15A browser contract failed: ' + JSON.stringify(facts));
+            if (!facts.hasLieflat || !facts.hasAdaptiveWindow || !facts.hasTruthContract || facts.hasOldSemanticAxis || facts.hasOldPressureAxis || facts.documentWidth > facts.viewportWidth + 1) {
+              throw new Error('Gate 15A v3 browser contract failed: ' + JSON.stringify(facts));
             }
 
             const out = path.join(process.cwd(), 'artifacts/gate-15a');
