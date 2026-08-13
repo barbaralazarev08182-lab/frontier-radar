@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import "./globals.css";
 import "./product-grammar.css";
+import "./product-grammar-layer2.css";
 
 export const metadata: Metadata = {
   title: "Frontier Radar",
