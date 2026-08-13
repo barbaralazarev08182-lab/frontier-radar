@@ -8,6 +8,10 @@ import {
   vectorizeFeedItem,
 } from "./vector";
 import { trySemanticPersonalization } from "./semantic-ranking";
+import {
+  personalizationConfidence,
+  storedProfileIsFresh,
+} from "./confidence";
 
 interface UserEventRow {
   item_id: string;
@@ -29,6 +33,7 @@ interface StoredInterestVectorRow {
   vector_version: string;
   interest_vector: unknown;
   event_count: number;
+  updated_at: string;
 }
 
 export interface PersonalizationResult {
@@ -124,15 +129,17 @@ function clamp(value: number, min: number, max: number): number {
 
 export function rankWithInterestVector(
   feed: FeedResult,
-  vector: number[]
+  vector: number[],
+  confidence = 1
 ): FeedResult {
+  const safeConfidence = clamp(confidence, 0, 1);
   const scored = feed.items.map((item, index) => {
     const similarity = cosineSimilarity(vector, vectorizeFeedItem(item));
     const base = item.score ?? 35;
     return {
       item,
       index,
-      rankScore: base + clamp(similarity, -1, 1) * 28,
+      rankScore: base + clamp(similarity, -1, 1) * 28 * safeConfidence,
     };
   });
 
@@ -192,10 +199,12 @@ async function personalizeWithRules(
     return { feed, applied: false, mode: null, signalCount: events.length, strongestInterests: [] };
   }
 
+  const confidence = personalizationConfidence(events.length, events[0]?.created_at);
   const scored = feed.items.map((item, index) => {
     const keys = matchInterestKeys(itemCorpus(item));
     const categorySignal = keys.reduce((sum, key) => sum + (categoryWeights.get(key) ?? 0), 0);
-    const personalizationBoost = clamp(categorySignal * 2.5, -20, 20);
+    const rawBoost = clamp(categorySignal * 2.5, -20, 20);
+    const personalizationBoost = rawBoost * confidence;
     const base = item.score ?? 35;
     return { item, index, rankScore: base + personalizationBoost };
   });
@@ -245,16 +254,35 @@ export async function personalizeFeed(
   try {
     const { data, error } = await supabase
       .from("user_interest_vectors")
-      .select("vector_version, interest_vector, event_count")
+      .select("vector_version, interest_vector, event_count, updated_at")
       .eq("visitor_id", visitorId)
       .maybeSingle();
 
     if (!error && data) {
       const row = data as StoredInterestVectorRow;
+      const { data: latestEventData, error: latestEventError } = await supabase
+        .from("user_events")
+        .select("created_at")
+        .eq("visitor_id", visitorId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const latestEventAt =
+        !latestEventError && latestEventData && typeof latestEventData.created_at === "string"
+          ? latestEventData.created_at
+          : null;
       const vector = numberArray(row.interest_vector);
-      if (row.vector_version === FEATURE_VECTOR_VERSION && vector.some((value) => value !== 0)) {
+      const isFresh = storedProfileIsFresh(row.updated_at, latestEventAt);
+
+      if (
+        isFresh &&
+        row.vector_version === FEATURE_VECTOR_VERSION &&
+        vector.some((value) => value !== 0)
+      ) {
+        const confidence = personalizationConfidence(row.event_count, latestEventAt);
         return {
-          feed: rankWithInterestVector(feed, vector),
+          feed: rankWithInterestVector(feed, vector, confidence),
           applied: true,
           mode: "vector",
           signalCount: row.event_count,
@@ -263,7 +291,7 @@ export async function personalizeFeed(
       }
     }
   } catch {
-    // 继续走旧规则层。
+    // stale/缺失向量或查询异常时继续走实时规则层。
   }
 
   try {
