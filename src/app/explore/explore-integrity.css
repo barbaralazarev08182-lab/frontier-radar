@@ -1,0 +1,17 @@
+/* Gate 14A — Explore Integrity.
+   The field is an editorial discovery layout, not a quantitative x/y plot. */
+
+.explore-field-stage {
+  background: radial-gradient(circle at 57% 47%, var(--explore-accent-soft), transparent 24%);
+}
+
+.explore-field-stats span:last-child {
+  margin-left: auto;
+  color: rgba(23, 23, 25, .5);
+}
+
+@media (max-width: 980px) {
+  .explore-field-stats span:last-child {
+    display: none;
+  }
+}
