@@ -122,7 +122,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
-function rankWithInterestVector(
+export function rankWithInterestVector(
   feed: FeedResult,
   vector: number[]
 ): FeedResult {
