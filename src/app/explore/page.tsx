@@ -92,11 +92,14 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   }
 
   return (
-    <ExploreFieldV3
-      candidates={candidates}
-      totalDiscoveries={totalDiscoveries}
-      dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
-      personalized={personalizedApplied}
-    />
+    <>
+      <style>{`.lf3{margin-top:0!important}`}</style>
+      <ExploreFieldV3
+        candidates={candidates}
+        totalDiscoveries={totalDiscoveries}
+        dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
+        personalized={personalizedApplied}
+      />
+    </>
   );
 }
