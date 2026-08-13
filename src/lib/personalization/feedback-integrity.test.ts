@@ -42,7 +42,7 @@ test("Gate 13B contract: Production Today records detail opens and qualified dwe
 test("Gate 13B contract: Explore uses the shared qualified dwell contract and rejects legacy focus dwell", () => {
   assert.match(
     exploreField,
-    /observeQualifiedDwell\(node, focus\.itemId, \{[\s\S]*surface: "explore"/[\s\S]*\}\);/
+    /observeQualifiedDwell\(node, focus\.itemId, \{[\s\S]*surface: "explore"[\s\S]*\}\);/
   );
   assert.doesNotMatch(exploreField, /dwellMs < 1200/);
   assert.doesNotMatch(exploreField, /measurement: "focus_dwell"/);
