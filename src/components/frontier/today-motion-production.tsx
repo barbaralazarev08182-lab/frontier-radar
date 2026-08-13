@@ -8,6 +8,8 @@ import { TodaySignalWeave } from "@/components/frontier/today-signal-weave";
 import { TodayStageScrollController } from "@/components/frontier/today-stage-scroll-controller";
 import type { EditorialSignal } from "@/components/frontier/today-editorial";
 import type { DailySynthesisSignalInput, DailySynthesisSnapshot } from "@/lib/ai/daily-synthesis";
+import { trackFeedback } from "@/lib/personalization/browser";
+import { observeQualifiedDwell } from "@/lib/personalization/qualified-dwell";
 
 type ResolveSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
 type LoadSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
@@ -121,7 +123,10 @@ export function TodayMotionProduction({
       if (deckBottom[0]) deckBottom[0].textContent = topic;
       if (deckBottom[1]) deckBottom[1].textContent = `${source} / SIGNAL`;
 
-      const open = () => window.location.assign(`/project/${encodeURIComponent(signal.id)}`);
+      const open = () => {
+        trackFeedback(signal.id, "open_detail", undefined, signal.metadata);
+        window.location.assign(`/project/${encodeURIComponent(signal.id)}`);
+      };
       const onClick = (event: MouseEvent) => {
         if (event.defaultPrevented) return;
         open();
@@ -133,9 +138,11 @@ export function TodayMotionProduction({
       };
       card.addEventListener("click", onClick);
       card.addEventListener("keydown", onKeyDown);
+      const stopDwell = observeQualifiedDwell(card, signal.id, signal.metadata);
       cleanups.push(() => {
         card.removeEventListener("click", onClick);
         card.removeEventListener("keydown", onKeyDown);
+        stopDwell();
       });
     });
 

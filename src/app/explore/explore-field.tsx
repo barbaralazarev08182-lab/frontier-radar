@@ -6,6 +6,7 @@ import { ArrowUpRight, Heart, MousePointer2, Radar, Search, Sparkles, ThumbsDown
 import { SaveButton } from "@/components/frontier/save-button";
 import { TrackedDetailLink } from "@/components/frontier/tracked-detail-link";
 import { trackFeedback } from "@/lib/personalization/browser";
+import { observeQualifiedDwell } from "@/lib/personalization/qualified-dwell";
 import type { ExploreCandidate, ExploreLens } from "@/lib/feed/explore-candidates";
 
 const LENSES: Array<{ id: ExploreLens; label: string; short: string; note: string }> = [
@@ -93,18 +94,14 @@ export function ExploreField({
 
   useEffect(() => {
     if (!focus) return;
-    const startedAt = Date.now();
-    return () => {
-      const dwellMs = Date.now() - startedAt;
-      if (dwellMs < 1200) return;
-      trackFeedback(focus.itemId, "dwell", dwellMs, {
-        surface: "explore",
-        algorithm_variant: `explore-frontier-field-v1:${lens}`,
-        source: focus.source,
-        content_type: focus.contentType,
-        measurement: "focus_dwell",
-      });
-    };
+    const node = document.querySelector<HTMLElement>(".explore-signal.is-focus .explore-focus-card");
+    if (!node) return;
+    return observeQualifiedDwell(node, focus.itemId, {
+      surface: "explore",
+      algorithm_variant: `explore-frontier-field-v1:${lens}`,
+      source: focus.source,
+      content_type: focus.contentType,
+    });
   }, [focus, lens]);
 
   useEffect(() => {
