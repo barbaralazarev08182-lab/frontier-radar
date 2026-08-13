@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
 import { ExploreField } from "./explore-field";
 import "./lieflat-explore.css";
+import "./lieflat-mono.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
