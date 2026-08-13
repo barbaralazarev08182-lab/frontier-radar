@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PersonalMemoryNavTools } from "@/components/personal-memory-nav-tools";
 
 const NAV_ITEMS = [
   { href: "/today", label: "Today", short: "T" },
@@ -15,6 +16,7 @@ export function SiteNav() {
   const today = pathname === "/today";
   const project = pathname.startsWith("/project/");
   const explore = pathname === "/explore" || pathname.startsWith("/explore/");
+  const memorySurface = pathname === "/saved" || pathname.startsWith("/idea-lab");
   const lightEditorial = explore;
 
   return (
@@ -138,6 +140,7 @@ export function SiteNav() {
               </Link>
             );
           })}
+          {memorySurface ? <PersonalMemoryNavTools /> : null}
         </nav>
       </div>
     </header>
