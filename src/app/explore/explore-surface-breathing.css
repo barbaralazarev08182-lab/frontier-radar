@@ -28,15 +28,6 @@ body .lf4.lf4 {
   background-position: 83% 48%, -7% -9%, 0 0, 0 0;
 }
 
-/* Keep controls and data marks visually above the atmosphere without changing layout. */
-body .lf4 .lf4-hero,
-body .lf4 .lf4-controls,
-body .lf4 .lf4-field,
-body .lf4 .lf4-footer {
-  position: relative;
-  z-index: 1;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   body .lf4.lf4 {
     animation: lf4-surface-breathe 24s ease-in-out infinite alternate;
