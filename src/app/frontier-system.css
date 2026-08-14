@@ -1,0 +1,26 @@
+/* Gate 15C-A — Frontier Radar canonical product primitives.
+   This layer is intentionally a visual no-op on accepted surfaces.
+   Existing route styles may migrate to these tokens only after parity proof. */
+
+:root {
+  /* Accepted light research surface / Lieflat-native mono vocabulary. */
+  --fr-system-paper: #f0efeb;
+  --fr-system-paper-rgb: 240, 239, 235;
+  --fr-system-ink: #1c1c1a;
+  --fr-system-muted: #8f8e88;
+  --fr-system-faint: #c6c5bf;
+  --fr-system-grid: #deddd6;
+
+  /* Product semantics. These are meaning-bearing accents, not decoration. */
+  --fr-system-cobalt: #3150ff;
+  --fr-system-wildcard: #ff5b21;
+
+  /* Shared shell rhythm. */
+  --fr-system-header-h: 3rem;
+
+  /* Shared motion personality: fast-in / fast-stop, no bounce. */
+  --fr-system-motion-micro: 160ms;
+  --fr-system-motion-focus: 340ms;
+  --fr-system-ease-ui: cubic-bezier(.2, .8, .2, 1);
+  --fr-system-ease-focus: cubic-bezier(.16, 1, .3, 1);
+}
