@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PersonalMemoryNavTools } from "@/components/personal-memory-nav-tools";
+import { frontierWorkspaceForPath } from "@/lib/frontier-workspaces";
 
 const NAV_ITEMS = [
   { href: "/today", label: "Today", short: "T" },
@@ -11,14 +12,6 @@ const NAV_ITEMS = [
   { href: "/idea-lab", label: "Idea Lab", short: "I" },
 ];
 
-function surfaceIdentity(pathname: string) {
-  if (pathname.startsWith("/project/")) return { index: "03", label: "PROJECT", descriptor: "INTELLIGENCE" };
-  if (pathname === "/explore" || pathname.startsWith("/explore/")) return { index: "02", label: "EXPLORE", descriptor: "FRONTIER FIELD" };
-  if (pathname === "/saved" || pathname.startsWith("/saved/")) return { index: "04", label: "SAVED", descriptor: "RESEARCH SHELF" };
-  if (pathname === "/idea-lab" || pathname.startsWith("/idea-lab/")) return { index: "05", label: "IDEA LAB", descriptor: "DIRECTION WORKBENCH" };
-  return { index: "01", label: "TODAY", descriptor: "DAILY DISCOVERY" };
-}
-
 export function SiteNav() {
   const pathname = usePathname();
   const today = pathname === "/today";
@@ -26,7 +19,7 @@ export function SiteNav() {
   const memorySurface = pathname === "/saved" || pathname.startsWith("/idea-lab");
   const tone = today ? "overlay" : memorySurface ? "dark" : "light";
   const position = today || project ? "fixed" : "sticky";
-  const surface = surfaceIdentity(pathname);
+  const surface = frontierWorkspaceForPath(pathname);
 
   return (
     <header className="fr-site-nav" data-fr-tone={tone} data-fr-position={position}>
