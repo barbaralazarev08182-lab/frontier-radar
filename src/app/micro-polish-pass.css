@@ -1,13 +1,13 @@
 /* Micro Polish Pass — shared light surfaces.
    Owner scope only:
-   1) Explore uses the exact shared Project paper with no tinting background fills.
+   1) Explore keeps the Project paper, but its perimeter design is visibly present.
    2) Global light nav stays 85% paper glass.
    3) Explore helper strips leave the rendered composition so their space returns to L12.
    4) L12 type and usable horizontal field grow without increasing viewport height. */
 
 :root {
-  --fr-surface-paper: #f1efe9;
-  --fr-surface-paper-rgb: 241, 239, 233;
+  --fr-surface-paper: #f0efeb;
+  --fr-surface-paper-rgb: 240, 239, 235;
 }
 
 /* Global light nav: materially present, still integrated with the paper. */
@@ -18,14 +18,10 @@
   border-bottom-color: rgba(17, 18, 20, .105) !important;
 }
 
-/* Paper lock: Explore follows the same shared paper token used by Project.
-   Decorative layers may draw lines/points only; they must not recolor the page. */
+/* Explore uses the same paper as Project, but the paper lives on the page.
+   Content regions stay transparent so the fixed perimeter field is not occluded. */
 body:has(.lf4) {
   background-color: var(--fr-surface-paper) !important;
-}
-
-body:has(.lf4) .lf4.lf4 {
-  --paper: var(--fr-surface-paper);
 }
 
 body:has(.lf4) .lf4.lf4,
@@ -64,7 +60,7 @@ body:has(.lf4) .lf4-controls {
   }
 }
 
-/* Explore perimeter design — line-only so the Project paper remains visually unchanged. */
+/* Explore perimeter design — visible but subordinate, and confined to the edge field. */
 .fr-explore-surface {
   opacity: 1 !important;
 }
@@ -73,26 +69,22 @@ body:has(.lf4) .lf4-controls {
   opacity: 1 !important;
 }
 
-.fr-explore-surface__plate--a,
-.fr-explore-surface__plate--b,
-.fr-explore-surface__plate--c {
-  fill: none !important;
-  filter: none !important;
-}
-
 .fr-explore-surface__plate--a {
   opacity: 1;
   stroke: rgba(49, 94, 251, .18);
   stroke-width: .9;
+  filter: saturate(1.2) drop-shadow(0 11px 26px rgba(49, 94, 251, .055));
 }
 
 .fr-explore-surface__plate--b {
   opacity: 1;
   stroke: rgba(28, 28, 26, .14);
   stroke-width: .82;
+  filter: contrast(1.08);
 }
 
 .fr-explore-surface__plate--c {
+  fill: rgba(49, 94, 251, .06) !important;
   stroke: rgba(49, 94, 251, .16);
   stroke-width: .85;
 }
