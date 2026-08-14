@@ -1,5 +1,144 @@
-/* Surface Pass 3 — viewport-scale editorial vector field.
-   Fixed paper, moving geometry. The line field is decorative only and never carries data semantics. */
+/* Surface Pass 4
+   One fixed paper across Explore + Project.
+   Explore uses perimeter surfaces so decoration never competes with L12 data threads.
+   Project keeps the stage-aware vector field and pushes it into a more theatrical editorial system. */
+
+:root {
+  --fr-surface-paper: #f0efeb;
+}
+
+/* --------------------------------------------------------------------------
+   Shared paper + stacking
+   -------------------------------------------------------------------------- */
+
+body:has(.lf4),
+body:has(.pr-shell) {
+  background: var(--fr-surface-paper);
+}
+
+body:has(.lf4) .lf4,
+body:has(.pr-shell) .pr-shell {
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+}
+
+body:has(.lf4) .lf4 {
+  --paper: var(--fr-surface-paper);
+}
+
+body:has(.pr-shell) .pr-shell {
+  --paper: var(--fr-surface-paper);
+}
+
+body:has(.lf4) .lf4-controls,
+body:has(.pr-shell) .pr-stage-nav {
+  background-color: rgba(240, 239, 235, .94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* --------------------------------------------------------------------------
+   EXPLORE — perimeter surface, not a second line graph
+   -------------------------------------------------------------------------- */
+
+.fr-explore-surface {
+  position: fixed;
+  inset: var(--fr-header-h, 48px) 0 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: #1c1c1a;
+}
+
+.fr-explore-surface svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fr-explore-surface path,
+.fr-explore-surface line,
+.fr-explore-surface circle,
+.fr-explore-surface rect {
+  vector-effect: non-scaling-stroke;
+}
+
+.fr-explore-surface__plates {
+  opacity: .98;
+}
+
+.fr-explore-surface__plate {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.fr-explore-surface__plate--c {
+  fill: rgba(49, 94, 251, .022);
+}
+
+.fr-explore-surface__edge-frame {
+  fill: none;
+  stroke: rgba(28, 28, 26, .25);
+  stroke-width: .9;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.fr-explore-surface__calibration {
+  fill: none;
+  stroke: rgba(28, 28, 26, .16);
+  stroke-width: .72;
+}
+
+.fr-explore-surface__calibration--right line:nth-child(4n + 1),
+.fr-explore-surface__calibration--bottom line:nth-child(4n + 1) {
+  stroke: rgba(49, 94, 251, .34);
+  stroke-width: 1;
+}
+
+.fr-explore-surface__dots {
+  fill: rgba(28, 28, 26, .19);
+}
+
+.fr-explore-surface__dots circle:nth-child(7n + 1),
+.fr-explore-surface__dots circle:nth-child(11n + 2) {
+  fill: rgba(49, 94, 251, .58);
+}
+
+.fr-explore-surface__ghost-index {
+  fill: rgba(28, 28, 26, .035);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 214px;
+  font-weight: 800;
+  letter-spacing: -.08em;
+}
+
+.fr-explore-surface__ghost-label {
+  fill: rgba(28, 28, 26, .14);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .24em;
+}
+
+.fr-explore-surface__scan rect,
+.fr-explore-surface__scan circle {
+  fill: #315efb;
+  filter: drop-shadow(0 0 6px rgba(49, 94, 251, .22));
+}
+
+.fr-explore-surface__scan rect {
+  opacity: .62;
+}
+
+.fr-explore-surface__scan circle {
+  opacity: .86;
+}
+
+/* --------------------------------------------------------------------------
+   PROJECT — stage-aware line field, pushed beyond chart-template language
+   -------------------------------------------------------------------------- */
 
 .fr-line-field {
   position: fixed;
@@ -25,29 +164,35 @@
 
 .fr-line-field__wire {
   fill: none;
-  stroke: rgba(28, 28, 26, .145);
-  stroke-width: .82;
+  stroke: rgba(28, 28, 26, .16);
+  stroke-width: .88;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .fr-line-field__wire--major {
-  stroke: rgba(28, 28, 26, .21);
-  stroke-width: 1.02;
+  stroke: rgba(28, 28, 26, .265);
+  stroke-width: 1.12;
 }
 
 .fr-line-field__wire--quiet {
-  stroke: rgba(28, 28, 26, .075);
+  stroke: rgba(28, 28, 26, .08);
 }
 
 .fr-line-field__wire--signal {
-  stroke: rgba(245, 87, 47, .25);
+  stroke: rgba(245, 87, 47, .32);
+}
+
+.fr-line-field__wire--dash {
+  stroke: rgba(28, 28, 26, .17);
+  stroke-dasharray: 4 9;
+  stroke-linecap: square;
 }
 
 .fr-line-field__construction {
   fill: none;
-  stroke: rgba(28, 28, 26, .115);
-  stroke-width: .72;
+  stroke: rgba(28, 28, 26, .13);
+  stroke-width: .76;
   stroke-linecap: square;
   stroke-linejoin: miter;
 }
@@ -55,68 +200,62 @@
 .fr-line-field__construction circle {
   fill: #1c1c1a;
   stroke: none;
-  opacity: .32;
+  opacity: .36;
 }
 
-.fr-line-field__micro circle,
-.fr-line-field__micro rect {
-  fill: #1c1c1a;
-  stroke: none;
-  opacity: .26;
+.fr-line-field__plate {
+  stroke: rgba(28, 28, 26, .045);
+  stroke-width: .7;
+  opacity: .9;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .fr-line-field__trace {
   fill: none;
   stroke: #315efb;
-  stroke-width: 1.35;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-dasharray: .045 .955;
   stroke-dashoffset: 1;
-  opacity: .72;
-  filter: drop-shadow(0 0 3px rgba(49, 94, 251, .20));
+  opacity: .82;
+  filter: drop-shadow(0 0 4px rgba(49, 94, 251, .24));
+}
+
+.fr-line-field__trace--secondary {
+  stroke-width: .95;
+  opacity: .42;
+  stroke-dasharray: .018 .982;
+  filter: drop-shadow(0 0 3px rgba(49, 94, 251, .14));
 }
 
 .fr-line-field__trace--signal {
   stroke: #f5572f;
-  opacity: .62;
-  filter: drop-shadow(0 0 3px rgba(245, 87, 47, .18));
+  opacity: .72;
+  filter: drop-shadow(0 0 4px rgba(245, 87, 47, .21));
 }
 
 .fr-line-field__beacon {
   fill: #315efb;
-  stroke: rgba(255, 255, 255, .9);
+  stroke: rgba(255, 255, 255, .92);
   stroke-width: 1.2;
-  opacity: .76;
-  filter: drop-shadow(0 0 6px rgba(49, 94, 251, .24));
+  opacity: .82;
+  filter: drop-shadow(0 0 7px rgba(49, 94, 251, .27));
 }
 
 .fr-line-field__beacon--signal {
   fill: #f5572f;
-  filter: drop-shadow(0 0 6px rgba(245, 87, 47, .22));
+  filter: drop-shadow(0 0 7px rgba(245, 87, 47, .24));
 }
 
-/* Explore is a live field: more horizontal travel, stronger perimeter energy. */
-.fr-line-field--explore {
-  opacity: .84;
-}
-
-.fr-line-field--explore .fr-line-field__base {
-  opacity: .93;
-}
-
-.fr-line-field--explore .fr-line-field__construction {
-  opacity: .88;
-}
-
-/* Project is stage-aware. Only one line composition carries foreground energy at a time. */
 .fr-line-field--project {
-  opacity: .78;
+  opacity: .9;
 }
 
 .fr-line-field--project .fr-line-field__project-stage {
-  opacity: .08;
-  transition: opacity 900ms cubic-bezier(.16, 1, .3, 1), transform 1200ms cubic-bezier(.16, 1, .3, 1);
-  transform: translate3d(0, 0, 0);
+  opacity: .035;
+  transition: opacity 880ms cubic-bezier(.16, 1, .3, 1), transform 1200ms cubic-bezier(.16, 1, .3, 1);
+  transform: translate3d(0, 0, 0) scale(.997);
   transform-origin: center;
 }
 
@@ -125,51 +264,74 @@ body:has(.pr-shell[data-active-stage="evidence"]) .fr-line-field__project-stage-
 body:has(.pr-shell[data-active-stage="interrogation"]) .fr-line-field__project-stage--interrogation,
 body:has(.pr-shell[data-active-stage="resolution"]) .fr-line-field__project-stage--resolution,
 body:has(.pr-shell[data-active-stage="build"]) .fr-line-field__project-stage--build {
-  opacity: .9;
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 body:has(.pr-shell[data-active-stage="capture"]) .fr-line-field__project-stage--capture,
 body:has(.pr-shell[data-active-stage="resolution"]) .fr-line-field__project-stage--resolution {
-  transform: translate3d(4px, -2px, 0);
+  transform: translate3d(5px, -3px, 0) scale(1.003);
 }
 
 body:has(.pr-shell[data-active-stage="evidence"]) .fr-line-field__project-stage--evidence,
 body:has(.pr-shell[data-active-stage="build"]) .fr-line-field__project-stage--build {
-  transform: translate3d(-3px, 2px, 0);
+  transform: translate3d(-4px, 3px, 0) scale(1.002);
 }
 
 body:has(.pr-shell[data-active-stage="interrogation"]) .fr-line-field__project-stage--interrogation {
-  transform: translate3d(2px, 3px, 0);
+  transform: translate3d(3px, 4px, 0) scale(1.004);
 }
 
-/* Keep the paper fixed and let the vector field live behind it. */
-body:has(.lf4),
-body:has(.pr-shell) {
-  background: #f0efeb;
-}
-
-body:has(.lf4) .lf4,
-body:has(.pr-shell) .pr-shell {
-  position: relative;
-  z-index: 1;
-  background-color: transparent;
-}
-
-/* The surface lines are allowed through large editorial areas, but controls stay materially paper-backed. */
-body:has(.lf4) .lf4-controls,
-body:has(.pr-shell) .pr-stage-nav {
-  background-color: rgba(240, 239, 235, .94);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
+/* --------------------------------------------------------------------------
+   Motion — geometry breathes; the paper never does
+   -------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: no-preference) {
-  .fr-line-field__wire,
+  .fr-explore-surface__edge-frame path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: fr-surface-draw 1.15s cubic-bezier(.4, 0, .2, 1) forwards;
+  }
+
+  .fr-explore-surface__plate--a {
+    animation: fr-explore-plate-a 17s ease-in-out infinite alternate;
+  }
+
+  .fr-explore-surface__plate--b {
+    animation: fr-explore-plate-b 21s ease-in-out infinite alternate;
+  }
+
+  .fr-explore-surface__plate--c {
+    animation: fr-explore-plate-c 19s ease-in-out infinite alternate;
+  }
+
+  .fr-explore-surface__dots--a {
+    animation: fr-explore-dots-a 8s ease-in-out infinite alternate;
+  }
+
+  .fr-explore-surface__dots--b {
+    animation: fr-explore-dots-b 10s ease-in-out infinite alternate;
+  }
+
+  .fr-explore-surface__scan--top {
+    animation: fr-explore-scan-top 9.5s cubic-bezier(.45, 0, .55, 1) infinite;
+  }
+
+  .fr-explore-surface__scan--right {
+    animation: fr-explore-scan-right 12s cubic-bezier(.45, 0, .55, 1) infinite -4s;
+  }
+
+  .fr-explore-surface__ghost-index,
+  .fr-explore-surface__ghost-label {
+    animation: fr-explore-ghost 14s ease-in-out infinite alternate;
+  }
+
+  .fr-line-field__wire:not(.fr-line-field__wire--dash),
   .fr-line-field__construction path,
   .fr-line-field__construction line {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: fr-linefield-draw 1.7s cubic-bezier(.4, 0, .2, 1) forwards;
+    animation: fr-surface-draw 1.7s cubic-bezier(.4, 0, .2, 1) forwards;
   }
 
   .fr-line-field__construction path,
@@ -178,73 +340,102 @@ body:has(.pr-shell) .pr-stage-nav {
   }
 
   .fr-line-field__trace {
-    animation: fr-linefield-travel 10.8s linear infinite;
+    animation: fr-project-travel 10.2s linear infinite;
   }
 
-  .fr-line-field__trace--b {
-    animation-duration: 14.2s;
-    animation-delay: -5.4s;
+  .fr-line-field__trace--secondary {
+    animation-duration: 15.5s;
+    animation-delay: -6s;
   }
 
   .fr-line-field__trace--signal {
-    animation-duration: 12.6s;
+    animation-duration: 11.8s;
   }
 
-  .fr-line-field__drift-a {
-    animation: fr-linefield-drift-a 18s ease-in-out infinite alternate;
-    transform-origin: center;
-  }
-
-  .fr-line-field__drift-b {
-    animation: fr-linefield-drift-b 22s ease-in-out infinite alternate;
-    transform-origin: center;
+  .fr-line-field__plate {
+    animation: fr-project-plate 16s ease-in-out infinite alternate;
   }
 
   .fr-line-field__beacon {
-    animation: fr-linefield-beacon 4.8s ease-in-out infinite;
+    animation: fr-project-beacon 4.6s ease-in-out infinite;
     transform-box: fill-box;
     transform-origin: center;
   }
 
-  .fr-line-field__beacon--b {
-    animation-delay: -2.1s;
-  }
-
-  .fr-line-field--project .fr-line-field__project-stage .fr-line-field__trace {
-    animation-duration: 13.5s;
-  }
-
-  @keyframes fr-linefield-draw {
+  @keyframes fr-surface-draw {
     to { stroke-dashoffset: 0; }
   }
 
-  @keyframes fr-linefield-travel {
+  @keyframes fr-explore-plate-a {
+    0% { transform: translate3d(0, -3px, 0) scale(1); opacity: .78; }
+    55% { transform: translate3d(-5px, 4px, 0) scale(1.01); opacity: 1; }
+    100% { transform: translate3d(3px, 1px, 0) scale(1.004); opacity: .86; }
+  }
+
+  @keyframes fr-explore-plate-b {
+    0% { transform: translate3d(-2px, 2px, 0); opacity: .72; }
+    50% { transform: translate3d(5px, -4px, 0); opacity: .96; }
+    100% { transform: translate3d(0, 3px, 0); opacity: .82; }
+  }
+
+  @keyframes fr-explore-plate-c {
+    0% { transform: translate3d(0, 3px, 0); }
+    100% { transform: translate3d(-6px, -2px, 0); }
+  }
+
+  @keyframes fr-explore-dots-a {
+    from { opacity: .42; transform: translate3d(0, 0, 0); }
+    to { opacity: .82; transform: translate3d(-3px, 2px, 0); }
+  }
+
+  @keyframes fr-explore-dots-b {
+    from { opacity: .46; transform: translate3d(0, 0, 0); }
+    to { opacity: .76; transform: translate3d(2px, -3px, 0); }
+  }
+
+  @keyframes fr-explore-scan-top {
+    0%, 12% { opacity: 0; transform: translate3d(-180px, 0, 0); }
+    25% { opacity: .92; }
+    62% { opacity: .76; transform: translate3d(170px, 0, 0); }
+    76%, 100% { opacity: 0; transform: translate3d(250px, 0, 0); }
+  }
+
+  @keyframes fr-explore-scan-right {
+    0%, 15% { opacity: 0; transform: translate3d(0, -120px, 0); }
+    28% { opacity: .82; }
+    65% { opacity: .72; transform: translate3d(0, 120px, 0); }
+    82%, 100% { opacity: 0; transform: translate3d(0, 190px, 0); }
+  }
+
+  @keyframes fr-explore-ghost {
+    from { opacity: .68; transform: translate3d(0, 2px, 0); }
+    to { opacity: 1; transform: translate3d(-2px, -2px, 0); }
+  }
+
+  @keyframes fr-project-travel {
     from { stroke-dashoffset: 1; }
     to { stroke-dashoffset: -1; }
   }
 
-  @keyframes fr-linefield-drift-a {
-    0% { transform: translate3d(-2px, 0, 0) scale(1.002); }
-    52% { transform: translate3d(3px, -3px, 0) scale(1.006); }
-    100% { transform: translate3d(0, 2px, 0) scale(1.003); }
+  @keyframes fr-project-plate {
+    0% { transform: translate3d(-2px, 2px, 0) scale(.998); opacity: .72; }
+    50% { transform: translate3d(4px, -3px, 0) scale(1.006); opacity: 1; }
+    100% { transform: translate3d(0, 3px, 0) scale(1.002); opacity: .84; }
   }
 
-  @keyframes fr-linefield-drift-b {
-    0% { transform: translate3d(0, 2px, 0); }
-    50% { transform: translate3d(-4px, -1px, 0); }
-    100% { transform: translate3d(3px, 1px, 0); }
-  }
-
-  @keyframes fr-linefield-beacon {
-    0%, 72%, 100% { opacity: .38; transform: scale(.82); }
-    82% { opacity: .95; transform: scale(1.18); }
-    90% { opacity: .58; transform: scale(1); }
+  @keyframes fr-project-beacon {
+    0%, 70%, 100% { opacity: .42; transform: scale(.82); }
+    80% { opacity: 1; transform: scale(1.22); }
+    90% { opacity: .64; transform: scale(1); }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .fr-explore-surface *,
   .fr-line-field *,
+  .fr-explore-surface *::before,
   .fr-line-field *::before,
+  .fr-explore-surface *::after,
   .fr-line-field *::after {
     animation: none !important;
     transition-duration: 0s !important;
@@ -252,19 +443,29 @@ body:has(.pr-shell) .pr-stage-nav {
 
   .fr-line-field__wire,
   .fr-line-field__construction path,
-  .fr-line-field__construction line {
+  .fr-line-field__construction line,
+  .fr-explore-surface__edge-frame path {
     stroke-dasharray: none;
     stroke-dashoffset: 0;
   }
 }
 
 @media (max-width: 900px) {
-  .fr-line-field {
-    opacity: .42;
+  .fr-explore-surface {
+    opacity: .58;
   }
 
-  .fr-line-field__construction,
-  .fr-line-field__micro {
+  .fr-explore-surface__dots,
+  .fr-explore-surface__calibration--bottom,
+  .fr-explore-surface__ghost-label {
+    display: none;
+  }
+
+  .fr-line-field {
+    opacity: .5;
+  }
+
+  .fr-line-field__construction {
     display: none;
   }
 }
