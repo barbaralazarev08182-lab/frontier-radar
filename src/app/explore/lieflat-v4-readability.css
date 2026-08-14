@@ -1,0 +1,112 @@
+/* Gate 15A readability pass.
+   Keep the L12 geometry and viewport composition; only raise the type scale
+   where the previous focus-aperture pass became too fine to read. */
+@media (min-width: 901px) {
+  .lf4-hero-compact .lf4-kicker {
+    font-size: 7.6px;
+  }
+
+  .lf4-hero-compact .lf4-compact-thesis h1 {
+    font-size: 22px;
+  }
+
+  .lf4-compact-thesis p {
+    font-size: 8.8px;
+    line-height: 1.4;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta strong {
+    font-size: 18px;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta span {
+    font-size: 7px;
+  }
+
+  .lf4-viewport .lf4-lenses button,
+  .lf4-viewport .lf4-tool {
+    font-size: 8.8px;
+  }
+
+  .lf4-viewport .lf4-canvas-head strong {
+    font-size: 8.2px;
+  }
+
+  .lf4-viewport .lf4-canvas-head span {
+    font-size: 7.8px;
+  }
+
+  .lf4-rank {
+    font-size: 8.7px;
+  }
+
+  .lf4-score {
+    font-size: 8.2px;
+  }
+
+  .lf4-title {
+    font-size: 10.4px;
+  }
+
+  .lf4-inline-readout {
+    font-size: 6.6px;
+  }
+
+  .lf4-group-name {
+    font-size: 9.2px;
+  }
+
+  .lf4-group-count {
+    font-size: 7.5px;
+  }
+
+  .lf4-aperture-kicker {
+    font-size: 6.4px;
+  }
+
+  .lf4-aperture-copy h2 {
+    font-size: 16.5px;
+  }
+
+  .lf4-aperture-copy > p {
+    font-size: 7.4px;
+    line-height: 1.38;
+  }
+
+  .lf4-aperture-scores span {
+    font-size: 5.7px;
+  }
+
+  .lf4-aperture-scores b {
+    font-size: 7.6px;
+  }
+
+  .lf4-aperture-reason > span {
+    font-size: 5.7px;
+  }
+
+  .lf4-aperture-reason p {
+    font-size: 6.5px;
+    line-height: 1.32;
+  }
+
+  .lf4-aperture-actions .lf4-open,
+  .lf4-aperture-actions .lf4-save,
+  .lf4-aperture-actions button {
+    font-size: 6.1px;
+  }
+
+  .lf4-viewport .lf4-canvas figcaption {
+    font-size: 7.2px;
+  }
+
+  .lf4-viewport .lf4-footer {
+    font-size: 6.8px;
+  }
+
+  .lf4[data-focus="pinned"] .lf4-canvas-head > div:last-child span::after {
+    content: " · WHEEL / TRACKPAD ALSO SWITCHES";
+    color: var(--ink);
+    font-weight: 700;
+  }
+}
