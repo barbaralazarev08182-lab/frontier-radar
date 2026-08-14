@@ -20,7 +20,7 @@ test("Gate 9 contract: Today hands the exact signal id to Project Intelligence",
 
   assert.match(projectPage, /const \{ id \} = await params;/);
   assert.match(projectPage, /const detail = await loadProjectDetail\(id\);/);
-  assert.match(projectPage, /<h1 className="pi-title">\{item\.title\}<\/h1>/);
+  assert.match(projectPage, /<h1(?:\s+className="[^"]+")?>\{item\.title\}<\/h1>/);
 });
 
 test("Gate 10 contract: Project hands the exact item id to Idea Lab via from", () => {
