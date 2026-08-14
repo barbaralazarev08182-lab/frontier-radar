@@ -34,7 +34,7 @@ test("Explore -> Saved -> Idea Lab persists the user's signal-to-direction chain
 
     const firstRecord = field.locator(".lf4-row").first();
     await expect(firstRecord).toBeVisible();
-    await firstRecord.click();
+    await firstRecord.locator(".lf4-title").click();
 
     const focusCard = page.locator(".lf4-sheet");
     await expect(focusCard).toBeVisible();
