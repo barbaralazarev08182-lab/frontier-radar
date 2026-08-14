@@ -18,11 +18,12 @@ const LENSES: Array<{ id: ExploreLens; label: string; note: string }> = [
 
 const MAX_PLOTTED = 24;
 const MAX_GROUPS = 6;
-const APERTURE_HEIGHT = 132;
-const APERTURE_GAP = 12;
+const APERTURE_HEIGHT = 116;
+const APERTURE_GAP = 10;
 const APERTURE_X = 34;
-const APERTURE_WIDTH = 718;
-const APERTURE_PATH_X = APERTURE_X + APERTURE_WIDTH + 18;
+const APERTURE_WIDTH = 820;
+const APERTURE_PATH_X = APERTURE_X + APERTURE_WIDTH + 16;
+const MIN_CONTEXT_ROW_GAP = 18;
 const CANVAS = {
   width: 1280,
   height: 620,
@@ -220,11 +221,19 @@ export function ExploreFieldV4({
     : CANVAS.rowTop + (CANVAS.rowBottom - CANVAS.rowTop) * (rank / denominator);
 
   const apertureHalf = APERTURE_HEIGHT / 2;
+  const rowSpan = CANVAS.rowBottom - CANVAS.rowTop;
+  const availableContextSpan = rowSpan - APERTURE_HEIGHT - APERTURE_GAP * 2;
+  const contextRowGap = plotted.length <= 1
+    ? 0
+    : Math.max(15.5, Math.min(MIN_CONTEXT_ROW_GAP, availableContextSpan / Math.max(1, plotted.length - 1)));
+  const beforeCount = Math.max(0, focusRank);
+  const afterCount = focusRank >= 0 ? Math.max(0, plotted.length - focusRank - 1) : 0;
+  const minFocusY = CANVAS.rowTop + apertureHalf + (beforeCount > 0 ? APERTURE_GAP + Math.max(0, beforeCount - 1) * contextRowGap : 0);
+  const maxFocusY = CANVAS.rowBottom - apertureHalf - (afterCount > 0 ? APERTURE_GAP + Math.max(0, afterCount - 1) * contextRowGap : 0);
   const focusY = focusRank >= 0
-    ? Math.max(
-      CANVAS.rowTop + apertureHalf,
-      Math.min(CANVAS.rowBottom - apertureHalf, baseY(focusRank))
-    )
+    ? minFocusY <= maxFocusY
+      ? Math.max(minFocusY, Math.min(maxFocusY, baseY(focusRank)))
+      : (minFocusY + maxFocusY) / 2
     : null;
 
   const rows: ColonnadeRow[] = plotted.map((candidate, rank) => {
@@ -420,8 +429,8 @@ export function ExploreFieldV4({
             const active = row.candidate.itemId === activeId;
             const lensScore = Math.round(row.candidate.lensScores[lens]);
             const pathStart = selected ? APERTURE_PATH_X : CANVAS.stemX + 9;
-            const bendOne = selected ? 842 : CANVAS.bendX1;
-            const bendTwo = selected ? 900 : CANVAS.bendX2;
+            const bendOne = selected ? APERTURE_PATH_X + 36 : CANVAS.bendX1;
+            const bendTwo = selected ? 950 : CANVAS.bendX2;
             const path = `M ${pathStart} ${row.y} C ${bendOne} ${row.y} ${bendTwo} ${row.groupY} ${CANVAS.hubX - 12} ${row.groupY}`;
             const groupLabel = tagModel.groups.find((group) => group.id === row.groupId)?.label ?? "UNTAGGED";
             return (
@@ -580,7 +589,7 @@ export function ExploreFieldV4({
         </svg>
 
         <figcaption>
-          <span>{focus ? "FOCUS APERTURE · click another record or use ↑ / ↓ · Esc releases" : "HOVER TO INSPECT · CLICK TO FOCUS · OPEN FOR FULL INTELLIGENCE"}</span>
+          <span>{focus ? "FOCUS APERTURE · click another record · ↑ / ↓ or wheel / trackpad switches · Esc releases" : "HOVER TO INSPECT · CLICK TO FOCUS · OPEN FOR FULL INTELLIGENCE"}</span>
           <span>No semantic coordinates · Lens changes rank only.</span>
         </figcaption>
 
