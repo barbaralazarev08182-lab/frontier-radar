@@ -643,3 +643,112 @@
     grid-template-columns: 110px 150px minmax(0, 1fr) 32px;
   }
 }
+
+/* Gate 15B visual refinement: remove the page-within-page effect seen in owner review. */
+.pr-shell {
+  --muted: #7d7c76;
+  --faint: #bbb9b1;
+  --mid: #595852;
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.pr-stage-nav {
+  grid-template-columns: 180px minmax(0, 1fr) 132px;
+  min-height: 42px;
+  padding-inline: clamp(34px, 4.4vw, 72px);
+}
+
+.pr-stage-links {
+  gap: clamp(14px, 2vw, 30px);
+}
+
+.pr-document {
+  width: 100%;
+  max-width: 1520px;
+  margin-inline: auto;
+}
+
+.pr-capture {
+  grid-template-columns: minmax(0, 1.7fr) minmax(315px, .58fr);
+  gap: clamp(48px, 6vw, 96px);
+  min-height: 520px;
+  padding: clamp(52px, 5vw, 74px) clamp(34px, 4.4vw, 72px) 58px;
+  align-items: center;
+}
+
+.pr-capture h1 {
+  max-width: none;
+  font-size: clamp(58px, 5.35vw, 92px);
+  line-height: .92;
+}
+
+.pr-kicker {
+  margin-bottom: 26px;
+}
+
+.pr-deck {
+  margin-top: 26px;
+}
+
+.pr-capture-actions {
+  margin-top: 28px;
+}
+
+.pr-verdict {
+  align-self: center;
+}
+
+.pr-verdict-score {
+  font-size: clamp(76px, 7vw, 112px);
+}
+
+.pr-ledger-section,
+.pr-resolution {
+  grid-template-columns: 205px minmax(0, 1fr);
+  gap: clamp(38px, 5vw, 76px);
+  padding: 54px clamp(34px, 4.4vw, 72px) 60px;
+}
+
+.pr-section-label {
+  top: 108px;
+}
+
+.pr-section-label > p {
+  margin-top: 12px;
+}
+
+.pr-section-intro {
+  gap: 32px;
+  padding-bottom: 22px;
+}
+
+.pr-evidence-row {
+  grid-template-columns: 48px 138px minmax(0, 1fr) 82px;
+  gap: 18px;
+  padding: 20px 0 22px;
+}
+
+.pr-question-row,
+.pr-build-row {
+  padding-block: 19px;
+}
+
+.pr-resolution-verdict {
+  top: 108px;
+}
+
+@media (max-width: 1100px) {
+  .pr-shell {
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+  }
+
+  .pr-capture {
+    min-height: 480px;
+  }
+}
