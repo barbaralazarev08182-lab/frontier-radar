@@ -188,7 +188,7 @@ export function ExploreFieldV4({
   const plotted = ordered.slice(0, MAX_PLOTTED);
   const activeLens = LENSES.find((entry) => entry.id === lens) ?? LENSES[0]!;
   const focus = plotted.find((candidate) => candidate.itemId === focusId) ?? null;
-  const activeId = hoverId ?? focusId;
+  const activeId = focusId ?? hoverId;
   const tagModel = buildTagAssignments(plotted);
   const focusGroupId = focus ? (tagModel.assignment.get(focus.itemId) ?? "__other__") : null;
   const focusGroupLabel = focusGroupId
@@ -234,6 +234,16 @@ export function ExploreFieldV4({
       content_type: focus.contentType,
     });
   }, [focus, lens]);
+
+  useEffect(() => {
+    const release = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setFocusId(null);
+      setHoverId(null);
+    };
+    window.addEventListener("keydown", release);
+    return () => window.removeEventListener("keydown", release);
+  }, []);
 
   function chooseLens(next: ExploreLens) {
     setLens(next);
@@ -344,7 +354,7 @@ export function ExploreFieldV4({
           </div>
           <div>
             <strong>SHARED TAG FAMILIES</strong>
-            <span>tag assignment only · not semantic embeddings</span>
+            <span>hover to inspect · click to pin · click blank space / Esc to release</span>
           </div>
         </div>
 
@@ -353,6 +363,12 @@ export function ExploreFieldV4({
           viewBox={`0 0 ${CANVAS.width} ${CANVAS.height}`}
           role="img"
           aria-label={`Type Colonnade of ${plotted.length} Explore candidates ranked by ${activeLens.label} and connected to tags already present on each record`}
+          onClick={(event) => {
+            const target = event.target;
+            if (target instanceof Element && target.closest(".lf4-row")) return;
+            setFocusId(null);
+            setHoverId(null);
+          }}
         >
           <line className="lf4-spine" x1={CANVAS.stemX} y1={34} x2={CANVAS.stemX} y2={746} />
           <line className="lf4-hub-spine" x1={CANVAS.hubX} y1={54} x2={CANVAS.hubX} y2={726} />
@@ -362,6 +378,7 @@ export function ExploreFieldV4({
             const active = row.candidate.itemId === activeId;
             const lensScore = Math.round(row.candidate.lensScores[lens]);
             const path = `M ${CANVAS.stemX + 9} ${row.y} C ${CANVAS.bendX1} ${row.y} ${CANVAS.bendX2} ${row.groupY} ${CANVAS.hubX - 12} ${row.groupY}`;
+            const groupLabel = tagModel.groups.find((group) => group.id === row.groupId)?.label ?? "UNTAGGED";
             return (
               <g
                 key={row.candidate.itemId}
@@ -381,6 +398,7 @@ export function ExploreFieldV4({
                   }
                 }}
               >
+                <rect className="lf4-hit" x={34} y={row.y - 11} width={390} height={22} rx={2} />
                 <text className="lf4-rank" x={42} y={row.y + 4}>{String(row.rank + 1).padStart(2, "0")}</text>
                 <text className="lf4-score" x={82} y={row.y + 4}>
                   <tspan>G {scoreLabel(row.candidate.score)}</tspan>
@@ -388,9 +406,14 @@ export function ExploreFieldV4({
                 </text>
                 <g>
                   <title>{row.candidate.title}</title>
-                  <text className="lf4-title" x={CANVAS.titleX} y={row.y + 4} textAnchor="end">
+                  <text className="lf4-title" x={CANVAS.titleX} y={row.y + (active ? -1 : 4)} textAnchor="end">
                     {truncateTitle(row.candidate.title)}
                   </text>
+                  {active ? (
+                    <text className="lf4-inline-readout" x={CANVAS.titleX} y={row.y + 11} textAnchor="end">
+                      {selected ? "PINNED" : "INSPECT"} · {sourceLabel(row.candidate.source)} · {groupLabel} · {firstSeenLabel(row.candidate.firstSeenAt)}
+                    </text>
+                  ) : null}
                 </g>
                 <rect className="lf4-record-mark" x={CANVAS.stemX - 3} y={row.y - 2.2} width={7} height={4.4} rx={1} />
                 <path className="lf4-thread" d={path} pathLength={1} style={{ animationDelay: `${row.rank * 18}ms` }} />
@@ -435,68 +458,80 @@ export function ExploreFieldV4({
         ) : null}
       </figure>
 
-      {focus ? (
-        <aside className="lf4-sheet" aria-label={`Selected signal: ${focus.title}`}>
-          <button className="lf4-sheet-close" type="button" onClick={() => setFocusId(null)} aria-label="Close selected signal">
-            <X aria-hidden />
-          </button>
-          <div className="lf4-sheet-kicker">
-            <span>{sourceLabel(focus.source)}</span>
-            <span>{focus.contentType.toUpperCase()}</span>
-            <span>{firstSeenLabel(focus.firstSeenAt)}</span>
-          </div>
-          <h2>{focus.title}</h2>
-          <p className="lf4-summary">{focus.summary}</p>
-          <dl className="lf4-stats">
-            <div><dt>GLOBAL SCORE</dt><dd>{scoreLabel(focus.score)} / 100</dd></div>
-            <div><dt>{activeLens.label} MATCH</dt><dd>{Math.round(focus.lensScores[lens])} / 100</dd></div>
-            <div><dt>TAG FAMILY</dt><dd>{focusGroupLabel ?? "UNTAGGED"}</dd></div>
-          </dl>
-          <div className="lf4-reasons">
-            <div><span>WHY NOW</span><p>{focus.whyNow ?? lensFallback("now", lens, personalized)}</p></div>
-            <div><span>WHY YOU</span><p>{focus.whyYou ?? lensFallback("you", lens, personalized)}</p></div>
-          </div>
-          <div className="lf4-actions">
-            <TrackedDetailLink
-              itemId={focus.itemId}
-              href={`/project/${focus.itemId}`}
-              className="lf4-open"
-              metadata={{
-                surface: "explore",
-                algorithm_variant: `explore-lieflat-l12-tag-colonnade:${lens}`,
-                source: focus.source,
-                content_type: focus.contentType,
-              }}
-            >
-              OPEN INTELLIGENCE <ArrowUpRight aria-hidden />
-            </TrackedDetailLink>
-            <div className="lf4-secondary">
-              <SaveButton
-                item={{
-                  id: focus.itemId,
-                  title: focus.title,
-                  source: focus.source,
-                  contentType: focus.contentType,
-                  summary: focus.summary,
-                  score: focus.score,
-                  tags: focus.tags,
-                }}
-                className="lf4-save"
-              />
-              <button
-                type="button"
-                className={liked.has(focus.itemId) ? "is-active" : ""}
-                onClick={() => feedback(focus, "interested")}
-              >
-                <Heart aria-hidden /> MORE
-              </button>
-              <button type="button" onClick={() => feedback(focus, "not_interested") }>
-                <ThumbsDown aria-hidden /> LESS
-              </button>
+      <aside
+        className={`lf4-sheet${focus ? " is-pinned" : " is-idle"}`}
+        aria-live="polite"
+        aria-label={focus ? `Pinned signal: ${focus.title}` : "Explore interaction readout"}
+      >
+        {focus ? (
+          <>
+            <button className="lf4-sheet-close" type="button" onClick={() => setFocusId(null)} aria-label="Release pinned signal">
+              <X aria-hidden />
+            </button>
+            <div className="lf4-sheet-kicker">
+              <span>PINNED RECORD</span>
+              <span>{sourceLabel(focus.source)}</span>
+              <span>{focus.contentType.toUpperCase()}</span>
+              <span>{firstSeenLabel(focus.firstSeenAt)}</span>
             </div>
+            <h2>{focus.title}</h2>
+            <p className="lf4-summary">{focus.summary}</p>
+            <dl className="lf4-stats">
+              <div><dt>GLOBAL SCORE</dt><dd>{scoreLabel(focus.score)} / 100</dd></div>
+              <div><dt>{activeLens.label} MATCH</dt><dd>{Math.round(focus.lensScores[lens])} / 100</dd></div>
+              <div><dt>TAG FAMILY</dt><dd>{focusGroupLabel ?? "UNTAGGED"}</dd></div>
+            </dl>
+            <div className="lf4-reasons">
+              <div><span>WHY NOW</span><p>{focus.whyNow ?? lensFallback("now", lens, personalized)}</p></div>
+              <div><span>WHY YOU</span><p>{focus.whyYou ?? lensFallback("you", lens, personalized)}</p></div>
+            </div>
+            <div className="lf4-actions">
+              <TrackedDetailLink
+                itemId={focus.itemId}
+                href={`/project/${focus.itemId}`}
+                className="lf4-open"
+                metadata={{
+                  surface: "explore",
+                  algorithm_variant: `explore-lieflat-l12-tag-colonnade:${lens}`,
+                  source: focus.source,
+                  content_type: focus.contentType,
+                }}
+              >
+                OPEN INTELLIGENCE <ArrowUpRight aria-hidden />
+              </TrackedDetailLink>
+              <div className="lf4-secondary">
+                <SaveButton
+                  item={{
+                    id: focus.itemId,
+                    title: focus.title,
+                    source: focus.source,
+                    contentType: focus.contentType,
+                    summary: focus.summary,
+                    score: focus.score,
+                    tags: focus.tags,
+                  }}
+                  className="lf4-save"
+                />
+                <button
+                  type="button"
+                  className={liked.has(focus.itemId) ? "is-active" : ""}
+                  onClick={() => feedback(focus, "interested")}
+                >
+                  <Heart aria-hidden /> MORE
+                </button>
+                <button type="button" onClick={() => feedback(focus, "not_interested") }>
+                  <ThumbsDown aria-hidden /> LESS
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="lf4-idle-readout">
+            <strong>INSPECT THE FIELD, THEN PIN A RECORD.</strong>
+            <span>Hover any record for an inline readout · click to pin · click another record to switch · blank space or Esc releases.</span>
           </div>
-        </aside>
-      ) : null}
+        )}
+      </aside>
 
       <footer className="lf4-footer">
         <span>L12 TYPE COLONNADE · LIEFLAT CHARTS · POLYFORM NONCOMMERCIAL 1.0.0</span>
