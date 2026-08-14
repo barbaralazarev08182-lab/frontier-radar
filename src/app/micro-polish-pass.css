@@ -6,8 +6,8 @@
    4) L12 type and usable horizontal field grow without increasing viewport height. */
 
 :root {
-  --fr-surface-paper: #f0efeb;
-  --fr-surface-paper-rgb: 240, 239, 235;
+  --fr-surface-paper: var(--fr-system-paper);
+  --fr-surface-paper-rgb: var(--fr-system-paper-rgb);
 }
 
 /* Global light nav: materially present, still integrated with the paper. */
