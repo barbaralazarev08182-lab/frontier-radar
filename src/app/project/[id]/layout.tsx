@@ -5,7 +5,6 @@ import "./project-research-history.css";
 import "./project-lieflat-reading.css";
 import "./project-focus-density.css";
 import "./project-editorial-drama.css";
-import "../../editorial-line-field.css";
 
 export default function ProjectIntelligenceLayout({ children }: { children: ReactNode }) {
   return (
