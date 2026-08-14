@@ -1,0 +1,103 @@
+/* Micro Polish Pass — Project small type readability.
+   Increase only the smallest supporting type; keep section heights, chart geometry,
+   column widths, and the accepted research-document composition unchanged. */
+
+body .pr-shell .pr-stage-links a span {
+  font-size: 8px;
+}
+
+body .pr-shell .pr-eyebrow,
+body .pr-shell .pr-verdict dt,
+body .pr-shell .pr-resolution-verdict > span,
+body .pr-shell .pr-score-notes > strong,
+body .pr-shell .pr-source-ledger > span {
+  font-size: 8.7px;
+  letter-spacing: .095em;
+}
+
+body .pr-shell .pr-row-number {
+  font-size: 9.4px;
+}
+
+body .pr-shell .pr-row-meta {
+  font-size: 8.7px;
+  letter-spacing: .07em;
+}
+
+body .pr-shell .pr-row-meta strong {
+  font-size: 9.4px;
+}
+
+body .pr-shell .pr-momentum {
+  font-size: 8.7px;
+  letter-spacing: .06em;
+}
+
+body .pr-shell .pr-kind {
+  font-size: 8px;
+  letter-spacing: .085em;
+}
+
+body .pr-shell .pr-section-label::after {
+  font-size: 8.2px;
+  letter-spacing: .075em;
+}
+
+body .pr-shell .pr-section-intro::before {
+  font-size: 8px;
+  letter-spacing: .095em;
+}
+
+body .pr-shell .pr-history-head span,
+body .pr-shell .pr-history-note,
+body .pr-shell .pr-history-single span,
+body .pr-shell .pr-history-single small {
+  font-size: 8.2px;
+  letter-spacing: .075em;
+}
+
+body .pr-shell .pr-history-date {
+  font-size: 7.8px;
+  letter-spacing: .045em;
+}
+
+body .pr-shell .pr-score-caption strong {
+  font-size: 8.8px;
+  letter-spacing: .07em;
+}
+
+body .pr-shell .pr-score-caption span {
+  font-size: 8px;
+  letter-spacing: .065em;
+}
+
+body .pr-shell .pr-score-rank {
+  font-size: 8.6px;
+}
+
+body .pr-shell .pr-score-label {
+  font-size: 10.4px;
+}
+
+body .pr-shell .pr-build-row > strong {
+  font-size: 9.4px;
+}
+
+body .pr-shell .pr-build-row a {
+  font-size: 8.7px;
+  letter-spacing: .07em;
+}
+
+body .pr-shell .pr-source-ledger a {
+  font-size: 9.4px;
+}
+
+/* Keep the denser typography from increasing vertical rhythm. */
+body .pr-shell .pr-row-meta,
+body .pr-shell .pr-momentum,
+body .pr-shell .pr-history-note,
+body .pr-shell .pr-score-caption strong,
+body .pr-shell .pr-score-caption span,
+body .pr-shell .pr-build-row a {
+  line-height: 1.35;
+}
