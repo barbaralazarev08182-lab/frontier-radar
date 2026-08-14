@@ -11,3 +11,23 @@
 .lf4-record-mark {
   cursor: pointer;
 }
+
+/* Gate 15A visual refinement: keep the record detail out of the
+   right-hand tag-family convergence field. The sheet remains temporary,
+   but reads as a centered inspector dock rather than a permanent sidebar. */
+.lf4-sheet {
+  left: 50%;
+  right: auto;
+  bottom: 22px;
+  width: min(860px, calc(100vw - 72px));
+  max-height: min(58vh, 520px);
+  transform: translateX(-50%);
+}
+
+@media (max-width: 900px) {
+  .lf4-sheet {
+    bottom: 12px;
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 84px);
+  }
+}
