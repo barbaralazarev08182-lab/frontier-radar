@@ -1,0 +1,270 @@
+/* Surface Pass 3 — viewport-scale editorial vector field.
+   Fixed paper, moving geometry. The line field is decorative only and never carries data semantics. */
+
+.fr-line-field {
+  position: fixed;
+  inset: var(--fr-header-h, 48px) 0 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: #1c1c1a;
+}
+
+.fr-line-field svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fr-line-field path,
+.fr-line-field line,
+.fr-line-field circle,
+.fr-line-field rect {
+  vector-effect: non-scaling-stroke;
+}
+
+.fr-line-field__wire {
+  fill: none;
+  stroke: rgba(28, 28, 26, .145);
+  stroke-width: .82;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fr-line-field__wire--major {
+  stroke: rgba(28, 28, 26, .21);
+  stroke-width: 1.02;
+}
+
+.fr-line-field__wire--quiet {
+  stroke: rgba(28, 28, 26, .075);
+}
+
+.fr-line-field__wire--signal {
+  stroke: rgba(245, 87, 47, .25);
+}
+
+.fr-line-field__construction {
+  fill: none;
+  stroke: rgba(28, 28, 26, .115);
+  stroke-width: .72;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+.fr-line-field__construction circle {
+  fill: #1c1c1a;
+  stroke: none;
+  opacity: .32;
+}
+
+.fr-line-field__micro circle,
+.fr-line-field__micro rect {
+  fill: #1c1c1a;
+  stroke: none;
+  opacity: .26;
+}
+
+.fr-line-field__trace {
+  fill: none;
+  stroke: #315efb;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-dasharray: .045 .955;
+  stroke-dashoffset: 1;
+  opacity: .72;
+  filter: drop-shadow(0 0 3px rgba(49, 94, 251, .20));
+}
+
+.fr-line-field__trace--signal {
+  stroke: #f5572f;
+  opacity: .62;
+  filter: drop-shadow(0 0 3px rgba(245, 87, 47, .18));
+}
+
+.fr-line-field__beacon {
+  fill: #315efb;
+  stroke: rgba(255, 255, 255, .9);
+  stroke-width: 1.2;
+  opacity: .76;
+  filter: drop-shadow(0 0 6px rgba(49, 94, 251, .24));
+}
+
+.fr-line-field__beacon--signal {
+  fill: #f5572f;
+  filter: drop-shadow(0 0 6px rgba(245, 87, 47, .22));
+}
+
+/* Explore is a live field: more horizontal travel, stronger perimeter energy. */
+.fr-line-field--explore {
+  opacity: .84;
+}
+
+.fr-line-field--explore .fr-line-field__base {
+  opacity: .93;
+}
+
+.fr-line-field--explore .fr-line-field__construction {
+  opacity: .88;
+}
+
+/* Project is stage-aware. Only one line composition carries foreground energy at a time. */
+.fr-line-field--project {
+  opacity: .78;
+}
+
+.fr-line-field--project .fr-line-field__project-stage {
+  opacity: .08;
+  transition: opacity 900ms cubic-bezier(.16, 1, .3, 1), transform 1200ms cubic-bezier(.16, 1, .3, 1);
+  transform: translate3d(0, 0, 0);
+  transform-origin: center;
+}
+
+body:has(.pr-shell[data-active-stage="capture"]) .fr-line-field__project-stage--capture,
+body:has(.pr-shell[data-active-stage="evidence"]) .fr-line-field__project-stage--evidence,
+body:has(.pr-shell[data-active-stage="interrogation"]) .fr-line-field__project-stage--interrogation,
+body:has(.pr-shell[data-active-stage="resolution"]) .fr-line-field__project-stage--resolution,
+body:has(.pr-shell[data-active-stage="build"]) .fr-line-field__project-stage--build {
+  opacity: .9;
+}
+
+body:has(.pr-shell[data-active-stage="capture"]) .fr-line-field__project-stage--capture,
+body:has(.pr-shell[data-active-stage="resolution"]) .fr-line-field__project-stage--resolution {
+  transform: translate3d(4px, -2px, 0);
+}
+
+body:has(.pr-shell[data-active-stage="evidence"]) .fr-line-field__project-stage--evidence,
+body:has(.pr-shell[data-active-stage="build"]) .fr-line-field__project-stage--build {
+  transform: translate3d(-3px, 2px, 0);
+}
+
+body:has(.pr-shell[data-active-stage="interrogation"]) .fr-line-field__project-stage--interrogation {
+  transform: translate3d(2px, 3px, 0);
+}
+
+/* Keep the paper fixed and let the vector field live behind it. */
+body:has(.lf4),
+body:has(.pr-shell) {
+  background: #f0efeb;
+}
+
+body:has(.lf4) .lf4,
+body:has(.pr-shell) .pr-shell {
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+}
+
+/* The surface lines are allowed through large editorial areas, but controls stay materially paper-backed. */
+body:has(.lf4) .lf4-controls,
+body:has(.pr-shell) .pr-stage-nav {
+  background-color: rgba(240, 239, 235, .94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fr-line-field__wire,
+  .fr-line-field__construction path,
+  .fr-line-field__construction line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: fr-linefield-draw 1.7s cubic-bezier(.4, 0, .2, 1) forwards;
+  }
+
+  .fr-line-field__construction path,
+  .fr-line-field__construction line {
+    animation-delay: 220ms;
+  }
+
+  .fr-line-field__trace {
+    animation: fr-linefield-travel 10.8s linear infinite;
+  }
+
+  .fr-line-field__trace--b {
+    animation-duration: 14.2s;
+    animation-delay: -5.4s;
+  }
+
+  .fr-line-field__trace--signal {
+    animation-duration: 12.6s;
+  }
+
+  .fr-line-field__drift-a {
+    animation: fr-linefield-drift-a 18s ease-in-out infinite alternate;
+    transform-origin: center;
+  }
+
+  .fr-line-field__drift-b {
+    animation: fr-linefield-drift-b 22s ease-in-out infinite alternate;
+    transform-origin: center;
+  }
+
+  .fr-line-field__beacon {
+    animation: fr-linefield-beacon 4.8s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .fr-line-field__beacon--b {
+    animation-delay: -2.1s;
+  }
+
+  .fr-line-field--project .fr-line-field__project-stage .fr-line-field__trace {
+    animation-duration: 13.5s;
+  }
+
+  @keyframes fr-linefield-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes fr-linefield-travel {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: -1; }
+  }
+
+  @keyframes fr-linefield-drift-a {
+    0% { transform: translate3d(-2px, 0, 0) scale(1.002); }
+    52% { transform: translate3d(3px, -3px, 0) scale(1.006); }
+    100% { transform: translate3d(0, 2px, 0) scale(1.003); }
+  }
+
+  @keyframes fr-linefield-drift-b {
+    0% { transform: translate3d(0, 2px, 0); }
+    50% { transform: translate3d(-4px, -1px, 0); }
+    100% { transform: translate3d(3px, 1px, 0); }
+  }
+
+  @keyframes fr-linefield-beacon {
+    0%, 72%, 100% { opacity: .38; transform: scale(.82); }
+    82% { opacity: .95; transform: scale(1.18); }
+    90% { opacity: .58; transform: scale(1); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-line-field *,
+  .fr-line-field *::before,
+  .fr-line-field *::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+
+  .fr-line-field__wire,
+  .fr-line-field__construction path,
+  .fr-line-field__construction line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .fr-line-field {
+    opacity: .42;
+  }
+
+  .fr-line-field__construction,
+  .fr-line-field__micro {
+    display: none;
+  }
+}
