@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   browser-integration:
-    name: Explore / Saved / Idea Lab browser QA
+    name: Explore / Saved / Idea Lab / Personal Radar browser QA
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -75,7 +75,7 @@ jobs:
           exit 1
 
       - name: Run browser integration gate
-        run: npx playwright test e2e/integration-qa.spec.ts --reporter=line
+        run: npx playwright test e2e/integration-qa.spec.ts e2e/personal-radar-qa.spec.ts --reporter=line
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 
