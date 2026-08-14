@@ -8,6 +8,7 @@ on:
       - agent/gate-15a-lieflat-explore
       - agent/gate-15b-project-research-mode
       - agent/gate-15c-product-grammar-consolidation
+      - agent/gate-16b-personal-radar-v1
       - main
   workflow_dispatch:
 
