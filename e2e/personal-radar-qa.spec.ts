@@ -6,16 +6,28 @@ function route(path: string): string {
   return new URL(path, baseUrl).toString();
 }
 
-test("Personal Radar preview evidence mode renders the full truthful visual state", async ({ page }) => {
+test("Personal Radar preview renders one integrated three-view morph workspace", async ({ page }) => {
   await page.goto(route("/radar?demo=evidence"));
 
   await expect(page.getByText("06 PERSONAL RADAR · INTEREST FRONTIER", { exact: true })).toBeVisible();
   await expect(page.getByText("EVIDENCE-QUALIFIED · PREVIEW QA / SYNTHETIC", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "YOUR CURRENT INTEREST FRONTIER." })).toBeVisible();
-  await expect(page.getByText("F5 · CURRENT INTEREST EVIDENCE", { exact: true })).toBeVisible();
-  await expect(page.getByText("F8 · STRENGTH × CONFIDENCE", { exact: true })).toBeVisible();
+  await expect(page.getByText("G9 · ONE PROFILE, THREE VIEWS", { exact: true })).toBeVisible();
   await expect(page.getByText("SYNTHETIC PREVIEW PROFILE · VISUAL QA ONLY", { exact: true })).toBeVisible();
-  await expect(page.getByText("NO SEMANTIC COORDINATES", { exact: false })).toBeVisible();
+  await expect(page.getByText("LIEFLAT G9 SCATTER MORPH", { exact: false })).toBeVisible();
+
+  const strength = page.getByRole("button", { name: /01 · STRENGTH/i });
+  const evidence = page.getByRole("button", { name: /02 · EVIDENCE/i });
+  const freshness = page.getByRole("button", { name: /03 · FRESHNESS/i });
+
+  await expect(strength).toHaveAttribute("aria-pressed", "true");
+  await evidence.click();
+  await expect(evidence).toHaveAttribute("aria-pressed", "true");
+  await freshness.click();
+  await expect(freshness).toHaveAttribute("aria-pressed", "true");
+
+  const morphCanvas = page.locator('[role="img"] canvas').first();
+  await expect(morphCanvas).toBeVisible({ timeout: 15_000 });
 
   const overflow = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
