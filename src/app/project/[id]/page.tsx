@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { loadProjectDetail } from "@/lib/feed/project-detail";
+import { loadProjectDetail, type ProjectScoreDetail } from "@/lib/feed/project-detail";
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
-import { ProjectIntelligenceMotion } from "@/components/frontier/project-intelligence-motion";
-import "./project-intelligence.css";
+import "./project-research-mode.css";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +25,14 @@ const SCORE_LABEL: Record<string, string> = {
   idea_spark: "Idea spark",
   tryability: "Tryability",
 };
+
+const STAGES = [
+  ["01", "CAPTURE"],
+  ["02", "EVIDENCE"],
+  ["03", "INTERROGATION"],
+  ["04", "RESOLUTION"],
+  ["05", "BUILD"],
+] as const;
 
 function formatDate(value: string | null): string | null {
   if (!value) return null;
@@ -93,14 +100,14 @@ function verdict(score: number | null, crossSource: boolean, evidenceCount: numb
   if (crossSource && value >= 80) {
     return {
       label: "HIGH-CONVICTION / MULTI-SOURCE",
-      note: `${evidenceCount} evidence nodes support the signal across more than one source.`,
+      note: `${evidenceCount} evidence records support the signal across more than one source.`,
     };
   }
 
   if (crossSource) {
     return {
       label: "CONFIRMED / MULTI-SOURCE",
-      note: `${evidenceCount} evidence nodes reduce the chance that this is only a single-feed anomaly.`,
+      note: `${evidenceCount} evidence records reduce the chance that this is only a single-feed anomaly.`,
     };
   }
 
@@ -115,6 +122,63 @@ function verdict(score: number | null, crossSource: boolean, evidenceCount: numb
     label: "WATCH / EARLY SIGNAL",
     note: "Worth tracking, with more evidence still needed before treating it as a confirmed frontier shift.",
   };
+}
+
+function ScoreTickRows({ scores }: { scores: ProjectScoreDetail[] }) {
+  const rows = scores.slice(0, 8);
+  if (rows.length === 0) {
+    return <p className="pr-empty">Score components are not available for this project yet.</p>;
+  }
+
+  const rowHeight = 46;
+  const width = 760;
+  const height = 42 + rows.length * rowHeight;
+  const tickStart = 255;
+  const tickGap = 19;
+
+  return (
+    <div className="pr-score-visual">
+      <div className="pr-score-caption">
+        <strong>NORMALIZED SCORE FIELD</strong>
+        <span>F5 TICK ROWS ADAPTATION · ONE TICK = 5 NORMALIZED SCORE POINTS · EXACT VALUE AT RIGHT</span>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Normalized score dimensions shown as Lieflat tick rows">
+        {rows.map((entry, index) => {
+          const score = Math.max(0, Math.min(100, Number(entry.score)));
+          const filled = Math.floor(score / 5);
+          const y = 34 + index * rowHeight;
+          return (
+            <g key={entry.dimension}>
+              <text className="pr-score-rank" x="4" y={y + 4}>{String(index + 1).padStart(2, "0")}</text>
+              <text className="pr-score-label" x="38" y={y + 4}>{SCORE_LABEL[entry.dimension] ?? entry.dimension}</text>
+              <line className="pr-score-baseline" x1={tickStart - 5} x2={tickStart + tickGap * 19 + 8} y1={y} y2={y} />
+              {Array.from({ length: 20 }, (_, tick) => (
+                <line
+                  key={tick}
+                  className={tick < filled ? "pr-score-tick is-filled" : "pr-score-tick"}
+                  x1={tickStart + tick * tickGap}
+                  x2={tickStart + tick * tickGap}
+                  y1={y - (tick % 5 === 4 ? 7 : 5)}
+                  y2={y + (tick % 5 === 4 ? 7 : 5)}
+                />
+              ))}
+              <text className="pr-score-value" x="728" y={y + 5} textAnchor="end">{Math.round(score)}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function StageLabel({ number, name, thesis }: { number: string; name: string; thesis: string }) {
+  return (
+    <header className="pr-section-label">
+      <span>{number}</span>
+      <strong>{name}</strong>
+      <p>{thesis}</p>
+    </header>
+  );
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -145,7 +209,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
     hypeRisk ? { label: "HYPE RISK", kind: "OPEN QUESTION", copy: hypeRisk } : null,
   ].filter((entry): entry is { label: string; kind: string; copy: string } => entry !== null);
 
-  const evidenceNodes = orderedEvidence.length > 0 ? orderedEvidence : [null];
   const interrogationNodes = caseBlocks.length > 0
     ? caseBlocks
     : [{ label: "ANALYSIS STATUS", kind: "OPEN QUESTION", copy: "The structured intelligence layer is still being generated." }];
@@ -154,204 +217,171 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
     : ["Build directions have not been generated for this project yet."];
 
   return (
-    <div className="project-intelligence-shell" data-pi-stage="0" data-pi-step="0">
-      <ProjectIntelligenceMotion
-        evidenceCount={evidenceNodes.length}
-        caseCount={interrogationNodes.length}
-        buildCount={buildNodes.length}
-      />
+    <div className="pr-shell">
+      <nav className="pr-stage-nav" aria-label="Project Intelligence stages">
+        <Link href="/today" className="pr-back"><ArrowLeft aria-hidden /> DAILY RADAR</Link>
+        <div className="pr-stage-links">
+          {STAGES.map(([number, label]) => (
+            <a key={label} href={`#${label.toLowerCase()}`}><span>{number}</span>{label}</a>
+          ))}
+        </div>
+        <span className="pr-mode">RESEARCH MODE</span>
+      </nav>
 
-      <Link href="/today" className="pi-back">
-        <ArrowLeft className="h-3.5 w-3.5" /> Daily Radar
-      </Link>
-
-      <main className="pi-stage-viewport">
-        <section className="pi-stage pi-stage-capture" data-pi-stage-panel="0" data-active="true">
-          <div className="pi-capture-noise" aria-hidden="true" />
-          <div className="pi-capture-copy">
-            <div className="pi-kicker">
-              <strong>FR / PROJECT INTELLIGENCE</strong>
+      <main className="pr-document">
+        <section id="capture" className="pr-section pr-capture">
+          <div className="pr-capture-main">
+            <div className="pr-kicker">
+              <span>03 PROJECT · INTELLIGENCE</span>
               <span>{SOURCE_LABEL[item.source] ?? item.source}</span>
-              <span>{item.contentType}</span>
+              <span>{item.contentType.toUpperCase()}</span>
               {firstSeen ? <span>FIRST SEEN {firstSeen}</span> : null}
             </div>
-            <h1 className="pi-title">{item.title}</h1>
-            <p className="pi-deck">{summary}</p>
-          </div>
-
-          <div className="pi-capture-object" aria-hidden="true">
-            <div className="pi-capture-sheet pi-capture-sheet-4" />
-            <div className="pi-capture-sheet pi-capture-sheet-3" />
-            <div className="pi-capture-sheet pi-capture-sheet-2" />
-            <div className="pi-capture-sheet pi-capture-sheet-1">
-              <div className="pi-capture-topline">
-                <span>FR / EVIDENCE DOSSIER</span>
-                <span>{SOURCE_LABEL[item.source] ?? item.source}</span>
-              </div>
-              <strong>{String(evidence.length).padStart(2, "0")}</strong>
-              <div className="pi-capture-bottomline">
-                <span>EVIDENCE NODES</span>
-                <span>{String(item.score == null ? "--" : Math.round(item.score))} / RADAR</span>
-              </div>
-            </div>
-            <div className="pi-capture-flare" />
-          </div>
-
-          <aside className="pi-capture-verdict">
-            <span className="pi-label">FRONTIER VERDICT</span>
-            <p>{read.label}</p>
-            <small>{read.note}</small>
-            <div className="pi-status">
-              <span>CODE {entity.hasCodeAnywhere ? "YES" : "—"}</span>
-              <span>DEMO {entity.hasDemoAnywhere ? "YES" : "—"}</span>
-              <span>SOURCES {entity.sources.length}</span>
-              <span>SCORE {item.score == null ? "—" : Math.round(item.score)}</span>
-            </div>
-            <div className="pi-cta-row">
+            <h1>{item.title}</h1>
+            <p className="pr-deck">{summary}</p>
+            <div className="pr-capture-actions">
               <TrackedSourceLink
                 itemId={item.id}
                 href={item.canonicalUrl}
                 metadata={{ surface: "project_intelligence", source: item.source, content_type: item.contentType }}
-                className="pi-cta"
+                className="pr-primary-action"
               >
-                Open project <ArrowUpRight className="h-3.5 w-3.5" />
+                OPEN PROJECT <ArrowUpRight aria-hidden />
               </TrackedSourceLink>
-              <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pi-cta secondary">
-                Idea Lab
-              </Link>
+              <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pr-secondary-action">SEND TO IDEA LAB</Link>
             </div>
+          </div>
+
+          <aside className="pr-verdict">
+            <span className="pr-eyebrow">FRONTIER VERDICT</span>
+            <strong className="pr-verdict-score">{item.score == null ? "—" : Math.round(item.score)}</strong>
+            <h2>{read.label}</h2>
+            <p>{read.note}</p>
+            <dl>
+              <div><dt>EVIDENCE</dt><dd>{evidence.length}</dd></div>
+              <div><dt>SOURCES</dt><dd>{entity.sources.length}</dd></div>
+              <div><dt>CODE</dt><dd>{entity.hasCodeAnywhere ? "YES" : "—"}</dd></div>
+              <div><dt>DEMO</dt><dd>{entity.hasDemoAnywhere ? "YES" : "—"}</dd></div>
+            </dl>
           </aside>
         </section>
 
-        <section className="pi-stage pi-stage-evidence" data-pi-stage-panel="1" data-active="false" aria-hidden="true">
-          <div className="pi-stage-heading">
-            <span>02 / EVIDENCE FILM</span>
-            <strong>WHY SHOULD<br />YOU BELIEVE IT?</strong>
-            <small>Each gesture advances one source node.</small>
-          </div>
-          <div className="pi-vanishing-grid" aria-hidden="true" />
-          <div className="pi-evidence-tunnel">
-            {evidenceNodes.map((entry, index) => {
-              if (!entry) {
+        <section id="evidence" className="pr-section pr-ledger-section">
+          <StageLabel number="02" name="EVIDENCE" thesis="What is directly traceable, and how much confirmation actually exists?" />
+          <div className="pr-section-body">
+            <div className="pr-section-intro">
+              <strong>{evidence.length} evidence record{evidence.length === 1 ? "" : "s"} · {entity.sources.length} source{entity.sources.length === 1 ? "" : "s"}</strong>
+              <p>{entity.crossSource
+                ? "This Project has cross-source confirmation. Every record below remains independently verifiable."
+                : "This is currently a single-source signal. The sparse ledger is intentional; absence of confirmation is part of the evidence state."}</p>
+            </div>
+
+            <div className="pr-evidence-ledger">
+              {orderedEvidence.length > 0 ? orderedEvidence.map((entry, index) => {
+                const momentum = momentumLines(entry.source, entry.momentum);
                 return (
-                  <article key="empty-evidence" className="pi-evidence-card" data-pi-evidence data-state={index === 0 ? "active" : "after"}>
-                    <span className="pi-evidence-seq">01</span>
-                    <div className="pi-source-meta">SOURCE PENDING</div>
-                    <h2>Evidence is still being collected.</h2>
+                  <article key={entry.itemId} className="pr-evidence-row">
+                    <span className="pr-row-number">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="pr-row-meta">
+                      <strong>{SOURCE_LABEL[entry.source] ?? entry.source}</strong>
+                      <span>{entry.contentType.toUpperCase()}</span>
+                      <span>{formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A"}</span>
+                    </div>
+                    <div className="pr-row-copy">
+                      <h3>{entry.title}</h3>
+                      <div className="pr-momentum">
+                        {momentum.length > 0
+                          ? momentum.map((line) => <span key={line}>{line}</span>)
+                          : <span>NO VERIFIED MULTI-SNAPSHOT MOMENTUM YET</span>}
+                      </div>
+                    </div>
+                    <TrackedSourceLink
+                      itemId={entry.itemId}
+                      href={entry.url}
+                      metadata={{ surface: "project_intelligence_evidence", source: entry.source, content_type: entry.contentType }}
+                      className="pr-verify"
+                    >VERIFY ↗</TrackedSourceLink>
                   </article>
                 );
-              }
-              const momentum = momentumLines(entry.source, entry.momentum);
-              return (
-                <article key={entry.itemId} className="pi-evidence-card" data-pi-evidence data-state={index === 0 ? "active" : "after"}>
-                  <span className="pi-evidence-seq">{String(index + 1).padStart(2, "0")}</span>
-                  <div className="pi-evidence-card-top">
-                    <span>{formatDate(entry.publishedAt ?? entry.updatedAt) ?? "DATE N/A"}</span>
-                    <span>{SOURCE_LABEL[entry.source] ?? entry.source} / {entry.contentType}</span>
-                  </div>
-                  <h2>{entry.title}</h2>
-                  <div className="pi-momentum">
-                    {momentum.length > 0 ? momentum.map((line) => <span key={line}>{line}</span>) : <span>momentum accumulating</span>}
-                  </div>
-                  <TrackedSourceLink
-                    itemId={entry.itemId}
-                    href={entry.url}
-                    metadata={{ surface: "project_intelligence_evidence", source: entry.source, content_type: entry.contentType }}
-                    className="pi-evidence-link"
-                  >
-                    Verify source ↗
-                  </TrackedSourceLink>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        <section
-          className="pi-stage pi-stage-interrogation"
-          data-pi-stage-panel="2"
-          data-active="false"
-          data-active-label={interrogationNodes[0]?.label ?? "INTERROGATION"}
-          aria-hidden="true"
-        >
-          <div className="pi-interrogation-chrome">
-            <span>03 / INTERROGATION</span>
-            <strong>FR / QUESTION THE SIGNAL</strong>
-          </div>
-          <div className="pi-interrogation-stack">
-            {interrogationNodes.map((entry, index) => (
-              <article
-                key={`${entry.label}-${index}`}
-                className="pi-interrogation-card"
-                data-pi-case
-                data-label={entry.label}
-                data-state={index === 0 ? "active" : "after"}
-              >
-                <span className="pi-interrogation-kind">{entry.kind}</span>
-                <h2>{entry.label}</h2>
-                <p>{entry.copy}</p>
-                <div className="pi-interrogation-stamp">FR / {String(index + 1).padStart(2, "0")}</div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="pi-stage pi-stage-resolution" data-pi-stage-panel="3" data-active="false" aria-hidden="true">
-          <div className="pi-resolution-heading">
-            <span>04 / RADAR RESOLUTION</span>
-            <strong>THE SIGNAL<br />RESOLVES.</strong>
-          </div>
-          <div className="pi-score-orbit" aria-label="Radar scoring dimensions">
-            {scores.slice(0, 7).map((entry, index) => (
-              <div key={entry.dimension} className="pi-score-shard">
-                <span>{String(index + 1).padStart(2, "0")} / {SCORE_LABEL[entry.dimension] ?? entry.dimension}</span>
-                <strong>{Math.round(entry.score)}</strong>
-              </div>
-            ))}
-          </div>
-          <div className="pi-resolution-core">
-            <span>FRONTIER VERDICT</span>
-            <strong>{read.label}</strong>
-            <p>{read.note}</p>
-            <div>
-              <span>{entity.sources.length} SOURCES</span>
-              <span>{evidence.length} EVIDENCE</span>
-              <span>{item.score == null ? "—" : Math.round(item.score)} RADAR</span>
+              }) : (
+                <p className="pr-empty">Evidence is still being collected.</p>
+              )}
             </div>
           </div>
         </section>
 
-        <section className="pi-stage pi-stage-build" data-pi-stage-panel="4" data-active="false" aria-hidden="true">
-          <div className="pi-build-heading">
-            <span>05 / BUILD</span>
-            <strong>DON&apos;T JUST<br />UNDERSTAND IT.</strong>
-            <small>Choose a direction and turn the signal into a move.</small>
+        <section id="interrogation" className="pr-section pr-ledger-section">
+          <StageLabel number="03" name="INTERROGATION" thesis="Separate what was observed from what Frontier Radar infers or still questions." />
+          <div className="pr-section-body">
+            <div className="pr-question-ledger">
+              {interrogationNodes.map((entry, index) => (
+                <article key={`${entry.label}-${index}`} className="pr-question-row">
+                  <span className={`pr-kind pr-kind-${entry.kind.toLowerCase().replace(" ", "-")}`}>{entry.kind}</span>
+                  <h3>{entry.label}</h3>
+                  <p>{entry.copy}</p>
+                  <span className="pr-row-number">{String(index + 1).padStart(2, "0")}</span>
+                </article>
+              ))}
+            </div>
           </div>
-          <div className="pi-build-deck">
-            {buildNodes.map((idea, index) => (
-              <article key={`${idea}-${index}`} className="pi-build-card" data-pi-build data-state={index === 0 ? "active" : "after"}>
-                <span className="pi-build-number">{String(index + 1).padStart(2, "0")}</span>
-                <span className="pi-build-mode">{index === 0 ? "USE IT" : index === 1 ? "EXTEND IT" : index === 2 ? "COMBINE IT" : "BUILD DIRECTION"}</span>
-                <p>{idea}</p>
-                <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pi-build-action">
-                  Send to Idea Lab ↗
-                </Link>
-              </article>
-            ))}
+        </section>
+
+        <section id="resolution" className="pr-section pr-resolution">
+          <StageLabel number="04" name="RESOLUTION" thesis="How the normalized scoring dimensions support the current verdict." />
+          <div className="pr-section-body pr-resolution-body">
+            <div>
+              <ScoreTickRows scores={scores} />
+              {scores.some((entry) => entry.rationale) ? (
+                <div className="pr-score-notes">
+                  <strong>SCORING NOTES</strong>
+                  {scores.slice(0, 8).map((entry) => entry.rationale ? (
+                    <p key={entry.dimension}><span>{SCORE_LABEL[entry.dimension] ?? entry.dimension}</span>{entry.rationale}</p>
+                  ) : null)}
+                </div>
+              ) : null}
+            </div>
+            <aside className="pr-resolution-verdict">
+              <span>FRONTIER VERDICT</span>
+              <strong>{read.label}</strong>
+              <p>{read.note}</p>
+              <dl>
+                <div><dt>RADAR</dt><dd>{item.score == null ? "—" : Math.round(item.score)}</dd></div>
+                <div><dt>SOURCES</dt><dd>{entity.sources.length}</dd></div>
+                <div><dt>EVIDENCE</dt><dd>{evidence.length}</dd></div>
+              </dl>
+            </aside>
           </div>
-          <div className="pi-source-ribbon">
-            <span>TRACEABLE SOURCE LEDGER</span>
-            {orderedEvidence.slice(0, 5).map((entry) => (
-              <TrackedSourceLink
-                key={entry.itemId}
-                itemId={entry.itemId}
-                href={entry.url}
-                metadata={{ surface: "project_intelligence_ledger", source: entry.source, content_type: entry.contentType }}
-                className="pi-source-ribbon-link"
-              >
-                {SOURCE_LABEL[entry.source] ?? entry.source} ↗
-              </TrackedSourceLink>
-            ))}
+        </section>
+
+        <section id="build" className="pr-section pr-ledger-section pr-build">
+          <StageLabel number="05" name="BUILD" thesis="Turn the signal into a concrete direction without pretending the product has built it for you." />
+          <div className="pr-section-body">
+            <div className="pr-build-ledger">
+              {buildNodes.map((idea, index) => (
+                <article key={`${idea}-${index}`} className="pr-build-row">
+                  <span className="pr-row-number">{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{index === 0 ? "USE IT" : index === 1 ? "EXTEND IT" : index === 2 ? "COMBINE IT" : "BUILD DIRECTION"}</strong>
+                  <p>{idea}</p>
+                  <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`}>IDEA LAB ↗</Link>
+                </article>
+              ))}
+            </div>
+
+            <footer className="pr-source-ledger">
+              <span>TRACEABLE SOURCE LEDGER</span>
+              <div>
+                {orderedEvidence.slice(0, 5).map((entry) => (
+                  <TrackedSourceLink
+                    key={entry.itemId}
+                    itemId={entry.itemId}
+                    href={entry.url}
+                    metadata={{ surface: "project_intelligence_ledger", source: entry.source, content_type: entry.contentType }}
+                  >
+                    {SOURCE_LABEL[entry.source] ?? entry.source} ↗
+                  </TrackedSourceLink>
+                ))}
+              </div>
+            </footer>
           </div>
         </section>
       </main>
