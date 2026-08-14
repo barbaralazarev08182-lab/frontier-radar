@@ -18,10 +18,22 @@
 .lf4-sheet {
   left: 50%;
   right: auto;
-  bottom: 22px;
-  width: min(860px, calc(100vw - 72px));
-  max-height: min(58vh, 520px);
+  bottom: 20px;
+  width: min(920px, calc(100vw - 96px));
+  max-height: min(44vh, 390px);
   transform: translateX(-50%);
+  animation: lf4-sheet-centered-in .22s cubic-bezier(.22,.75,.28,1) both;
+}
+
+@keyframes lf4-sheet-centered-in {
+  from {
+    transform: translate(-50%, 10px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 900px) {
