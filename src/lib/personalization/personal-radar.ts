@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { INTEREST_PROFILE, type InterestKey } from "@/config/interest-profile";
 import { activityFreshness, evidenceConfidence, personalizationConfidence } from "./confidence";
 import { feedbackStrength } from "./profile";
-import { FEATURE_KEYS, FEATURE_VECTOR_VERSION } from "./vector";
+import { FEATURE_KEYS, FEATURE_VECTOR_VERSION, vectorizeItem } from "./vector";
 
 interface RadarEventRow {
   item_id: string;
@@ -86,30 +86,21 @@ function eventRecencyMultiplier(createdAt: string, nowMs: number): number {
   return Math.pow(0.5, ageDays / 30);
 }
 
-function buildCorpus(row: RadarItemRow): string {
-  return [
-    row.title,
-    row.description ?? "",
-    row.summary_zh ?? "",
-    row.why_it_matters ?? "",
-    row.source_slug,
-    row.content_type,
-    ...stringArray(row.tags),
-  ]
-    .join(" ")
-    .toLowerCase();
-}
-
-function matchedInterestKeys(row: RadarItemRow): InterestKey[] {
-  const corpus = buildCorpus(row);
-  return FEATURE_KEYS.filter((key) =>
-    INTEREST_PROFILE[key].keywords.some((keyword) => corpus.includes(keyword.toLowerCase()))
-  );
-}
-
 function round(value: number, digits = 3): number {
   const scale = 10 ** digits;
   return Math.round(value * scale) / scale;
+}
+
+function featureVector(row: RadarItemRow): number[] {
+  return vectorizeItem({
+    title: row.title,
+    description: row.description,
+    summaryZh: row.summary_zh,
+    whyItMatters: row.why_it_matters,
+    source: row.source_slug,
+    contentType: row.content_type,
+    tags: stringArray(row.tags),
+  });
 }
 
 export function derivePersonalRadarProfile(
@@ -118,6 +109,7 @@ export function derivePersonalRadarProfile(
   nowMs = Date.now()
 ): PersonalRadarProfile {
   const itemById = new Map(items.map((item) => [item.item_id, item]));
+  const vectorById = new Map(items.map((item) => [item.item_id, featureVector(item)]));
   const dimensionState = new Map<InterestKey, PersonalRadarDimension>();
 
   for (const key of FEATURE_KEYS) {
@@ -140,22 +132,27 @@ export function derivePersonalRadarProfile(
   );
 
   for (const event of sortedEvents) {
-    const item = itemById.get(event.item_id);
-    if (!item) continue;
+    if (!itemById.has(event.item_id)) continue;
+    const itemVector = vectorById.get(event.item_id);
+    if (!itemVector) continue;
+
     const rawStrength = feedbackStrength(event.event_type, event.dwell_ms);
     if (rawStrength === 0) continue;
     const weightedStrength = rawStrength * eventRecencyMultiplier(event.created_at, nowMs);
 
-    for (const key of matchedInterestKeys(item)) {
+    FEATURE_KEYS.forEach((key, index) => {
+      const itemFeatureWeight = itemVector[index] ?? 0;
+      if (itemFeatureWeight <= 0) return;
+
       const current = dimensionState.get(key)!;
-      current.behaviorSignal += weightedStrength;
+      current.behaviorSignal += weightedStrength * itemFeatureWeight;
       current.evidenceCount += 1;
       if (rawStrength > 0) current.positiveEvidence += 1;
       if (rawStrength < 0) current.negativeEvidence += 1;
       if (!current.lastEvidenceAt || Date.parse(event.created_at) > Date.parse(current.lastEvidenceAt)) {
         current.lastEvidenceAt = event.created_at;
       }
-    }
+    });
   }
 
   const dimensions = FEATURE_KEYS.map((key) => {
