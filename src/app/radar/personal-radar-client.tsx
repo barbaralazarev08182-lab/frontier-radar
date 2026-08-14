@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getVisitorId } from "@/lib/personalization/browser";
 import type {
   PersonalRadarDimension,
@@ -51,6 +51,18 @@ function timeAgo(value: string | null): string {
   if (hours < 24) return `${hours}H AGO`;
   const days = Math.floor(hours / 24);
   return `${days}D AGO`;
+}
+
+async function fetchPersonalRadarProfile(): Promise<PersonalRadarProfile> {
+  const visitorId = getVisitorId();
+  const response = await fetch("/api/personal-radar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ visitorId }),
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("personal_radar_read_failed");
+  return (await response.json()) as PersonalRadarProfile;
 }
 
 function evidenceDimensions(profile: PersonalRadarProfile): PersonalRadarDimension[] {
@@ -240,29 +252,39 @@ export function PersonalRadarClient() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  useEffect(() => {
+    let active = true;
+
+    void fetchPersonalRadarProfile()
+      .then((nextProfile) => {
+        if (!active) return;
+        setProfile(nextProfile);
+        setError(false);
+      })
+      .catch(() => {
+        if (!active) return;
+        setError(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function retry() {
     setLoading(true);
     setError(false);
     try {
-      const visitorId = getVisitorId();
-      const response = await fetch("/api/personal-radar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visitorId }),
-        cache: "no-store",
-      });
-      if (!response.ok) throw new Error("personal_radar_read_failed");
-      setProfile((await response.json()) as PersonalRadarProfile);
+      setProfile(await fetchPersonalRadarProfile());
     } catch {
       setError(true);
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  }
 
   const learned = useMemo(() => (profile ? evidenceDimensions(profile) : []), [profile]);
 
@@ -280,7 +302,7 @@ export function PersonalRadarClient() {
       <section className={styles.loading}>
         <span>06 PERSONAL RADAR · INTEREST FRONTIER</span>
         <strong>THE RADAR COULD NOT READ THIS PROFILE.</strong>
-        <button type="button" onClick={() => void load()}>RETRY</button>
+        <button type="button" onClick={() => void retry()}>RETRY</button>
       </section>
     );
   }
