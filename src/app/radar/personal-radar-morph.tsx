@@ -276,7 +276,7 @@ export function PersonalRadarMorph({
       if (Date.now() < manualPauseUntilRef.current) return;
       setView((current) => {
         const index = VIEW_ORDER.indexOf(current);
-        return VIEW_ORDER[(index + 1) % VIEW_ORDER.length];
+        return VIEW_ORDER[(index + 1) % VIEW_ORDER.length] ?? "strength";
       });
     }, 3000);
     return () => window.clearInterval(timer);
@@ -293,6 +293,7 @@ export function PersonalRadarMorph({
         src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"
         strategy="afterInteractive"
         onLoad={() => setScriptReady(true)}
+        onReady={() => setScriptReady(true)}
       />
 
       <div className={styles.morphRail} aria-label="Personal Radar views">
