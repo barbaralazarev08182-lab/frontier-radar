@@ -16,7 +16,7 @@ import "./lieflat-v4.css";
 import "./lieflat-v4-interaction.css";
 import "./lieflat-v4-svg-geometry.css";
 import "./lieflat-v4-readability.css";
-import "./explore-surface-breathing.css";
+import "./explore-surface-lines.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
