@@ -12,9 +12,30 @@
   cursor: pointer;
 }
 
-/* Gate 15A interaction refinement: selected-record detail is part of the
-   page flow, never an overlay. The relationship field remains fully visible
-   and fully clickable while a record is selected. */
+/* B3-inspired interaction grammar, without changing the L12 geometry:
+   one generous hit zone per real record; hover inspects; click pins. */
+.lf4-hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.lf4-inline-readout {
+  fill: #8f8e88;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 5.9px;
+  font-weight: 700;
+  letter-spacing: .075em;
+  pointer-events: none;
+}
+
+.lf4-row.is-selected .lf4-inline-readout {
+  fill: #4a4944;
+}
+
+/* The detailed record readout is a ledger in normal document flow.
+   It never covers the colonnade, never steals clicks from another record,
+   and is permanently present so the interaction has an obvious contract. */
 .lf4-sheet {
   position: relative;
   left: auto;
@@ -24,24 +45,118 @@
   width: auto;
   max-height: none;
   overflow: visible;
-  margin: 0 46px 30px;
-  border-left: 0;
-  border-right: 0;
+  margin: 0 46px 28px;
+  border: 0;
+  border-top: 1px solid var(--grid);
+  border-bottom: 1px solid var(--grid);
   border-radius: 0;
   background: transparent;
-  padding: 28px 0 26px;
+  padding: 18px 0 17px;
   transform: none;
+  box-shadow: none;
   animation: none;
 }
 
+.lf4-sheet.is-idle {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+}
+
+.lf4-idle-readout {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.lf4-idle-readout strong {
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.lf4-idle-readout span {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .045em;
+  text-align: right;
+}
+
+.lf4-sheet.is-pinned {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(310px, .55fr);
+  column-gap: 34px;
+  row-gap: 0;
+  padding-right: 38px;
+}
+
+.lf4-sheet.is-pinned .lf4-sheet-kicker,
+.lf4-sheet.is-pinned h2,
+.lf4-sheet.is-pinned .lf4-summary,
+.lf4-sheet.is-pinned .lf4-stats {
+  grid-column: 1;
+}
+
+.lf4-sheet.is-pinned .lf4-reasons,
+.lf4-sheet.is-pinned .lf4-actions {
+  grid-column: 2;
+}
+
 .lf4-sheet h2 {
+  max-width: none;
+  margin: 7px 0 5px;
+  font-size: clamp(18px, 2vw, 27px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+}
+
+.lf4-sheet .lf4-summary {
   max-width: 760px;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.lf4-sheet .lf4-stats {
+  margin-top: 12px;
+}
+
+.lf4-sheet .lf4-reasons {
+  align-self: start;
+  gap: 16px;
+  padding: 0 0 12px;
+}
+
+.lf4-sheet .lf4-actions {
+  align-self: end;
+}
+
+.lf4-sheet-close {
+  top: 12px;
+  right: 0;
 }
 
 @media (max-width: 1180px) {
   .lf4-sheet {
     margin-left: 28px;
     margin-right: 28px;
+  }
+
+  .lf4-sheet.is-pinned {
+    grid-template-columns: 1fr;
+    padding-right: 36px;
+  }
+
+  .lf4-sheet.is-pinned .lf4-reasons,
+  .lf4-sheet.is-pinned .lf4-actions {
+    grid-column: 1;
+  }
+
+  .lf4-sheet.is-pinned .lf4-reasons {
+    padding-top: 14px;
   }
 }
 
@@ -51,6 +166,15 @@
     max-height: none;
     margin-left: 20px;
     margin-right: 20px;
-    padding-top: 24px;
+  }
+
+  .lf4-idle-readout {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .lf4-idle-readout span {
+    text-align: left;
   }
 }
