@@ -100,8 +100,14 @@ function buildView(
   const hero = dimensions.reduce((best, point) =>
     point.behaviorSignal > best.behaviorSignal ? point : best
   );
-  const shade = (dimension: PersonalRadarDimension, index: number) =>
-    dimension.key === hero.key ? COBALT : LADDER[Math.min(index + 1, LADDER.length - 1)];
+  const identityOrder = new Map(
+    dimensions.map((dimension, index) => [dimension.key, index] as const)
+  );
+  const shade = (dimension: PersonalRadarDimension) => {
+    if (dimension.key === hero.key) return COBALT;
+    const index = identityOrder.get(dimension.key) ?? 0;
+    return LADDER[Math.min(index + 1, LADDER.length - 1)] ?? MUTED;
+  };
 
   if (view === "evidence") {
     const ordered = [...dimensions].sort(
@@ -135,12 +141,12 @@ function buildView(
           type: "bar",
           universalTransition: true,
           barCategoryGap: "34%",
-          data: ordered.map((dimension, index) => ({
+          data: ordered.map((dimension) => ({
             name: dimension.label,
             value: dimension.evidenceCount,
             groupId: dimension.key,
             itemStyle: {
-              color: shade(dimension, index),
+              color: shade(dimension),
               borderRadius: [2, 2, 0, 0],
             },
           })),
@@ -159,6 +165,11 @@ function buildView(
   const maxX = isFreshness
     ? 100
     : Math.max(1, Math.ceil(Math.max(...xValues) + 1));
+  const maxConfidence = Math.max(...dimensions.map((dimension) => dimension.confidence * 100));
+  const confidenceCeiling = Math.min(
+    100,
+    Math.max(20, Math.ceil((maxConfidence + 8) / 10) * 10)
+  );
 
   return {
     grid: { left: 54, right: 28, top: 34, bottom: 54 },
@@ -176,7 +187,7 @@ function buildView(
       ...makeAxis("CONFIDENCE %"),
       type: "value",
       min: 0,
-      max: 100,
+      max: confidenceCeiling,
       axisLabel: {
         ...makeAxis("").axisLabel,
         formatter: "{value}%",
@@ -188,7 +199,7 @@ function buildView(
         type: "scatter",
         universalTransition: true,
         symbolSize: (value: number[]) => 9 + Math.sqrt(Number(value[2] ?? 1)) * 5.4,
-        data: dimensions.map((dimension, index) => ({
+        data: dimensions.map((dimension) => ({
           name: dimension.label,
           value: [
             isFreshness ? dimension.freshness * 100 : dimension.behaviorSignal,
@@ -196,7 +207,7 @@ function buildView(
             dimension.evidenceCount,
           ],
           groupId: dimension.key,
-          itemStyle: { color: shade(dimension, index) },
+          itemStyle: { color: shade(dimension) },
         })),
         label: {
           show: true,
@@ -226,9 +237,18 @@ export function PersonalRadarMorph({
   const manualPauseUntilRef = useRef(0);
   const [scriptReady, setScriptReady] = useState(false);
   const [view, setView] = useState<RadarView>("strength");
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   const points = useMemo(() => dimensions.slice(0, 12), [dimensions]);
   const viewCopy = VIEW_COPY[view];
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     if (!scriptReady || !chartRef.current || !window.echarts || points.length === 0) return;
@@ -238,7 +258,7 @@ export function PersonalRadarMorph({
     chartInstanceRef.current = chart;
     chart.clear();
     chart.setOption({
-      animationDurationUpdate: 1100,
+      animationDurationUpdate: reduceMotion ? 0 : 1100,
       animationEasingUpdate: "cubicInOut",
       tooltip: {
         backgroundColor: INK,
@@ -256,22 +276,23 @@ export function PersonalRadarMorph({
       chart.dispose();
       chartInstanceRef.current = null;
     };
-  }, [scriptReady, points]);
+  }, [scriptReady, points, reduceMotion]);
 
   useEffect(() => {
     const chart = chartInstanceRef.current;
     if (!chart || points.length === 0) return;
     chart.setOption(
       {
-        animationDurationUpdate: 1100,
+        animationDurationUpdate: reduceMotion ? 0 : 1100,
         animationEasingUpdate: "cubicInOut",
         ...buildView(view, points),
       },
       { replaceMerge: ["xAxis", "yAxis", "series"] }
     );
-  }, [view, points]);
+  }, [view, points, reduceMotion]);
 
   useEffect(() => {
+    if (reduceMotion) return;
     const timer = window.setInterval(() => {
       if (Date.now() < manualPauseUntilRef.current) return;
       setView((current) => {
@@ -280,7 +301,7 @@ export function PersonalRadarMorph({
       });
     }, 3000);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [reduceMotion]);
 
   function selectView(next: RadarView) {
     manualPauseUntilRef.current = Date.now() + 7000;
@@ -319,7 +340,7 @@ export function PersonalRadarMorph({
         <div className={styles.morphLegend}>
           <span><i className={styles.legendHero} /> strongest live signal</span>
           <span><i /> same interest identity</span>
-          <span>AUTO MORPH 3S · MANUAL SELECTION PAUSES 7S</span>
+          <span>{reduceMotion ? "REDUCED MOTION · MANUAL VIEWS" : "AUTO MORPH 3S · MANUAL SELECTION PAUSES 7S"}</span>
         </div>
       </div>
 
