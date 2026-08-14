@@ -1,0 +1,170 @@
+/* Owner-directed Explore surface pass.
+   The frozen L12 geometry / Focus Aperture / interaction model stays untouched.
+   This layer adds line-only atmosphere: registration arcs, editorial rails, and a slow signal trace.
+   The paper color itself never breathes or shifts.
+*/
+
+body:has(.lf4) {
+  background: #efeee9;
+}
+
+body .lf4.lf4 {
+  background: var(--paper);
+}
+
+/* Hero: line drawing, not a color wash. The arcs sit mostly in the empty right field. */
+body .lf4 .lf4-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+body .lf4 .lf4-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 91% 34%,
+      transparent 0 118px,
+      rgba(28, 28, 26, .070) 119px 120px,
+      transparent 121px 164px,
+      rgba(28, 28, 26, .034) 165px 166px,
+      transparent 167px 228px,
+      rgba(49, 94, 251, .045) 229px 230px,
+      transparent 231px),
+    linear-gradient(154deg,
+      transparent 0 69.0%,
+      rgba(28, 28, 26, .042) 69.08% 69.16%,
+      transparent 69.25% 100%),
+    linear-gradient(90deg,
+      transparent 0 calc(84% - .5px),
+      rgba(49, 94, 251, .070) calc(84% - .5px) calc(84% + .5px),
+      transparent calc(84% + .5px) 100%);
+  opacity: .78;
+}
+
+/* A short editorial signal travels along the hero rule occasionally.
+   It is intentionally a line event, not a background-color animation. */
+body .lf4 .lf4-hero::after {
+  content: "";
+  position: absolute;
+  left: -28%;
+  bottom: 0;
+  width: 28%;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(49, 94, 251, .08) 16%,
+    rgba(49, 94, 251, .48) 50%,
+    rgba(28, 28, 26, .20) 72%,
+    transparent 100%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Canvas: keep decoration at the margins so it cannot be mistaken for L12 data geometry. */
+body .lf4 .lf4-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(28, 28, 26, .045), rgba(28, 28, 26, .010)),
+    linear-gradient(rgba(28, 28, 26, .032), rgba(28, 28, 26, .008)),
+    radial-gradient(circle at 100% 52%,
+      transparent 0 218px,
+      rgba(28, 28, 26, .045) 219px 220px,
+      transparent 221px 294px,
+      rgba(49, 94, 251, .035) 295px 296px,
+      transparent 297px),
+    linear-gradient(142deg,
+      transparent 0 83.5%,
+      rgba(28, 28, 26, .030) 83.58% 83.66%,
+      transparent 83.74% 100%);
+  background-size:
+    1px 72%,
+    1px 58%,
+    100% 100%,
+    46% 100%;
+  background-position:
+    46px 14%,
+    calc(100% - 46px) 23%,
+    0 0,
+    0 0;
+  background-repeat: no-repeat;
+  opacity: .72;
+}
+
+/* A vertical trace lives on the far-right registration rail, outside the record field. */
+body .lf4 .lf4-canvas::after {
+  content: "";
+  position: absolute;
+  right: 20px;
+  top: -22%;
+  width: 1px;
+  height: 20%;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(28, 28, 26, .10) 22%,
+    rgba(49, 94, 251, .34) 52%,
+    rgba(28, 28, 26, .12) 72%,
+    transparent 100%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body .lf4 .lf4-hero::after {
+    animation: lf4-editorial-trace 16s cubic-bezier(.22, .61, .36, 1) infinite;
+  }
+
+  body .lf4 .lf4-canvas::after {
+    animation: lf4-rail-trace 19s cubic-bezier(.22, .61, .36, 1) 4s infinite;
+  }
+
+  @keyframes lf4-editorial-trace {
+    0%, 46% {
+      transform: translateX(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: .88;
+    }
+    72% {
+      transform: translateX(455%);
+      opacity: .58;
+    }
+    76%, 100% {
+      transform: translateX(455%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes lf4-rail-trace {
+    0%, 52% {
+      transform: translateY(0);
+      opacity: 0;
+    }
+    56% {
+      opacity: .72;
+    }
+    78% {
+      transform: translateY(610%);
+      opacity: .42;
+    }
+    82%, 100% {
+      transform: translateY(610%);
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .lf4 .lf4-hero::after,
+  body .lf4 .lf4-canvas::after {
+    animation: none;
+    opacity: 0;
+  }
+}
