@@ -42,6 +42,7 @@ test("Personal Radar preview renders one integrated three-view morph workspace",
 
   const morphCanvas = page.locator('[role="img"] canvas').first();
   await expect(morphCanvas).toBeVisible({ timeout: 15_000 });
+  await page.waitForTimeout(1100);
 
   const overflow = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,

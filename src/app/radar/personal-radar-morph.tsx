@@ -76,10 +76,10 @@ function signal(value: number): string {
   return `${rounded > 0 ? "+" : ""}${rounded.toFixed(1)}`;
 }
 
-function makeAxis(name: string, duration: number) {
+function makeAxis(name: string) {
   return {
-    animationDurationUpdate: duration,
-    animationEasingUpdate: "cubicOut",
+    animation: false,
+    animationDurationUpdate: 0,
     axisLine: { lineStyle: { color: GRID_MAJOR, width: 1.05 } },
     axisTick: { lineStyle: { color: GRID_MAJOR }, length: 5 },
     axisLabel: {
@@ -101,13 +101,29 @@ function makeAxis(name: string, duration: number) {
   };
 }
 
-function majorMarkLine(data: Array<Record<string, number>>) {
+function guideSeries(
+  id: string,
+  data: Array<Record<string, number>>,
+  color = GRID_MAJOR,
+  width = 1.2
+) {
   return {
+    id,
+    type: "scatter",
     silent: true,
-    symbol: ["none", "none"],
-    label: { show: false },
-    lineStyle: { color: GRID_MAJOR, width: 1.2, type: "solid" },
-    data,
+    animation: false,
+    z: 0,
+    symbolSize: 0,
+    data: [],
+    tooltip: { show: false },
+    markLine: {
+      silent: true,
+      animation: false,
+      symbol: ["none", "none"],
+      label: { show: false },
+      lineStyle: { color, width, type: "solid" },
+      data,
+    },
   };
 }
 
@@ -117,7 +133,7 @@ function buildView(
   reduceMotion: boolean
 ): Record<string, unknown> {
   const seriesDuration = reduceMotion ? 0 : 880;
-  const axisDuration = reduceMotion ? 0 : 180;
+  const supportDuration = reduceMotion ? 0 : 220;
   const hero = dimensions.reduce((best, point) =>
     point.behaviorSignal > best.behaviorSignal ? point : best
   );
@@ -139,11 +155,11 @@ function buildView(
       grid: CHART_GRID,
       xAxis: {
         id: "personal-radar-x",
-        ...makeAxis("INTEREST DIMENSION", axisDuration),
+        ...makeAxis("INTEREST DIMENSION"),
         type: "category",
         data: ordered.map((dimension) => dimension.label),
         axisLabel: {
-          ...makeAxis("", axisDuration).axisLabel,
+          ...makeAxis("").axisLabel,
           rotate: 24,
           fontSize: 8.5,
           interval: 0,
@@ -152,7 +168,7 @@ function buildView(
       },
       yAxis: {
         id: "personal-radar-y",
-        ...makeAxis("EVIDENCE EVENTS", axisDuration),
+        ...makeAxis("EVIDENCE EVENTS"),
         type: "value",
         min: 0,
         max: Math.max(4, Math.ceil(maxEvidence * 1.2)),
@@ -176,10 +192,11 @@ function buildView(
               borderRadius: [2, 2, 0, 0],
             },
           })),
-          markLine: majorMarkLine([
-            { yAxis: Math.max(1, Math.ceil(maxEvidence / 2)) },
-          ]),
         },
+        guideSeries(
+          "personal-radar-guide-primary",
+          [{ yAxis: Math.max(1, Math.ceil(maxEvidence / 2)) }]
+        ),
       ],
     };
   }
@@ -192,26 +209,26 @@ function buildView(
       grid: CHART_GRID,
       xAxis: {
         id: "personal-radar-x",
-        ...makeAxis("FRESHNESS %", axisDuration),
+        ...makeAxis("FRESHNESS %"),
         type: "value",
         min: 0,
         max: 100,
         interval: 25,
         axisLabel: {
-          ...makeAxis("", axisDuration).axisLabel,
+          ...makeAxis("").axisLabel,
           formatter: "{value}%",
         },
       },
       yAxis: {
         id: "personal-radar-y",
-        ...makeAxis("INTEREST DIMENSION", axisDuration),
+        ...makeAxis("INTEREST DIMENSION"),
         type: "category",
         inverse: true,
         data: ordered.map((dimension) => dimension.label),
         axisTick: { show: false },
         splitLine: { show: false },
         axisLabel: {
-          ...makeAxis("", axisDuration).axisLabel,
+          ...makeAxis("").axisLabel,
           color: MUTED,
           fontSize: 8.5,
           margin: 12,
@@ -223,8 +240,9 @@ function buildView(
           type: "bar",
           silent: true,
           z: 1,
-          barWidth: 2,
-          animationDurationUpdate: axisDuration,
+          barWidth: 3,
+          animationDurationUpdate: supportDuration,
+          animationEasingUpdate: "cubicOut",
           data: ordered.map((dimension) => dimension.freshness * 100),
           itemStyle: { color: GRID_MAJOR },
           showBackground: true,
@@ -238,7 +256,7 @@ function buildView(
           animationDurationUpdate: seriesDuration,
           animationEasingUpdate: "cubicInOut",
           symbolSize: (value: Array<number | string>) =>
-            8 + Math.max(0, Number(value[2] ?? 0)) * 0.2,
+            9 + Math.max(0, Number(value[2] ?? 0)) * 0.2,
           data: ordered.map((dimension) => ({
             name: dimension.label,
             value: [
@@ -254,8 +272,8 @@ function buildView(
             focus: "self",
             itemStyle: { borderColor: INK, borderWidth: 1 },
           },
-          markLine: majorMarkLine([{ xAxis: 50 }]),
         },
+        guideSeries("personal-radar-guide-primary", [{ xAxis: 50 }]),
       ],
     };
   }
@@ -273,7 +291,7 @@ function buildView(
     grid: CHART_GRID,
     xAxis: {
       id: "personal-radar-x",
-      ...makeAxis("SIGNED LIVE SIGNAL", axisDuration),
+      ...makeAxis("SIGNED LIVE SIGNAL"),
       type: "value",
       min: minX,
       max: maxX,
@@ -281,13 +299,13 @@ function buildView(
     },
     yAxis: {
       id: "personal-radar-y",
-      ...makeAxis("CONFIDENCE %", axisDuration),
+      ...makeAxis("CONFIDENCE %"),
       type: "value",
       min: 0,
       max: confidenceCeiling,
       splitNumber: 5,
       axisLabel: {
-        ...makeAxis("", axisDuration).axisLabel,
+        ...makeAxis("").axisLabel,
         formatter: "{value}%",
       },
     },
@@ -322,11 +340,12 @@ function buildView(
           focus: "self",
           label: { color: INK, fontWeight: 700 },
         },
-        markLine: majorMarkLine([
-          { xAxis: 0 },
-          { yAxis: Math.round(confidenceCeiling / 2) },
-        ]),
       },
+      guideSeries("personal-radar-guide-primary", [{ xAxis: 0 }], GRID_ZERO, 1.35),
+      guideSeries(
+        "personal-radar-guide-secondary",
+        [{ yAxis: Math.round(confidenceCeiling / 2) }]
+      ),
     ],
   };
 }
@@ -363,8 +382,7 @@ export function PersonalRadarMorph({
     chartInstanceRef.current = chart;
     chart.clear();
     chart.setOption({
-      animationDurationUpdate: reduceMotion ? 0 : 180,
-      animationEasingUpdate: "cubicOut",
+      animationDurationUpdate: 0,
       tooltip: {
         backgroundColor: INK,
         borderWidth: 0,
@@ -388,8 +406,7 @@ export function PersonalRadarMorph({
     if (!scriptReady || !chart || points.length === 0) return;
     chart.setOption(
       {
-        animationDurationUpdate: reduceMotion ? 0 : 180,
-        animationEasingUpdate: "cubicOut",
+        animationDurationUpdate: 0,
         ...buildView(view, points, reduceMotion),
       },
       { replaceMerge: ["series"] }
