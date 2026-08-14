@@ -234,7 +234,8 @@ export function PersonalRadarMorph({
 }) {
   const chartRef = useRef<HTMLDivElement | null>(null);
   const chartInstanceRef = useRef<EChartsInstance | null>(null);
-  const manualPauseUntilRef = useRef(0);
+  const manualPauseRef = useRef(false);
+  const manualPauseTimerRef = useRef<number | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [view, setView] = useState<RadarView>("strength");
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -266,7 +267,7 @@ export function PersonalRadarMorph({
         padding: [9, 12],
         textStyle: { color: PAPER, fontSize: 11 },
       },
-      ...buildView(view, points),
+      ...buildView("strength", points),
     });
 
     const resize = () => chart.resize();
@@ -280,7 +281,7 @@ export function PersonalRadarMorph({
 
   useEffect(() => {
     const chart = chartInstanceRef.current;
-    if (!chart || points.length === 0) return;
+    if (!scriptReady || !chart || points.length === 0) return;
     chart.setOption(
       {
         animationDurationUpdate: reduceMotion ? 0 : 1100,
@@ -289,12 +290,12 @@ export function PersonalRadarMorph({
       },
       { replaceMerge: ["xAxis", "yAxis", "series"] }
     );
-  }, [view, points, reduceMotion]);
+  }, [view, points, reduceMotion, scriptReady]);
 
   useEffect(() => {
     if (reduceMotion) return;
     const timer = window.setInterval(() => {
-      if (Date.now() < manualPauseUntilRef.current) return;
+      if (manualPauseRef.current) return;
       setView((current) => {
         const index = VIEW_ORDER.indexOf(current);
         return VIEW_ORDER[(index + 1) % VIEW_ORDER.length] ?? "strength";
@@ -303,8 +304,21 @@ export function PersonalRadarMorph({
     return () => window.clearInterval(timer);
   }, [reduceMotion]);
 
+  useEffect(() => () => {
+    if (manualPauseTimerRef.current !== null) {
+      window.clearTimeout(manualPauseTimerRef.current);
+    }
+  }, []);
+
   function selectView(next: RadarView) {
-    manualPauseUntilRef.current = Date.now() + 7000;
+    manualPauseRef.current = true;
+    if (manualPauseTimerRef.current !== null) {
+      window.clearTimeout(manualPauseTimerRef.current);
+    }
+    manualPauseTimerRef.current = window.setTimeout(() => {
+      manualPauseRef.current = false;
+      manualPauseTimerRef.current = null;
+    }, 7000);
     setView(next);
   }
 
