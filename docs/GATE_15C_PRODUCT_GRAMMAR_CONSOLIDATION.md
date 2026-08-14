@@ -1,6 +1,6 @@
 # Gate 15C — Product Grammar / Visual System Consolidation
 
-Status: CURRENT / DRAFT
+Status: COMPLETE / MACHINE PASS / NOT MERGED
 
 ## Objective
 
@@ -23,35 +23,13 @@ The following are the current reference implementations and are FROZEN unless th
 - Explore — L12 Type Colonnade / Focus Aperture / owner-approved perimeter field / Project-matched paper / focus + wheel transition motion
 - Project — Research Mode / five protected stages / ordinary browser scrolling / accepted chart and chapter motion
 
-Gate 15C must learn from them, not re-style them.
-
-## Current implementation problem
-
-The product currently reaches the accepted visual result through several historical CSS layers:
-
-```text
-product-grammar.css
-product-grammar-layer2.css
-site-nav-transparent-light.css
-surface-pass-5.css
-micro-polish-pass.css
-```
-
-Several of these layers redefine or override the same concepts such as:
-
-- light paper tone
-- light navigation background / translucency
-- shared semantic accents
-- interaction timing
-- route identity grammar
-
-The browser result is currently correct, but the source of truth is fragmented.
+Gate 15C learns from them; it does not re-style them.
 
 ## Gate thesis
 
 > **Consolidate the grammar, not the layouts.**
 
-The product should share one system for:
+The product shares one system for:
 
 - workspace identity
 - paper / ink / muted / faint / grid vocabulary
@@ -75,11 +53,11 @@ But each route keeps its own composition and personality.
 
 Same product != same layout.
 
-## Subgates
+## Completed subgates
 
-### 15C-A — Canonical primitives — CURRENT
+### 15C-A — Canonical primitives — COMPLETE
 
-Create a single system layer that records the owner-accepted primitives without changing current rendered output.
+Created `src/app/frontier-system.css` as the canonical primitive registry and loaded it before historical product-grammar layers.
 
 Canonical light research surface:
 
@@ -98,43 +76,60 @@ Adjacent / primary research accent = cobalt
 Wildcard = orange
 ```
 
-Header:
+Shared shell / motion:
 
 ```text
-48px
-```
-
-Motion personality:
-
-```text
+HEADER 48px
+micro interaction ~160ms
+focus / object-identity transition ~340ms
 fast-in / fast-stop
 no gratuitous bounce
-cubicOut / quarticOut family
-~160ms micro interaction
-~340ms focus / object-identity transition
 prefers-reduced-motion fallback required
 ```
 
-15C-A must be a **visual no-op** on accepted pages.
+Also centralized the 01–05 workspace identity contract in `src/lib/frontier-workspaces.ts` and changed `SiteNav` to consume that single source.
 
-### 15C-B — Override consolidation — PLANNED
+### 15C-B — Exact-value override consolidation — COMPLETE
 
-After 15C-A CI/runtime proof, reduce duplicate historical overrides where they can be replaced by the canonical primitives with computed-style parity.
+Only values already identical in the accepted browser result were migrated to canonical aliases:
 
-No deletion or cleanup is allowed merely because a file looks old. Remove a legacy rule only after its replacement is verified.
+- product cobalt
+- Wildcard orange
+- 48px header height
+- shared UI easing
+- accepted Explore / Project `#F0EFEB` paper alias
 
-### 15C-C — Shared grammar audit — PLANNED
+Deliberately **not** changed:
+- older route-local paper/ink values that are not exact matches
+- Today production motion layers
+- Saved dark archive palette
+- Idea Lab dark workbench palette
+- any FROZEN route composition
 
-Audit Today, Saved and Idea Lab against the shared grammar **without automatically redesigning them**.
+No historical CSS file was deleted merely because it looked old.
 
-Output should classify each difference as one of:
+### 15C-C — Shared grammar audit — COMPLETE
+
+Recorded in:
 
 ```text
-SYSTEM DRIFT     -> should eventually converge
-ROUTE PERSONALITY -> intentionally different
-FROZEN CONTRACT  -> do not touch
-FUTURE GATE      -> valid issue, out of this Gate
+docs/GATE_15C_GRAMMAR_AUDIT.md
 ```
+
+Every cross-route difference is classified as:
+
+```text
+SYSTEM DRIFT
+ROUTE PERSONALITY
+FROZEN CONTRACT
+FUTURE GATE
+```
+
+Important result:
+- Today cinematic Daily Discovery = route personality / frozen behavior
+- Saved dark research archive = route personality
+- Idea Lab dark direction workbench = route personality
+- local accent-token differences and historical CSS layering = system/source drift to handle only in a future explicitly reopened route Gate
 
 ## Lieflat rule
 
@@ -154,9 +149,26 @@ real data shape
 
 A successful L12 implementation does not make L12 the default.
 
-Gate 15C itself does **not** add charts simply to express the visual system.
+Gate 15C itself adds no chart simply to express the visual system.
 
-## Non-goals
+## Verification
+
+Latest full Integration QA on the completed 15C stack:
+
+```text
+run 31784717749
+TypeCheck PASS
+ESLint PASS
+Unit tests PASS
+fixture build PASS
+application start PASS
+browser integration gate PASS
+screenshot artifact upload PASS
+```
+
+This proves machine/browser regression safety for the existing integration chain. It is **not** a new owner Visual PASS claim because Gate 15C intentionally introduced no new visual composition.
+
+## Non-goals preserved
 
 - no Explore redesign
 - no Project redesign
@@ -167,7 +179,7 @@ Gate 15C itself does **not** add charts simply to express the visual system.
 - no ranking / personalization changes
 - no schema / database changes
 - no new product capability claims
-- no Production deployment without explicit owner approval
+- no Production deployment
 
 ## Delivery / safety
 
@@ -183,15 +195,7 @@ Base:
 agent/gate-15b-project-research-mode
 ```
 
-Workflow:
-
-```text
-narrow subgate
-→ CI
-→ Preview/runtime parity where relevant
-→ owner review when visual output changes
-→ freeze subgate
-```
+PR #37 remains Draft / Open / Not merged.
 
 Machine PASS != Runtime PASS != Visual PASS.
 
