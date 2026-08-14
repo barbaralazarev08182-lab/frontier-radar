@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/site-nav";
 import "./globals.css";
 import "./product-grammar.css";
 import "./product-grammar-layer2.css";
+import "./site-nav-transparent-light.css";
 
 export const metadata: Metadata = {
   title: "Frontier Radar",
