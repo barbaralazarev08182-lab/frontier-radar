@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PersonalRadarDimension } from "@/lib/personalization/personal-radar";
 import styles from "./personal-radar.module.css";
+import polish from "./personal-radar-polish.module.css";
 
 type RadarView = "strength" | "evidence" | "freshness";
 
@@ -49,8 +50,8 @@ const VIEW_COPY: Record<
   freshness: {
     eyebrow: "03 · FRESHNESS",
     title: "WHAT IS STILL CLOSE TO THE SURFACE",
-    note: "X is recency freshness and Y remains confidence. A fresh point is not automatically a strong preference.",
-    axis: "FRESHNESS × CONFIDENCE",
+    note: "Each horizontal rung runs from zero to current freshness. Endpoint size keeps confidence visible without turning freshness into a second scatter field.",
+    axis: "FRESHNESS RUNG",
   },
 };
 
@@ -59,8 +60,12 @@ const INK = "#1C1C1A";
 const MUTED = "#8F8E88";
 const FAINT = "#C6C5BF";
 const GRID = "#DEDDD6";
+const GRID_MAJOR = "#BBBAB3";
+const GRID_ZERO = "#97968F";
+const TRACK = "#E8E7E0";
 const COBALT = "#315EFB";
 const LADDER = [INK, "#4A4944", "#6A6963", MUTED, "#B0AFA9", FAINT];
+const CHART_GRID = { left: 58, right: 28, top: 34, bottom: 58 };
 
 function percentage(value: number): string {
   return `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`;
@@ -71,17 +76,20 @@ function signal(value: number): string {
   return `${rounded > 0 ? "+" : ""}${rounded.toFixed(1)}`;
 }
 
-function makeAxis(name: string) {
+function makeAxis(name: string, duration: number) {
   return {
-    axisLine: { lineStyle: { color: GRID, width: 1 } },
-    axisTick: { lineStyle: { color: GRID }, length: 5 },
+    animationDurationUpdate: duration,
+    animationEasingUpdate: "cubicOut",
+    axisLine: { lineStyle: { color: GRID_MAJOR, width: 1.05 } },
+    axisTick: { lineStyle: { color: GRID_MAJOR }, length: 5 },
     axisLabel: {
       color: MUTED,
       fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
       fontSize: 9,
       margin: 10,
+      hideOverlap: true,
     },
-    splitLine: { lineStyle: { color: GRID, width: 0.7 } },
+    splitLine: { lineStyle: { color: GRID, width: 0.72 } },
     name,
     nameGap: 18,
     nameTextStyle: {
@@ -93,10 +101,23 @@ function makeAxis(name: string) {
   };
 }
 
+function majorMarkLine(data: Array<Record<string, number>>) {
+  return {
+    silent: true,
+    symbol: ["none", "none"],
+    label: { show: false },
+    lineStyle: { color: GRID_MAJOR, width: 1.2, type: "solid" },
+    data,
+  };
+}
+
 function buildView(
   view: RadarView,
-  dimensions: PersonalRadarDimension[]
+  dimensions: PersonalRadarDimension[],
+  reduceMotion: boolean
 ): Record<string, unknown> {
+  const seriesDuration = reduceMotion ? 0 : 880;
+  const axisDuration = reduceMotion ? 0 : 180;
   const hero = dimensions.reduce((best, point) =>
     point.behaviorSignal > best.behaviorSignal ? point : best
   );
@@ -115,31 +136,36 @@ function buildView(
     );
     const maxEvidence = Math.max(1, ...ordered.map((dimension) => dimension.evidenceCount));
     return {
-      grid: { left: 48, right: 26, top: 34, bottom: 72 },
+      grid: CHART_GRID,
       xAxis: {
-        ...makeAxis("INTEREST DIMENSION"),
+        id: "personal-radar-x",
+        ...makeAxis("INTEREST DIMENSION", axisDuration),
         type: "category",
         data: ordered.map((dimension) => dimension.label),
         axisLabel: {
-          ...makeAxis("").axisLabel,
-          rotate: 31,
+          ...makeAxis("", axisDuration).axisLabel,
+          rotate: 24,
           fontSize: 8.5,
           interval: 0,
         },
         splitLine: { show: false },
       },
       yAxis: {
-        ...makeAxis("EVIDENCE EVENTS"),
+        id: "personal-radar-y",
+        ...makeAxis("EVIDENCE EVENTS", axisDuration),
         type: "value",
         min: 0,
         max: Math.max(4, Math.ceil(maxEvidence * 1.2)),
         minInterval: 1,
+        splitNumber: 4,
       },
       series: [
         {
           id: "personal-radar-profile",
           type: "bar",
           universalTransition: true,
+          animationDurationUpdate: seriesDuration,
+          animationEasingUpdate: "cubicInOut",
           barCategoryGap: "34%",
           data: ordered.map((dimension) => ({
             name: dimension.label,
@@ -150,21 +176,93 @@ function buildView(
               borderRadius: [2, 2, 0, 0],
             },
           })),
+          markLine: majorMarkLine([
+            { yAxis: Math.max(1, Math.ceil(maxEvidence / 2)) },
+          ]),
         },
       ],
     };
   }
 
-  const isFreshness = view === "freshness";
-  const xValues = dimensions.map((dimension) =>
-    isFreshness ? dimension.freshness * 100 : dimension.behaviorSignal
-  );
-  const minX = isFreshness
-    ? Math.max(0, Math.floor(Math.min(...xValues) - 8))
-    : Math.min(0, Math.floor(Math.min(...xValues) - 1));
-  const maxX = isFreshness
-    ? 100
-    : Math.max(1, Math.ceil(Math.max(...xValues) + 1));
+  if (view === "freshness") {
+    const ordered = [...dimensions].sort(
+      (a, b) => b.freshness - a.freshness || b.confidence - a.confidence
+    );
+    return {
+      grid: CHART_GRID,
+      xAxis: {
+        id: "personal-radar-x",
+        ...makeAxis("FRESHNESS %", axisDuration),
+        type: "value",
+        min: 0,
+        max: 100,
+        interval: 25,
+        axisLabel: {
+          ...makeAxis("", axisDuration).axisLabel,
+          formatter: "{value}%",
+        },
+      },
+      yAxis: {
+        id: "personal-radar-y",
+        ...makeAxis("INTEREST DIMENSION", axisDuration),
+        type: "category",
+        inverse: true,
+        data: ordered.map((dimension) => dimension.label),
+        axisTick: { show: false },
+        splitLine: { show: false },
+        axisLabel: {
+          ...makeAxis("", axisDuration).axisLabel,
+          color: MUTED,
+          fontSize: 8.5,
+          margin: 12,
+        },
+      },
+      series: [
+        {
+          id: "personal-radar-freshness-track",
+          type: "bar",
+          silent: true,
+          z: 1,
+          barWidth: 2,
+          animationDurationUpdate: axisDuration,
+          data: ordered.map((dimension) => dimension.freshness * 100),
+          itemStyle: { color: GRID_MAJOR },
+          showBackground: true,
+          backgroundStyle: { color: TRACK },
+        },
+        {
+          id: "personal-radar-profile",
+          type: "scatter",
+          z: 3,
+          universalTransition: true,
+          animationDurationUpdate: seriesDuration,
+          animationEasingUpdate: "cubicInOut",
+          symbolSize: (value: Array<number | string>) =>
+            8 + Math.max(0, Number(value[2] ?? 0)) * 0.2,
+          data: ordered.map((dimension) => ({
+            name: dimension.label,
+            value: [
+              dimension.freshness * 100,
+              dimension.label,
+              dimension.confidence * 100,
+            ],
+            groupId: dimension.key,
+            itemStyle: { color: shade(dimension) },
+          })),
+          label: { show: false },
+          emphasis: {
+            focus: "self",
+            itemStyle: { borderColor: INK, borderWidth: 1 },
+          },
+          markLine: majorMarkLine([{ xAxis: 50 }]),
+        },
+      ],
+    };
+  }
+
+  const xValues = dimensions.map((dimension) => dimension.behaviorSignal);
+  const minX = Math.min(0, Math.floor(Math.min(...xValues) - 1));
+  const maxX = Math.max(1, Math.ceil(Math.max(...xValues) + 1));
   const maxConfidence = Math.max(...dimensions.map((dimension) => dimension.confidence * 100));
   const confidenceCeiling = Math.min(
     100,
@@ -172,24 +270,24 @@ function buildView(
   );
 
   return {
-    grid: { left: 54, right: 28, top: 34, bottom: 54 },
+    grid: CHART_GRID,
     xAxis: {
-      ...makeAxis(isFreshness ? "FRESHNESS %" : "SIGNED LIVE SIGNAL"),
+      id: "personal-radar-x",
+      ...makeAxis("SIGNED LIVE SIGNAL", axisDuration),
       type: "value",
       min: minX,
       max: maxX,
-      axisLabel: {
-        ...makeAxis("").axisLabel,
-        formatter: isFreshness ? "{value}%" : "{value}",
-      },
+      splitNumber: 5,
     },
     yAxis: {
-      ...makeAxis("CONFIDENCE %"),
+      id: "personal-radar-y",
+      ...makeAxis("CONFIDENCE %", axisDuration),
       type: "value",
       min: 0,
       max: confidenceCeiling,
+      splitNumber: 5,
       axisLabel: {
-        ...makeAxis("").axisLabel,
+        ...makeAxis("", axisDuration).axisLabel,
         formatter: "{value}%",
       },
     },
@@ -198,11 +296,13 @@ function buildView(
         id: "personal-radar-profile",
         type: "scatter",
         universalTransition: true,
+        animationDurationUpdate: seriesDuration,
+        animationEasingUpdate: "cubicInOut",
         symbolSize: (value: number[]) => 9 + Math.sqrt(Number(value[2] ?? 1)) * 5.4,
         data: dimensions.map((dimension) => ({
           name: dimension.label,
           value: [
-            isFreshness ? dimension.freshness * 100 : dimension.behaviorSignal,
+            dimension.behaviorSignal,
             dimension.confidence * 100,
             dimension.evidenceCount,
           ],
@@ -222,6 +322,10 @@ function buildView(
           focus: "self",
           label: { color: INK, fontWeight: 700 },
         },
+        markLine: majorMarkLine([
+          { xAxis: 0 },
+          { yAxis: Math.round(confidenceCeiling / 2) },
+        ]),
       },
     ],
   };
@@ -259,15 +363,15 @@ export function PersonalRadarMorph({
     chartInstanceRef.current = chart;
     chart.clear();
     chart.setOption({
-      animationDurationUpdate: reduceMotion ? 0 : 1100,
-      animationEasingUpdate: "cubicInOut",
+      animationDurationUpdate: reduceMotion ? 0 : 180,
+      animationEasingUpdate: "cubicOut",
       tooltip: {
         backgroundColor: INK,
         borderWidth: 0,
         padding: [9, 12],
         textStyle: { color: PAPER, fontSize: 11 },
       },
-      ...buildView("strength", points),
+      ...buildView("strength", points, reduceMotion),
     });
 
     const resize = () => chart.resize();
@@ -284,11 +388,11 @@ export function PersonalRadarMorph({
     if (!scriptReady || !chart || points.length === 0) return;
     chart.setOption(
       {
-        animationDurationUpdate: reduceMotion ? 0 : 1100,
-        animationEasingUpdate: "cubicInOut",
-        ...buildView(view, points),
+        animationDurationUpdate: reduceMotion ? 0 : 180,
+        animationEasingUpdate: "cubicOut",
+        ...buildView(view, points, reduceMotion),
       },
-      { replaceMerge: ["xAxis", "yAxis", "series"] }
+      { replaceMerge: ["series"] }
     );
   }, [view, points, reduceMotion, scriptReady]);
 
@@ -323,7 +427,7 @@ export function PersonalRadarMorph({
   }
 
   return (
-    <div className={styles.morphWorkspace}>
+    <div className={`${styles.morphWorkspace} ${polish.morphWorkspace}`}>
       <Script
         src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"
         strategy="afterInteractive"
@@ -331,13 +435,13 @@ export function PersonalRadarMorph({
         onReady={() => setScriptReady(true)}
       />
 
-      <div className={styles.morphRail} aria-label="Personal Radar views">
-        <div className={styles.morphRailHead}>
+      <div className={`${styles.morphRail} ${polish.morphRail}`} aria-label="Personal Radar views">
+        <div className={`${styles.morphRailHead} ${polish.morphRailHead}`}>
           <span>G9 · ONE PROFILE, THREE VIEWS</span>
           <strong>{viewCopy.title}</strong>
           <p>{viewCopy.note}</p>
         </div>
-        <div className={styles.morphButtons}>
+        <div className={`${styles.morphButtons} ${polish.morphButtons}`}>
           {VIEW_ORDER.map((candidate) => (
             <button
               type="button"
@@ -358,20 +462,20 @@ export function PersonalRadarMorph({
         </div>
       </div>
 
-      <div className={styles.morphPlotWrap}>
+      <div className={`${styles.morphPlotWrap} ${polish.morphPlotWrap}`}>
         <div
           ref={chartRef}
-          className={styles.morphPlot}
+          className={`${styles.morphPlot} ${polish.morphPlot}`}
           role="img"
           aria-label={`Personal Radar ${view} view. The same interest dimensions transition between strength, evidence, and freshness.`}
         />
         {!scriptReady ? <div className={styles.morphLoading}>LOADING G9 INSTRUMENT…</div> : null}
         <div className={styles.morphSource}>
-          LIEFLAT G9 SCATTER MORPH · UNIVERSAL TRANSITION · GROUP ID = INTEREST DIMENSION
+          LIEFLAT G9 MORPH · F11 TICK GAUGE SMALL MULTIPLES · GROUP ID = INTEREST DIMENSION
         </div>
       </div>
 
-      <aside className={styles.morphReadout}>
+      <aside className={`${styles.morphReadout} ${polish.morphReadout}`}>
         <div className={styles.morphReadoutHead}>
           <span>LIVE EVIDENCE LEDGER</span>
           <strong>{points.length} DIMENSIONS IN VIEW</strong>
@@ -388,7 +492,7 @@ export function PersonalRadarMorph({
           </div>
         ))}
         <p>
-          S = signed live signal · E = contributing events · F = freshness. Confidence remains visible in the plotted geometry.
+          S = signed live signal · E = contributing events · F = freshness. Confidence remains encoded in point size where the view requires it.
         </p>
       </aside>
     </div>

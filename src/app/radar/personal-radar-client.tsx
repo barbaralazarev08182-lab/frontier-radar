@@ -9,6 +9,7 @@ import type {
 } from "@/lib/personalization/personal-radar";
 import { PersonalRadarMorph } from "./personal-radar-morph";
 import styles from "./personal-radar.module.css";
+import polish from "./personal-radar-polish.module.css";
 
 const STATUS_COPY: Record<
   PersonalRadarStatus,
@@ -171,7 +172,7 @@ export function PersonalRadarClient({
   const state = STATUS_COPY[profile.status];
 
   return (
-    <article className={styles.radar} data-radar-state={profile.status}>
+    <article className={`${styles.radar} ${polish.radar}`} data-radar-state={profile.status}>
       <header className={styles.hero}>
         <div className={styles.heroCopy}>
           <div className={styles.kicker}>
@@ -199,12 +200,12 @@ export function PersonalRadarClient({
       {profile.status === "cold_start" ? (
         <PriorField profile={profile} />
       ) : (
-        <section className={styles.morphSection}>
+        <section className={`${styles.morphSection} ${polish.morphSection}`}>
           <PersonalRadarMorph dimensions={learned} />
         </section>
       )}
 
-      <footer className={styles.footer}>
+      <footer className={`${styles.footer} ${polish.footer}`}>
         <span>{previewDemo ? "SYNTHETIC PREVIEW PROFILE · VISUAL QA ONLY" : "INTERPRETABLE PROFILE · NOT A SEMANTIC EMBEDDING MAP"}</span>
         <span>STRENGTH · EVIDENCE · FRESHNESS SHARE ONE IDENTITY FIELD · NO LONG-TERM HISTORY CLAIM</span>
       </footer>

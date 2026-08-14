@@ -1,0 +1,93 @@
+@media (min-width: 1121px) and (min-height: 760px) {
+  .radar {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    height: calc(100dvh - var(--fr-system-header-h));
+    min-height: 0;
+    overflow: hidden;
+    padding-top: .9rem;
+    padding-bottom: .4rem;
+  }
+
+  .morphSection {
+    display: grid;
+    min-height: 0;
+    padding-top: .65rem;
+    padding-bottom: .28rem;
+  }
+
+  .morphWorkspace {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .morphRail,
+  .morphPlotWrap,
+  .morphReadout {
+    min-height: 0;
+  }
+
+  .morphPlot {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .footer {
+    padding-top: .28rem;
+  }
+}
+
+.morphWorkspace {
+  border-top-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+  border-left-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+}
+
+.morphRail {
+  grid-template-rows: 10rem auto minmax(0, 1fr);
+  border-right-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+}
+
+.morphRailHead {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.morphButtons {
+  margin-top: .7rem;
+  border-top-color: color-mix(in srgb, var(--fr-system-ink) 24%, transparent);
+}
+
+.morphButtons button {
+  box-sizing: border-box;
+  transform: none;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.morphButtons button:nth-child(2) {
+  border-bottom-color: color-mix(in srgb, var(--fr-system-ink) 22%, transparent);
+}
+
+.morphPlotWrap {
+  border-right-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+}
+
+.morphReadout {
+  border-right-color: color-mix(in srgb, var(--fr-system-ink) 22%, transparent);
+}
+
+.morphRail,
+.morphPlotWrap,
+.morphReadout {
+  border-bottom-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+}
+
+@media (max-width: 1120px) {
+  .morphRail {
+    grid-template-rows: auto auto 1fr;
+  }
+
+  .morphRailHead {
+    overflow: visible;
+  }
+}
