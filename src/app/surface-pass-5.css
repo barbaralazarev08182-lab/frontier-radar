@@ -3,8 +3,8 @@
    The global light nav is translucent glass, not a separate opaque strip. */
 
 :root {
-  --fr-surface-paper: #f1efe9;
-  --fr-surface-paper-rgb: 241, 239, 233;
+  --fr-surface-paper: var(--fr-system-paper);
+  --fr-surface-paper-rgb: var(--fr-system-paper-rgb);
 }
 
 body:has(.lf4),
