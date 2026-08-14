@@ -12,8 +12,140 @@
   cursor: pointer;
 }
 
-/* B3-inspired interaction grammar, without changing the L12 geometry:
-   one generous hit zone per real record; hover inspects; click pins. */
+/* Gate 15A — Focus Aperture
+   L12 remains the data geometry. B3 contributes only interaction grammar:
+   generous hit targets, hover inspection, click-to-pin, keyboard release.
+   Desktop Explore is treated as a viewport composition, not a long page. */
+.lf4-viewport {
+  height: calc(100svh - 48px);
+  min-height: 690px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+.lf4-hero-compact {
+  padding: 11px 46px 10px;
+}
+
+.lf4-hero-compact .lf4-kicker {
+  margin-bottom: 7px;
+  font-size: 7px;
+  letter-spacing: .13em;
+}
+
+.lf4-compact-line {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.lf4-compact-thesis {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+}
+
+.lf4-hero-compact .lf4-compact-thesis h1 {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: -.045em;
+  white-space: nowrap;
+}
+
+.lf4-compact-thesis p {
+  max-width: 620px;
+  margin: 0;
+  color: #6a6963;
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: .01em;
+}
+
+.lf4-hero-compact .lf4-hero-meta {
+  flex: 0 0 300px;
+  width: 300px;
+  gap: 12px;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.lf4-hero-compact .lf4-hero-meta strong {
+  font-size: 17px;
+}
+
+.lf4-hero-compact .lf4-hero-meta span {
+  margin-top: 3px;
+  font-size: 6.3px;
+}
+
+.lf4-viewport .lf4-controls {
+  position: static;
+  min-height: 39px;
+  padding: 4px 46px;
+}
+
+.lf4-viewport .lf4-lenses button,
+.lf4-viewport .lf4-tool {
+  min-height: 27px;
+  font-size: 8px;
+}
+
+.lf4-viewport .lf4-canvas {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 8px 46px 5px;
+}
+
+.lf4-viewport .lf4-canvas-head {
+  flex: 0 0 auto;
+  gap: 60px;
+  padding-bottom: 6px;
+}
+
+.lf4-viewport .lf4-canvas-head strong {
+  margin-bottom: 2px;
+  font-size: 7.2px;
+}
+
+.lf4-viewport .lf4-canvas-head span {
+  font-size: 7px;
+}
+
+.lf4-viewport .lf4-colonnade {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  margin-top: 2px;
+  overflow: visible;
+}
+
+.lf4-viewport .lf4-canvas figcaption {
+  flex: 0 0 auto;
+  gap: 20px;
+  padding-top: 5px;
+  font-size: 6.4px;
+  letter-spacing: .07em;
+}
+
+.lf4-viewport .lf4-footer {
+  min-height: 24px;
+  padding: 6px 46px 7px;
+  font-size: 6.2px;
+}
+
+/* Every record receives an explicit target wider than its visible type. */
 .lf4-hit {
   fill: transparent;
   pointer-events: all;
@@ -23,158 +155,328 @@
 .lf4-inline-readout {
   fill: #8f8e88;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: 5.9px;
+  font-size: 5.6px;
   font-weight: 700;
   letter-spacing: .075em;
   pointer-events: none;
 }
 
-.lf4-row.is-selected .lf4-inline-readout {
-  fill: #4a4944;
+/* Focus+context: the selected row keeps full contrast; the rest remains readable
+   but recedes enough for the aperture to become the current reading state. */
+.lf4[data-focus="pinned"] .lf4-row:not(.is-selected) .lf4-thread {
+  opacity: .18;
 }
 
-/* The detailed record readout is a ledger in normal document flow.
-   It never covers the colonnade, never steals clicks from another record,
-   and is permanently present so the interaction has an obvious contract. */
-.lf4-sheet {
-  position: relative;
-  left: auto;
-  right: auto;
-  bottom: auto;
+.lf4[data-focus="pinned"] .lf4-row:not(.is-selected) .lf4-title,
+.lf4[data-focus="pinned"] .lf4-row:not(.is-selected) .lf4-score,
+.lf4[data-focus="pinned"] .lf4-row:not(.is-selected) .lf4-rank {
+  opacity: .62;
+}
+
+.lf4[data-focus="pinned"] .lf4-row:not(.is-selected):hover .lf4-title,
+.lf4[data-focus="pinned"] .lf4-row:not(.is-selected):focus .lf4-title {
+  opacity: 1;
+}
+
+/* The focus aperture lives inside the L12 SVG band vacated by neighboring rows.
+   It is not positioned over another record and it never changes document scroll. */
+.lf4-aperture.lf4-sheet {
+  position: static;
+  inset: auto;
   z-index: auto;
   width: auto;
   max-height: none;
   overflow: visible;
-  margin: 0 46px 28px;
+  margin: 0;
   border: 0;
-  border-top: 1px solid var(--grid);
-  border-bottom: 1px solid var(--grid);
   border-radius: 0;
   background: transparent;
-  padding: 18px 0 17px;
-  transform: none;
+  padding: 0;
   box-shadow: none;
-  animation: none;
+  animation: lf4-aperture-reveal .2s cubic-bezier(.22,.75,.28,1) both;
+  pointer-events: auto;
 }
 
-.lf4-sheet.is-idle {
-  min-height: 58px;
+.lf4-aperture-body {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--grid);
+  background: var(--paper);
+  padding: 7px 9px 7px;
+  color: var(--ink);
+}
+
+.lf4-aperture-kicker {
   display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  color: var(--muted);
+  font-size: 5.4px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  white-space: nowrap;
+}
+
+.lf4-aperture-kicker span:first-child {
+  color: var(--ink);
+}
+
+.lf4-aperture-kicker button {
+  width: 17px;
+  height: 17px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-left: auto;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lf4-aperture-kicker button:hover,
+.lf4-aperture-kicker button:focus-visible {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lf4-aperture-kicker button svg {
+  width: 8px;
+  height: 8px;
+}
+
+.lf4-aperture-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  gap: 16px;
   align-items: center;
 }
 
-.lf4-idle-readout {
-  display: flex;
-  width: 100%;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 28px;
+.lf4-aperture-copy {
+  min-width: 0;
 }
 
-.lf4-idle-readout strong {
+.lf4-aperture-copy h2 {
+  max-width: none;
+  margin: 3px 0 2px;
+  overflow: hidden;
   color: var(--ink);
-  font-size: 9px;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lf4-aperture-copy > p {
+  display: -webkit-box;
+  max-width: 560px;
+  margin: 0;
+  overflow: hidden;
+  color: #6a6963;
+  font-size: 6.5px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.lf4-aperture-scores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-left: 1px solid var(--grid);
+}
+
+.lf4-aperture-scores span {
+  min-width: 0;
+  padding: 2px 6px;
+  color: var(--muted);
+  font-size: 4.8px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: .06em;
+}
+
+.lf4-aperture-scores span + span {
+  border-left: 1px solid var(--grid);
+}
+
+.lf4-aperture-scores b {
+  display: block;
+  margin-bottom: 2px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 6.7px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lf4-aperture-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, .9fr) auto;
+  gap: 11px;
+  align-items: end;
+  padding-top: 4px;
+  border-top: 1px solid var(--grid);
+}
+
+.lf4-aperture-reason {
+  min-width: 0;
+}
+
+.lf4-aperture-reason > span {
+  display: block;
+  margin-bottom: 1px;
+  color: var(--muted);
+  font-size: 4.8px;
   font-weight: 800;
   letter-spacing: .1em;
 }
 
-.lf4-idle-readout span {
-  color: var(--muted);
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: .045em;
-  text-align: right;
+.lf4-aperture-reason p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #55544f;
+  font-size: 5.6px;
+  line-height: 1.28;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
-.lf4-sheet.is-pinned {
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(310px, .55fr);
-  column-gap: 34px;
-  row-gap: 0;
-  padding-right: 38px;
+.lf4-aperture-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.lf4-sheet.is-pinned .lf4-sheet-kicker,
-.lf4-sheet.is-pinned h2,
-.lf4-sheet.is-pinned .lf4-summary,
-.lf4-sheet.is-pinned .lf4-stats {
-  grid-column: 1;
+.lf4-aperture-actions .lf4-open,
+.lf4-aperture-actions .lf4-save,
+.lf4-aperture-actions button {
+  width: auto;
+  min-width: 46px;
+  min-height: 22px;
+  padding: 0 6px;
+  border-radius: 0;
+  font-size: 5.2px;
+  letter-spacing: .07em;
+  white-space: nowrap;
 }
 
-.lf4-sheet.is-pinned .lf4-reasons,
-.lf4-sheet.is-pinned .lf4-actions {
-  grid-column: 2;
+.lf4-aperture-actions .lf4-open {
+  min-width: 50px;
 }
 
-.lf4-sheet h2 {
-  max-width: none;
-  margin: 7px 0 5px;
-  font-size: clamp(18px, 2vw, 27px);
-  line-height: 1.02;
-  letter-spacing: -.035em;
+.lf4-aperture-actions .lf4-open svg,
+.lf4-aperture-actions .lf4-save svg,
+.lf4-aperture-actions button svg {
+  width: 7px;
+  height: 7px;
 }
 
-.lf4-sheet .lf4-summary {
-  max-width: 760px;
-  font-size: 10px;
-  line-height: 1.55;
-}
-
-.lf4-sheet .lf4-stats {
-  margin-top: 12px;
-}
-
-.lf4-sheet .lf4-reasons {
-  align-self: start;
-  gap: 16px;
-  padding: 0 0 12px;
-}
-
-.lf4-sheet .lf4-actions {
-  align-self: end;
-}
-
-.lf4-sheet-close {
-  top: 12px;
-  right: 0;
+@keyframes lf4-aperture-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (max-width: 1180px) {
-  .lf4-sheet {
-    margin-left: 28px;
-    margin-right: 28px;
+  .lf4-hero-compact,
+  .lf4-viewport .lf4-controls,
+  .lf4-viewport .lf4-canvas,
+  .lf4-viewport .lf4-footer {
+    padding-left: 28px;
+    padding-right: 28px;
   }
 
-  .lf4-sheet.is-pinned {
-    grid-template-columns: 1fr;
-    padding-right: 36px;
+  .lf4-compact-thesis p {
+    display: none;
   }
 
-  .lf4-sheet.is-pinned .lf4-reasons,
-  .lf4-sheet.is-pinned .lf4-actions {
-    grid-column: 1;
+  .lf4-hero-compact .lf4-hero-meta {
+    flex-basis: 250px;
+    width: 250px;
   }
 
-  .lf4-sheet.is-pinned .lf4-reasons {
-    padding-top: 14px;
+  .lf4-viewport .lf4-canvas {
+    overflow-x: auto;
+  }
+
+  .lf4-viewport .lf4-colonnade,
+  .lf4-viewport .lf4-canvas figcaption {
+    min-width: 1060px;
   }
 }
 
-@media (max-width: 900px) {
-  .lf4-sheet {
-    width: auto;
-    max-height: none;
-    margin-left: 20px;
-    margin-right: 20px;
+@media (max-height: 760px) and (min-width: 901px) {
+  .lf4-viewport {
+    min-height: 640px;
   }
 
-  .lf4-idle-readout {
+  .lf4-hero-compact {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+
+  .lf4-hero-compact .lf4-kicker {
+    margin-bottom: 4px;
+  }
+
+  .lf4-compact-thesis p,
+  .lf4-viewport .lf4-footer span:last-child {
+    display: none;
+  }
+
+  .lf4-viewport .lf4-footer {
+    min-height: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}
+
+/* Mobile remains outside this desktop-first Gate. Do not force the desktop
+   aperture into a tiny viewport; allow the existing document flow fallback. */
+@media (max-width: 900px) {
+  .lf4-viewport {
+    height: auto;
+    min-height: calc(100vh - 48px);
+    display: block;
+    overflow: visible;
+  }
+
+  .lf4-compact-line {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .lf4-compact-thesis {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
   }
 
-  .lf4-idle-readout span {
-    text-align: left;
+  .lf4-compact-thesis p {
+    display: block;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .lf4-viewport .lf4-canvas {
+    min-height: 720px;
+    overflow-x: auto;
+  }
+
+  .lf4-viewport .lf4-colonnade {
+    height: 640px;
   }
 }
