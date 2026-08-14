@@ -4,6 +4,7 @@ import "./globals.css";
 import "./product-grammar.css";
 import "./product-grammar-layer2.css";
 import "./site-nav-transparent-light.css";
+import "./editorial-line-field.css";
 
 export const metadata: Metadata = {
   title: "Frontier Radar",
