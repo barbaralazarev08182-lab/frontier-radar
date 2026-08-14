@@ -1,6 +1,58 @@
 # Gate 15B — Project Research Mode
 
-Status: CURRENT / DRAFT
+Status: OWNER VISUAL PASS / FROZEN PENDING EXPLICIT MERGE
+
+## Closure record — 2026-08-14
+
+Owner visual acceptance was explicitly given after reviewing the live Vercel Preview.
+
+This acceptance closes the current desktop visual work for both:
+
+- **Project Research Mode** in Gate 15B
+- the owner-approved **narrow Explore surface/readability/motion exception** carried on the same stacked branch
+
+Accepted Explore exception scope:
+- Project-matched paper/base surface (`#F0EFEB`)
+- existing cobalt/blue perimeter artwork preserved
+- larger L12 typography and wider usable field
+- helper strips removed from the rendered composition
+- Focus Aperture open transition
+- wheel / trackpad and keyboard focus-switch transition
+- no change to L12 ranking semantics, Global Score semantics, tag-family semantics, Focus Aperture actions, or core data contract
+
+Latest accepted interaction commit in the chain:
+
+```text
+bca10c38fac7282f53432e6b19afac5e5d2707b1
+Explore: add focus and wheel transition motion
+```
+
+Latest accepted branch Preview also contains the subsequent documentation-only commit:
+
+```text
+22751a8d868ac72d579aa5f6b1e0251941dbf238
+docs: codify Frontier Radar design and Lieflat standard
+```
+
+Verification for the accepted motion change:
+
+```text
+Integration QA #110
+TypeCheck PASS
+ESLint PASS
+Unit tests PASS
+Fixture build PASS
+Browser integration gate PASS
+Owner Visual PASS
+```
+
+Freeze rule:
+
+> Do not continue polishing Explore or Project after this acceptance unless the owner explicitly reopens a new scope.
+
+This closure **does not authorize merge or Production deployment**. PR #36 may remain Open/Draft until the owner explicitly requests merge/release handling.
+
+---
 
 ## Objective
 
@@ -18,7 +70,7 @@ Do not rename, remove, merge, or reorder these stages.
 
 ## Current UX obstruction
 
-The current client controller globally sets `html/body` overflow to hidden and captures wheel gestures with `preventDefault()`. One gesture advances one stage / record. This creates cinematic pacing but blocks normal research behavior: skim, jump, select/copy, compare, and ordinary browser scrolling.
+The prior client controller globally set `html/body` overflow to hidden and captured wheel gestures with `preventDefault()`. One gesture advanced one stage / record. This created cinematic pacing but blocked normal research behavior: skim, jump, select/copy, compare, and ordinary browser scrolling.
 
 Gate thesis:
 
@@ -95,7 +147,7 @@ Current scoring has up to eight normalized dimensions. A compact horizontal reco
 - Project → Idea Lab remains `/idea-lab?from=<id>`
 - charts appear only when the actual data shape supports them
 
-## Initial composition direction
+## Accepted composition
 
 ### 01 CAPTURE
 Compact dossier header: title, summary, source/content type, first-seen date, verdict, score, code/demo/source counts, Project / Idea Lab actions.
@@ -112,14 +164,14 @@ Compact score-dimension evidence. Show normalized dimensions and rationales. No 
 ### 05 BUILD
 Numbered build directions based only on actual `possibleUses`. Do not imply an experiment engine, autonomous builder, or export system.
 
-## Non-goals
+## Non-goals / frozen boundaries
 
 - no Project stage rename/reorder
 - no schema changes
 - no new recommender semantics
 - no fake multi-source graph
 - no fake long-term trend
-- no reopening Explore
+- no broad reopening of Explore; the accepted exception above is now frozen
 - no mobile work
 
 ## Delivery
@@ -127,4 +179,10 @@ Numbered build directions based only on actual `possibleUses`. Do not imply an e
 Stacked branch: `agent/gate-15b-project-research-mode`
 Base: `agent/gate-15a-lieflat-explore`
 
-Draft → CI → Vercel Preview → owner visual approval. No production deployment before acceptance.
+Delivery reached:
+
+```text
+Draft → CI PASS → Vercel Preview → owner visual approval
+```
+
+Next release actions, if any, require explicit owner instruction. No Production deployment is implied by visual acceptance.
