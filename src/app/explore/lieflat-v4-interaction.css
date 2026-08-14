@@ -12,34 +12,45 @@
   cursor: pointer;
 }
 
-/* Gate 15A visual refinement: keep the record detail out of the
-   right-hand tag-family convergence field. The sheet remains temporary,
-   but reads as a centered inspector dock rather than a permanent sidebar. */
+/* Gate 15A interaction refinement: selected-record detail is part of the
+   page flow, never an overlay. The relationship field remains fully visible
+   and fully clickable while a record is selected. */
 .lf4-sheet {
-  left: 50%;
+  position: relative;
+  left: auto;
   right: auto;
-  bottom: 20px;
-  width: min(920px, calc(100vw - 96px));
-  max-height: min(44vh, 390px);
-  transform: translateX(-50%);
-  animation: lf4-sheet-centered-in .22s cubic-bezier(.22,.75,.28,1) both;
+  bottom: auto;
+  z-index: auto;
+  width: auto;
+  max-height: none;
+  overflow: visible;
+  margin: 0 46px 30px;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 28px 0 26px;
+  transform: none;
+  animation: none;
 }
 
-@keyframes lf4-sheet-centered-in {
-  from {
-    transform: translate(-50%, 10px);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
+.lf4-sheet h2 {
+  max-width: 760px;
+}
+
+@media (max-width: 1180px) {
+  .lf4-sheet {
+    margin-left: 28px;
+    margin-right: 28px;
   }
 }
 
 @media (max-width: 900px) {
   .lf4-sheet {
-    bottom: 12px;
-    width: calc(100vw - 24px);
-    max-height: calc(100vh - 84px);
+    width: auto;
+    max-height: none;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-top: 24px;
   }
 }
