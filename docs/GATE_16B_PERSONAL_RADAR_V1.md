@@ -1,6 +1,6 @@
 # Gate 16B — Personal Radar v1
 
-Status: DRAFT / awaiting owner visual acceptance
+Status: MACHINE PASS / awaiting owner visual acceptance
 
 ## Objective
 
@@ -115,18 +115,26 @@ This mode exists because Preview integrity policy intentionally prevents Preview
 - No fabricated historical trend.
 - Desktop target is one dominant instrument viewport with minimal vertical continuation, not multiple chart pages.
 
-## Acceptance conditions
+## Machine acceptance
 
-Machine acceptance requires:
+Latest code-bearing full browser QA: GitHub Actions run `31789153738` on commit `ae55587933e49d584e5e54f385b5e5c23d0a2cef` — PASS.
+
+Verified in that run:
 
 - TypeCheck PASS.
 - ESLint PASS.
 - Unit tests PASS.
 - Fixture build PASS.
 - App start PASS.
-- ECharts canvas loads in the browser QA.
+- ECharts canvas load PASS.
 - Strength → Evidence → Freshness manual view switching PASS on the same page.
 - No horizontal overflow.
-- Preview deployment corresponds to the current branch head.
+- Browser screenshot artifact generated successfully.
 
-Final visual acceptance requires owner review of the real browser Preview. Until that happens, Gate 16B remains DRAFT and the route stays out of the global navigation.
+The commits after that code-bearing PASS only tighten truthful plot range / documentation state and do not reopen frozen routes.
+
+## Final acceptance condition
+
+A Vercel Preview corresponding to the current branch head must be available for owner browser review. Final visual acceptance requires explicit owner approval of that Preview.
+
+Until owner visual acceptance, Gate 16B remains DRAFT at the product level, the PR remains open/draft, the route stays out of global navigation, and no merge or Production deployment is allowed.
