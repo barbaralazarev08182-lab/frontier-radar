@@ -11,11 +11,11 @@
   --fr-dark-soft: #111722;
   --fr-line-light: rgba(17, 18, 20, 0.14);
   --fr-line-dark: rgba(255, 255, 255, 0.14);
-  --fr-cobalt: #3150ff;
-  --fr-wildcard: #ff5b21;
+  --fr-cobalt: var(--fr-system-cobalt);
+  --fr-wildcard: var(--fr-system-wildcard);
 
   --fr-page-x: clamp(1.5rem, 3vw, 3.25rem);
-  --fr-header-h: 3rem;
+  --fr-header-h: var(--fr-system-header-h);
   --fr-content-max: 90rem;
   --fr-control-h: 2rem;
 
@@ -25,7 +25,7 @@
   --fr-text-body: 0.9375rem;
   --fr-text-meta: 0.625rem;
 
-  --fr-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --fr-ease: var(--fr-system-ease-ui);
 }
 
 .fr-site-nav {
