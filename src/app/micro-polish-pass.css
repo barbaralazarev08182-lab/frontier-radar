@@ -19,9 +19,11 @@
 }
 
 /* Explore uses the same paper as Project, but the paper lives on the page.
+   Remove the legacy global body gradients so the paper is not color-shifted.
    Content regions stay transparent so the fixed perimeter field is not occluded. */
 body:has(.lf4) {
   background-color: var(--fr-surface-paper) !important;
+  background-image: none !important;
 }
 
 body:has(.lf4) .lf4.lf4,
