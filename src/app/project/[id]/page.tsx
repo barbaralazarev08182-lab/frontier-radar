@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { loadProjectDetail, type ProjectScoreDetail } from "@/lib/feed/project-detail";
+import {
+  loadProjectDetail,
+  type ProjectMetricPoint,
+  type ProjectScoreDetail,
+} from "@/lib/feed/project-detail";
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
 import "./project-research-mode.css";
@@ -43,6 +47,14 @@ function formatDate(value: string | null): string | null {
     month: "short",
     year: "numeric",
   }).toUpperCase();
+}
+
+function shortDate(value: string): string {
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" })
+    .format(date)
+    .toUpperCase();
 }
 
 function dateValue(value: string | null): number {
@@ -122,6 +134,83 @@ function verdict(score: number | null, crossSource: boolean, evidenceCount: numb
     label: "WATCH / EARLY SIGNAL",
     note: "Worth tracking, with more evidence still needed before treating it as a confirmed frontier shift.",
   };
+}
+
+function MetricHairline({ label, points }: { label: string; points: ProjectMetricPoint[] }) {
+  if (points.length < 2) {
+    return (
+      <div className="pr-history-single">
+        <span>{label}</span>
+        <strong>{points[0] ? compactNumber(points[0].value) : "—"}</strong>
+        <small>{points[0] ? "1 DAILY SNAPSHOT · TREND NOT DRAWN" : "NO DAILY HISTORY"}</small>
+      </div>
+    );
+  }
+
+  const parsed = points
+    .map((point) => ({ ...point, time: Date.parse(`${point.date}T00:00:00Z`) }))
+    .filter((point) => Number.isFinite(point.time));
+  if (parsed.length < 2) return null;
+
+  const width = 620;
+  const height = 126;
+  const left = 8;
+  const right = 610;
+  const top = 18;
+  const bottom = 88;
+  const minTime = parsed[0]!.time;
+  const maxTime = parsed[parsed.length - 1]!.time;
+  const minValue = Math.min(...parsed.map((point) => point.value));
+  const maxValue = Math.max(...parsed.map((point) => point.value));
+  const dayMs = 86_400_000;
+  const dayCount = Math.max(1, Math.round((maxTime - minTime) / dayMs));
+  const x = (time: number) => left + ((time - minTime) / Math.max(dayMs, maxTime - minTime)) * (right - left);
+  const y = (value: number) => maxValue === minValue
+    ? (top + bottom) / 2
+    : bottom - ((value - minValue) / (maxValue - minValue)) * (bottom - top);
+  const path = parsed.map((point, index) => `${index === 0 ? "M" : "L"} ${x(point.time).toFixed(1)} ${y(point.value).toFixed(1)}`).join(" ");
+  const observedDates = new Set(parsed.map((point) => point.date));
+  const calendar = Array.from({ length: dayCount + 1 }, (_, index) => {
+    const time = minTime + index * dayMs;
+    const date = new Date(time).toISOString().slice(0, 10);
+    const weekend = [0, 6].includes(new Date(time).getUTCDay());
+    return { time, date, weekend, observed: observedDates.has(date) };
+  });
+
+  return (
+    <div className="pr-history">
+      <div className="pr-history-head">
+        <span>F2 HAIRLINE LINE · {label}</span>
+        <strong>{compactNumber(parsed[parsed.length - 1]!.value)}</strong>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${label} daily metric history from ${points[0]?.date} to ${points[points.length - 1]?.date}`}>
+        <path className="pr-history-line" d={path} />
+        {calendar.map((day) => (
+          <g key={day.date}>
+            <line className="pr-history-floor" x1={x(day.time)} x2={x(day.time)} y1="99" y2={day.weekend ? 111 : 107} />
+            {!day.observed ? <circle className="pr-history-missing" cx={x(day.time)} cy="103" r="1.7" /> : null}
+          </g>
+        ))}
+        {parsed.map((point) => {
+          const weekend = [0, 6].includes(new Date(point.time).getUTCDay());
+          return (
+            <circle
+              key={point.date}
+              className={weekend ? "pr-history-dot is-weekend" : "pr-history-dot"}
+              cx={x(point.time)}
+              cy={y(point.value)}
+              r="3.2"
+            >
+              <title>{`${shortDate(point.date)} · ${point.value}`}</title>
+            </circle>
+          );
+        })}
+        <text className="pr-history-date" x={left} y="123">{shortDate(parsed[0]!.date)}</text>
+        <text className="pr-history-date" x={right} y="123" textAnchor="end">{shortDate(parsed[parsed.length - 1]!.date)}</text>
+      </svg>
+      <div className="pr-history-note">ONE DOT = ONE OBSERVED DAY · HOLLOW DOT = WEEKEND · FLOOR TICKS PRESERVE CALENDAR GAPS</div>
+    </div>
+  );
 }
 
 function ScoreTickRows({ scores }: { scores: ProjectScoreDetail[] }) {
@@ -292,8 +381,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                       <div className="pr-momentum">
                         {momentum.length > 0
                           ? momentum.map((line) => <span key={line}>{line}</span>)
-                          : <span>NO VERIFIED MULTI-SNAPSHOT MOMENTUM YET</span>}
+                          : <span>NO VERIFIED 24H / 7D DELTA YET</span>}
                       </div>
+                      {entry.metricLabel ? <MetricHairline label={entry.metricLabel} points={entry.metricHistory} /> : null}
                     </div>
                     <TrackedSourceLink
                       itemId={entry.itemId}
