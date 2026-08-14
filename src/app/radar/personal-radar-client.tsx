@@ -247,12 +247,19 @@ function EvidenceScatter({ dimensions }: { dimensions: PersonalRadarDimension[] 
   );
 }
 
-export function PersonalRadarClient() {
-  const [profile, setProfile] = useState<PersonalRadarProfile | null>(null);
+export function PersonalRadarClient({
+  initialProfile,
+  previewDemo = false,
+}: {
+  initialProfile?: PersonalRadarProfile;
+  previewDemo?: boolean;
+}) {
+  const [profile, setProfile] = useState<PersonalRadarProfile | null>(initialProfile ?? null);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialProfile);
 
   useEffect(() => {
+    if (initialProfile) return;
     let active = true;
 
     void fetchPersonalRadarProfile()
@@ -272,7 +279,7 @@ export function PersonalRadarClient() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialProfile]);
 
   async function retry() {
     setLoading(true);
@@ -315,7 +322,7 @@ export function PersonalRadarClient() {
         <div className={styles.heroCopy}>
           <div className={styles.kicker}>
             <span>06 PERSONAL RADAR · INTEREST FRONTIER</span>
-            <span>{state.label}</span>
+            <span>{previewDemo ? `${state.label} · PREVIEW QA / SYNTHETIC` : state.label}</span>
           </div>
           <h1>{state.title}</h1>
           <p>{state.note}</p>
@@ -332,7 +339,7 @@ export function PersonalRadarClient() {
         <div><span>MODEL</span><strong>{profile.modelVersion.toUpperCase()}</strong></div>
         <div><span>LAST SIGNAL</span><strong>{timeAgo(profile.lastEventAt)}</strong></div>
         <div><span>EVIDENCE</span><strong>{profile.eventCount}</strong></div>
-        <div><span>PROFILE MODE</span><strong>{state.label}</strong></div>
+        <div><span>PROFILE MODE</span><strong>{previewDemo ? "SYNTHETIC QA" : state.label}</strong></div>
       </section>
 
       {profile.status === "cold_start" ? (
@@ -348,7 +355,7 @@ export function PersonalRadarClient() {
               <p>Rows are ordered by the live signed behavior signal. The marks themselves stay countable: one tick is one contributing event.</p>
             </div>
             <TickRows dimensions={learned} />
-            <div className={styles.chartSource}>TICK ROWS · LIEFLAT BASICS F5 · LIVE USER EVENTS</div>
+            <div className={styles.chartSource}>{previewDemo ? "TICK ROWS · LIEFLAT BASICS F5 · SYNTHETIC PREVIEW EVIDENCE" : "TICK ROWS · LIEFLAT BASICS F5 · LIVE USER EVENTS"}</div>
           </section>
 
           {profile.status === "evidence_qualified" ? (
@@ -373,7 +380,7 @@ export function PersonalRadarClient() {
             <span>MODEL TRUTH</span>
             <h2>WHY THE RADAR THINKS THIS</h2>
           </div>
-          <p>The profile is rebuilt from this browser&apos;s feedback evidence. Cold-start prior and learned evidence are kept separate.</p>
+          <p>{previewDemo ? "This Preview QA view uses synthetic evidence only to expose the full visual state. Production ignores the demo parameter." : "The profile is rebuilt from this browser's feedback evidence. Cold-start prior and learned evidence are kept separate."}</p>
         </div>
         <div className={styles.ledgerGrid}>
           {(learned.length > 0 ? learned.slice(0, 8) : profile.dimensions.slice(0, 8)).map((dimension) => (
@@ -389,7 +396,7 @@ export function PersonalRadarClient() {
       </section>
 
       <footer className={styles.footer}>
-        <span>INTERPRETABLE PROFILE · NOT A SEMANTIC EMBEDDING MAP</span>
+        <span>{previewDemo ? "SYNTHETIC PREVIEW PROFILE · VISUAL QA ONLY" : "INTERPRETABLE PROFILE · NOT A SEMANTIC EMBEDDING MAP"}</span>
         <span>BEHAVIOR SIGNAL ≠ GLOBAL DISCOVERY SCORE · NO LONG-TERM HISTORY CLAIM</span>
       </footer>
     </article>
