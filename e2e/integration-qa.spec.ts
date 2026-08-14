@@ -29,15 +29,20 @@ test("Explore -> Saved -> Idea Lab persists the user's signal-to-direction chain
   try {
     await page.goto(route("/explore"));
 
-    const field = page.locator(".explore-field-shell");
-    const focusCard = page.locator(".explore-focus-card");
+    const field = page.locator(".lf4");
     await expect(field).toBeVisible();
+
+    const firstRecord = field.locator(".lf4-row").first();
+    await expect(firstRecord).toBeVisible();
+    await firstRecord.click();
+
+    const focusCard = page.locator(".lf4-sheet");
     await expect(focusCard).toBeVisible();
 
     const sourceTitle = (await focusCard.locator("h2").innerText()).trim();
     expect(sourceTitle.length).toBeGreaterThan(0);
 
-    const saveButton = focusCard.locator("button.explore-save-action");
+    const saveButton = focusCard.locator("button.lf4-save");
     await expect(saveButton).toHaveAttribute("aria-pressed", "false");
     await saveButton.click();
     await expect(saveButton).toHaveAttribute("aria-pressed", "true");
