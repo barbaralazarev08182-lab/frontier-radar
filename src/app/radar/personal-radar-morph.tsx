@@ -57,15 +57,15 @@ const VIEW_COPY: Record<
 
 const PAPER = "#F0EFEB";
 const INK = "#1C1C1A";
-const MUTED = "#8F8E88";
-const FAINT = "#C6C5BF";
-const GRID = "#DEDDD6";
-const GRID_MAJOR = "#BBBAB3";
-const GRID_ZERO = "#97968F";
-const TRACK = "#E8E7E0";
+const MUTED = "#6F6D66";
+const FAINT = "#9E9C94";
+const GRID = "#D1CFC7";
+const GRID_MAJOR = "#99978F";
+const GRID_ZERO = "#66645D";
+const TRACK = "#DAD8D0";
 const COBALT = "#315EFB";
-const LADDER = [INK, "#4A4944", "#6A6963", MUTED, "#B0AFA9", FAINT];
-const CHART_GRID = { left: 58, right: 28, top: 34, bottom: 58 };
+const LADDER = [INK, "#474640", "#5E5C56", "#74726B", "#908E86", "#ABA9A1"];
+const CHART_GRID = { left: 64, right: 30, top: 34, bottom: 62 };
 
 function percentage(value: number): string {
   return `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`;
@@ -80,23 +80,24 @@ function makeAxis(name: string) {
   return {
     animation: false,
     animationDurationUpdate: 0,
-    axisLine: { lineStyle: { color: GRID_MAJOR, width: 1.05 } },
-    axisTick: { lineStyle: { color: GRID_MAJOR }, length: 5 },
+    axisLine: { lineStyle: { color: GRID_MAJOR, width: 1.3 } },
+    axisTick: { lineStyle: { color: GRID_MAJOR, width: 1.1 }, length: 6 },
     axisLabel: {
       color: MUTED,
       fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
-      fontSize: 9,
+      fontSize: 10,
+      fontWeight: 560,
       margin: 10,
       hideOverlap: true,
     },
-    splitLine: { lineStyle: { color: GRID, width: 0.72 } },
+    splitLine: { lineStyle: { color: GRID, width: 0.88 } },
     name,
-    nameGap: 18,
+    nameGap: 19,
     nameTextStyle: {
-      color: FAINT,
+      color: "#85837B",
       fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-      fontSize: 8,
-      fontWeight: 700,
+      fontSize: 8.8,
+      fontWeight: 760,
     },
   };
 }
@@ -105,7 +106,7 @@ function guideSeries(
   id: string,
   data: Array<Record<string, number>>,
   color = GRID_MAJOR,
-  width = 1.2
+  width = 1.4
 ) {
   return {
     id,
@@ -161,7 +162,7 @@ function buildView(
         axisLabel: {
           ...makeAxis("").axisLabel,
           rotate: 24,
-          fontSize: 8.5,
+          fontSize: 9.2,
           interval: 0,
         },
         splitLine: { show: false },
@@ -230,7 +231,8 @@ function buildView(
         axisLabel: {
           ...makeAxis("").axisLabel,
           color: MUTED,
-          fontSize: 8.5,
+          fontSize: 9.2,
+          fontWeight: 620,
           margin: 12,
         },
       },
@@ -240,7 +242,7 @@ function buildView(
           type: "bar",
           silent: true,
           z: 1,
-          barWidth: 3,
+          barWidth: 4,
           animationDurationUpdate: supportDuration,
           animationEasingUpdate: "cubicOut",
           data: ordered.map((dimension) => dimension.freshness * 100),
@@ -256,7 +258,7 @@ function buildView(
           animationDurationUpdate: seriesDuration,
           animationEasingUpdate: "cubicInOut",
           symbolSize: (value: Array<number | string>) =>
-            9 + Math.max(0, Number(value[2] ?? 0)) * 0.2,
+            10 + Math.max(0, Number(value[2] ?? 0)) * 0.2,
           data: ordered.map((dimension) => ({
             name: dimension.label,
             value: [
@@ -270,7 +272,7 @@ function buildView(
           label: { show: false },
           emphasis: {
             focus: "self",
-            itemStyle: { borderColor: INK, borderWidth: 1 },
+            itemStyle: { borderColor: INK, borderWidth: 1.2 },
           },
         },
         guideSeries("personal-radar-guide-primary", [{ xAxis: 50 }]),
@@ -316,7 +318,7 @@ function buildView(
         universalTransition: true,
         animationDurationUpdate: seriesDuration,
         animationEasingUpdate: "cubicInOut",
-        symbolSize: (value: number[]) => 9 + Math.sqrt(Number(value[2] ?? 1)) * 5.4,
+        symbolSize: (value: number[]) => 10 + Math.sqrt(Number(value[2] ?? 1)) * 5.4,
         data: dimensions.map((dimension) => ({
           name: dimension.label,
           value: [
@@ -333,15 +335,16 @@ function buildView(
           distance: 7,
           color: MUTED,
           fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
-          fontSize: 8.5,
+          fontSize: 9.2,
+          fontWeight: 620,
           formatter: "{b}",
         },
         emphasis: {
           focus: "self",
-          label: { color: INK, fontWeight: 700 },
+          label: { color: INK, fontWeight: 760 },
         },
       },
-      guideSeries("personal-radar-guide-primary", [{ xAxis: 0 }], GRID_ZERO, 1.35),
+      guideSeries("personal-radar-guide-primary", [{ xAxis: 0 }], GRID_ZERO, 1.7),
       guideSeries(
         "personal-radar-guide-secondary",
         [{ yAxis: Math.round(confidenceCeiling / 2) }]

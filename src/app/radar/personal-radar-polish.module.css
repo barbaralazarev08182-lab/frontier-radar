@@ -1,5 +1,117 @@
+@keyframes radarRise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes radarFrameIn {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0); }
+}
+
+@keyframes radarScan {
+  0% { transform: translateX(-110%); opacity: 0; }
+  12% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { transform: translateX(560%); opacity: 0; }
+}
+
+@keyframes radarPulse {
+  0%, 100% { transform: scale(.82); opacity: .5; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes ledgerIn {
+  from { opacity: 0; transform: translateX(7px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+:global(article[data-radar-state]) {
+  --pr-major: color-mix(in srgb, var(--fr-system-ink) 72%, transparent);
+  --pr-mid: color-mix(in srgb, var(--fr-system-ink) 42%, transparent);
+  --pr-minor: color-mix(in srgb, var(--fr-system-ink) 20%, transparent);
+  --pr-soft: color-mix(in srgb, var(--fr-system-ink) 5%, transparent);
+  --pr-copy: color-mix(in srgb, var(--fr-system-ink) 72%, transparent);
+  --pr-meta: color-mix(in srgb, var(--fr-system-ink) 57%, transparent);
+}
+
+:global(article[data-radar-state] > header) {
+  border-bottom: 1.5px solid var(--pr-major) !important;
+  animation: radarRise 480ms cubic-bezier(.2,.72,.2,1) both;
+}
+
+:global(article[data-radar-state] > header h1) {
+  font-weight: 800 !important;
+}
+
+:global(article[data-radar-state] > header > div:first-child > p) {
+  color: var(--pr-copy) !important;
+  font-size: clamp(.8rem, .94vw, .94rem) !important;
+}
+
+:global(article[data-radar-state] > header > div:first-child > div:first-child) {
+  position: relative;
+  padding-left: .72rem;
+}
+
+:global(article[data-radar-state] > header > div:first-child > div:first-child::before) {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .08rem;
+  bottom: .08rem;
+  width: 3px;
+  background: var(--fr-system-cobalt);
+}
+
+:global(article[data-radar-state] > header > div:last-child > span),
+:global(article[data-radar-state] > header > div:last-child > small) {
+  color: var(--pr-meta) !important;
+}
+
+:global(article[data-radar-state] > header > div:last-child > i) {
+  height: 8px !important;
+  background: repeating-linear-gradient(90deg, var(--pr-minor) 0 1px, transparent 1px 8px) !important;
+}
+
+:global(article[data-radar-state] > section[aria-label="Personal Radar model status"]) {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1.35px solid var(--pr-mid) !important;
+  animation: radarRise 520ms 70ms cubic-bezier(.2,.72,.2,1) both;
+}
+
+:global(article[data-radar-state] > section[aria-label="Personal Radar model status"]::after) {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 18%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--fr-system-cobalt) 28%, var(--fr-system-cobalt) 72%, transparent);
+  animation: radarScan 6.8s 900ms ease-in-out infinite;
+  pointer-events: none;
+}
+
+:global(article[data-radar-state] > section[aria-label="Personal Radar model status"] > div) {
+  border-right-color: var(--pr-minor) !important;
+}
+
+:global(article[data-radar-state] > section[aria-label="Personal Radar model status"] span) {
+  color: var(--pr-meta) !important;
+}
+
+:global(article[data-radar-state] > section[aria-label="Personal Radar model status"] strong) {
+  font-size: .7rem !important;
+  font-weight: 790 !important;
+}
+
+:global(article[data-radar-state] > footer) {
+  color: color-mix(in srgb, var(--fr-system-ink) 42%, transparent) !important;
+  animation: radarRise 480ms 180ms cubic-bezier(.2,.72,.2,1) both;
+}
+
 @media (min-width: 1121px) and (min-height: 760px) {
-  .radar {
+  :global(article[data-radar-state]) {
     box-sizing: border-box;
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr) auto;
@@ -10,7 +122,7 @@
     padding-bottom: .4rem;
   }
 
-  .morphSection {
+  :global(article[data-radar-state] > section:not([aria-label="Personal Radar model status"])) {
     display: grid;
     min-height: 0;
     padding-top: .65rem;
@@ -32,20 +144,38 @@
     height: 100%;
     min-height: 0;
   }
-
-  .footer {
-    padding-top: .28rem;
-  }
 }
 
 .morphWorkspace {
-  border-top-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
-  border-left-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+  position: relative;
+  overflow: hidden;
+  border-top: 1.45px solid var(--pr-major) !important;
+  border-left: 1.45px solid var(--pr-major) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 40%, transparent);
+  animation: radarFrameIn 560ms 120ms cubic-bezier(.2,.72,.2,1) both;
+}
+
+.morphWorkspace::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  width: 5.5rem;
+  height: 3px;
+  background: var(--fr-system-cobalt);
+  pointer-events: none;
+}
+
+.morphRail,
+.morphReadout {
+  background: color-mix(in srgb, var(--fr-system-ink) 2.4%, var(--fr-system-paper));
 }
 
 .morphRail {
   grid-template-rows: 10rem auto minmax(0, 1fr);
-  border-right-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+  border-right: 1.45px solid var(--pr-major) !important;
+  border-bottom: 1.45px solid var(--pr-major) !important;
 }
 
 .morphRailHead {
@@ -53,33 +183,193 @@
   overflow: hidden;
 }
 
+.morphRailHead > span {
+  display: flex !important;
+  align-items: center;
+  gap: .42rem;
+  font-size: .54rem !important;
+  letter-spacing: .12em !important;
+}
+
+.morphRailHead > span::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--fr-system-cobalt);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--fr-system-cobalt) 10%, transparent);
+  animation: radarPulse 2.2s ease-in-out infinite;
+}
+
+.morphRailHead > strong {
+  margin-top: .1rem;
+  font-size: clamp(1.32rem, 1.78vw, 2rem) !important;
+  line-height: .96 !important;
+  font-weight: 810 !important;
+}
+
+.morphRailHead > p {
+  color: var(--pr-copy) !important;
+  font-size: .72rem !important;
+  line-height: 1.48 !important;
+}
+
 .morphButtons {
   margin-top: .7rem;
-  border-top-color: color-mix(in srgb, var(--fr-system-ink) 24%, transparent);
+  border-top: 1.25px solid var(--pr-mid) !important;
 }
 
 .morphButtons button {
   box-sizing: border-box;
+  min-height: 4.15rem !important;
+  padding: .72rem .72rem .72rem .15rem !important;
+  border-bottom: 1px solid var(--pr-minor) !important;
   transform: none;
-  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+  transition: color 180ms ease, background-color 180ms ease, padding-left 180ms ease, border-color 180ms ease;
 }
 
-.morphButtons button:nth-child(2) {
-  border-bottom-color: color-mix(in srgb, var(--fr-system-ink) 22%, transparent);
+.morphButtons button:hover {
+  background: color-mix(in srgb, var(--fr-system-ink) 3.5%, transparent) !important;
+}
+
+.morphButtons button[aria-pressed="true"] {
+  padding-left: .65rem !important;
+  background: color-mix(in srgb, var(--fr-system-cobalt) 6%, transparent) !important;
+  box-shadow: inset 4px 0 0 var(--fr-system-cobalt);
+}
+
+.morphButtons button[aria-pressed="true"]::before {
+  display: none !important;
+}
+
+.morphButtons button span {
+  color: var(--pr-meta) !important;
+  font-size: .52rem !important;
+}
+
+.morphButtons button b {
+  font-size: .72rem !important;
+  font-weight: 790 !important;
+}
+
+.morphButtons button[aria-pressed="true"] span {
+  color: var(--fr-system-cobalt) !important;
+}
+
+.morphRail > div:last-child {
+  color: color-mix(in srgb, var(--fr-system-ink) 47%, transparent) !important;
+}
+
+.morphRail > div:last-child span {
+  font-size: .46rem !important;
 }
 
 .morphPlotWrap {
-  border-right-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+  background: var(--fr-system-paper);
+  border-right: 1.45px solid var(--pr-major) !important;
+  border-bottom: 1.45px solid var(--pr-major) !important;
+}
+
+.morphPlotWrap > div:last-child {
+  border-top: 1px solid var(--pr-mid) !important;
+  color: color-mix(in srgb, var(--fr-system-ink) 45%, transparent) !important;
+  font-size: .47rem !important;
 }
 
 .morphReadout {
-  border-right-color: color-mix(in srgb, var(--fr-system-ink) 22%, transparent);
+  position: relative;
+  border-right: 1.45px solid var(--pr-major) !important;
+  border-bottom: 1.45px solid var(--pr-major) !important;
+  padding: 1rem .9rem .72rem !important;
 }
 
-.morphRail,
-.morphPlotWrap,
-.morphReadout {
-  border-bottom-color: color-mix(in srgb, var(--fr-system-ink) 30%, transparent);
+.morphReadout > div:first-child {
+  padding-bottom: .72rem;
+  margin-bottom: .1rem !important;
+  border-bottom: 1.3px solid var(--pr-mid);
+}
+
+.morphReadout > div:first-child > span {
+  display: flex !important;
+  align-items: center;
+  gap: .42rem;
+  font-size: .54rem !important;
+}
+
+.morphReadout > div:first-child > span::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--fr-system-cobalt);
+  animation: radarPulse 2.2s .35s ease-in-out infinite;
+}
+
+.morphReadout > div:first-child > strong {
+  margin-top: .15rem;
+  font-size: .76rem !important;
+  font-weight: 810 !important;
+}
+
+.morphReadout > div:nth-child(2) {
+  min-height: 1.75rem !important;
+  border-top: 0 !important;
+  border-bottom: 1.15px solid var(--pr-mid) !important;
+  color: var(--pr-meta) !important;
+}
+
+.morphReadout > div:nth-child(2) span {
+  font-size: .45rem !important;
+  font-weight: 780 !important;
+}
+
+.morphReadout > div:nth-child(n+3) {
+  border-bottom: 1px solid var(--pr-minor) !important;
+  animation: ledgerIn 360ms cubic-bezier(.2,.72,.2,1) both;
+}
+
+.morphReadout > div:nth-child(3) {
+  background: color-mix(in srgb, var(--fr-system-cobalt) 5.5%, transparent);
+  box-shadow: inset 3px 0 0 var(--fr-system-cobalt);
+  padding-left: .45rem;
+  padding-right: .2rem;
+}
+
+.morphReadout > div:nth-child(3) strong {
+  color: var(--fr-system-ink) !important;
+}
+
+.morphReadout > div:nth-child(3) span:first-of-type {
+  color: var(--fr-system-cobalt) !important;
+}
+
+.morphReadout > div:nth-child(3) { animation-delay: 160ms; }
+.morphReadout > div:nth-child(4) { animation-delay: 200ms; }
+.morphReadout > div:nth-child(5) { animation-delay: 240ms; }
+.morphReadout > div:nth-child(6) { animation-delay: 280ms; }
+.morphReadout > div:nth-child(7) { animation-delay: 320ms; }
+.morphReadout > div:nth-child(8) { animation-delay: 360ms; }
+.morphReadout > div:nth-child(9) { animation-delay: 400ms; }
+.morphReadout > div:nth-child(10) { animation-delay: 440ms; }
+
+.morphReadout > div:nth-child(n+3) strong {
+  font-size: .65rem !important;
+  font-weight: 780 !important;
+}
+
+.morphReadout > div:nth-child(n+3) span {
+  color: color-mix(in srgb, var(--fr-system-ink) 58%, transparent) !important;
+  font-size: .51rem !important;
+  font-weight: 760 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.morphReadout > p {
+  color: color-mix(in srgb, var(--fr-system-ink) 46%, transparent) !important;
+  font-size: .58rem !important;
+  line-height: 1.46 !important;
 }
 
 @media (max-width: 1120px) {
@@ -89,5 +379,21 @@
 
   .morphRailHead {
     overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(article[data-radar-state] > header),
+  :global(article[data-radar-state] > section[aria-label="Personal Radar model status"]),
+  :global(article[data-radar-state] > footer),
+  .morphWorkspace,
+  .morphReadout > div:nth-child(n+3) {
+    animation: none !important;
+  }
+
+  :global(article[data-radar-state] > section[aria-label="Personal Radar model status"]::after),
+  .morphRailHead > span::before,
+  .morphReadout > div:first-child > span::before {
+    animation: none !important;
   }
 }
