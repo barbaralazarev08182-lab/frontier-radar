@@ -29,10 +29,13 @@ const CANVAS = {
   height: 620,
   rowTop: 46,
   rowBottom: 574,
-  titleX: 388,
-  stemX: 414,
-  bendX1: 680,
-  bendX2: 820,
+  rankX: 42,
+  globalX: 96,
+  lensX: 158,
+  titleX: 226,
+  stemX: 500,
+  bendX1: 700,
+  bendX2: 830,
   hubX: 1010,
   groupLabelX: 1050,
 };
@@ -45,7 +48,7 @@ function displayTag(tag: string): string {
   return tag.replace(/[-_]+/g, " ").toUpperCase();
 }
 
-function truncateTitle(title: string, max = 46): string {
+function truncateTitle(title: string, max = 38): string {
   return title.length <= max ? title : `${title.slice(0, max - 1).trimEnd()}…`;
 }
 
@@ -458,19 +461,19 @@ export function ExploreFieldV4({
               >
                 {!selected ? (
                   <>
-                    <rect className="lf4-hit" x={34} y={row.y - 10} width={390} height={20} rx={2} />
-                    <text className="lf4-rank" x={42} y={row.y + 4}>{String(row.rank + 1).padStart(2, "0")}</text>
-                    <text className="lf4-score" x={82} y={row.y + 4}>
+                    <rect className="lf4-hit" x={34} y={row.y - 10} width={476} height={20} rx={2} />
+                    <text className="lf4-rank" x={CANVAS.rankX} y={row.y + 4}>{String(row.rank + 1).padStart(2, "0")}</text>
+                    <text className="lf4-score" x={CANVAS.globalX} y={row.y + 4}>
                       <tspan>G {scoreLabel(row.candidate.score)}</tspan>
-                      <tspan x={126}>L {lensScore}</tspan>
+                      <tspan x={CANVAS.lensX}>L {lensScore}</tspan>
                     </text>
                     <g>
                       <title>{row.candidate.title}</title>
-                      <text className="lf4-title" x={CANVAS.titleX} y={row.y + (active ? -1 : 4)} textAnchor="end">
+                      <text className="lf4-title" x={CANVAS.titleX} y={row.y + (active ? -1 : 4)} textAnchor="start">
                         {truncateTitle(row.candidate.title)}
                       </text>
                       {active ? (
-                        <text className="lf4-inline-readout" x={CANVAS.titleX} y={row.y + 10} textAnchor="end">
+                        <text className="lf4-inline-readout" x={CANVAS.titleX} y={row.y + 10} textAnchor="start">
                           INSPECT · {sourceLabel(row.candidate.source)} · {groupLabel} · {firstSeenLabel(row.candidate.firstSeenAt)}
                         </text>
                       ) : null}
