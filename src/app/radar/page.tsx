@@ -34,7 +34,10 @@ export default async function PersonalRadarPage({
 }) {
   const params = await searchParams;
   const requested = params.demo === "evidence";
-  const demoAllowed = process.env.VERCEL_ENV === "preview" || process.env.NODE_ENV === "development";
+  const demoAllowed =
+    process.env.VERCEL_ENV === "preview" ||
+    process.env.FRONTIER_DATA_MODE === "fixture" ||
+    process.env.NODE_ENV === "development";
   const previewDemo = requested && demoAllowed;
 
   return (
