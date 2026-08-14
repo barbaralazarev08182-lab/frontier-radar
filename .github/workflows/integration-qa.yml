@@ -6,6 +6,7 @@ on:
       - feat/idea-lab-v1
       - feat/explore-saved-integration
       - agent/gate-15a-lieflat-explore
+      - agent/gate-15b-project-research-mode
       - main
   workflow_dispatch:
 
@@ -81,9 +82,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: integration-qa-screenshots
-          path: artifacts/integration-qa
-          if-no-files-found: warn
-          retention-days: 14
+          path: test-results/**/*.png
+          if-no-files-found: ignore
 
       - name: Print server log on failure
         if: failure()
