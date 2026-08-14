@@ -1,0 +1,196 @@
+/* Gate 15B focus-density pass
+   Keep the Lieflat reading layer, but never let motion or whitespace hide the data.
+*/
+
+body .pr-shell .pr-ledger-section,
+body .pr-shell .pr-resolution {
+  padding-top: 50px;
+  padding-bottom: 56px;
+}
+
+body .pr-shell .pr-section-label > p {
+  color: #66635d;
+  font-size: 11.25px;
+  line-height: 1.55;
+}
+
+body .pr-shell .pr-section-label::after {
+  margin-top: 16px;
+  font-size: 8px;
+}
+
+/* Data-derived reading summaries injected by ProjectReadingController. */
+body .pr-shell .pr-reading-summary {
+  display: grid;
+  grid-template-columns: minmax(210px, .72fr) minmax(0, 1.28fr);
+  gap: 28px;
+  align-items: baseline;
+  margin-bottom: 18px;
+  padding: 12px 0 14px;
+  border-top: 2px solid var(--cobalt);
+  border-bottom: 1px solid var(--grid);
+}
+
+body .pr-shell .pr-reading-summary > div {
+  min-width: 0;
+}
+
+body .pr-shell .pr-reading-summary span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--cobalt);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .105em;
+  text-transform: uppercase;
+}
+
+body .pr-shell .pr-reading-summary strong {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+}
+
+body .pr-shell .pr-reading-summary p {
+  max-width: 760px;
+  margin: 0;
+  color: #4f4c46;
+  font-size: 12.5px;
+  line-height: 1.58;
+}
+
+body .pr-shell .pr-reading-summary .is-signal span {
+  color: var(--signal);
+}
+
+body .pr-shell .pr-reading-summary .is-signal strong {
+  color: #383631;
+}
+
+/* Sparse interrogation should read like a compact judgement strip, not a whole empty chapter. */
+body .pr-shell #interrogation.is-sparse-stage {
+  padding-top: 40px;
+  padding-bottom: 42px;
+}
+
+body .pr-shell #interrogation.is-sparse-stage .pr-section-body {
+  align-self: start;
+}
+
+body .pr-shell #interrogation.is-sparse-stage .pr-question-ledger {
+  border-top: 0;
+}
+
+body .pr-shell #interrogation.is-sparse-stage .pr-question-row {
+  grid-template-columns: 118px 165px minmax(0, 1fr) 34px;
+  min-height: 0;
+  padding: 16px 8px 16px 0;
+}
+
+body .pr-shell #interrogation.is-sparse-stage .pr-question-row h3 {
+  font-size: 12px;
+}
+
+body .pr-shell #interrogation.is-sparse-stage .pr-question-row p {
+  max-width: 840px;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* Keep default data legible. Hover adds emphasis; it never turns the rest into fog. */
+body .pr-shell .pr-evidence-ledger:hover .pr-evidence-row:not(:hover),
+body .pr-shell .pr-question-ledger:hover .pr-question-row:not(:hover),
+body .pr-shell .pr-build-ledger:hover .pr-build-row:not(:hover) {
+  opacity: .72;
+}
+
+body .pr-shell .pr-score-visual svg:hover g,
+body .pr-shell .pr-score-visual svg g {
+  opacity: 1;
+}
+
+body .pr-shell .pr-score-label {
+  fill: #37352f;
+  font-size: 11px;
+  font-weight: 720;
+}
+
+body .pr-shell .pr-score-value {
+  fill: #2b2925;
+  font-size: 13px;
+}
+
+body .pr-shell .pr-score-rank {
+  fill: #9e9a91;
+}
+
+body .pr-shell .pr-score-baseline {
+  stroke: #d0ccc3;
+  stroke-width: 1;
+}
+
+body .pr-shell .pr-score-tick {
+  stroke: #b7b2a8;
+  stroke-width: 1.2;
+}
+
+body .pr-shell .pr-score-tick.is-filled {
+  stroke: #292824;
+  stroke-width: 1.55;
+}
+
+body .pr-shell .pr-score-visual svg g:hover .pr-score-label,
+body .pr-shell .pr-score-visual svg g:hover .pr-score-value {
+  fill: var(--cobalt);
+}
+
+body .pr-shell .pr-score-visual svg g:hover .pr-score-tick.is-filled {
+  stroke: var(--cobalt);
+  stroke-width: 1.9;
+}
+
+/* Bring the score shape and the verdict back into one reading unit. */
+body .pr-shell .pr-resolution-body {
+  grid-template-columns: minmax(0, 1.5fr) minmax(310px, .66fr);
+  gap: clamp(38px, 4.6vw, 72px);
+}
+
+body .pr-shell #resolution .pr-reading-summary {
+  margin-bottom: 20px;
+}
+
+body .pr-shell .pr-resolution-verdict {
+  border-top-color: var(--cobalt);
+}
+
+body .pr-shell .pr-resolution-verdict::before {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-resolution-verdict > strong {
+  font-size: clamp(29px, 2.45vw, 40px);
+  line-height: .93;
+}
+
+body .pr-shell .pr-score-notes {
+  margin-top: 16px;
+}
+
+body .pr-shell .pr-score-notes p {
+  grid-template-columns: 145px minmax(0, 1fr);
+  padding-block: 10px;
+  font-size: 10.5px;
+}
+
+@media (max-width: 1180px) {
+  body .pr-shell .pr-reading-summary {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  body .pr-shell .pr-resolution-body {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+  }
+}
