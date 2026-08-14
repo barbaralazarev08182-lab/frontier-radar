@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { derivePersonalRadarProfile } from "./personal-radar";
+import { FEATURE_KEYS, vectorizeItem } from "./vector";
 
 const NOW = Date.parse("2026-08-14T08:00:00.000Z");
 
@@ -35,10 +36,12 @@ test("Personal Radar keeps cold start separate from learned evidence", () => {
   assert.ok(profile.dimensions.every((dimension) => dimension.evidenceCount === 0));
 });
 
-test("Personal Radar preserves negative feedback as negative signal", () => {
+test("Personal Radar preserves negative feedback and ranking feature weights", () => {
+  const itemId = "11111111-1111-4111-8111-111111111111";
+  const row = item(itemId, "agent workflow");
   const profile = derivePersonalRadarProfile(
-    [event("11111111-1111-4111-8111-111111111111", "not_interested")],
-    [item("11111111-1111-4111-8111-111111111111", "agent workflow")],
+    [event(itemId, "not_interested")],
+    [row],
     NOW
   );
   const agents = profile.dimensions.find((dimension) => dimension.key === "ai_agents");
@@ -46,7 +49,19 @@ test("Personal Radar preserves negative feedback as negative signal", () => {
   assert.equal(agents.evidenceCount, 1);
   assert.equal(agents.negativeEvidence, 1);
   assert.equal(agents.positiveEvidence, 0);
-  assert.equal(agents.behaviorSignal, -5);
+
+  const featureIndex = FEATURE_KEYS.indexOf("ai_agents");
+  const featureWeight = vectorizeItem({
+    title: row.title,
+    description: row.description,
+    summaryZh: row.summary_zh,
+    whyItMatters: row.why_it_matters,
+    source: row.source_slug,
+    contentType: row.content_type,
+    tags: row.tags,
+  })[featureIndex] ?? 0;
+  assert.equal(agents.behaviorSignal, Math.round(-5 * featureWeight * 1000) / 1000);
+  assert.ok(agents.behaviorSignal < 0);
   assert.equal(profile.status, "forming");
 });
 
