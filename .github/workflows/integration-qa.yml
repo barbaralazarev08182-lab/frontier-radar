@@ -84,7 +84,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: integration-qa-screenshots
-          path: test-results/**/*.png
+          path: |
+            test-results/**/*.png
+            artifacts/integration-qa/*.png
           if-no-files-found: ignore
 
       - name: Print server log on failure
