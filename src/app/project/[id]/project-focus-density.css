@@ -69,6 +69,15 @@ body .pr-shell .pr-reading-summary .is-signal strong {
   color: #383631;
 }
 
+/* Orange remains epistemic: Resolution uses cobalt/ink, not the uncertainty accent. */
+body .pr-shell #resolution .pr-reading-summary .is-signal span {
+  color: #77736b;
+}
+
+body .pr-shell #resolution .pr-reading-summary .is-signal strong {
+  color: var(--ink);
+}
+
 /* Sparse interrogation should read like a compact judgement strip, not a whole empty chapter. */
 body .pr-shell #interrogation.is-sparse-stage {
   padding-top: 40px;
