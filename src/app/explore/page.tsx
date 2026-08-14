@@ -10,13 +10,14 @@ import { personalizeFeed } from "@/lib/personalization/server";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
+import { EditorialLineField } from "@/components/frontier/editorial-line-field";
 import { ExploreFieldV4 } from "./explore-field-v4";
 import { ExploreWheelNavigator } from "./explore-wheel-navigator";
 import "./lieflat-v4.css";
 import "./lieflat-v4-interaction.css";
 import "./lieflat-v4-svg-geometry.css";
 import "./lieflat-v4-readability.css";
-import "./explore-surface-lines.css";
+import "../editorial-line-field.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
@@ -98,6 +99,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
   return (
     <>
+      <EditorialLineField variant="explore" />
       <ExploreWheelNavigator />
       <ExploreFieldV4
         candidates={candidates}
