@@ -1,3 +1,13 @@
-.lf4-row {
-  pointer-events: bounding-box;
+.lf4-thread,
+.lf4-endpoint,
+.lf4-group-dot,
+.lf4-group-rule {
+  pointer-events: none;
+}
+
+.lf4-title,
+.lf4-rank,
+.lf4-score,
+.lf4-record-mark {
+  cursor: pointer;
 }
