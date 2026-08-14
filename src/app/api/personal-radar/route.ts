@@ -1,5 +1,7 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { loadPersonalRadarProfile } from "@/lib/personalization/personal-radar";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +20,12 @@ export async function POST(request: Request) {
     const visitorId = body.visitorId;
     if (!isUuid(visitorId)) {
       return NextResponse.json({ error: "invalid_visitor_id" }, { status: 400 });
+    }
+
+    const cookieStore = await cookies();
+    const cookieVisitorId = cookieStore.get(VISITOR_COOKIE)?.value;
+    if (cookieVisitorId !== visitorId) {
+      return NextResponse.json({ error: "visitor_mismatch" }, { status: 403 });
     }
 
     const profile = await loadPersonalRadarProfile(createAdminClient(), visitorId);
