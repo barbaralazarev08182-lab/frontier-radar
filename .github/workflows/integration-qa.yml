@@ -5,6 +5,7 @@ on:
     branches:
       - feat/idea-lab-v1
       - feat/explore-saved-integration
+      - agent/gate-15a-lieflat-explore
       - main
   workflow_dispatch:
 
