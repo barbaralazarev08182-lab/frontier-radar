@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import "./globals.css";
+import "./frontier-system.css";
 import "./product-grammar.css";
 import "./product-grammar-layer2.css";
 import "./site-nav-transparent-light.css";
