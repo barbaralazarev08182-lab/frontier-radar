@@ -1,0 +1,96 @@
+/* Gate 15B surface pass
+   Quiet editorial atmosphere only: no new information hierarchy, no chart geometry changes.
+   The page should feel less like a flat canvas while remaining subordinate to the existing drama layer.
+*/
+
+body .pr-shell.pr-shell {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 88% 14%, rgba(49, 94, 251, .032) 0%, rgba(49, 94, 251, .010) 29%, transparent 54%),
+    radial-gradient(ellipse at 11% 69%, rgba(245, 87, 47, .012) 0%, transparent 43%),
+    radial-gradient(ellipse at 16% 4%, rgba(255, 255, 255, .42) 0%, rgba(255, 255, 255, .12) 33%, transparent 59%),
+    linear-gradient(90deg, rgba(29, 29, 27, .010), transparent 28%, transparent 72%, rgba(49, 94, 251, .008));
+  background-size: 125% 118%, 130% 126%, 132% 132%, 100% 100%;
+  background-position: 91% 13%, -8% 70%, -9% -7%, 0 0;
+}
+
+/* Section surfaces are intentionally almost imperceptible. They create a change of paper, not a card. */
+body .pr-shell #capture {
+  background-image:
+    linear-gradient(112deg, rgba(255, 255, 255, .16) 0%, transparent 39%),
+    linear-gradient(90deg, transparent 0%, transparent 68%, rgba(49, 94, 251, .010) 100%);
+}
+
+body .pr-shell #evidence {
+  background-image:
+    linear-gradient(90deg, rgba(49, 94, 251, .012) 0%, transparent 23%, transparent 100%),
+    repeating-linear-gradient(0deg, transparent 0, transparent 95px, rgba(29, 29, 27, .010) 95px, rgba(29, 29, 27, .010) 96px);
+}
+
+body .pr-shell #interrogation {
+  background-image:
+    linear-gradient(100deg, rgba(245, 87, 47, .010) 0%, transparent 23%),
+    linear-gradient(270deg, rgba(49, 94, 251, .008) 0%, transparent 26%);
+}
+
+body .pr-shell #resolution {
+  background-image:
+    radial-gradient(ellipse at 77% 47%, rgba(49, 94, 251, .024) 0%, transparent 36%),
+    linear-gradient(90deg, transparent 0%, rgba(29, 29, 27, .008) 50%, transparent 100%);
+}
+
+body .pr-shell #build {
+  background-image:
+    linear-gradient(105deg, rgba(255, 255, 255, .14) 0%, transparent 35%),
+    radial-gradient(ellipse at 86% 76%, rgba(49, 94, 251, .014) 0%, transparent 36%);
+}
+
+/* A faint vignette keeps the reading surface feeling bounded without introducing a visible frame. */
+body .pr-shell .pr-document {
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, .20),
+    inset 22px 0 42px -48px rgba(29, 29, 27, .16),
+    inset -22px 0 42px -48px rgba(29, 29, 27, .16);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body .pr-shell.pr-shell {
+    animation: pr-surface-breathe 28s ease-in-out infinite alternate;
+  }
+
+  body .pr-shell[data-active-stage="capture"] #capture,
+  body .pr-shell[data-active-stage="evidence"] #evidence,
+  body .pr-shell[data-active-stage="interrogation"] #interrogation,
+  body .pr-shell[data-active-stage="resolution"] #resolution,
+  body .pr-shell[data-active-stage="build"] #build {
+    animation: pr-active-paper-pulse 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes pr-surface-breathe {
+    0% {
+      background-position: 91% 13%, -8% 70%, -9% -7%, 0 0;
+    }
+    52% {
+      background-position: 84% 18%, 0% 66%, -2% 0%, 0 0;
+    }
+    100% {
+      background-position: 89% 11%, -4% 73%, -6% 3%, 0 0;
+    }
+  }
+
+  @keyframes pr-active-paper-pulse {
+    0% { filter: saturate(1) brightness(1); }
+    100% { filter: saturate(1.015) brightness(1.006); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .pr-shell.pr-shell,
+  body .pr-shell #capture,
+  body .pr-shell #evidence,
+  body .pr-shell #interrogation,
+  body .pr-shell #resolution,
+  body .pr-shell #build {
+    animation: none;
+  }
+}
