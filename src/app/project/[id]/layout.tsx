@@ -6,6 +6,7 @@ import "./project-lieflat-reading.css";
 import "./project-focus-density.css";
 import "./project-editorial-drama.css";
 import "./project-chapter-chart-motion.css";
+import "./project-micro-polish.css";
 
 export default function ProjectIntelligenceLayout({ children }: { children: ReactNode }) {
   return (
