@@ -1,0 +1,494 @@
+/* Gate 15B editorial drama pass
+   Motion and surface should direct the reading order, not decorate the page.
+   Charts keep their existing Lieflat geometry; this layer gives the surrounding
+   research document a stronger editorial stage.
+*/
+
+body .pr-shell {
+  --surface-blue: rgba(49, 94, 251, .055);
+  --surface-blue-strong: rgba(49, 94, 251, .085);
+  --surface-warm: rgba(245, 87, 47, .055);
+  --surface-ink: rgba(29, 29, 27, .035);
+  --stage-wash: transparent;
+}
+
+/* A subtle moving field marks the currently-read chapter without becoming a card. */
+body .pr-shell .pr-section {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  transition: background-color .45s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell .pr-section::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(100deg, transparent 0 14%, var(--stage-wash) 39%, transparent 68%),
+    linear-gradient(to bottom, rgba(255,255,255,.07), transparent 32%);
+  opacity: .2;
+  transform: translateX(-16%);
+  transition: opacity .45s ease, transform .7s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell[data-active-stage="capture"] #capture,
+body .pr-shell[data-active-stage="evidence"] #evidence,
+body .pr-shell[data-active-stage="interrogation"] #interrogation,
+body .pr-shell[data-active-stage="resolution"] #resolution,
+body .pr-shell[data-active-stage="build"] #build {
+  --stage-wash: var(--surface-blue);
+}
+
+body .pr-shell[data-active-stage="interrogation"] #interrogation {
+  --stage-wash: rgba(245, 87, 47, .035);
+}
+
+body .pr-shell[data-active-stage="capture"] #capture::before,
+body .pr-shell[data-active-stage="evidence"] #evidence::before,
+body .pr-shell[data-active-stage="interrogation"] #interrogation::before,
+body .pr-shell[data-active-stage="resolution"] #resolution::before,
+body .pr-shell[data-active-stage="build"] #build::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Chapter labels become editorial anchors instead of quiet margin text. */
+body .pr-shell .pr-section-label {
+  position: sticky;
+  isolation: isolate;
+  padding: 4px 0 16px 18px;
+  transition: transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell .pr-section-label::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 34px;
+  background: var(--grid);
+  transform-origin: top;
+  transition: height .42s cubic-bezier(.16, 1, .3, 1), background .28s ease;
+}
+
+body .pr-shell[data-active-stage="evidence"] #evidence .pr-section-label,
+body .pr-shell[data-active-stage="interrogation"] #interrogation .pr-section-label,
+body .pr-shell[data-active-stage="resolution"] #resolution .pr-section-label,
+body .pr-shell[data-active-stage="build"] #build .pr-section-label {
+  transform: translateX(5px);
+}
+
+body .pr-shell[data-active-stage="evidence"] #evidence .pr-section-label::before,
+body .pr-shell[data-active-stage="interrogation"] #interrogation .pr-section-label::before,
+body .pr-shell[data-active-stage="resolution"] #resolution .pr-section-label::before,
+body .pr-shell[data-active-stage="build"] #build .pr-section-label::before {
+  height: 100%;
+  background: var(--cobalt);
+}
+
+body .pr-shell[data-active-stage="interrogation"] #interrogation .pr-section-label::before {
+  background: var(--signal);
+}
+
+body .pr-shell .pr-section-label > span {
+  position: relative;
+  width: max-content;
+}
+
+body .pr-shell .pr-section-label > span::after {
+  content: "";
+  position: absolute;
+  left: calc(100% + 9px);
+  top: 50%;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width .38s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell[data-active-stage="evidence"] #evidence .pr-section-label > span::after,
+body .pr-shell[data-active-stage="interrogation"] #interrogation .pr-section-label > span::after,
+body .pr-shell[data-active-stage="resolution"] #resolution .pr-section-label > span::after,
+body .pr-shell[data-active-stage="build"] #build .pr-section-label > span::after {
+  width: 28px;
+}
+
+/* CAPTURE reads more like a cover spread. */
+body .pr-shell .pr-capture {
+  min-height: 560px;
+}
+
+body .pr-shell .pr-capture-main {
+  position: relative;
+  padding: 24px 0 18px;
+}
+
+body .pr-shell .pr-capture-main::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: min(560px, 70%);
+  height: 1px;
+  background: linear-gradient(90deg, var(--cobalt), rgba(49,94,251,.18), transparent);
+  transform-origin: left;
+}
+
+body .pr-shell.is-reading-enhanced .pr-capture-main.is-revealed::after {
+  animation: pr-editorial-rule 1.05s cubic-bezier(.4, 0, .2, 1) .16s both;
+}
+
+body .pr-shell .pr-capture h1 {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+body .pr-shell .pr-capture h1::after {
+  content: "";
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  bottom: 5%;
+  height: .16em;
+  z-index: -1;
+  background: var(--cobalt-soft);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+body .pr-shell .pr-capture-main.is-revealed h1::after {
+  animation: pr-title-swipe .72s cubic-bezier(.16, 1, .3, 1) .26s forwards;
+}
+
+body .pr-shell .pr-verdict {
+  overflow: hidden;
+  padding: 19px 18px 16px;
+  border-top: 0;
+  background:
+    linear-gradient(145deg, rgba(49,94,251,.09), rgba(49,94,251,.025) 54%, transparent 55%),
+    transparent;
+}
+
+body .pr-shell .pr-verdict::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-top: 2px solid var(--cobalt);
+  border-right: 1px solid rgba(49,94,251,.18);
+  border-bottom: 1px solid rgba(29,29,27,.08);
+}
+
+body .pr-shell .pr-verdict-score {
+  position: relative;
+  width: max-content;
+}
+
+body .pr-shell .pr-verdict-score::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  top: 10%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  box-shadow: 0 0 0 0 rgba(49,94,251,.28);
+}
+
+body .pr-shell .pr-verdict.is-revealed .pr-verdict-score::after {
+  animation: pr-verdict-pulse 2.6s ease-out .75s infinite;
+}
+
+/* Reading summaries become editorial straps rather than plain rows. */
+body .pr-shell .pr-reading-summary {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+  padding: 15px 18px 16px;
+  border: 0;
+  background:
+    linear-gradient(90deg, var(--surface-blue-strong), rgba(49,94,251,.018) 46%, transparent 78%);
+}
+
+body .pr-shell .pr-reading-summary::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--cobalt);
+}
+
+body .pr-shell #interrogation .pr-reading-summary {
+  background:
+    linear-gradient(90deg, var(--surface-warm), rgba(245,87,47,.012) 44%, transparent 78%);
+}
+
+body .pr-shell #interrogation .pr-reading-summary::before {
+  background: var(--signal);
+}
+
+body .pr-shell .pr-reading-summary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -24%;
+  width: 16%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.48), transparent);
+  transform: skewX(-16deg);
+  opacity: 0;
+}
+
+body .pr-shell .pr-reading-summary.is-revealed::after {
+  animation: pr-paper-sweep .85s cubic-bezier(.16, 1, .3, 1) .16s both;
+}
+
+body .pr-shell .pr-reading-summary strong {
+  font-size: clamp(15px, 1.18vw, 18px);
+}
+
+/* Evidence feels like a research board: one row comes forward without hiding the rest. */
+body .pr-shell .pr-evidence-row {
+  overflow: hidden;
+  padding-inline: 12px 10px;
+}
+
+body .pr-shell .pr-evidence-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 1px;
+  background: var(--cobalt);
+  transition: width .42s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell .pr-evidence-row:hover::after {
+  width: 100%;
+}
+
+body .pr-shell .pr-evidence-row .pr-row-copy h3 {
+  transition: transform .26s cubic-bezier(.16, 1, .3, 1), color .2s ease;
+}
+
+body .pr-shell .pr-evidence-row:hover .pr-row-copy h3 {
+  color: var(--cobalt);
+  transform: translateX(3px);
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-row-number,
+body .pr-shell .pr-evidence-row.is-revealed .pr-row-meta,
+body .pr-shell .pr-evidence-row.is-revealed .pr-row-copy,
+body .pr-shell .pr-evidence-row.is-revealed .pr-verify {
+  animation: pr-ledger-arrive .52s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-row-meta { animation-delay: 65ms; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-row-copy { animation-delay: 115ms; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-verify { animation-delay: 165ms; }
+
+/* INTERROGATION: epistemic statements become distinct strips, not generic table rows. */
+body .pr-shell .pr-question-row {
+  overflow: hidden;
+  padding-inline: 16px 12px;
+  border-bottom-color: rgba(29,29,27,.1);
+}
+
+body .pr-shell .pr-question-row:has(.pr-kind-observed) {
+  background: linear-gradient(90deg, rgba(49,94,251,.052), transparent 56%);
+}
+
+body .pr-shell .pr-question-row:has(.pr-kind-inference),
+body .pr-shell .pr-question-row:has(.pr-kind-open-question) {
+  background: linear-gradient(90deg, rgba(245,87,47,.052), transparent 56%);
+}
+
+body .pr-shell .pr-question-row::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 48px;
+  height: 100%;
+  opacity: .22;
+  background: repeating-linear-gradient(135deg, transparent 0 7px, currentColor 7px 8px, transparent 8px 14px);
+  mask-image: linear-gradient(to left, black, transparent);
+  pointer-events: none;
+}
+
+body .pr-shell .pr-question-row:has(.pr-kind-observed)::after { color: var(--cobalt); }
+body .pr-shell .pr-question-row:has(.pr-kind-inference)::after,
+body .pr-shell .pr-question-row:has(.pr-kind-open-question)::after { color: var(--signal); }
+
+body .pr-shell .pr-question-row.is-revealed h3,
+body .pr-shell .pr-question-row.is-revealed p {
+  animation: pr-copy-unmask .58s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+body .pr-shell .pr-question-row.is-revealed p { animation-delay: 85ms; }
+
+/* RESOLUTION reads as one verdict spread, not two distant columns. */
+body .pr-shell .pr-resolution-body {
+  position: relative;
+  padding: 16px 18px 18px;
+  background: linear-gradient(115deg, rgba(49,94,251,.035), transparent 40%, rgba(29,29,27,.018) 78%);
+}
+
+body .pr-shell .pr-resolution-body::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--cobalt) 0 46%, transparent 46% 51%, var(--ink) 51% 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+body .pr-shell[data-active-stage="resolution"] .pr-resolution-body::before {
+  animation: pr-editorial-rule 1s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+body .pr-shell .pr-resolution-verdict {
+  padding: 17px 16px 18px;
+  border-top: 0;
+  background: rgba(255,255,255,.17);
+  box-shadow: inset 2px 0 0 var(--cobalt);
+}
+
+body .pr-shell .pr-resolution-verdict > strong {
+  position: relative;
+  display: inline-block;
+}
+
+body .pr-shell .pr-resolution-verdict > strong::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -9px;
+  width: 42%;
+  height: 3px;
+  background: var(--cobalt);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+body .pr-shell .pr-resolution-verdict.is-revealed > strong::after {
+  animation: pr-title-swipe .62s cubic-bezier(.16,1,.3,1) .3s forwards;
+}
+
+/* BUILD gets a restrained action runway so it does not collapse back into a table. */
+body .pr-shell .pr-build-row {
+  overflow: hidden;
+  padding-inline: 14px 10px;
+}
+
+body .pr-shell .pr-build-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--surface-blue);
+  transition: width .38s cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none;
+}
+
+body .pr-shell .pr-build-row:hover::before {
+  width: 100%;
+}
+
+body .pr-shell .pr-build-row > * {
+  position: relative;
+}
+
+/* Existing reveal stays legible, but the motion has a clearer editorial rhythm. */
+body .pr-shell.is-reading-enhanced .pr-section-body .is-revealed,
+body .pr-shell.is-reading-enhanced .pr-capture-main.is-revealed,
+body .pr-shell.is-reading-enhanced .pr-verdict.is-revealed {
+  will-change: transform, opacity;
+}
+
+@keyframes pr-editorial-rule {
+  from { transform: scaleX(0); opacity: .25; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes pr-title-swipe {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes pr-paper-sweep {
+  0% { left: -24%; opacity: 0; }
+  18% { opacity: .85; }
+  100% { left: 112%; opacity: 0; }
+}
+
+@keyframes pr-verdict-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(49,94,251,.3); }
+  62%, 100% { box-shadow: 0 0 0 10px rgba(49,94,251,0); }
+}
+
+@keyframes pr-ledger-arrive {
+  from { opacity: 0; transform: translateX(-9px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pr-copy-unmask {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); transform: translateX(-7px); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .pr-shell .pr-section,
+  body .pr-shell .pr-section::before,
+  body .pr-shell .pr-section-label,
+  body .pr-shell .pr-section-label::before,
+  body .pr-shell .pr-section-label > span::after,
+  body .pr-shell .pr-evidence-row::after,
+  body .pr-shell .pr-evidence-row .pr-row-copy h3,
+  body .pr-shell .pr-build-row::before {
+    transition: none;
+  }
+
+  body .pr-shell .pr-capture-main::after,
+  body .pr-shell .pr-capture h1::after,
+  body .pr-shell .pr-verdict-score::after,
+  body .pr-shell .pr-reading-summary::after,
+  body .pr-shell .pr-evidence-row.is-revealed .pr-row-number,
+  body .pr-shell .pr-evidence-row.is-revealed .pr-row-meta,
+  body .pr-shell .pr-evidence-row.is-revealed .pr-row-copy,
+  body .pr-shell .pr-evidence-row.is-revealed .pr-verify,
+  body .pr-shell .pr-question-row.is-revealed h3,
+  body .pr-shell .pr-question-row.is-revealed p,
+  body .pr-shell .pr-resolution-body::before,
+  body .pr-shell .pr-resolution-verdict > strong::after {
+    animation: none !important;
+    transform: none;
+    opacity: 1;
+    clip-path: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  body .pr-shell .pr-section-label {
+    padding-left: 12px;
+  }
+
+  body .pr-shell .pr-reading-summary,
+  body .pr-shell .pr-resolution-body {
+    padding-inline: 13px;
+  }
+}
