@@ -1,0 +1,202 @@
+/* Micro Polish Pass — shared light surfaces.
+   Owner scope only:
+   1) Explore keeps the Project paper, but its perimeter design regains presence.
+   2) Global light nav becomes 85% paper glass.
+   3) Explore micro type is nudged up without changing the L12 geometry or viewport height. */
+
+:root {
+  --fr-surface-paper: #f1efe9;
+  --fr-surface-paper-rgb: 241, 239, 233;
+}
+
+/* Global light nav: materially present, still integrated with the paper. */
+.fr-site-nav[data-fr-tone="light"] {
+  background: rgba(var(--fr-surface-paper-rgb), .85) !important;
+  backdrop-filter: blur(14px) saturate(108%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(108%) !important;
+  border-bottom-color: rgba(17, 18, 20, .105) !important;
+}
+
+/* Explore must use the exact same paper as Project. */
+body:has(.lf4),
+body:has(.lf4) .lf4.lf4,
+body:has(.lf4) .lf4-hero,
+body:has(.lf4) .lf4-canvas,
+body:has(.lf4) .lf4-footer {
+  background-color: var(--fr-surface-paper) !important;
+}
+
+body:has(.lf4) .lf4-controls {
+  background-color: rgba(var(--fr-surface-paper-rgb), .94) !important;
+}
+
+/* Explore perimeter design — stronger on the lighter paper, still outside the L12 heart. */
+.fr-explore-surface__plates {
+  opacity: 1 !important;
+}
+
+.fr-explore-surface__plate--a {
+  opacity: 1;
+  stroke: rgba(49, 94, 251, .13);
+  stroke-width: .8;
+  filter: saturate(1.18) drop-shadow(0 10px 24px rgba(49, 94, 251, .035));
+}
+
+.fr-explore-surface__plate--b {
+  opacity: .98;
+  stroke: rgba(28, 28, 26, .095);
+  stroke-width: .75;
+  filter: contrast(1.06);
+}
+
+.fr-explore-surface__plate--c {
+  fill: rgba(49, 94, 251, .042) !important;
+  stroke: rgba(49, 94, 251, .105);
+  stroke-width: .75;
+}
+
+.fr-explore-surface__edge-frame {
+  stroke: rgba(28, 28, 26, .34) !important;
+  stroke-width: 1 !important;
+}
+
+.fr-explore-surface__calibration {
+  stroke: rgba(28, 28, 26, .225) !important;
+}
+
+.fr-explore-surface__calibration--right line:nth-child(4n + 1),
+.fr-explore-surface__calibration--bottom line:nth-child(4n + 1) {
+  stroke: rgba(49, 94, 251, .52) !important;
+}
+
+.fr-explore-surface__dots {
+  fill: rgba(28, 28, 26, .255) !important;
+}
+
+.fr-explore-surface__dots circle:nth-child(7n + 1),
+.fr-explore-surface__dots circle:nth-child(11n + 2) {
+  fill: rgba(49, 94, 251, .72) !important;
+}
+
+.fr-explore-surface__ghost-index {
+  fill: rgba(28, 28, 26, .06) !important;
+}
+
+.fr-explore-surface__ghost-label {
+  fill: rgba(28, 28, 26, .19) !important;
+}
+
+.fr-explore-surface__scan rect {
+  opacity: .76 !important;
+}
+
+.fr-explore-surface__scan circle {
+  opacity: .96 !important;
+  filter: drop-shadow(0 0 8px rgba(49, 94, 251, .30));
+}
+
+/* Explore micro typography — no geometry changes, only readability. */
+@media (min-width: 901px) {
+  .lf4-hero-compact .lf4-kicker {
+    font-size: 8.8px !important;
+    letter-spacing: .105em;
+  }
+
+  .lf4-compact-thesis p {
+    font-size: 9.5px !important;
+    line-height: 1.38;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta span {
+    font-size: 8px !important;
+    letter-spacing: .09em;
+  }
+
+  .lf4-viewport .lf4-canvas-head strong {
+    font-size: 9px !important;
+    letter-spacing: .115em;
+  }
+
+  .lf4-viewport .lf4-canvas-head span {
+    font-size: 8.5px !important;
+  }
+
+  .lf4-rank {
+    font-size: 9px !important;
+  }
+
+  .lf4-score {
+    font-size: 8.6px !important;
+  }
+
+  .lf4-title {
+    font-size: 10.4px !important;
+  }
+
+  .lf4-inline-readout {
+    font-size: 7.4px !important;
+  }
+
+  .lf4-group-name {
+    font-size: 9.8px !important;
+  }
+
+  .lf4-group-count {
+    font-size: 8.3px !important;
+    letter-spacing: .09em;
+  }
+
+  .lf4-aperture-kicker {
+    font-size: 7.5px !important;
+    letter-spacing: .085em;
+  }
+
+  .lf4-aperture-copy > p {
+    font-size: 8.3px !important;
+    line-height: 1.34;
+  }
+
+  .lf4-aperture-scores span {
+    font-size: 6.8px !important;
+    letter-spacing: .06em;
+  }
+
+  .lf4-aperture-scores b {
+    font-size: 8.5px !important;
+  }
+
+  .lf4-aperture-reason > span {
+    font-size: 6.8px !important;
+    letter-spacing: .08em;
+  }
+
+  .lf4-aperture-reason p {
+    font-size: 7.5px !important;
+    line-height: 1.28;
+  }
+
+  .lf4-aperture-actions .lf4-open,
+  .lf4-aperture-actions .lf4-save,
+  .lf4-aperture-actions button {
+    font-size: 7.1px !important;
+    letter-spacing: .075em;
+  }
+
+  .lf4-viewport .lf4-canvas figcaption {
+    font-size: 8px !important;
+    letter-spacing: .05em;
+  }
+
+  .lf4-viewport .lf4-footer {
+    font-size: 7.7px !important;
+    letter-spacing: .075em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-explore-surface__plate--a,
+  .fr-explore-surface__plate--b,
+  .fr-explore-surface__plate--c {
+    filter: none;
+  }
+}
