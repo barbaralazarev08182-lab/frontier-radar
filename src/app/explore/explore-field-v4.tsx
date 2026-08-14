@@ -189,39 +189,39 @@ export function ExploreFieldV4({
   const activeLens = LENSES.find((entry) => entry.id === lens) ?? LENSES[0]!;
   const focus = plotted.find((candidate) => candidate.itemId === focusId) ?? null;
   const activeId = hoverId ?? focusId;
-  const tagModel = useMemo(() => buildTagAssignments(plotted), [plotted]);
+  const tagModel = buildTagAssignments(plotted);
   const focusGroupId = focus ? (tagModel.assignment.get(focus.itemId) ?? "__other__") : null;
   const focusGroupLabel = focusGroupId
     ? (tagModel.groups.find((group) => group.id === focusGroupId)?.label ?? "UNTAGGED")
     : null;
 
-  const groupY = useMemo(() => {
-    const map = new Map<string, number>();
-    const count = Math.max(1, tagModel.groups.length);
-    const top = 118;
-    const bottom = 666;
-    tagModel.groups.forEach((group, index) => {
-      map.set(group.id, count === 1 ? (top + bottom) / 2 : top + (bottom - top) * (index / (count - 1)));
-    });
-    return map;
-  }, [tagModel.groups]);
+  const groupY = new Map<string, number>();
+  const groupCount = Math.max(1, tagModel.groups.length);
+  const groupTop = 118;
+  const groupBottom = 666;
+  tagModel.groups.forEach((group, index) => {
+    groupY.set(
+      group.id,
+      groupCount === 1
+        ? (groupTop + groupBottom) / 2
+        : groupTop + (groupBottom - groupTop) * (index / (groupCount - 1))
+    );
+  });
 
-  const rows = useMemo<ColonnadeRow[]>(() => {
-    const denominator = Math.max(1, plotted.length - 1);
-    return plotted.map((candidate, rank) => {
-      const y = plotted.length === 1
-        ? (CANVAS.rowTop + CANVAS.rowBottom) / 2
-        : CANVAS.rowTop + (CANVAS.rowBottom - CANVAS.rowTop) * (rank / denominator);
-      const groupId = tagModel.assignment.get(candidate.itemId) ?? "__other__";
-      return {
-        candidate,
-        rank,
-        groupId,
-        y,
-        groupY: groupY.get(groupId) ?? CANVAS.height / 2,
-      };
-    });
-  }, [groupY, plotted, tagModel.assignment]);
+  const denominator = Math.max(1, plotted.length - 1);
+  const rows: ColonnadeRow[] = plotted.map((candidate, rank) => {
+    const y = plotted.length === 1
+      ? (CANVAS.rowTop + CANVAS.rowBottom) / 2
+      : CANVAS.rowTop + (CANVAS.rowBottom - CANVAS.rowTop) * (rank / denominator);
+    const groupId = tagModel.assignment.get(candidate.itemId) ?? "__other__";
+    return {
+      candidate,
+      rank,
+      groupId,
+      y,
+      groupY: groupY.get(groupId) ?? CANVAS.height / 2,
+    };
+  });
 
   useEffect(() => {
     if (!focus) return;
@@ -490,7 +490,7 @@ export function ExploreFieldV4({
               >
                 <Heart aria-hidden /> MORE
               </button>
-              <button type="button" onClick={() => feedback(focus, "not_interested")}>
+              <button type="button" onClick={() => feedback(focus, "not_interested") }>
                 <ThumbsDown aria-hidden /> LESS
               </button>
             </div>
