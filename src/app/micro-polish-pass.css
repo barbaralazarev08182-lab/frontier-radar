@@ -19,13 +19,23 @@
 }
 
 /* Explore uses the same paper as Project, but the paper lives on the page.
-   Remove the legacy global body gradients so the paper is not color-shifted.
-   Content regions stay transparent so the fixed perimeter field is not occluded. */
+   Remove the legacy global body gradients so the paper is not color-shifted. */
 body:has(.lf4) {
   background-color: var(--fr-surface-paper) !important;
   background-image: none !important;
 }
 
+/* The Explore route is still wrapped by the legacy FieldMotionBridge shell.
+   field-first.css gives that shell its own warm kraft paper (#f2ede2), which was
+   the actual visible source of the #f1ede3 cast. Lock only that wrapper to the
+   Project paper; do not touch Explore's blue perimeter artwork. */
+body:has(.lf4) .explore-field-first.explore-field-motion-root {
+  --fr-paper: var(--fr-surface-paper) !important;
+  background: var(--fr-surface-paper) !important;
+  background-image: none !important;
+}
+
+/* Content regions stay transparent so the fixed perimeter field is not occluded. */
 body:has(.lf4) .lf4.lf4,
 body:has(.lf4) .lf4-hero,
 body:has(.lf4) .lf4-canvas,
