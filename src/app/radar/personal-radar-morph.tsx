@@ -5,8 +5,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { PersonalRadarDimension } from "@/lib/personalization/personal-radar";
 import styles from "./personal-radar.module.css";
 import polish from "./personal-radar-polish.module.css";
+import delight from "./personal-radar-delight.module.css";
 
 type RadarView = "strength" | "evidence" | "freshness";
+
+type EChartsDatum = {
+  groupId?: string;
+};
+
+type EChartsEventParams = {
+  seriesId?: string;
+  name?: string;
+  dataIndex?: number;
+  data?: EChartsDatum | unknown[] | number | string;
+};
+
+type EChartsHandler = (params?: EChartsEventParams) => void;
 
 type EChartsInstance = {
   clear: () => void;
@@ -16,6 +30,9 @@ type EChartsInstance = {
     option: Record<string, unknown>,
     options?: { replaceMerge?: string[] }
   ) => void;
+  on: (eventName: string, handler: EChartsHandler) => void;
+  off: (eventName: string, handler: EChartsHandler) => void;
+  dispatchAction: (payload: Record<string, unknown>) => void;
 };
 
 type EChartsApi = {
@@ -74,6 +91,67 @@ function percentage(value: number): string {
 function signal(value: number): string {
   const rounded = Math.round(value * 10) / 10;
   return `${rounded > 0 ? "+" : ""}${rounded.toFixed(1)}`;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
+    };
+    return entities[character] ?? character;
+  });
+}
+
+function groupIdFromParams(params?: EChartsEventParams): string | undefined {
+  const data = params?.data;
+  if (typeof data !== "object" || data === null || Array.isArray(data)) return undefined;
+  const groupId = (data as EChartsDatum).groupId;
+  return typeof groupId === "string" ? groupId : undefined;
+}
+
+function orderedForView(
+  view: RadarView,
+  dimensions: PersonalRadarDimension[]
+): PersonalRadarDimension[] {
+  if (view === "evidence") {
+    return [...dimensions].sort(
+      (a, b) => b.evidenceCount - a.evidenceCount || b.behaviorSignal - a.behaviorSignal
+    );
+  }
+  if (view === "freshness") {
+    return [...dimensions].sort(
+      (a, b) => b.freshness - a.freshness || b.confidence - a.confidence
+    );
+  }
+  return dimensions;
+}
+
+function tooltipMarkup(
+  rawParams: EChartsEventParams | EChartsEventParams[],
+  dimensions: PersonalRadarDimension[]
+): string {
+  const params = Array.isArray(rawParams) ? rawParams[0] : rawParams;
+  if (!params || params.seriesId !== "personal-radar-profile") return "";
+  const groupId = groupIdFromParams(params);
+  const dimension = dimensions.find((item) => item.key === groupId)
+    ?? dimensions.find((item) => item.label === params.name);
+  if (!dimension) return "";
+
+  return `
+    <div style="min-width:176px;padding:2px 1px 1px;font-family:Inter,ui-sans-serif,system-ui,sans-serif">
+      <div style="font:700 9px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.11em;color:#9EA8D8;margin-bottom:7px">INTEREST DOSSIER</div>
+      <div style="font-size:13px;font-weight:760;line-height:1.15;color:${PAPER};margin-bottom:9px">${escapeHtml(dimension.label)}</div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:5px 14px;font-size:10px;color:#C9C8C2">
+        <span>SIGNAL</span><b style="color:${PAPER}">${signal(dimension.behaviorSignal)}</b>
+        <span>EVIDENCE</span><b style="color:${PAPER}">${dimension.evidenceCount}</b>
+        <span>FRESHNESS</span><b style="color:${PAPER}">${percentage(dimension.freshness)}</b>
+        <span>CONFIDENCE</span><b style="color:${PAPER}">${percentage(dimension.confidence)}</b>
+      </div>
+    </div>`;
 }
 
 function makeAxis(name: string) {
@@ -148,9 +226,7 @@ function buildView(
   };
 
   if (view === "evidence") {
-    const ordered = [...dimensions].sort(
-      (a, b) => b.evidenceCount - a.evidenceCount || b.behaviorSignal - a.behaviorSignal
-    );
+    const ordered = orderedForView(view, dimensions);
     const maxEvidence = Math.max(1, ...ordered.map((dimension) => dimension.evidenceCount));
     return {
       grid: CHART_GRID,
@@ -203,9 +279,7 @@ function buildView(
   }
 
   if (view === "freshness") {
-    const ordered = [...dimensions].sort(
-      (a, b) => b.freshness - a.freshness || b.confidence - a.confidence
-    );
+    const ordered = orderedForView(view, dimensions);
     return {
       grid: CHART_GRID,
       xAxis: {
@@ -361,13 +435,20 @@ export function PersonalRadarMorph({
   const chartRef = useRef<HTMLDivElement | null>(null);
   const chartInstanceRef = useRef<EChartsInstance | null>(null);
   const manualPauseRef = useRef(false);
+  const inspectionPauseRef = useRef(false);
   const manualPauseTimerRef = useRef<number | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [view, setView] = useState<RadarView>("strength");
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [manualHold, setManualHold] = useState(false);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
 
   const points = useMemo(() => dimensions.slice(0, 12), [dimensions]);
+  const activeOrder = useMemo(() => orderedForView(view, points), [view, points]);
   const viewCopy = VIEW_COPY[view];
+  const hoveredDimension = hoveredKey
+    ? points.find((dimension) => dimension.key === hoveredKey) ?? null
+    : null;
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -382,23 +463,44 @@ export function PersonalRadarMorph({
 
     const element = chartRef.current;
     const chart = window.echarts.getInstanceByDom(element) ?? window.echarts.init(element);
+    const labelToKey = new Map(points.map((dimension) => [dimension.label, dimension.key] as const));
+    const handleChartOver: EChartsHandler = (params) => {
+      if (params?.seriesId !== "personal-radar-profile") return;
+      const key = groupIdFromParams(params) ?? labelToKey.get(params.name ?? "");
+      if (!key) return;
+      inspectionPauseRef.current = true;
+      setHoveredKey(key);
+    };
+    const handleChartOut: EChartsHandler = () => {
+      inspectionPauseRef.current = false;
+      setHoveredKey(null);
+    };
+
     chartInstanceRef.current = chart;
     chart.clear();
     chart.setOption({
       animationDurationUpdate: 0,
       tooltip: {
-        backgroundColor: INK,
-        borderWidth: 0,
-        padding: [9, 12],
+        trigger: "item",
+        backgroundColor: "rgba(28,28,26,.96)",
+        borderColor: "rgba(109,210,255,.24)",
+        borderWidth: 1,
+        padding: [10, 12],
+        extraCssText: "box-shadow:0 14px 38px rgba(0,0,0,.18);border-radius:0;",
         textStyle: { color: PAPER, fontSize: 11 },
+        formatter: (params: EChartsEventParams | EChartsEventParams[]) => tooltipMarkup(params, points),
       },
       ...buildView("strength", points, reduceMotion),
     });
+    chart.on("mouseover", handleChartOver);
+    chart.on("globalout", handleChartOut);
 
     const resize = () => chart.resize();
     window.addEventListener("resize", resize);
     return () => {
       window.removeEventListener("resize", resize);
+      chart.off("mouseover", handleChartOver);
+      chart.off("globalout", handleChartOut);
       chart.dispose();
       chartInstanceRef.current = null;
     };
@@ -419,7 +521,8 @@ export function PersonalRadarMorph({
   useEffect(() => {
     if (reduceMotion) return;
     const timer = window.setInterval(() => {
-      if (manualPauseRef.current) return;
+      if (manualPauseRef.current || inspectionPauseRef.current) return;
+      setHoveredKey(null);
       setView((current) => {
         const index = VIEW_ORDER.indexOf(current);
         return VIEW_ORDER[(index + 1) % VIEW_ORDER.length] ?? "strength";
@@ -436,18 +539,64 @@ export function PersonalRadarMorph({
 
   function selectView(next: RadarView) {
     manualPauseRef.current = true;
+    setManualHold(true);
+    setHoveredKey(null);
+    inspectionPauseRef.current = false;
     if (manualPauseTimerRef.current !== null) {
       window.clearTimeout(manualPauseTimerRef.current);
     }
     manualPauseTimerRef.current = window.setTimeout(() => {
       manualPauseRef.current = false;
+      setManualHold(false);
       manualPauseTimerRef.current = null;
     }, 7000);
     setView(next);
   }
 
+  function focusDimension(dimension: PersonalRadarDimension) {
+    inspectionPauseRef.current = true;
+    setHoveredKey(dimension.key);
+    const chart = chartInstanceRef.current;
+    const dataIndex = activeOrder.findIndex((item) => item.key === dimension.key);
+    if (!chart || dataIndex < 0) return;
+    chart.dispatchAction({ type: "downplay", seriesId: "personal-radar-profile" });
+    chart.dispatchAction({
+      type: "highlight",
+      seriesId: "personal-radar-profile",
+      dataIndex,
+    });
+    chart.dispatchAction({
+      type: "showTip",
+      seriesId: "personal-radar-profile",
+      dataIndex,
+    });
+  }
+
+  function clearDimensionFocus() {
+    inspectionPauseRef.current = false;
+    setHoveredKey(null);
+    const chart = chartInstanceRef.current;
+    if (!chart) return;
+    chart.dispatchAction({ type: "downplay", seriesId: "personal-radar-profile" });
+    chart.dispatchAction({ type: "hideTip" });
+  }
+
+  const statusCopy = hoveredDimension
+    ? `FOCUS · ${hoveredDimension.label}`
+    : manualHold
+      ? "MANUAL HOLD · AUTO RESUMES IN 7S"
+      : reduceMotion
+        ? "REDUCED MOTION · MANUAL VIEWS"
+        : "AUTO MORPH 3S · HOVER PAUSES INSPECTION";
+
   return (
-    <div className={`${styles.morphWorkspace} ${polish.morphWorkspace}`}>
+    <div
+      className={`${styles.morphWorkspace} ${polish.morphWorkspace} ${delight.workspace}`}
+      data-radar-workspace
+      data-view={view}
+      data-manual={manualHold ? "true" : "false"}
+      data-focused={hoveredKey ? "true" : "false"}
+    >
       <Script
         src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"
         strategy="afterInteractive"
@@ -455,13 +604,13 @@ export function PersonalRadarMorph({
         onReady={() => setScriptReady(true)}
       />
 
-      <div className={`${styles.morphRail} ${polish.morphRail}`} aria-label="Personal Radar views">
-        <div className={`${styles.morphRailHead} ${polish.morphRailHead}`}>
+      <div className={`${styles.morphRail} ${polish.morphRail} ${delight.rail}`} aria-label="Personal Radar views">
+        <div key={view} className={`${styles.morphRailHead} ${polish.morphRailHead} ${delight.railHead}`}>
           <span>G9 · ONE PROFILE, THREE VIEWS</span>
           <strong>{viewCopy.title}</strong>
           <p>{viewCopy.note}</p>
         </div>
-        <div className={`${styles.morphButtons} ${polish.morphButtons}`}>
+        <div className={`${styles.morphButtons} ${polish.morphButtons} ${delight.buttons}`}>
           {VIEW_ORDER.map((candidate) => (
             <button
               type="button"
@@ -475,27 +624,30 @@ export function PersonalRadarMorph({
             </button>
           ))}
         </div>
-        <div className={styles.morphLegend}>
+        <div className={`${styles.morphLegend} ${delight.legend}`}>
           <span><i className={styles.legendHero} /> strongest live signal</span>
           <span><i /> same interest identity</span>
-          <span>{reduceMotion ? "REDUCED MOTION · MANUAL VIEWS" : "AUTO MORPH 3S · MANUAL SELECTION PAUSES 7S"}</span>
+          <span data-radar-focus-status>{statusCopy}</span>
         </div>
       </div>
 
-      <div className={`${styles.morphPlotWrap} ${polish.morphPlotWrap}`}>
+      <div
+        className={`${styles.morphPlotWrap} ${polish.morphPlotWrap} ${delight.plotWrap}`}
+        data-view={view}
+      >
         <div
           ref={chartRef}
-          className={`${styles.morphPlot} ${polish.morphPlot}`}
+          className={`${styles.morphPlot} ${polish.morphPlot} ${delight.plot}`}
           role="img"
           aria-label={`Personal Radar ${view} view. The same interest dimensions transition between strength, evidence, and freshness.`}
         />
         {!scriptReady ? <div className={styles.morphLoading}>LOADING G9 INSTRUMENT…</div> : null}
-        <div className={styles.morphSource}>
+        <div className={`${styles.morphSource} ${delight.source}`}>
           LIEFLAT G9 MORPH · F11 TICK GAUGE SMALL MULTIPLES · GROUP ID = INTEREST DIMENSION
         </div>
       </div>
 
-      <aside className={`${styles.morphReadout} ${polish.morphReadout}`}>
+      <aside className={`${styles.morphReadout} ${polish.morphReadout} ${delight.readout}`}>
         <div className={styles.morphReadoutHead}>
           <span>LIVE EVIDENCE LEDGER</span>
           <strong>{points.length} DIMENSIONS IN VIEW</strong>
@@ -504,7 +656,18 @@ export function PersonalRadarMorph({
           <span>INTEREST</span><span>S</span><span>E</span><span>F</span>
         </div>
         {points.slice(0, 8).map((dimension, index) => (
-          <div className={styles.morphReadoutRow} key={dimension.key}>
+          <div
+            className={`${styles.morphReadoutRow} ${delight.readoutRow}`}
+            key={dimension.key}
+            data-interest-key={dimension.key}
+            data-active={hoveredKey === dimension.key ? "true" : "false"}
+            tabIndex={0}
+            aria-label={`Trace ${dimension.label} across the active chart`}
+            onMouseEnter={() => focusDimension(dimension)}
+            onMouseLeave={clearDimensionFocus}
+            onFocus={() => focusDimension(dimension)}
+            onBlur={clearDimensionFocus}
+          >
             <strong>{String(index + 1).padStart(2, "0")} · {dimension.label}</strong>
             <span>{signal(dimension.behaviorSignal)}</span>
             <span>{dimension.evidenceCount}</span>
@@ -512,7 +675,7 @@ export function PersonalRadarMorph({
           </div>
         ))}
         <p>
-          S = signed live signal · E = contributing events · F = freshness. Confidence remains encoded in point size where the view requires it.
+          S = signed live signal · E = contributing events · F = freshness. Hover either the chart or ledger to trace one interest across the instrument.
         </p>
       </aside>
     </div>
