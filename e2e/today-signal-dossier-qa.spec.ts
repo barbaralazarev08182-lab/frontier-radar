@@ -22,6 +22,18 @@ async function expectNoHorizontalOverflow(page: Page) {
   ).toBeLessThanOrEqual(1);
 }
 
+async function wheelStage(page: Page) {
+  await page.evaluate(() => {
+    const scroller = document.querySelector<HTMLElement>(".motion-lab-scroller");
+    if (!scroller) return;
+    scroller.dispatchEvent(new WheelEvent("wheel", {
+      deltaY: 120,
+      bubbles: true,
+      cancelable: true,
+    }));
+  });
+}
+
 test("Today exposes one shared signal dossier and updates it from the existing signal objects", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -35,17 +47,21 @@ test("Today exposes one shared signal dossier and updates it from the existing s
   const cards = root.locator(".motion-lab-signal[role='link']");
   await expect(cards).toHaveCount(7);
 
-  // Move through the accepted Motion Lab scroll controller rather than faking a
-  // data attribute. 74% sits inside the Today inspection chapter (62%–86%).
+  // Preserve the accepted Today stage controller. Seed the end of the free Hero
+  // travel, then let two real wheel gestures trigger its cinematic snaps:
+  // HERO → COMPRESSION → TODAY.
   await page.evaluate(() => {
     const scroller = document.querySelector<HTMLElement>(".motion-lab-scroller");
     if (!scroller) return;
     const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
-    scroller.scrollTop = travel * 0.74;
-    scroller.dispatchEvent(new Event("scroll", { bubbles: true }));
+    scroller.scrollTop = travel * 0.28;
   });
-  await expect(root).toHaveAttribute("data-scroll-stage", "today", { timeout: 7_000 });
-  await page.waitForTimeout(1_100);
+  await wheelStage(page);
+  await expect(root).toHaveAttribute("data-scroll-stage", "compression", { timeout: 3_000 });
+  await page.waitForTimeout(520);
+  await wheelStage(page);
+  await expect(root).toHaveAttribute("data-scroll-stage", "today", { timeout: 3_000 });
+  await page.waitForTimeout(760);
 
   const dossier = page.locator('[data-today-signal-dossier="true"]');
   await expect(dossier).toBeVisible();
