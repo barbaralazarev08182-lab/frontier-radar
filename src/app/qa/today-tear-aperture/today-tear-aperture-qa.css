@@ -1,0 +1,4 @@
+[data-today-r4="true"] article h2 {
+  max-width: 15ch;
+  font-size: clamp(2.85rem, 4.1vw, 4.9rem) !important;
+}
