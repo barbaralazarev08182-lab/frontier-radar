@@ -1,16 +1,37 @@
 # Gate 16B — Personal Radar v1
 
-Status: MACHINE PASS / awaiting owner visual acceptance
+Status: OWNER VISUAL PASS / FINAL / FROZEN
 
 ## Objective
 
 Build a truthful Personal Radar surface that explains the behavioral evidence currently shaping this browser's Frontier Radar profile without claiming semantic proximity, long-term history, or stable personality inference.
 
-The accepted direction for visual QA is **one profile / one canvas / three views**. Personal Radar must not become a stack of separate chart pages.
+The owner-accepted direction is **one profile / one canvas / three views**. Personal Radar must not become a stack of separate chart pages.
+
+## Final acceptance
+
+Owner browser review: **PASS** on 2026-08-15.
+
+Accepted Preview head: `d44e82822861ac961dabb351e9fd2405c4e98815`.
+
+The following Personal Radar composition is now FINAL / FROZEN unless the owner explicitly reopens it:
+
+- single-view desktop research-instrument composition;
+- redesigned hero / confidence console;
+- dense calibration scale under Profile Confidence;
+- Strength / Evidence / Freshness identity-preserving morph;
+- F11-style freshness rung treatment;
+- left mode rail and fixed control geometry;
+- chart ↔ evidence-ledger hover linkage;
+- Project-derived pale cyan / cobalt / pink film accents and restrained foil motion;
+- single desktop viewport with no page-level horizontal or vertical overflow;
+- current typography, structural-line hierarchy, and interaction rhythm.
+
+Do not continue opportunistic visual polish after this acceptance.
 
 ## Frozen boundaries
 
-This Gate must not redesign or reopen accepted Explore, Project, Today, Saved, or Idea Lab compositions. It must not merge, deploy to Production, or add the Personal Radar route to the global navigation before explicit owner approval.
+This Gate must not redesign or reopen accepted Explore, Project, Today, Saved, or Idea Lab compositions. It must not merge, deploy to Production, or add the Personal Radar route to the global navigation without explicit owner approval.
 
 ## Data contract
 
@@ -36,21 +57,22 @@ No learned-evidence claim. Show the product starting prior and clearly identify 
 
 Use one integrated Personal Radar instrument. The same learned interest identities remain present while the user changes how they are measured.
 
-No separate full-page F5 section, F8 section, or repeated evidence page is allowed in this Gate.
+No separate full-page F5 section, F8 section, or repeated evidence page is allowed.
 
-## Lieflat G9 contract — one profile, three views
+## Lieflat contract — one profile, three views
 
-Upstream reference: Lieflat Glance G9 Scatter Morph, used because continuous identity-preserving transition is the interaction requirement that Basics does not provide.
+Primary upstream interaction reference: Lieflat Glance G9 Scatter Morph, used because continuous identity-preserving transition is the interaction requirement that Basics does not provide.
 
-Core upstream behavior retained:
+Freshness view additionally uses the Lieflat F11 Tick Gauge / small-multiple reading grammar so the third view is visibly distinct without changing freshness semantics.
+
+Core behavior retained:
 
 - one stable series identity;
 - stable `groupId` for each interest dimension;
-- `universalTransition: true`;
-- `animationDurationUpdate: 1100`;
-- `animationEasingUpdate: cubicInOut`;
-- `replaceMerge: [xAxis, yAxis, series]`;
-- automatic view rotation every 3 seconds when reduced motion is not requested.
+- `universalTransition: true` for the interest entities;
+- cubic identity-preserving morph motion;
+- automatic view rotation every 3 seconds when reduced motion is not requested;
+- axes / guide framework settle independently rather than participating in distracting geometric morphs.
 
 ### 01 STRENGTH
 
@@ -68,9 +90,9 @@ Core upstream behavior retained:
 
 ### 03 FRESHNESS
 
-- Same interest dimensions.
-- X = recency freshness.
-- Y = evidence confidence.
+- Same interest dimensions and stable identity colors.
+- Freshness is read as horizontal gauge / rung position from 0–100%.
+- The endpoint remains the interest entity; confidence can remain visible through endpoint sizing where applicable.
 - Freshness does not imply preference strength.
 
 ### Identity continuity
@@ -81,11 +103,32 @@ An interest must keep its semantic identity through all three views. `groupId` a
 
 Axes may use truthful data-dependent ranges when a fixed global range would create large empty regions and harm reading. The range must never alter the underlying value or imply unavailable evidence.
 
-The supporting evidence ledger is compact and subordinate to the main canvas. It may show signed signal, evidence count, and freshness without creating another full-height section.
+The supporting evidence ledger is compact and subordinate to the main canvas. It shows signed signal, evidence count, and freshness without creating another full-height section.
+
+## Interaction contract
+
+- Selecting Strength / Evidence / Freshness changes the same instrument rather than navigating or replacing the page.
+- Manual selection temporarily pauses auto rotation.
+- Left-side controls must not move vertically as changing copy reflows.
+- Hovering a chart entity highlights the corresponding evidence-ledger row.
+- Hovering / focusing a ledger row highlights the matching chart entity and exposes the mini interest dossier.
+- Interaction focus may pause the automatic morph while the user inspects an entity.
+- The interface must preserve keyboard focus and reduced-motion accessibility.
+
+## Hero / confidence console contract
+
+The accepted hero is part of the same Research Instrument grammar as the main workspace, not a separate marketing card.
+
+- Large title and confidence console are horizontally pulled toward opposite edges to align with the instrument below.
+- Profile Confidence remains the dominant right-side readout.
+- The calibration meter is long, dense, and uses short minor ticks plus longer major ticks.
+- The current confidence position is marked in cobalt.
+- The hero may use restrained cyan / cobalt / pink Project-derived film accents, calibration rails, corner guides, and low-frequency foil sweeps.
+- Paper remains stable; decorative motion must not animate the page background itself.
 
 ## Motion accessibility
 
-- `prefers-reduced-motion` disables automatic cycling and uses zero-duration chart updates.
+- `prefers-reduced-motion` disables automatic cycling and decorative sweeps where appropriate.
 - Manual Strength / Evidence / Freshness selection remains available.
 - A manual selection temporarily pauses automatic rotation so the user can inspect the chosen view.
 
@@ -99,7 +142,7 @@ Requirements:
 - It must never be presented as the user's real profile.
 - Production must ignore the demo parameter.
 - Ordinary `/radar` always reads the real current browser profile.
-- Synthetic freshness values may be deliberately distributed to test all three G9 geometries; this is visual-QA data only and must remain explicitly synthetic.
+- Synthetic freshness values may be deliberately distributed to test all three geometries; this is visual-QA data only and must remain explicitly synthetic.
 
 This mode exists because Preview integrity policy intentionally prevents Preview interactions from training Production personalization data.
 
@@ -110,6 +153,8 @@ This mode exists because Preview integrity policy intentionally prevents Preview
 - Paper: `#F0EFEB`.
 - Mono information hierarchy.
 - Restrained cobalt research accent.
+- Pale Project-derived cyan / cobalt / pink film accents are allowed only as low-opacity instrumentation layers.
+- Structural lines have explicit hierarchy: primary boundaries must read clearly; secondary grid lines remain subordinate.
 - No literal radar chart.
 - No generic SaaS card dashboard.
 - No fabricated historical trend.
@@ -117,7 +162,9 @@ This mode exists because Preview integrity policy intentionally prevents Preview
 
 ## Machine acceptance
 
-Latest code-bearing full browser QA: GitHub Actions run `31789153738` on commit `ae55587933e49d584e5e54f385b5e5c23d0a2cef` — PASS.
+Final owner-accepted head: `d44e82822861ac961dabb351e9fd2405c4e98815`.
+
+GitHub Actions Integration QA run `31863415612`: **PASS**.
 
 Verified in that run:
 
@@ -128,13 +175,16 @@ Verified in that run:
 - App start PASS.
 - ECharts canvas load PASS.
 - Strength → Evidence → Freshness manual view switching PASS on the same page.
-- No horizontal overflow.
+- Chart ↔ Evidence Ledger interaction regression remains covered by the Personal Radar browser gate.
+- Left mode controls retain stable vertical positions through view changes.
+- Desktop page-level horizontal overflow ≤ 1px.
+- Desktop page-level vertical overflow ≤ 1px.
 - Browser screenshot artifact generated successfully.
 
-The commits after that code-bearing PASS only tighten truthful plot range / documentation state and do not reopen frozen routes.
+Vercel Preview for the accepted head reached READY before owner acceptance.
 
-## Final acceptance condition
+## Product status after acceptance
 
-A Vercel Preview corresponding to the current branch head must be available for owner browser review. Final visual acceptance requires explicit owner approval of that Preview.
+Gate 16B is **FINAL / FROZEN at the product level**.
 
-Until owner visual acceptance, Gate 16B remains DRAFT at the product level, the PR remains open/draft, the route stays out of global navigation, and no merge or Production deployment is allowed.
+PR #39 remains open/draft. No merge or Production deployment is implied by visual acceptance. Personal Radar stays out of global navigation until separately approved.
