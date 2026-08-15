@@ -9,6 +9,7 @@ on:
       - agent/gate-15b-project-research-mode
       - agent/gate-15c-product-grammar-consolidation
       - agent/gate-16b-personal-radar-v1
+      - agent/gate-17b-r4-today-tear-aperture-prototype
       - main
   workflow_dispatch:
 
@@ -18,7 +19,7 @@ concurrency:
 
 jobs:
   browser-integration:
-    name: Explore / Saved / Idea Lab / Personal Radar browser QA
+    name: Explore / Saved / Idea Lab / Personal Radar / Today R4 browser QA
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -75,7 +76,7 @@ jobs:
           exit 1
 
       - name: Run browser integration gate
-        run: npx playwright test e2e/integration-qa.spec.ts e2e/personal-radar-qa.spec.ts --reporter=line
+        run: npx playwright test e2e/integration-qa.spec.ts e2e/personal-radar-qa.spec.ts e2e/today-r4-qa.spec.ts --reporter=line
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 
