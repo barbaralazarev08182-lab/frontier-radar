@@ -203,7 +203,7 @@ function PerimeterRecord({
 
 export function SignalCutawayPrototype() {
   const [selectedRank, setSelectedRank] = useState<(typeof PROTOTYPE_IDS)[number]>("01");
-  const selected = SIGNALS.find((signal) => signal.rank === selectedRank) ?? SIGNALS[0];
+  const selected = SIGNALS.find((signal) => signal.rank === selectedRank) ?? SIGNALS[0]!;
   const context = SIGNALS.filter((signal) => signal.rank !== selected.rank);
   const topContext = context.slice(0, 3);
   const bottomContext = context.slice(3, 6);
