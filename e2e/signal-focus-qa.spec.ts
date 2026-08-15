@@ -43,7 +43,7 @@ test("Signal Focus R3.1 keeps one readable focus sheet and a truthful evidence r
   await buttons.nth(3).click();
   await expect(shell).toHaveAttribute("data-selected-rank", "04");
   await expect(page.getByText("WHY YOU", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("Mocktail — Free, open-source mock API server with a built-in dashboard", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Mocktail — Free, open-source mock API server with a built-in dashboard", exact: true })).toBeVisible();
   await expectViewportLocked(page);
   await page.screenshot({ path: `${artifactDir}/21-signal-focus-gap.png`, fullPage: false });
 
