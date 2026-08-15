@@ -112,34 +112,24 @@ export async function getDiscoveryExplanations(
   if (items.length === 0) return result;
 
   const itemIds = items.map((item) => item.id);
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("score_components")
+    .select("item_id,dimension,normalized_score,rationale,created_at")
+    .in("item_id", itemIds)
+    .in("dimension", ["momentum", "freshness", "idea_spark", "tryability"])
+    .order("created_at", { ascending: false });
+
   const latestByItem = new Map<string, Map<string, ScoreRow>>();
-
-  // Score-component explanations are a read-only enrichment sidecar. Missing or
-  // temporarily unavailable Supabase configuration must not make the core feed
-  // disappear (fixture/preview QA deliberately runs without those credentials).
-  // Local interest overlap can still produce WHY YOU below; WHY NOW remains null
-  // until real score evidence is available.
-  try {
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from("score_components")
-      .select("item_id,dimension,normalized_score,rationale,created_at")
-      .in("item_id", itemIds)
-      .in("dimension", ["momentum", "freshness", "idea_spark", "tryability"])
-      .order("created_at", { ascending: false });
-
-    if (!error) {
-      for (const raw of (data ?? []) as ScoreRow[]) {
-        let dimensions = latestByItem.get(raw.item_id);
-        if (!dimensions) {
-          dimensions = new Map<string, ScoreRow>();
-          latestByItem.set(raw.item_id, dimensions);
-        }
-        if (!dimensions.has(raw.dimension)) dimensions.set(raw.dimension, raw);
+  if (!error) {
+    for (const raw of (data ?? []) as ScoreRow[]) {
+      let dimensions = latestByItem.get(raw.item_id);
+      if (!dimensions) {
+        dimensions = new Map<string, ScoreRow>();
+        latestByItem.set(raw.item_id, dimensions);
       }
+      if (!dimensions.has(raw.dimension)) dimensions.set(raw.dimension, raw);
     }
-  } catch {
-    // Non-blocking enrichment: the Today/Explore feed remains truthful without it.
   }
 
   for (const item of items) {
