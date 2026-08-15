@@ -20,3 +20,16 @@ body:has([data-cutaway-prototype="true"]) > div > main {
 body:has([data-cutaway-prototype="true"]) .fr-site-nav {
   flex: 0 0 var(--fr-header-h, 3rem);
 }
+
+/* R2.1 includes one deliberately long-title / missing-WHY-YOU specimen.
+   Keep the title dominant, but let the absence close compositionally instead
+   of allowing display type to collide with the evidence reading field. */
+[data-cutaway-prototype="true"][data-selected-rank="04"] article h1 {
+  max-width: 16ch !important;
+  font-size: clamp(2.75rem, 3.55vw, 4.8rem) !important;
+  line-height: .86 !important;
+}
+
+[data-cutaway-prototype="true"][data-selected-rank="04"] [data-has-why-you="false"] {
+  top: 61% !important;
+}
