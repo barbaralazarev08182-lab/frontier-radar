@@ -1,3 +1,9 @@
+:global(body:has([data-today-r4="true"]) main) {
+  width: 100%;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
 .shell {
   --paper: #f0efeb;
   --ink: #171715;
@@ -16,7 +22,7 @@
   --hero-r-3: 0deg;
   --aperture-skew: 4.5deg;
   position: relative;
-  height: calc(100dvh - var(--fr-header-h, 3rem));
+  height: calc(100dvh - var(--fr-system-header-h, 3rem));
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
@@ -41,7 +47,7 @@
 .stage {
   position: sticky;
   top: 0;
-  height: calc(100dvh - var(--fr-header-h, 3rem));
+  height: calc(100dvh - var(--fr-system-header-h, 3rem));
   overflow: hidden;
   isolation: isolate;
 }
