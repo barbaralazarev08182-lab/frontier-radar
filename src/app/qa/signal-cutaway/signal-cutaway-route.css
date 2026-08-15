@@ -1,0 +1,22 @@
+html:has([data-cutaway-prototype="true"]),
+body:has([data-cutaway-prototype="true"]),
+body:has([data-cutaway-prototype="true"]) > div {
+  height: 100dvh !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+body:has([data-cutaway-prototype="true"]) > div > main {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: calc(100dvh - var(--fr-header-h, 3rem)) !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+body:has([data-cutaway-prototype="true"]) .fr-site-nav {
+  flex: 0 0 var(--fr-header-h, 3rem);
+}
