@@ -1,6 +1,12 @@
 # Gate 17A — Today Intelligence Density Audit
 
-Status: AUDIT PASS / implementation not started
+> **SUPERSEDED IMPLEMENTATION NOTE — 2026-08-15**
+>
+> The data audit in this document remains valid, but the `shared Signal Dossier / inspection layer` implementation recommendation below was tried in Gate 17B v1 and **REJECTED by owner visual review**. Do not revive the floating/overlay dossier direction.
+>
+> Current design direction is defined in `docs/GATE_17A_R2_TODAY_INTELLIGENCE_RETHINK.md`: **the signal itself must become the deeper inspection state (Signal Cutaway), rather than receiving a separate inspector panel.**
+
+Status: AUDIT PASS / implementation recommendation superseded by R2
 
 ## Objective
 
@@ -142,15 +148,19 @@ This is a deliberate “no forced chart” result under the standing rule:
 
 > If no honest visualization fits the decision, do not force one.
 
-## Recommended implementation contract for Gate 17B
+## Historical implementation recommendation — REJECTED / DO NOT IMPLEMENT
+
+The following section is retained only as design history. Its proposed separate Dossier surface was implemented in Gate 17B v1, visually rejected, and rolled back. The current R2 direction is Signal Cutaway: transform the primary signal object itself.
 
 ### 1. Keep the seven signals as the primary physical objects
 
 Do not add a second list, bento grid, or dashboard card wall.
 
-### 2. Add one shared Signal Dossier / inspection layer
+### 2. Add one shared Signal Dossier / inspection layer — REJECTED
 
-When a signal is hovered, focused, or deliberately held, expose a single shared inspection surface containing only real fields:
+This recommendation is superseded. Do not implement a floating, fixed, overlay or sidebar Dossier.
+
+Historical intent was to expose:
 - `WHY NOW`;
 - `WHY YOU`;
 - one build/use idea when available;
@@ -159,7 +169,7 @@ When a signal is hovered, focused, or deliberately held, expose a single shared 
 - `CODE` / `DEMO` evidence;
 - source and content type.
 
-The dossier should update in place as signal identity changes rather than spawning seven separate panels.
+R2 keeps the data goals but moves them into the transformed signal object itself.
 
 ### 3. Progressive disclosure, not permanent density
 
@@ -170,36 +180,32 @@ Inspection state may increase density strongly, but only around the selected rec
 ### 4. Motion must carry state meaning
 
 Allowed motion:
-- selected signal visibly hands its identity into the dossier;
-- dossier copy transitions with fast-in / fast-stop continuity;
-- evidence marks may light or trace when they become relevant;
+- selected signal visibly carries its identity into the deeper state;
+- copy transitions with fast-in / fast-stop continuity;
+- evidence marks may reveal only when they represent real evidence;
 - scroll choreography remains unchanged.
 
 Avoid decorative motion unrelated to inspection.
 
 ### 5. Signal Weave remains the synthesis chapter
 
-Do not repeat `7 → directions` upstream in another chart. The dossier answers record-level intelligence; Signal Weave answers cross-record synthesis.
+Do not repeat `7 → directions` upstream in another chart. The inspection state answers record-level intelligence; Signal Weave answers cross-record synthesis.
 
-## Acceptance criteria for Gate 17B
+## Acceptance criteria — superseded by R2 prototype process
 
-Machine:
+The original machine criteria remain relevant for any later integration:
 - Today still selects exactly seven signals where available;
 - no ranking or personalization mutation;
-- keyboard inspection works;
-- no duplicate navigation or accidental click-through while interacting with dossier controls;
+- keyboard path works;
 - reduced-motion path remains valid;
 - current Today browser choreography and Signal Weave integration tests remain green.
 
-Visual:
-- user can identify a signal and discover `why now / why you / evidence` without leaving Today;
-- default page does not look more cluttered than the accepted version;
-- inspection state feels materially richer and more designed, not like a generic tooltip/card;
-- one signal’s intelligence is readable in a few seconds;
-- Signal Weave still feels like the natural final synthesis chapter.
+Visual acceptance is now governed by R2 and must happen on an isolated visual prototype before `/today` is modified.
 
 ## Gate result
 
-Gate 17A = PASS.
+Gate 17A data audit = PASS.
 
-Next Gate, if continued: **Gate 17B — Today Signal Dossier / Intelligence Density v1**.
+Gate 17A Dossier implementation recommendation = **SUPERSEDED / REJECTED**.
+
+Current next Gate if approved: **Gate 17B-R2.1 — Signal Cutaway Visual Prototype**.
