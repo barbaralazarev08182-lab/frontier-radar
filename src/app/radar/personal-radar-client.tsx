@@ -10,6 +10,7 @@ import type {
 import { PersonalRadarMorph } from "./personal-radar-morph";
 import styles from "./personal-radar.module.css";
 import polish from "./personal-radar-polish.module.css";
+import hero from "./personal-radar-hero.module.css";
 
 const STATUS_COPY: Record<
   PersonalRadarStatus,
@@ -173,16 +174,16 @@ export function PersonalRadarClient({
 
   return (
     <article className={`${styles.radar} ${polish.radar}`} data-radar-state={profile.status}>
-      <header className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <div className={styles.kicker}>
+      <header className={`${styles.hero} ${hero.hero}`}>
+        <div className={`${styles.heroCopy} ${hero.heroCopy}`}>
+          <div className={`${styles.kicker} ${hero.kicker}`}>
             <span>06 PERSONAL RADAR · INTEREST FRONTIER</span>
             <span>{previewDemo ? `${state.label} · PREVIEW QA / SYNTHETIC` : state.label}</span>
           </div>
           <h1>{state.title}</h1>
           <p>{state.note}</p>
         </div>
-        <div className={styles.confidenceReadout}>
+        <div className={`${styles.confidenceReadout} ${hero.confidenceReadout}`}>
           <span>PROFILE CONFIDENCE</span>
           <strong>{percentage(profile.globalConfidence)}</strong>
           <i aria-hidden style={{ "--radar-confidence": profile.globalConfidence } as React.CSSProperties} />
