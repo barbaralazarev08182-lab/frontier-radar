@@ -36,6 +36,7 @@ test("Today R4 preserves the torn hero and opens signals inside one cinematic ap
 
   const shell = page.locator('[data-today-r4="true"]');
   const scroller = shell.locator(":scope > div").first();
+  const stage = scroller.locator(":scope > div > div").first();
   const signalButtons = page.getByRole("navigation", { name: "Today R4 fixture signals" }).getByRole("button");
 
   await expect(shell).toBeVisible();
@@ -44,13 +45,48 @@ test("Today R4 preserves the torn hero and opens signals inside one cinematic ap
   await expect(page.getByText("BEFORE IT HAS", { exact: true })).toBeVisible();
   await expect(page.getByText("A NAME.", { exact: true })).toBeVisible();
   await expectViewportLocked(page);
+
+  const ambientAnimation = await stage.evaluate((element) => getComputedStyle(element, "::before").animationName);
+  expect(ambientAnimation, "Today R4 ambient field animation").toContain("ambientSweep");
+  const fragmentAnimation = await signalButtons.first().evaluate((element) => getComputedStyle(element).animationName);
+  expect(fragmentAnimation, "Today R4 peripheral signal idle animation").toContain("fragmentFloat");
+
   await page.screenshot({ path: `${artifactDir}/30-today-r4-hero.png`, fullPage: false });
+
+  await scrollToRatio(scroller, 0.17);
+  await page.waitForTimeout(320);
+  const heroHeading = page.locator("#today-r4-title");
+  const tearSafety = await heroHeading.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      maskImage: style.maskImage,
+      webkitMaskImage: style.getPropertyValue("-webkit-mask-image"),
+      childOverflow: Array.from(element.children).map((child) => getComputedStyle(child).overflow),
+    };
+  });
+  expect(
+    tearSafety.maskImage !== "none" || (tearSafety.webkitMaskImage !== "" && tearSafety.webkitMaskImage !== "none"),
+    "Today R4 hero should use a soft edge mask while tearing",
+  ).toBeTruthy();
+  expect(
+    tearSafety.childOverflow.every((value) => value === "visible"),
+    "Today R4 hero rows should not hard-clip moving type",
+  ).toBeTruthy();
+  await page.screenshot({ path: `${artifactDir}/30a-today-r4-tear.png`, fullPage: false });
 
   await scrollToRatio(scroller, 0.58);
   await page.waitForTimeout(420);
   await expect(shell).toHaveAttribute("data-lane", "core");
   await expect(page.getByText("WHY NOW", { exact: true })).toBeVisible();
   await expect(page.getByText("BUILD DIRECTION", { exact: true })).toBeVisible();
+
+  const fragmentBox = await signalButtons.first().boundingBox();
+  expect(fragmentBox, "Today R4 peripheral signal should have a measurable click target").not.toBeNull();
+  expect(fragmentBox!.width, "Today R4 peripheral signal click width").toBeGreaterThanOrEqual(150);
+  expect(fragmentBox!.height, "Today R4 peripheral signal click height").toBeGreaterThanOrEqual(36);
+  const fragmentCursor = await signalButtons.nth(3).evaluate((element) => getComputedStyle(element).cursor);
+  expect(fragmentCursor, "Today R4 peripheral signals should advertise click affordance").toBe("pointer");
+
   await page.screenshot({ path: `${artifactDir}/31-today-r4-aperture.png`, fullPage: false });
 
   await scrollToRatio(scroller, 0.88);
