@@ -1,0 +1,369 @@
+@keyframes prFoilPass {
+  0%, 12% { transform: skewX(-13deg) translateX(-300%); opacity: 0; }
+  20% { opacity: .48; }
+  46% { opacity: .24; }
+  62%, 100% { transform: skewX(-13deg) translateX(900%); opacity: 0; }
+}
+
+@keyframes prConfidenceSweep {
+  0%, 16% { transform: translateX(-180%); opacity: 0; }
+  26% { opacity: .9; }
+  48% { opacity: .46; }
+  62%, 100% { transform: translateX(760%); opacity: 0; }
+}
+
+@keyframes prCopyIn {
+  from { opacity: .22; transform: translateY(7px); filter: blur(1.2px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes prPlotPulseStrength {
+  0% { transform: scaleX(.08); opacity: .95; }
+  68% { transform: scaleX(1); opacity: .58; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+@keyframes prPlotPulseEvidence {
+  0% { transform: scaleX(.08); opacity: .95; }
+  68% { transform: scaleX(1); opacity: .58; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+@keyframes prPlotPulseFreshness {
+  0% { transform: scaleX(.08); opacity: .95; }
+  68% { transform: scaleX(1); opacity: .58; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+@keyframes prReadoutScan {
+  0%, 18% { transform: translateX(-260%); opacity: 0; }
+  28% { opacity: .34; }
+  52% { opacity: .18; }
+  70%, 100% { transform: translateX(980%); opacity: 0; }
+}
+
+@keyframes prActiveProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes prFocusTrace {
+  0% { opacity: .25; transform: scaleX(.22); }
+  100% { opacity: 1; transform: scaleX(1); }
+}
+
+:global(article[data-radar-state] > header > div:last-child) {
+  position: relative;
+  isolation: isolate;
+}
+
+:global(article[data-radar-state] > header > div:last-child::before) {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -1.35rem -2rem -1rem -2.2rem;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 52% 48%, rgba(109, 210, 255, .075), transparent 43%),
+    radial-gradient(circle at 74% 60%, rgba(49, 94, 251, .045), transparent 38%),
+    radial-gradient(circle at 38% 32%, rgba(255, 170, 218, .035), transparent 34%);
+}
+
+:global(article[data-radar-state] > header > div:last-child > i) {
+  position: relative;
+  overflow: hidden;
+}
+
+:global(article[data-radar-state] > header > div:last-child > i::before) {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: -3px;
+  bottom: -3px;
+  left: -12%;
+  width: 11%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(109, 210, 255, .18) 18%,
+    rgba(255, 255, 255, .9) 48%,
+    rgba(255, 170, 218, .16) 70%,
+    transparent
+  );
+  box-shadow: 0 0 12px rgba(109, 210, 255, .18);
+  animation: prConfidenceSweep 6.4s 1.1s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+:global(article[data-radar-state] > section[aria-label="Personal Radar model status"]) {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(49, 94, 251, .025),
+      transparent 30%,
+      rgba(109, 210, 255, .032) 69%,
+      rgba(255, 170, 218, .018) 100%
+    );
+}
+
+.workspace {
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .52),
+    0 12px 36px rgba(28, 28, 26, .025);
+}
+
+.rail,
+.readout,
+.plotWrap {
+  position: relative;
+}
+
+.rail {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 3%, rgba(49, 94, 251, .07), transparent 34%),
+    linear-gradient(162deg, rgba(109, 210, 255, .035), transparent 39%, rgba(255, 170, 218, .022) 100%),
+    color-mix(in srgb, var(--fr-system-ink) 2.4%, var(--fr-system-paper)) !important;
+}
+
+.rail::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 1rem;
+  bottom: .9rem;
+  width: 4.6rem;
+  height: 3rem;
+  pointer-events: none;
+  opacity: .23;
+  background-image: radial-gradient(circle, rgba(49, 94, 251, .62) 0 1px, transparent 1.15px);
+  background-size: 14px 14px;
+}
+
+.rail > * {
+  position: relative;
+  z-index: 1;
+}
+
+.railHead {
+  animation: prCopyIn 390ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.buttons button {
+  position: relative;
+  overflow: hidden;
+}
+
+.buttons button:hover {
+  background:
+    linear-gradient(90deg, rgba(49, 94, 251, .055), rgba(109, 210, 255, .025) 62%, transparent) !important;
+}
+
+.buttons button[aria-pressed="true"] {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(49, 94, 251, .115),
+      rgba(109, 210, 255, .045) 47%,
+      rgba(255, 255, 255, .05) 73%,
+      transparent
+    ) !important;
+}
+
+.buttons button[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  left: .65rem;
+  right: .7rem;
+  bottom: 0;
+  height: 2px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--fr-system-cobalt), rgba(109, 210, 255, .82), transparent 92%);
+}
+
+.workspace[data-manual="false"] .buttons button[aria-pressed="true"]::after {
+  animation: prActiveProgress 3s linear infinite;
+}
+
+.workspace[data-manual="true"] .buttons button[aria-pressed="true"]::after {
+  transform: scaleX(.34);
+  opacity: .72;
+}
+
+.legend span:last-child {
+  min-height: 1.2em;
+  color: color-mix(in srgb, var(--fr-system-ink) 55%, transparent) !important;
+  transition: color 160ms ease, letter-spacing 160ms ease;
+}
+
+.workspace[data-focused="true"] .legend span:last-child {
+  color: var(--fr-system-cobalt) !important;
+  letter-spacing: .135em;
+}
+
+.plotWrap {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 88% 5%, rgba(109, 210, 255, .055), transparent 35%),
+    radial-gradient(circle at 18% 92%, rgba(49, 94, 251, .028), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, .05), transparent 42%, rgba(255, 170, 218, .018) 100%),
+    var(--fr-system-paper) !important;
+}
+
+.plotWrap::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  pointer-events: none;
+  transform-origin: left center;
+  opacity: 0;
+  background: linear-gradient(90deg, var(--fr-system-cobalt), rgba(109, 210, 255, .82) 52%, rgba(255, 170, 218, .34), transparent 94%);
+}
+
+.plotWrap[data-view="strength"]::before {
+  animation: prPlotPulseStrength 920ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.plotWrap[data-view="evidence"]::before {
+  animation: prPlotPulseEvidence 920ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.plotWrap[data-view="freshness"]::before {
+  animation: prPlotPulseFreshness 920ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.plotWrap::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -22%;
+  bottom: -22%;
+  left: -18%;
+  width: 12%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(109, 210, 255, .055) 14%,
+    rgba(255, 255, 255, .52) 45%,
+    rgba(255, 170, 218, .07) 61%,
+    rgba(255, 215, 115, .035) 72%,
+    transparent
+  );
+  box-shadow: 0 0 26px rgba(109, 210, 255, .08);
+  animation: prFoilPass 10.8s 1.6s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.plot {
+  position: relative;
+  z-index: 1;
+}
+
+.source {
+  position: relative;
+  z-index: 5;
+  background: color-mix(in srgb, var(--fr-system-paper) 91%, transparent);
+}
+
+.readout {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 94% 7%, rgba(109, 210, 255, .055), transparent 28%),
+    linear-gradient(162deg, rgba(49, 94, 251, .026), transparent 43%, rgba(255, 170, 218, .025) 100%),
+    color-mix(in srgb, var(--fr-system-ink) 2.4%, var(--fr-system-paper)) !important;
+}
+
+.readout::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -8%;
+  bottom: -8%;
+  left: -18%;
+  width: 10%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(109, 210, 255, .12), rgba(255, 255, 255, .24), transparent);
+  animation: prReadoutScan 9.2s 2.4s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.readout > * {
+  position: relative;
+  z-index: 1;
+}
+
+.readoutRow {
+  cursor: crosshair;
+  outline: none;
+  transition:
+    transform 180ms cubic-bezier(.16, 1, .3, 1),
+    background 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
+}
+
+.readoutRow:hover,
+.readoutRow:focus-visible,
+.readoutRow[data-active="true"] {
+  transform: translateX(2px);
+  background:
+    linear-gradient(90deg, rgba(49, 94, 251, .11), rgba(109, 210, 255, .04) 55%, transparent 88%) !important;
+  box-shadow: inset 3px 0 0 var(--fr-system-cobalt) !important;
+}
+
+.readoutRow:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--fr-system-cobalt) 58%, transparent);
+  outline-offset: -1px;
+}
+
+.readoutRow[data-active="true"] strong,
+.readoutRow:hover strong,
+.readoutRow:focus-visible strong {
+  color: var(--fr-system-ink) !important;
+}
+
+.readoutRow[data-active="true"] span,
+.readoutRow:hover span,
+.readoutRow:focus-visible span {
+  color: color-mix(in srgb, var(--fr-system-ink) 78%, transparent) !important;
+}
+
+.workspace[data-focused="true"] .readout > div:nth-child(3):not([data-active="true"]) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.workspace[data-focused="true"] .readoutRow[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  left: .45rem;
+  right: .3rem;
+  bottom: 0;
+  height: 1px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--fr-system-cobalt), rgba(109, 210, 255, .72), transparent);
+  animation: prFocusTrace 280ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(article[data-radar-state] > header > div:last-child > i::before),
+  .plotWrap::before,
+  .plotWrap::after,
+  .readout::before,
+  .railHead,
+  .workspace[data-manual="false"] .buttons button[aria-pressed="true"]::after,
+  .workspace[data-focused="true"] .readoutRow[data-active="true"]::after {
+    animation: none !important;
+  }
+
+  .readoutRow,
+  .buttons button,
+  .legend span:last-child {
+    transition: none !important;
+  }
+}
