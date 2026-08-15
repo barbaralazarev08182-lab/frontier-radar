@@ -18,6 +18,7 @@ test("Personal Radar preview renders one integrated three-view morph workspace",
   await expect(page.getByText("LIEFLAT G9 MORPH", { exact: false })).toBeVisible();
   await expect(page.getByText("F11 TICK GAUGE SMALL MULTIPLES", { exact: false })).toBeVisible();
 
+  const workspace = page.locator("[data-radar-workspace]");
   const strength = page.getByRole("button", { name: /01 · STRENGTH/i });
   const evidence = page.getByRole("button", { name: /02 · EVIDENCE/i });
   const freshness = page.getByRole("button", { name: /03 · FRESHNESS/i });
@@ -29,6 +30,7 @@ test("Personal Radar preview renders one integrated three-view morph workspace",
   await expect(strength).toHaveAttribute("aria-pressed", "true");
   await evidence.click();
   await expect(evidence).toHaveAttribute("aria-pressed", "true");
+  await expect(workspace).toHaveAttribute("data-manual", "true");
   await freshness.click();
   await expect(freshness).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByText("FRESHNESS RUNG", { exact: true })).toBeVisible();
@@ -43,6 +45,16 @@ test("Personal Radar preview renders one integrated three-view morph workspace",
   const morphCanvas = page.locator('[role="img"] canvas').first();
   await expect(morphCanvas).toBeVisible({ timeout: 15_000 });
   await page.waitForTimeout(1100);
+
+  const firstLedgerRow = page.locator("[data-interest-key]").first();
+  await firstLedgerRow.hover();
+  await expect(firstLedgerRow).toHaveAttribute("data-active", "true");
+  await expect(workspace).toHaveAttribute("data-focused", "true");
+  await expect(page.locator("[data-radar-focus-status]")).toContainText("FOCUS ·");
+
+  await page.getByRole("heading", { name: "YOUR CURRENT INTEREST FRONTIER." }).hover();
+  await expect(firstLedgerRow).toHaveAttribute("data-active", "false");
+  await expect(workspace).toHaveAttribute("data-focused", "false");
 
   const overflow = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
