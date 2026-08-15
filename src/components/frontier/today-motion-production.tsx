@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MotionLab } from "@/components/frontier/motion-lab/motion-lab";
 import { MotionLabDirectHandoff } from "@/components/frontier/motion-lab/motion-lab-direct-handoff";
+import { TodaySignalDossier } from "@/components/frontier/today-signal-dossier";
 import { TodaySignalWeave } from "@/components/frontier/today-signal-weave";
 import { TodayStageScrollController } from "@/components/frontier/today-stage-scroll-controller";
 import type { EditorialSignal } from "@/components/frontier/today-editorial";
@@ -62,7 +63,11 @@ export function TodayMotionProduction({
   const [stage, setStage] = useState<HTMLElement | null>(null);
   const [snapshot, setSnapshot] = useState<DailySynthesisSnapshot | null>(initialSnapshot);
   const [synthesisUnavailable, setSynthesisUnavailable] = useState(false);
+  const [activeSignalIndex, setActiveSignalIndex] = useState(0);
   const requestedRef = useRef(false);
+  const visibleSignals = signals.slice(0, 7);
+  const resolvedSignalIndex = Math.min(activeSignalIndex, Math.max(0, visibleSignals.length - 1));
+  const activeSignal = visibleSignals[resolvedSignalIndex] ?? null;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -123,6 +128,7 @@ export function TodayMotionProduction({
       if (deckBottom[0]) deckBottom[0].textContent = topic;
       if (deckBottom[1]) deckBottom[1].textContent = `${source} / SIGNAL`;
 
+      const inspect = () => setActiveSignalIndex(index);
       const open = () => {
         trackFeedback(signal.id, "open_detail", undefined, signal.metadata);
         window.location.assign(`/project/${encodeURIComponent(signal.id)}`);
@@ -136,10 +142,14 @@ export function TodayMotionProduction({
         event.preventDefault();
         open();
       };
+      card.addEventListener("pointerenter", inspect);
+      card.addEventListener("focus", inspect);
       card.addEventListener("click", onClick);
       card.addEventListener("keydown", onKeyDown);
       const stopDwell = observeQualifiedDwell(card, signal.id, signal.metadata);
       cleanups.push(() => {
+        card.removeEventListener("pointerenter", inspect);
+        card.removeEventListener("focus", inspect);
         card.removeEventListener("click", onClick);
         card.removeEventListener("keydown", onKeyDown);
         stopDwell();
@@ -172,6 +182,22 @@ export function TodayMotionProduction({
       root.removeAttribute("data-production");
     };
   }, [dataLabel, dateLabel, signals, totalDiscoveries]);
+
+  useEffect(() => {
+    const root = document.querySelector<HTMLElement>(".motion-lab-shell");
+    if (!root) return;
+    const cards = Array.from(root.querySelectorAll<HTMLElement>(".motion-lab-signal"));
+    root.dataset.inspection = "ready";
+    cards.forEach((card, index) => {
+      if (index === resolvedSignalIndex) card.dataset.inspected = "true";
+      else delete card.dataset.inspected;
+    });
+
+    return () => {
+      root.removeAttribute("data-inspection");
+      cards.forEach((card) => delete card.dataset.inspected);
+    };
+  }, [resolvedSignalIndex]);
 
   useEffect(() => {
     if (snapshot || (!resolveSynthesisAction && !loadSynthesisAction)) return;
@@ -310,42 +336,47 @@ export function TodayMotionProduction({
       <MotionLabDirectHandoff />
       {stage
         ? createPortal(
-            <div className="motion-lab-analysis today-production-analysis">
-              {snapshot ? (
-                <TodaySignalWeave
-                  signals={synthesisSignals}
-                  initialSnapshot={snapshot}
-                  resolveSynthesisAction={null}
-                />
-              ) : synthesisUnavailable ? (
-                <section
-                  className="today-synthesis-pending"
-                  data-synthesis-state="unavailable"
-                  aria-live="polite"
-                >
-                  <div className="today-synthesis-pending-grid" aria-hidden="true" />
-                  <div className="today-synthesis-pending-copy">
-                    <span>FR / TODAY&apos;S SYNTHESIS</span>
-                    <strong>SYNTHESIS UNAVAILABLE</strong>
-                    <p>Today&apos;s 7 remain the record. Open any signal to investigate it; synthesis can retry on a later visit.</p>
-                  </div>
-                </section>
-              ) : (
-                <section
-                  className="today-synthesis-pending"
-                  data-synthesis-state="pending"
-                  aria-live="polite"
-                  aria-busy="true"
-                >
-                  <div className="today-synthesis-pending-grid" aria-hidden="true" />
-                  <div className="today-synthesis-pending-copy">
-                    <span>FR / TODAY&apos;S SYNTHESIS</span>
-                    <strong>{String(synthesisSignals.length).padStart(2, "0")} SIGNALS → SYNTHESIS</strong>
-                    <p>Preparing today&apos;s signal relationships…</p>
-                  </div>
-                </section>
-              )}
-            </div>,
+            <>
+              {activeSignal ? (
+                <TodaySignalDossier signal={activeSignal} index={resolvedSignalIndex} />
+              ) : null}
+              <div className="motion-lab-analysis today-production-analysis">
+                {snapshot ? (
+                  <TodaySignalWeave
+                    signals={synthesisSignals}
+                    initialSnapshot={snapshot}
+                    resolveSynthesisAction={null}
+                  />
+                ) : synthesisUnavailable ? (
+                  <section
+                    className="today-synthesis-pending"
+                    data-synthesis-state="unavailable"
+                    aria-live="polite"
+                  >
+                    <div className="today-synthesis-pending-grid" aria-hidden="true" />
+                    <div className="today-synthesis-pending-copy">
+                      <span>FR / TODAY&apos;S SYNTHESIS</span>
+                      <strong>SYNTHESIS UNAVAILABLE</strong>
+                      <p>Today&apos;s 7 remain the record. Open any signal to investigate it; synthesis can retry on a later visit.</p>
+                    </div>
+                  </section>
+                ) : (
+                  <section
+                    className="today-synthesis-pending"
+                    data-synthesis-state="pending"
+                    aria-live="polite"
+                    aria-busy="true"
+                  >
+                    <div className="today-synthesis-pending-grid" aria-hidden="true" />
+                    <div className="today-synthesis-pending-copy">
+                      <span>FR / TODAY&apos;S SYNTHESIS</span>
+                      <strong>{String(synthesisSignals.length).padStart(2, "0")} SIGNALS → SYNTHESIS</strong>
+                      <p>Preparing today&apos;s signal relationships…</p>
+                    </div>
+                  </section>
+                )}
+              </div>
+            </>,
             stage
           )
         : null}
