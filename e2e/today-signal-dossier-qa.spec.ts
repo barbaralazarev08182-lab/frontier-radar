@@ -35,12 +35,17 @@ test("Today exposes one shared signal dossier and updates it from the existing s
   const cards = root.locator(".motion-lab-signal[role='link']");
   await expect(cards).toHaveCount(7);
 
-  // The visual surface is stage-gated. Force the already-accepted Today stage
-  // for this narrow dossier regression test rather than retesting scroll physics.
+  // Move through the accepted Motion Lab scroll controller rather than faking a
+  // data attribute. 74% sits inside the Today inspection chapter (62%–86%).
   await page.evaluate(() => {
-    const shell = document.querySelector<HTMLElement>(".motion-lab-shell");
-    if (shell) shell.dataset.scrollStage = "today";
+    const scroller = document.querySelector<HTMLElement>(".motion-lab-scroller");
+    if (!scroller) return;
+    const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+    scroller.scrollTop = travel * 0.74;
+    scroller.dispatchEvent(new Event("scroll", { bubbles: true }));
   });
+  await expect(root).toHaveAttribute("data-scroll-stage", "today", { timeout: 7_000 });
+  await page.waitForTimeout(1_100);
 
   const dossier = page.locator('[data-today-signal-dossier="true"]');
   await expect(dossier).toBeVisible();
