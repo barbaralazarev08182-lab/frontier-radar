@@ -149,8 +149,9 @@ function clamp(value: number, min = 0, max = 1) {
 export function TodayTearAperturePrototype() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const shellRef = useRef<HTMLElement | null>(null);
+  const manualPauseRef = useRef(false);
+  const manualTimerRef = useRef<number | null>(null);
   const [selectedRank, setSelectedRank] = useState("01");
-  const [manualUntil, setManualUntil] = useState(0);
 
   const selected = useMemo(
     () => SIGNALS.find((signal) => signal.rank === selectedRank) ?? SIGNALS[0]!,
@@ -185,7 +186,7 @@ export function TodayTearAperturePrototype() {
       shell.style.setProperty("--hero-r-3", `${(-tear * 3.4).toFixed(2)}deg`);
       shell.style.setProperty("--aperture-skew", `${(4.5 - settle * 3.2).toFixed(2)}deg`);
 
-      if (Date.now() >= manualUntil && raw > 0.36 && raw < 0.91) {
+      if (!manualPauseRef.current && raw > 0.36 && raw < 0.91) {
         const local = clamp((raw - 0.36) / 0.52);
         const index = Math.min(SIGNALS.length - 1, Math.floor(local * SIGNALS.length));
         const rank = SIGNALS[index]?.rank;
@@ -204,12 +205,21 @@ export function TodayTearAperturePrototype() {
       scroller.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
       if (frame) window.cancelAnimationFrame(frame);
+      if (manualTimerRef.current !== null) {
+        window.clearTimeout(manualTimerRef.current);
+        manualTimerRef.current = null;
+      }
     };
-  }, [manualUntil]);
+  }, []);
 
   function select(rank: string) {
     setSelectedRank(rank);
-    setManualUntil(Date.now() + 5000);
+    manualPauseRef.current = true;
+    if (manualTimerRef.current !== null) window.clearTimeout(manualTimerRef.current);
+    manualTimerRef.current = window.setTimeout(() => {
+      manualPauseRef.current = false;
+      manualTimerRef.current = null;
+    }, 5000);
   }
 
   return (

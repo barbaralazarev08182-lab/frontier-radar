@@ -41,7 +41,7 @@
 .stage {
   position: sticky;
   top: 0;
-  height: 100%;
+  height: calc(100dvh - var(--fr-header-h, 3rem));
   overflow: hidden;
   isolation: isolate;
 }
@@ -326,9 +326,7 @@
   padding: .3rem .4rem .4rem;
 }
 
-.primaryCopy {
-  min-height: 0;
-}
+.primaryCopy { min-height: 0; }
 
 .primaryCopy h2 {
   max-width: 14ch;
