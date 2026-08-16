@@ -1,0 +1,217 @@
+/* Gate 17B-R4 Structure & Depth Pass: turn the live field into a readable panel system without losing scene motion. */
+
+[data-today-r4="true"] article[aria-live="polite"] {
+  filter: none;
+}
+
+/* Keep scene motion behind content, never through it. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) {
+  z-index: 1 !important;
+  opacity: .58;
+}
+
+.fr-r4-focus-lens {
+  z-index: 1 !important;
+  opacity: .3 !important;
+}
+
+.fr-r4-capture-links path {
+  opacity: .2;
+}
+
+.fr-r4-capture-links path[data-active="true"] {
+  opacity: .52;
+}
+
+.fr-r4-current-map {
+  opacity: .72;
+}
+
+/* Shared physical-paper panel language. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3),
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child,
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section,
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"],
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+  position: relative;
+  z-index: 8;
+  border: 1px solid rgba(23, 23, 21, .28) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.52), rgba(255,255,255,.14) 42%, transparent 72%),
+    rgba(244, 243, 239, .965) !important;
+  box-shadow:
+    0 14px 34px rgba(23, 23, 21, .075),
+    0 3px 9px rgba(23, 23, 21, .045),
+    inset 0 1px 0 rgba(255,255,255,.72);
+}
+
+/* Compact identity strip. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) {
+  margin: 0 .35rem .7rem !important;
+  padding: .72rem .9rem .68rem !important;
+  border-top: 2px solid color-mix(in srgb, var(--r4-interaction) 76%, #171715) !important;
+}
+
+/* Rebuild the central reading grid. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+  grid-template-columns: minmax(0, 1fr) 11.3rem !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: .72rem .78rem !important;
+  padding: 0 .35rem .2rem !important;
+}
+
+/* Main title/summary panel. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 0;
+  padding: 1rem 1.05rem .95rem !important;
+  border-left: 2px solid color-mix(in srgb, var(--r4-interaction) 68%, #171715) !important;
+  overflow: hidden;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child::after {
+  content: "";
+  position: absolute;
+  right: .75rem;
+  top: .75rem;
+  width: 3.3rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--r4-interaction) 62%, rgba(23,23,21,.15));
+  box-shadow: 0 .36rem 0 rgba(23,23,21,.12), 0 .72rem 0 rgba(23,23,21,.08);
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+  max-width: 13ch !important;
+  font-size: clamp(2.65rem, 3.55vw, 4.35rem) !important;
+  line-height: .9 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child > p {
+  max-width: 54ch !important;
+  margin-top: .7rem !important;
+  font-size: .74rem !important;
+  line-height: 1.42 !important;
+}
+
+/* WHY NOW / WHY YOU become real fragments, not text floating on the field. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.2fr) minmax(12rem, .78fr) !important;
+  gap: .72rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2):has(> section:only-child) {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section {
+  min-height: 6.25rem;
+  padding: .78rem .9rem .8rem !important;
+  align-content: start;
+  border-top: 2px solid rgba(23,23,21,.72) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:last-child {
+  border-top-color: color-mix(in srgb, var(--r4-interaction) 64%, #171715) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section > span {
+  min-width: 4.6rem;
+}
+
+/* Evidence becomes a compact instrument block. */
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: stretch;
+  padding: .88rem .82rem .68rem !important;
+  border-left: 1px solid rgba(23,23,21,.28) !important;
+  border-top: 2px solid color-mix(in srgb, var(--r4-interaction) 72%, #171715) !important;
+  overflow: hidden;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] > div:not(:last-child) {
+  padding: .2rem 0 .7rem !important;
+  border-bottom: 1px solid rgba(23,23,21,.15) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler {
+  margin-top: auto;
+}
+
+/* Build direction is a final physical note. */
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+  margin: .55rem .35rem 0 !important;
+  padding: .72rem .9rem .78rem !important;
+  border-top: 2px solid color-mix(in srgb, var(--r4-interaction) 72%, #171715) !important;
+  grid-template-columns: 7.7rem minmax(0, 1fr) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child strong {
+  max-width: 64ch !important;
+}
+
+/* Peripheral Signals: unmistakably interactive physical nodes. */
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button {
+  border: 1px solid rgba(23,23,21,.36) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.58), rgba(255,255,255,.08) 62%),
+    rgba(244,243,239,.97) !important;
+  box-shadow:
+    0 8px 18px rgba(23,23,21,.075),
+    0 2px 5px rgba(23,23,21,.04),
+    inset 0 1px 0 rgba(255,255,255,.72) !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button:hover {
+  border-color: color-mix(in srgb, var(--fragment-accent) 66%, rgba(23,23,21,.28)) !important;
+  box-shadow:
+    0 15px 30px rgba(23,23,21,.13),
+    0 4px 10px rgba(23,23,21,.07),
+    0 0 0 1px color-mix(in srgb, var(--fragment-accent) 18%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.8) !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] {
+  border-color: color-mix(in srgb, var(--fragment-accent) 78%, rgba(23,23,21,.26)) !important;
+  box-shadow:
+    0 18px 38px rgba(23,23,21,.15),
+    0 5px 12px rgba(23,23,21,.075),
+    0 0 0 1px color-mix(in srgb, var(--fragment-accent) 28%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.82) !important;
+}
+
+/* Keep the scene alive, but visually subordinate to the new panel hierarchy. */
+[data-today-r4="true"][data-open-state="open"] .fr-r4-live-field {
+  opacity: .72 !important;
+}
+
+.fr-r4-live-bands {
+  opacity: .7;
+}
+
+.fr-r4-ghost-cloud {
+  opacity: .72;
+}
+
+.fr-r4-edge-meter {
+  opacity: .34;
+}
+
+@media (max-width: 1180px) {
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+    grid-template-columns: minmax(0, 1fr) 9.8rem !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) {
+    grid-template-columns: 1fr !important;
+  }
+}
