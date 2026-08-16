@@ -27,7 +27,7 @@ async function expectViewportLocked(page: Page) {
   expect(overflow.height, "Today R4 vertical document overflow").toBeLessThanOrEqual(1);
 }
 
-test("Today R4 opens on the first downward gesture and preserves the cinematic aperture", async ({ page }) => {
+test("Today R4 opens on the first downward gesture and preserves the live cinematic aperture", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
@@ -39,16 +39,20 @@ test("Today R4 opens on the first downward gesture and preserves the cinematic a
   const stage = scroller.locator(":scope > div > div").first();
   const signalButtons = page.getByRole("navigation", { name: "Today R4 fixture signals" }).getByRole("button");
   const showcase = page.locator('[data-r4-showcase="true"]');
+  const liveField = page.locator('[data-r4-live-field="true"]');
 
   await expect(shell).toBeVisible();
   await expect(shell).toHaveAttribute("data-open-state", "closed");
   await expect(shell).toHaveAttribute("data-r4-enhanced", "true");
   await expect(showcase).toBeVisible();
+  await expect(liveField).toBeVisible();
   await expect(showcase.locator(".fr-r4-radar__blip")).toHaveCount(7);
+  await expect(liveField.locator(".fr-r4-current")).toHaveCount(5);
   await expect(signalButtons).toHaveCount(7);
   await expect(page.getByText("FIND WHAT'S NEXT", { exact: true })).toBeVisible();
   await expect(page.getByText("BEFORE IT HAS", { exact: true })).toBeVisible();
   await expect(page.getByText("A NAME.", { exact: true })).toBeVisible();
+  await expect(shell.locator("header")).toBeHidden();
   await expectViewportLocked(page);
 
   const navAppearance = await page.locator(".fr-site-nav").evaluate((element) => {
@@ -64,6 +68,12 @@ test("Today R4 opens on the first downward gesture and preserves the cinematic a
   expect(fragmentAnimation, "Today R4 peripheral signal idle animation").toContain("fragmentFloat");
   const radarSweepAnimation = await showcase.locator(".fr-r4-radar__sweep").evaluate((element) => getComputedStyle(element).animationName);
   expect(radarSweepAnimation, "Today R4 hero radar should remain alive while idle").toContain("r4RadarSweep");
+  const currentAnimation = await liveField.locator(".fr-r4-current--blue").evaluate((element) => getComputedStyle(element).animationName);
+  expect(currentAnimation, "Today R4 expanded signal current should keep moving").toContain("r4CurrentFlow");
+
+  await page.mouse.move(320, 360);
+  const pointerX = await shell.evaluate((element) => getComputedStyle(element).getPropertyValue("--r4-px"));
+  expect(parseFloat(pointerX), "Today R4 inspection field should react to pointer position").toBeGreaterThan(100);
 
   await page.screenshot({ path: `${artifactDir}/30-today-r4-hero.png`, fullPage: false });
 
@@ -96,6 +106,10 @@ test("Today R4 opens on the first downward gesture and preserves the cinematic a
   await expect(page.getByText("WHY NOW", { exact: true })).toBeVisible();
   await expect(page.getByText("BUILD DIRECTION", { exact: true })).toBeVisible();
 
+  const aperture = shell.locator('article[aria-live="polite"]');
+  const apertureScan = await aperture.evaluate((element) => getComputedStyle(element, "::before").animationName);
+  expect(apertureScan, "Today R4 aperture should remain visibly alive after opening").toContain("r4ApertureScan");
+
   await scrollToRatio(scroller, 0.58);
   await page.waitForTimeout(420);
   await expect(shell).toHaveAttribute("data-lane", "core");
@@ -107,6 +121,9 @@ test("Today R4 opens on the first downward gesture and preserves the cinematic a
   const fragmentCursor = await signalButtons.nth(3).evaluate((element) => getComputedStyle(element).cursor);
   expect(fragmentCursor, "Today R4 peripheral signals should advertise click affordance").toBe("pointer");
 
+  await signalButtons.nth(5).hover();
+  await expect(shell).toHaveAttribute("data-r4-hover-rank", "06");
+  await page.waitForTimeout(260);
   await page.screenshot({ path: `${artifactDir}/31-today-r4-aperture.png`, fullPage: false });
 
   await scrollToRatio(scroller, 0.88);
@@ -116,5 +133,6 @@ test("Today R4 opens on the first downward gesture and preserves the cinematic a
   await expect(page.getByRole("heading", { name: "Procedural Generated Graffiti Wall" })).toBeVisible();
   await page.screenshot({ path: `${artifactDir}/32-today-r4-wildcard.png`, fullPage: false });
 
+  await expectViewportLocked(page);
   expect(pageErrors, `uncaught browser errors: ${pageErrors.join(" | ")}`).toEqual([]);
 });
