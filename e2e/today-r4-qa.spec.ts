@@ -110,6 +110,38 @@ test("Today R4 opens on the first downward gesture and preserves the live cinema
   const apertureScan = await aperture.evaluate((element) => getComputedStyle(element, "::before").animationName);
   expect(apertureScan, "Today R4 aperture should remain visibly alive after opening").toContain("r4ApertureScan");
 
+  const panelDepth = await aperture.evaluate((element) => {
+    const body = element.children[3] as HTMLElement;
+    const titlePanel = body.children[0] as HTMLElement;
+    const intelligence = body.children[1] as HTMLElement;
+    const whyNowPanel = intelligence.children[0] as HTMLElement;
+    const evidencePanel = body.children[2] as HTMLElement;
+    const buildPanel = element.children[4] as HTMLElement;
+    const snapshot = (node: HTMLElement) => {
+      const style = getComputedStyle(node);
+      return {
+        backgroundColor: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        borderTopWidth: style.borderTopWidth,
+        borderTopStyle: style.borderTopStyle,
+        boxShadow: style.boxShadow,
+      };
+    };
+    return {
+      title: snapshot(titlePanel),
+      whyNow: snapshot(whyNowPanel),
+      evidence: snapshot(evidencePanel),
+      build: snapshot(buildPanel),
+    };
+  });
+
+  for (const [name, panel] of Object.entries(panelDepth)) {
+    expect(panel.backgroundImage, `Today R4 ${name} panel should have a physical paper surface`).not.toBe("none");
+    expect(panel.borderTopStyle, `Today R4 ${name} panel should have a visible boundary`).toBe("solid");
+    expect(parseFloat(panel.borderTopWidth), `Today R4 ${name} panel boundary width`).toBeGreaterThanOrEqual(1);
+    expect(panel.boxShadow, `Today R4 ${name} panel should have depth`).not.toBe("none");
+  }
+
   await scrollToRatio(scroller, 0.58);
   await page.waitForTimeout(420);
   await expect(shell).toHaveAttribute("data-lane", "core");
@@ -118,8 +150,21 @@ test("Today R4 opens on the first downward gesture and preserves the live cinema
   expect(fragmentBox, "Today R4 peripheral signal should have a measurable click target").not.toBeNull();
   expect(fragmentBox!.width, "Today R4 peripheral signal click width").toBeGreaterThanOrEqual(150);
   expect(fragmentBox!.height, "Today R4 peripheral signal click height").toBeGreaterThanOrEqual(36);
-  const fragmentCursor = await signalButtons.nth(3).evaluate((element) => getComputedStyle(element).cursor);
-  expect(fragmentCursor, "Today R4 peripheral signals should advertise click affordance").toBe("pointer");
+  const fragmentAppearance = await signalButtons.nth(3).evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      cursor: style.cursor,
+      borderStyle: style.borderTopStyle,
+      borderWidth: style.borderTopWidth,
+      boxShadow: style.boxShadow,
+      backgroundImage: style.backgroundImage,
+    };
+  });
+  expect(fragmentAppearance.cursor, "Today R4 peripheral signals should advertise click affordance").toBe("pointer");
+  expect(fragmentAppearance.borderStyle, "Today R4 peripheral signals need a visible boundary").toBe("solid");
+  expect(parseFloat(fragmentAppearance.borderWidth), "Today R4 peripheral signal boundary width").toBeGreaterThanOrEqual(1);
+  expect(fragmentAppearance.boxShadow, "Today R4 peripheral signals need physical depth").not.toBe("none");
+  expect(fragmentAppearance.backgroundImage, "Today R4 peripheral signals need a defined surface").not.toBe("none");
 
   await signalButtons.nth(5).dispatchEvent("pointerenter");
   await expect(shell).toHaveAttribute("data-r4-hover-rank", "06");
