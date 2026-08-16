@@ -77,6 +77,7 @@ export function TodayR4ExperienceEnhancer() {
     const liveField = document.createElement("div");
     liveField.className = "fr-r4-live-field";
     liveField.dataset.r4LiveField = "true";
+    liveField.dataset.r4FocusField = "true";
     liveField.setAttribute("aria-hidden", "true");
     liveField.innerHTML = `
       <svg class="fr-r4-current-map" viewBox="0 0 1600 900" preserveAspectRatio="none" focusable="false">
@@ -86,14 +87,21 @@ export function TodayR4ExperienceEnhancer() {
         <path class="fr-r4-current fr-r4-current--hair" d="M60 70 L1490 825" />
         <path class="fr-r4-current fr-r4-current--hair" d="M1540 90 L120 840" />
       </svg>
-      <div class="fr-r4-live-bands">
-        <i></i><i></i><i></i>
-      </div>
-      <div class="fr-r4-ghost-cloud">
-        <b>458</b><span>CANDIDATES / LIVE INGEST</span>
-        <b>07</b><span>SELECTED SIGNAL FIELD</span>
-        <b>01</b><span>FOCUS / CURRENT APERTURE</span>
-      </div>
+
+      <svg class="fr-r4-capture-links" viewBox="0 0 1600 900" preserveAspectRatio="none" focusable="false">
+        <path data-rank="01" data-lane="core" d="M128 92 C340 112 520 265 790 435" />
+        <path data-rank="02" data-lane="core" d="M510 82 C600 145 655 260 790 435" />
+        <path data-rank="03" data-lane="core" d="M1125 98 C1030 152 930 290 790 435" />
+        <path data-rank="04" data-lane="core" d="M1510 330 C1280 340 1015 390 790 435" />
+        <path data-rank="05" data-lane="core" d="M1430 805 C1205 675 1010 535 790 435" />
+        <path data-rank="06" data-lane="adjacent" d="M545 820 C625 680 705 545 790 435" />
+        <path data-rank="07" data-lane="wildcard" d="M100 470 C315 470 555 452 790 435" />
+      </svg>
+
+      <div class="fr-r4-live-bands"><i></i><i></i><i></i></div>
+      <div class="fr-r4-focus-lens"><i></i><i></i><i></i><b></b></div>
+      <strong class="fr-r4-focus-rank">01</strong>
+      <div class="fr-r4-recalibration"><i></i><i></i><i></i></div>
       <div class="fr-r4-edge-meter fr-r4-edge-meter--left"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="fr-r4-edge-meter fr-r4-edge-meter--right"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="fr-r4-reticle"><i></i><b>LIVE FIELD</b><span>INSPECT</span></div>
@@ -104,6 +112,31 @@ export function TodayR4ExperienceEnhancer() {
 
     const heroPrompt = shell.querySelector<HTMLElement>("footer span:last-child");
     if (heroPrompt) heroPrompt.textContent = "SCROLL ONCE TO OPEN TODAY";
+
+    const focusRank = liveField.querySelector<HTMLElement>(".fr-r4-focus-rank");
+    const capturePaths = Array.from(liveField.querySelectorAll<SVGPathElement>(".fr-r4-capture-links path"));
+    const recalibration = liveField.querySelector<HTMLElement>(".fr-r4-recalibration");
+
+    const syncSelection = () => {
+      const rank = shell.dataset.selectedRank ?? "01";
+      const active = SIGNAL_META.find((signal) => signal.rank === rank) ?? SIGNAL_META[0];
+      if (focusRank) focusRank.textContent = rank;
+      capturePaths.forEach((path) => {
+        path.dataset.active = path.dataset.rank === rank ? "true" : "false";
+      });
+      if (!shell.dataset.r4HoverRank) {
+        shell.style.setProperty("--r4-interaction", laneAccent[active.lane]);
+      }
+      if (recalibration && shell.dataset.openState === "open") {
+        recalibration.classList.remove("is-pulsing");
+        void recalibration.offsetWidth;
+        recalibration.classList.add("is-pulsing");
+      }
+    };
+
+    syncSelection();
+    const selectionObserver = new MutationObserver(syncSelection);
+    selectionObserver.observe(shell, { attributes: true, attributeFilter: ["data-selected-rank"] });
 
     const dispatchOpenGesture = () => {
       if (shell.dataset.openState !== "closed") return;
@@ -192,6 +225,7 @@ export function TodayR4ExperienceEnhancer() {
         button.removeEventListener("pointerenter", enter);
         button.removeEventListener("pointerleave", leave);
       });
+      selectionObserver.disconnect();
       liveField.remove();
       layer.remove();
       delete shell.dataset.r4Enhanced;

@@ -1,0 +1,371 @@
+/* Gate 17B-R4 focus-field pass: remove the central-card feeling and make the stage recalibrate around the active signal. */
+
+[data-today-r4="true"] div:has(> nav[aria-label="Today R4 fixture signals"]) {
+  inset: .35rem 2.35vw .85rem !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] {
+  top: 6.5% !important;
+  bottom: 5.5% !important;
+  left: 8.8% !important;
+  right: 8.8% !important;
+  padding: .6rem .8rem .65rem !important;
+  overflow: visible;
+  transform-origin: 50% 52%;
+}
+
+/* The old full-sheet wash is replaced by two local capture planes. */
+[data-today-r4="true"] article[aria-live="polite"] > div:first-child {
+  inset: -3% -2% !important;
+  background: transparent !important;
+  border: 0 !important;
+  clip-path: none !important;
+  animation: none !important;
+  pointer-events: none;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:first-child::before,
+[data-today-r4="true"] article[aria-live="polite"] > div:first-child::after {
+  content: "";
+  position: absolute;
+  display: block;
+  mix-blend-mode: normal;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:first-child::before {
+  left: 2.5%;
+  top: 7%;
+  width: 69%;
+  height: 57%;
+  background:
+    linear-gradient(105deg, rgba(240,239,235,.97), rgba(240,239,235,.88) 66%, rgba(240,239,235,.18)),
+    color-mix(in srgb, var(--r4-interaction) 2.4%, #f0efeb);
+  clip-path: polygon(2% 9%, 100% 0, 91% 91%, 0 100%);
+  border-top: 1px solid color-mix(in srgb, var(--r4-interaction) 48%, transparent);
+  animation: r4PrimaryPlane 8.5s ease-in-out infinite alternate;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:first-child::after {
+  right: 1.5%;
+  bottom: 5%;
+  width: 31%;
+  height: 44%;
+  background: linear-gradient(145deg, rgba(240,239,235,.2), rgba(240,239,235,.93) 36%, rgba(240,239,235,.86));
+  clip-path: polygon(14% 0, 100% 8%, 91% 100%, 0 88%);
+  border-right: 1px solid color-mix(in srgb, var(--r4-interaction) 38%, transparent);
+  animation: r4EvidencePlane 10s ease-in-out infinite alternate;
+}
+
+[data-today-r4="true"] article[aria-live="polite"]::after {
+  border: 0 !important;
+  clip-path: none !important;
+  animation: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) {
+  inset: -3.5% -5% !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(1) {
+  width: 72% !important;
+  opacity: .8 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(2) {
+  width: 38% !important;
+  left: 61% !important;
+  opacity: .24 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(3) {
+  width: 82% !important;
+  left: 10% !important;
+  opacity: .72 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) {
+  padding: .1rem .35rem .7rem !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+  grid-template-columns: minmax(0, 1fr) 10.4rem !important;
+  column-gap: 2rem !important;
+  padding: .2rem .35rem .3rem !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+  position: relative;
+  padding: .75rem 1rem .9rem .15rem;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+  max-width: 15ch !important;
+  font-size: clamp(2.8rem, 4.05vw, 4.9rem) !important;
+  line-height: .88 !important;
+  animation: r4TitleCapture 620ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child > p {
+  max-width: 52ch !important;
+  margin-top: .7rem !important;
+  animation: r4SummaryCapture 620ms 90ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) {
+  margin-top: 0 !important;
+  padding: .8rem .25rem .15rem .15rem !important;
+  border-top: 1px solid rgba(23,23,21,.72) !important;
+  animation: r4IntelligenceCapture 680ms 150ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] {
+  padding: .8rem 0 .3rem .9rem !important;
+  border-left: 1px solid color-mix(in srgb, var(--r4-interaction) 64%, rgba(23,23,21,.12)) !important;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--r4-interaction) 2.5%, transparent), transparent 54%);
+  animation: r4EvidenceCapture 700ms 210ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+  margin-top: .4rem !important;
+  border-top-width: 1px !important;
+  animation: r4BuildCapture 680ms 250ms cubic-bezier(.16,1,.3,1) both;
+}
+
+/* Selected rank becomes the only giant field number. */
+.fr-r4-focus-rank {
+  position: absolute;
+  z-index: 1;
+  left: 10.5%;
+  top: 13%;
+  color: var(--r4-interaction);
+  font: 950 clamp(9rem, 17vw, 20rem)/.72 Arial, Helvetica, sans-serif;
+  letter-spacing: -.11em;
+  opacity: 0;
+  transform: translate3d(calc(var(--r4-mx) * -20px), calc(var(--r4-my) * -13px), 0) rotate(-2deg);
+  transform-origin: center;
+  transition: color 200ms ease, opacity 380ms ease, transform 650ms cubic-bezier(.16,1,.3,1);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-focus-rank {
+  opacity: .052;
+  animation: r4RankTension 8s ease-in-out infinite alternate;
+}
+
+[data-today-r4="true"][data-r4-hover-rank] .fr-r4-focus-rank {
+  opacity: .075;
+}
+
+/* A continuous focus lens replaces the idea of a static card boundary. */
+.fr-r4-focus-lens {
+  position: absolute;
+  z-index: 2;
+  left: 49%;
+  top: 51%;
+  width: min(58vw, 930px);
+  aspect-ratio: 1.72;
+  opacity: 0;
+  transform: translate(-50%, -50%) translate3d(calc(var(--r4-mx) * 16px), calc(var(--r4-my) * 10px), 0);
+  transition: opacity 500ms ease, transform 700ms cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-focus-lens { opacity: .52; }
+
+.fr-r4-focus-lens i {
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--r4-interaction) 30%, transparent);
+  border-radius: 50%;
+  transform-origin: center;
+}
+
+.fr-r4-focus-lens i:nth-child(1) {
+  inset: 4% 2%;
+  animation: r4LensA 13s linear infinite;
+}
+
+.fr-r4-focus-lens i:nth-child(2) {
+  inset: 15% 10%;
+  border-style: dashed;
+  opacity: .58;
+  animation: r4LensB 16s linear infinite reverse;
+}
+
+.fr-r4-focus-lens i:nth-child(3) {
+  inset: 29% 23%;
+  opacity: .72;
+  animation: r4LensC 9s ease-in-out infinite alternate;
+}
+
+.fr-r4-focus-lens b {
+  position: absolute;
+  left: 50%;
+  top: -4%;
+  bottom: -4%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--r4-interaction) 35%, transparent), transparent);
+  transform: rotate(8deg);
+  animation: r4LensNeedle 7s ease-in-out infinite alternate;
+}
+
+/* Seven real geometric links show that the field is selecting, not decorating. */
+.fr-r4-capture-links {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.fr-r4-capture-links path {
+  fill: none;
+  stroke: rgba(23,23,21,.1);
+  stroke-width: .8;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 2 12;
+  transition: stroke 240ms ease, stroke-width 240ms ease, opacity 240ms ease;
+  opacity: .34;
+}
+
+.fr-r4-capture-links path[data-lane="adjacent"] { stroke: rgba(49,80,255,.16); }
+.fr-r4-capture-links path[data-lane="wildcard"] { stroke: rgba(255,91,33,.16); }
+
+.fr-r4-capture-links path[data-active="true"] {
+  stroke: var(--r4-interaction);
+  stroke-width: 1.35;
+  stroke-dasharray: 6 13 1 10;
+  opacity: .68;
+  animation: r4CaptureFlow 2.8s linear infinite;
+}
+
+[data-today-r4="true"][data-r4-hover-rank] .fr-r4-capture-links path[data-active="true"] {
+  stroke-width: 1.7;
+  opacity: .82;
+}
+
+/* Each selection re-calibrates the whole field once. */
+.fr-r4-recalibration {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.fr-r4-recalibration i {
+  position: absolute;
+  left: -14%;
+  width: 128%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--r4-interaction), transparent);
+  opacity: .55;
+  transform-origin: center;
+}
+.fr-r4-recalibration i:nth-child(1) { top: 31%; transform: rotate(-4deg); }
+.fr-r4-recalibration i:nth-child(2) { top: 52%; transform: rotate(2deg); }
+.fr-r4-recalibration i:nth-child(3) { top: 72%; transform: rotate(-2deg); }
+
+.fr-r4-recalibration.is-pulsing { animation: r4Recalibrate 760ms cubic-bezier(.16,1,.3,1) both; }
+.fr-r4-recalibration.is-pulsing i:nth-child(2) { animation: r4RecalibrateLine 760ms 60ms cubic-bezier(.16,1,.3,1) both; }
+.fr-r4-recalibration.is-pulsing i:nth-child(3) { animation: r4RecalibrateLine 760ms 120ms cubic-bezier(.16,1,.3,1) both; }
+
+/* Nodes are physically pushed to the field boundary; the active specimen leans inward. */
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(1) { transform: translate(-8px,-5px) scale(.985); }
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(2) { transform: translate(0,-8px) scale(.985); }
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(3) { transform: translate(8px,-5px) scale(.985); }
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(4) { transform: translate(9px,0) scale(.985); }
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(5) { transform: translate(7px,7px) scale(.985); }
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(6) { transform: translate(0,8px) scale(.985); }
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button:not([data-active="true"]):nth-child(7) { transform: translate(-9px,0) scale(.985); }
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(1) { transform: translate(14px,8px) scale(1.07); }
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(2) { transform: translate(0,12px) scale(1.07); }
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(3) { transform: translate(-14px,8px) scale(1.07); }
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(4) { transform: translate(-15px,0) scale(1.07); }
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(5) { transform: translate(-12px,-10px) scale(1.07); }
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(6) { transform: translate(0,-12px) scale(1.07); }
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]:nth-child(7) { transform: translate(15px,0) scale(1.07); }
+
+@keyframes r4PrimaryPlane {
+  from { transform: translate3d(-.7%, -.5%, 0) skewX(-.6deg); opacity: .9; }
+  to { transform: translate3d(.8%, .45%, 0) skewX(.5deg); opacity: 1; }
+}
+
+@keyframes r4EvidencePlane {
+  from { transform: translate3d(.8%, -.7%, 0) rotate(.15deg); }
+  to { transform: translate3d(-.8%, .7%, 0) rotate(-.15deg); }
+}
+
+@keyframes r4RankTension {
+  from { transform: translate3d(calc(var(--r4-mx) * -20px), calc(var(--r4-my) * -13px), 0) rotate(-2.4deg) scale(.985); }
+  to { transform: translate3d(calc(var(--r4-mx) * -20px + 9px), calc(var(--r4-my) * -13px - 6px), 0) rotate(-1.2deg) scale(1.02); }
+}
+
+@keyframes r4LensA { to { transform: rotate(360deg) scaleX(1.015); } }
+@keyframes r4LensB { to { transform: rotate(360deg) scaleY(1.025); } }
+@keyframes r4LensC {
+  from { transform: rotate(-4deg) scale(.96); opacity: .38; }
+  to { transform: rotate(5deg) scale(1.04); opacity: .78; }
+}
+@keyframes r4LensNeedle {
+  from { transform: translateX(-8%) rotate(4deg); opacity: .2; }
+  to { transform: translateX(10%) rotate(11deg); opacity: .72; }
+}
+
+@keyframes r4CaptureFlow { to { stroke-dashoffset: -74; } }
+
+@keyframes r4Recalibrate {
+  0% { opacity: 0; transform: scaleX(.82); }
+  22% { opacity: .76; }
+  100% { opacity: 0; transform: scaleX(1.04); }
+}
+
+@keyframes r4RecalibrateLine {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes r4TitleCapture {
+  from { opacity: 0; transform: translate3d(-34px, 12px, 0) skewX(-2deg); clip-path: inset(0 24% 0 0); }
+  to { opacity: 1; transform: translate3d(0,0,0) skewX(0); clip-path: inset(0 0 0 0); }
+}
+
+@keyframes r4SummaryCapture {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes r4IntelligenceCapture {
+  from { opacity: 0; transform: translate3d(18px,18px,0); clip-path: inset(0 0 60% 0); }
+  to { opacity: 1; transform: translate3d(0,0,0); clip-path: inset(0); }
+}
+
+@keyframes r4EvidenceCapture {
+  from { opacity: 0; transform: translateX(22px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes r4BuildCapture {
+  from { opacity: 0; transform: translateY(18px); clip-path: inset(0 80% 0 0); }
+  to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-r4-focus-rank,
+  .fr-r4-focus-lens i,
+  .fr-r4-focus-lens b,
+  .fr-r4-capture-links path,
+  .fr-r4-recalibration,
+  [data-today-r4="true"] article[aria-live="polite"] > div:first-child::before,
+  [data-today-r4="true"] article[aria-live="polite"] > div:first-child::after,
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2,
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child > p,
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2),
+  [data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"],
+  [data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+    animation: none !important;
+  }
+}
