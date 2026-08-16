@@ -27,7 +27,7 @@ async function expectViewportLocked(page: Page) {
   expect(overflow.height, "Today R4 vertical document overflow").toBeLessThanOrEqual(1);
 }
 
-test("Today R4 opens from an intentional gesture and preserves the cinematic aperture", async ({ page }) => {
+test("Today R4 opens on the first downward gesture and preserves the cinematic aperture", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
@@ -38,9 +38,13 @@ test("Today R4 opens from an intentional gesture and preserves the cinematic ape
   const scroller = shell.locator(":scope > div").first();
   const stage = scroller.locator(":scope > div > div").first();
   const signalButtons = page.getByRole("navigation", { name: "Today R4 fixture signals" }).getByRole("button");
+  const showcase = page.locator('[data-r4-showcase="true"]');
 
   await expect(shell).toBeVisible();
   await expect(shell).toHaveAttribute("data-open-state", "closed");
+  await expect(shell).toHaveAttribute("data-r4-enhanced", "true");
+  await expect(showcase).toBeVisible();
+  await expect(showcase.locator(".fr-r4-radar__blip")).toHaveCount(7);
   await expect(signalButtons).toHaveCount(7);
   await expect(page.getByText("FIND WHAT'S NEXT", { exact: true })).toBeVisible();
   await expect(page.getByText("BEFORE IT HAS", { exact: true })).toBeVisible();
@@ -58,18 +62,14 @@ test("Today R4 opens from an intentional gesture and preserves the cinematic ape
   expect(ambientAnimation, "Today R4 ambient field animation").toContain("ambientSweep");
   const fragmentAnimation = await signalButtons.first().evaluate((element) => getComputedStyle(element).animationName);
   expect(fragmentAnimation, "Today R4 peripheral signal idle animation").toContain("fragmentFloat");
+  const radarSweepAnimation = await showcase.locator(".fr-r4-radar__sweep").evaluate((element) => getComputedStyle(element).animationName);
+  expect(radarSweepAnimation, "Today R4 hero radar should remain alive while idle").toContain("r4RadarSweep");
 
   await page.screenshot({ path: `${artifactDir}/30-today-r4-hero.png`, fullPage: false });
 
   await page.mouse.move(800, 520);
-  await page.mouse.wheel(0, 24);
-  await page.waitForTimeout(140);
-  await expect(shell).toHaveAttribute("data-open-state", "closed");
-  const smallGestureScroll = await scroller.evaluate((element) => (element as HTMLElement).scrollTop);
-  expect(smallGestureScroll, "A small wheel gesture should not scrub the opening").toBeLessThanOrEqual(1);
-
-  await page.mouse.wheel(0, 180);
-  await page.waitForTimeout(280);
+  await page.mouse.wheel(0, 18);
+  await page.waitForTimeout(180);
   await expect(shell).toHaveAttribute("data-open-state", "opening");
 
   const heroHeading = page.locator("#today-r4-title");
@@ -91,7 +91,7 @@ test("Today R4 opens from an intentional gesture and preserves the cinematic ape
   ).toBeTruthy();
   await page.screenshot({ path: `${artifactDir}/30a-today-r4-triggered-tear.png`, fullPage: false });
 
-  await page.waitForTimeout(760);
+  await page.waitForTimeout(900);
   await expect(shell).toHaveAttribute("data-open-state", "open");
   await expect(page.getByText("WHY NOW", { exact: true })).toBeVisible();
   await expect(page.getByText("BUILD DIRECTION", { exact: true })).toBeVisible();
