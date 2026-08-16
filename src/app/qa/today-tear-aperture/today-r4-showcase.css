@@ -1,0 +1,261 @@
+.fr-r4-showcase {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+  color: #171715;
+}
+
+.fr-r4-radar {
+  position: absolute;
+  top: 5.8vh;
+  right: -8vw;
+  width: min(62vw, 61rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(23, 23, 21, .16);
+  border-radius: 50%;
+  opacity: clamp(.16, calc(.72 - var(--focus) * .50), .72);
+  background:
+    repeating-radial-gradient(circle at center, transparent 0 8.8%, rgba(23,23,21,.06) 8.95% 9.08%, transparent 9.2% 17.9%),
+    linear-gradient(90deg, transparent 49.94%, rgba(23,23,21,.10) 50%, transparent 50.06%),
+    linear-gradient(0deg, transparent 49.94%, rgba(23,23,21,.08) 50%, transparent 50.06%);
+  transform:
+    translate3d(calc(var(--tear) * 7vw), calc(var(--tear) * -2vh), 0)
+    scale(calc(1 + var(--tear) * .28))
+    rotate(calc(-5deg + var(--tear) * 12deg));
+  transform-origin: center;
+  transition: opacity 260ms ease;
+  animation: r4RadarDrift 15s ease-in-out infinite alternate;
+}
+
+.fr-r4-radar::before {
+  content: "07";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(23,23,21,.035);
+  font: 950 clamp(10rem, 19vw, 23rem)/.7 Arial, sans-serif;
+  letter-spacing: -.11em;
+}
+
+.fr-r4-radar::after {
+  content: "SELECTED SIGNAL FIELD";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 8.2rem) rotate(-90deg);
+  color: rgba(23,23,21,.22);
+  font: 900 .42rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .18em;
+  white-space: nowrap;
+}
+
+.fr-r4-radar__sweep {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 80%,
+    rgba(49,80,255,.015) 84%,
+    rgba(49,80,255,.10) 91%,
+    rgba(255,255,255,.32) 94%,
+    transparent 98% 100%
+  );
+  -webkit-mask-image: radial-gradient(circle, transparent 0 19%, #000 21% 100%);
+  mask-image: radial-gradient(circle, transparent 0 19%, #000 21% 100%);
+  animation: r4RadarSweep 12s linear infinite;
+}
+
+.fr-r4-radar__blip {
+  --blip: #171715;
+  position: absolute;
+  width: .4rem;
+  height: .4rem;
+  border-radius: 50%;
+  background: var(--blip);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blip) 12%, transparent);
+  animation: r4BlipPulse 4.6s ease-in-out infinite;
+}
+
+.fr-r4-radar__blip::after {
+  content: attr(data-rank) "  " attr(data-label);
+  position: absolute;
+  left: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: color-mix(in srgb, var(--blip) 72%, #74726d);
+  font: 900 .34rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .10em;
+  white-space: nowrap;
+}
+
+.fr-r4-radar__blip[data-lane="adjacent"] { --blip: #3150ff; }
+.fr-r4-radar__blip[data-lane="wildcard"] { --blip: #ff5b21; }
+.fr-r4-radar__blip:nth-of-type(2) { top: 17%; left: 31%; animation-delay: -.7s; }
+.fr-r4-radar__blip:nth-of-type(3) { top: 27%; right: 19%; animation-delay: -1.3s; }
+.fr-r4-radar__blip:nth-of-type(4) { top: 48%; right: 8%; animation-delay: -2.1s; }
+.fr-r4-radar__blip:nth-of-type(5) { bottom: 19%; right: 24%; animation-delay: -3.4s; }
+.fr-r4-radar__blip:nth-of-type(6) { bottom: 10%; left: 40%; animation-delay: -2.7s; }
+.fr-r4-radar__blip:nth-of-type(7) { bottom: 29%; left: 12%; animation-delay: -1.8s; }
+.fr-r4-radar__blip:nth-of-type(8) { top: 35%; left: 13%; animation-delay: -4s; }
+
+.fr-r4-signal-tape {
+  position: absolute;
+  z-index: 1;
+  left: -3vw;
+  right: -3vw;
+  top: 75.5%;
+  overflow: hidden;
+  border-top: 1px solid rgba(23,23,21,.10);
+  border-bottom: 1px solid rgba(23,23,21,.07);
+  opacity: clamp(.08, calc(.34 - var(--focus) * .26), .34);
+  transform: rotate(-1.4deg) translateY(calc(var(--tear) * 1.4rem));
+}
+
+.fr-r4-signal-tape span {
+  display: block;
+  width: max-content;
+  padding: .42rem 0;
+  color: #5e5c56;
+  font: 900 .46rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  animation: r4Tape 27s linear infinite;
+}
+
+.fr-r4-hero-telemetry {
+  position: absolute;
+  left: 3.3vw;
+  top: 18.2%;
+  display: flex;
+  gap: .45rem;
+  flex-direction: column;
+  opacity: clamp(.12, calc(.56 - var(--focus) * .44), .56);
+  font: 900 .39rem/1.15 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.fr-r4-hero-telemetry span {
+  display: grid;
+  grid-template-columns: 2.6rem auto;
+  align-items: baseline;
+  gap: .45rem;
+}
+
+.fr-r4-hero-telemetry b {
+  color: #171715;
+  font-size: .74rem;
+  letter-spacing: -.03em;
+}
+
+.fr-r4-release-flash {
+  position: absolute;
+  z-index: 3;
+  top: -16%;
+  bottom: -16%;
+  left: -28vw;
+  width: 28vw;
+  opacity: 0;
+  transform: rotate(-7deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(49,80,255,.08),
+    rgba(255,255,255,.66),
+    rgba(255,91,33,.055),
+    transparent
+  );
+}
+
+[data-today-r4="true"][data-open-state="closed"] #today-r4-title > span {
+  animation: r4HeroTension 7s ease-in-out infinite alternate;
+}
+
+[data-today-r4="true"][data-open-state="closed"] #today-r4-title > span:nth-child(2) { animation-delay: -2.2s; }
+[data-today-r4="true"][data-open-state="closed"] #today-r4-title > span:nth-child(3) { animation-delay: -4.4s; }
+
+[data-today-r4="true"][data-open-state="opening"] .fr-r4-radar {
+  animation: r4RadarRelease 980ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"][data-open-state="opening"] .fr-r4-release-flash {
+  animation: r4ReleaseFlash 940ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"][data-open-state="opening"] .fr-r4-signal-tape {
+  animation: r4TapeRelease 940ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-radar {
+  opacity: .15;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-hero-telemetry {
+  opacity: .08;
+}
+
+[data-today-r4="true"] .fr-site-nav {
+  background: #f0efeb !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@keyframes r4RadarSweep {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes r4RadarDrift {
+  from { translate: -.45vw -.25vh; }
+  to { translate: .55vw .35vh; }
+}
+
+@keyframes r4BlipPulse {
+  0%, 100% { scale: .78; opacity: .48; }
+  45% { scale: 1.18; opacity: .92; }
+  62% { scale: .92; opacity: .65; }
+}
+
+@keyframes r4Tape {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes r4HeroTension {
+  from { translate: 0 -.8px; }
+  to { translate: 0 1.1px; }
+}
+
+@keyframes r4RadarRelease {
+  0% { filter: blur(0); }
+  48% { filter: blur(.8px); opacity: .62; }
+  100% { filter: blur(2px); opacity: .12; }
+}
+
+@keyframes r4ReleaseFlash {
+  0% { translate: 0 0; opacity: 0; }
+  14% { opacity: .82; }
+  72% { opacity: .34; }
+  100% { translate: 168vw 0; opacity: 0; }
+}
+
+@keyframes r4TapeRelease {
+  0% { filter: blur(0); }
+  42% { filter: blur(.25px); opacity: .48; }
+  100% { filter: blur(1px); opacity: .08; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-r4-radar,
+  .fr-r4-radar__sweep,
+  .fr-r4-radar__blip,
+  .fr-r4-signal-tape span,
+  .fr-r4-release-flash,
+  [data-today-r4="true"] #today-r4-title > span {
+    animation: none !important;
+  }
+}
