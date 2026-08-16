@@ -110,36 +110,46 @@ test("Today R4 opens on the first downward gesture and preserves the live cinema
   const apertureScan = await aperture.evaluate((element) => getComputedStyle(element, "::before").animationName);
   expect(apertureScan, "Today R4 aperture should remain visibly alive after opening").toContain("r4ApertureScan");
 
-  const panelDepth = await aperture.evaluate((element) => {
+  const reductionContract = await aperture.evaluate((element) => {
     const body = element.children[3] as HTMLElement;
-    const titlePanel = body.children[0] as HTMLElement;
+    const titleSurface = body.children[0] as HTMLElement;
     const intelligence = body.children[1] as HTMLElement;
-    const whyNowPanel = intelligence.children[0] as HTMLElement;
-    const evidencePanel = body.children[2] as HTMLElement;
-    const buildPanel = element.children[4] as HTMLElement;
-    const snapshot = (node: HTMLElement) => {
+    const whyNowSurface = intelligence.children[0] as HTMLElement;
+    const whyYouAnnotation = intelligence.children[1] as HTMLElement | undefined;
+    const evidenceAnnotation = body.children[2] as HTMLElement;
+    const buildRelease = element.children[4] as HTMLElement;
+    const snapshot = (node: HTMLElement | undefined) => {
+      if (!node) return null;
       const style = getComputedStyle(node);
       return {
-        backgroundColor: style.backgroundColor,
         backgroundImage: style.backgroundImage,
+        backgroundColor: style.backgroundColor,
         borderTopWidth: style.borderTopWidth,
         borderTopStyle: style.borderTopStyle,
         boxShadow: style.boxShadow,
       };
     };
     return {
-      title: snapshot(titlePanel),
-      whyNow: snapshot(whyNowPanel),
-      evidence: snapshot(evidencePanel),
-      build: snapshot(buildPanel),
+      title: snapshot(titleSurface),
+      whyNow: snapshot(whyNowSurface),
+      whyYou: snapshot(whyYouAnnotation),
+      evidence: snapshot(evidenceAnnotation),
+      build: snapshot(buildRelease),
     };
   });
 
-  for (const [name, panel] of Object.entries(panelDepth)) {
-    expect(panel.backgroundImage, `Today R4 ${name} panel should have a physical paper surface`).not.toBe("none");
-    expect(panel.borderTopStyle, `Today R4 ${name} panel should have a visible boundary`).toBe("solid");
-    expect(parseFloat(panel.borderTopWidth), `Today R4 ${name} panel boundary width`).toBeGreaterThanOrEqual(1);
-    expect(panel.boxShadow, `Today R4 ${name} panel should have depth`).not.toBe("none");
+  for (const [name, surface] of Object.entries({ title: reductionContract.title, whyNow: reductionContract.whyNow })) {
+    expect(surface, `Today R4 ${name} reading surface should exist`).not.toBeNull();
+    expect(surface!.backgroundImage, `Today R4 ${name} should remain a physical paper surface`).not.toBe("none");
+    expect(surface!.borderTopStyle, `Today R4 ${name} should retain a visible boundary`).toBe("solid");
+    expect(parseFloat(surface!.borderTopWidth), `Today R4 ${name} boundary width`).toBeGreaterThanOrEqual(1);
+    expect(surface!.boxShadow, `Today R4 ${name} should retain physical depth`).not.toBe("none");
+  }
+
+  for (const [name, annotation] of Object.entries({ whyYou: reductionContract.whyYou, evidence: reductionContract.evidence, build: reductionContract.build })) {
+    if (!annotation) continue;
+    expect(annotation.backgroundImage, `Today R4 ${name} must remain field instrumentation, not another card`).toBe("none");
+    expect(annotation.boxShadow, `Today R4 ${name} must not regain card depth`).toBe("none");
   }
 
   await scrollToRatio(scroller, 0.58);
