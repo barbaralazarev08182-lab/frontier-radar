@@ -5,6 +5,7 @@ import "./today-r4-showcase.css";
 import "./today-r4-expanded-stage.css";
 import "./today-r4-focus-field.css";
 import "./today-r4-structure-depth.css";
+import "./today-r4-reduction-pass.css";
 
 export const metadata = { title: "Today Tear Aperture QA · Frontier Radar" };
 
