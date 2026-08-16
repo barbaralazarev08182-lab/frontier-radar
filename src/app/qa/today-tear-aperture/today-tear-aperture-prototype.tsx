@@ -142,8 +142,19 @@ const laneLabel: Record<Lane, string> = {
   wildcard: "WILDCARD SIGNAL",
 };
 
+const OPEN_TARGET_RATIO = 0.42;
+const OPEN_DURATION_MS = 900;
+const OPEN_SINGLE_DELTA = 72;
+const OPEN_BURST_THRESHOLD = 116;
+const OPEN_BURST_WINDOW_MS = 220;
+
 function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
+}
+
+function easeOutQuart(value: number) {
+  const t = clamp(value);
+  return 1 - Math.pow(1 - t, 4);
 }
 
 export function TodayTearAperturePrototype() {
@@ -151,6 +162,11 @@ export function TodayTearAperturePrototype() {
   const shellRef = useRef<HTMLElement | null>(null);
   const manualPauseRef = useRef(false);
   const manualTimerRef = useRef<number | null>(null);
+  const openingFrameRef = useRef<number | null>(null);
+  const openingRef = useRef(false);
+  const openedRef = useRef(false);
+  const wheelBurstRef = useRef(0);
+  const wheelBurstAtRef = useRef(0);
   const [selectedRank, setSelectedRank] = useState("01");
 
   const selected = useMemo(
@@ -212,6 +228,106 @@ export function TodayTearAperturePrototype() {
     };
   }, []);
 
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    const shell = shellRef.current;
+    if (!scroller || !shell) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    shell.dataset.openState = "closed";
+
+    const finishOpen = () => {
+      openingRef.current = false;
+      openedRef.current = true;
+      shell.dataset.openState = "open";
+      wheelBurstRef.current = 0;
+      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+      scroller.scrollTop = travel * OPEN_TARGET_RATIO;
+    };
+
+    const triggerOpen = () => {
+      if (openingRef.current || openedRef.current) return;
+      openingRef.current = true;
+      shell.dataset.openState = "opening";
+
+      const travel = Math.max(1, scroller.scrollHeight - scroller.clientHeight);
+      const startTop = scroller.scrollTop;
+      const targetTop = travel * OPEN_TARGET_RATIO;
+
+      if (reducedMotion) {
+        scroller.scrollTop = targetTop;
+        finishOpen();
+        return;
+      }
+
+      const startedAt = performance.now();
+      const animate = (now: number) => {
+        const progress = clamp((now - startedAt) / OPEN_DURATION_MS);
+        const eased = easeOutQuart(progress);
+        scroller.scrollTop = startTop + (targetTop - startTop) * eased;
+
+        if (progress < 1) {
+          openingFrameRef.current = window.requestAnimationFrame(animate);
+          return;
+        }
+
+        openingFrameRef.current = null;
+        finishOpen();
+      };
+
+      openingFrameRef.current = window.requestAnimationFrame(animate);
+    };
+
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 16;
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * scroller.clientHeight;
+      return event.deltaY;
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (openedRef.current) return;
+      event.preventDefault();
+      if (openingRef.current) return;
+
+      const delta = normalizeWheelDelta(event);
+      if (delta <= 0) {
+        wheelBurstRef.current = 0;
+        wheelBurstAtRef.current = performance.now();
+        return;
+      }
+
+      const now = performance.now();
+      if (now - wheelBurstAtRef.current > OPEN_BURST_WINDOW_MS) {
+        wheelBurstRef.current = 0;
+      }
+      wheelBurstAtRef.current = now;
+      wheelBurstRef.current += delta;
+
+      if (delta >= OPEN_SINGLE_DELTA || wheelBurstRef.current >= OPEN_BURST_THRESHOLD) {
+        triggerOpen();
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (openedRef.current || openingRef.current) return;
+      if (event.key !== "ArrowDown" && event.key !== "PageDown" && event.key !== " ") return;
+      event.preventDefault();
+      triggerOpen();
+    };
+
+    scroller.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      scroller.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKeyDown);
+      if (openingFrameRef.current !== null) {
+        window.cancelAnimationFrame(openingFrameRef.current);
+        openingFrameRef.current = null;
+      }
+    };
+  }, []);
+
   function select(rank: string) {
     setSelectedRank(rank);
     manualPauseRef.current = true;
@@ -227,6 +343,7 @@ export function TodayTearAperturePrototype() {
       ref={shellRef}
       className={styles.shell}
       data-today-r4="true"
+      data-open-state="closed"
       data-selected-rank={selected.rank}
       data-lane={selected.lane}
     >
@@ -365,7 +482,15 @@ export function TodayTearAperturePrototype() {
           </div>
         </div>
       </div>
-      <style jsx global>{`body:has([data-today-r4="true"]) { overflow: hidden; }`}</style>
+      <style jsx global>{`
+        body:has([data-today-r4="true"]) { overflow: hidden; }
+        body:has([data-today-r4="true"]) .fr-site-nav {
+          background: #f0efeb !important;
+          opacity: 1 !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+      `}</style>
     </section>
   );
 }

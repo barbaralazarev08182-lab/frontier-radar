@@ -27,7 +27,7 @@ async function expectViewportLocked(page: Page) {
   expect(overflow.height, "Today R4 vertical document overflow").toBeLessThanOrEqual(1);
 }
 
-test("Today R4 preserves the torn hero and opens signals inside one cinematic aperture", async ({ page }) => {
+test("Today R4 opens from an intentional gesture and preserves the cinematic aperture", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
@@ -40,11 +40,19 @@ test("Today R4 preserves the torn hero and opens signals inside one cinematic ap
   const signalButtons = page.getByRole("navigation", { name: "Today R4 fixture signals" }).getByRole("button");
 
   await expect(shell).toBeVisible();
+  await expect(shell).toHaveAttribute("data-open-state", "closed");
   await expect(signalButtons).toHaveCount(7);
   await expect(page.getByText("FIND WHAT'S NEXT", { exact: true })).toBeVisible();
   await expect(page.getByText("BEFORE IT HAS", { exact: true })).toBeVisible();
   await expect(page.getByText("A NAME.", { exact: true })).toBeVisible();
   await expectViewportLocked(page);
+
+  const navAppearance = await page.locator(".fr-site-nav").evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { backgroundColor: style.backgroundColor, opacity: style.opacity };
+  });
+  expect(navAppearance.backgroundColor, "Today R4 nav should match the paper exactly").toBe("rgb(240, 239, 235)");
+  expect(navAppearance.opacity, "Today R4 nav should be fully opaque").toBe("1");
 
   const ambientAnimation = await stage.evaluate((element) => getComputedStyle(element, "::before").animationName);
   expect(ambientAnimation, "Today R4 ambient field animation").toContain("ambientSweep");
@@ -53,8 +61,17 @@ test("Today R4 preserves the torn hero and opens signals inside one cinematic ap
 
   await page.screenshot({ path: `${artifactDir}/30-today-r4-hero.png`, fullPage: false });
 
-  await scrollToRatio(scroller, 0.17);
-  await page.waitForTimeout(320);
+  await page.mouse.move(800, 520);
+  await page.mouse.wheel(0, 24);
+  await page.waitForTimeout(140);
+  await expect(shell).toHaveAttribute("data-open-state", "closed");
+  const smallGestureScroll = await scroller.evaluate((element) => (element as HTMLElement).scrollTop);
+  expect(smallGestureScroll, "A small wheel gesture should not scrub the opening").toBeLessThanOrEqual(1);
+
+  await page.mouse.wheel(0, 180);
+  await page.waitForTimeout(280);
+  await expect(shell).toHaveAttribute("data-open-state", "opening");
+
   const heroHeading = page.locator("#today-r4-title");
   const tearSafety = await heroHeading.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -72,13 +89,16 @@ test("Today R4 preserves the torn hero and opens signals inside one cinematic ap
     tearSafety.childOverflow.every((value) => value === "visible"),
     "Today R4 hero rows should not hard-clip moving type",
   ).toBeTruthy();
-  await page.screenshot({ path: `${artifactDir}/30a-today-r4-tear.png`, fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/30a-today-r4-triggered-tear.png`, fullPage: false });
+
+  await page.waitForTimeout(760);
+  await expect(shell).toHaveAttribute("data-open-state", "open");
+  await expect(page.getByText("WHY NOW", { exact: true })).toBeVisible();
+  await expect(page.getByText("BUILD DIRECTION", { exact: true })).toBeVisible();
 
   await scrollToRatio(scroller, 0.58);
   await page.waitForTimeout(420);
   await expect(shell).toHaveAttribute("data-lane", "core");
-  await expect(page.getByText("WHY NOW", { exact: true })).toBeVisible();
-  await expect(page.getByText("BUILD DIRECTION", { exact: true })).toBeVisible();
 
   const fragmentBox = await signalButtons.first().boundingBox();
   expect(fragmentBox, "Today R4 peripheral signal should have a measurable click target").not.toBeNull();
