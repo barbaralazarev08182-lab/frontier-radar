@@ -1,0 +1,208 @@
+/* Gate 17B-R4 Reduction Pass: two reading surfaces; everything else returns to the live field. */
+
+/* Identity + score become field instrumentation, not another card. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) {
+  position: relative;
+  z-index: 9;
+  margin: 0 .45rem .55rem !important;
+  padding: .15rem .2rem .5rem !important;
+  border: 0 !important;
+  border-top: 1px solid color-mix(in srgb, var(--r4-interaction) 46%, rgba(23,23,21,.18)) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* The reading field is two surfaces + one instrumentation rail. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+  grid-template-columns: minmax(0, 1fr) 13.25rem !important;
+  grid-template-rows: auto auto !important;
+  align-content: center;
+  gap: .82rem 1.55rem !important;
+  padding: 0 .45rem .15rem !important;
+}
+
+/* Surface 01 — Signal Specimen. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  width: min(100%, 48rem);
+  min-height: 0;
+  padding: 1.05rem 1.1rem 1rem !important;
+  overflow: hidden;
+  border: 1px solid rgba(23,23,21,.34) !important;
+  border-left: 2px solid color-mix(in srgb, var(--r4-interaction) 72%, #171715) !important;
+  background:
+    linear-gradient(128deg, rgba(255,255,255,.54), rgba(255,255,255,.1) 52%, transparent 78%),
+    rgba(244,243,239,.97) !important;
+  box-shadow:
+    7px 9px 0 rgba(23,23,21,.032),
+    0 14px 30px rgba(23,23,21,.078),
+    inset 0 1px 0 rgba(255,255,255,.76) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+  max-width: 13.5ch !important;
+  font-size: clamp(2.55rem, 3.35vw, 4.08rem) !important;
+  line-height: .9 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child > p {
+  max-width: 48ch !important;
+  margin-top: .72rem !important;
+  font-size: .74rem !important;
+  line-height: 1.43 !important;
+}
+
+/* Remove the container around WHY NOW / WHY YOU so the two can split roles. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) {
+  display: contents !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Surface 02 — Intelligence Conclusion. WHY NOW owns the second physical plane. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  width: min(100%, 50rem);
+  min-height: 0;
+  display: grid !important;
+  grid-template-columns: 5.6rem minmax(0, 1fr) !important;
+  gap: .9rem !important;
+  padding: .88rem 1rem .95rem !important;
+  border: 1px solid rgba(23,23,21,.3) !important;
+  border-top: 2px solid color-mix(in srgb, var(--r4-interaction) 72%, #171715) !important;
+  background:
+    linear-gradient(110deg, rgba(255,255,255,.42), transparent 64%),
+    rgba(242,241,237,.965) !important;
+  box-shadow:
+    5px 7px 0 rgba(23,23,21,.028),
+    0 12px 25px rgba(23,23,21,.068),
+    inset 0 1px 0 rgba(255,255,255,.72) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child strong {
+  max-width: 38ch;
+  font-size: clamp(1.16rem, 1.38vw, 1.46rem) !important;
+  line-height: 1.13 !important;
+}
+
+/* WHY YOU returns to the field as a marginal annotation. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+  display: block !important;
+  min-height: 0;
+  padding: .72rem .2rem .5rem .82rem !important;
+  border: 0 !important;
+  border-left: 1px solid color-mix(in srgb, var(--r4-interaction) 48%, rgba(23,23,21,.2)) !important;
+  border-top: 1px solid rgba(23,23,21,.16) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) > span {
+  display: block;
+  margin-bottom: .52rem;
+  color: var(--r4-interaction) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) p {
+  max-width: 24ch;
+  font-size: .66rem !important;
+  line-height: 1.42 !important;
+}
+
+/* Evidence is instrumentation, not a sidebar card. */
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+  min-height: 0;
+  padding: .78rem .1rem .35rem .82rem !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(23,23,21,.32) !important;
+  border-top: 1px solid color-mix(in srgb, var(--r4-interaction) 52%, rgba(23,23,21,.2)) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] > div:not(:last-child) {
+  padding: .15rem 0 .58rem !important;
+  border-bottom: 1px solid rgba(23,23,21,.13) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] strong {
+  font-size: .8rem !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler {
+  min-height: 2.05rem;
+  margin-top: .4rem;
+  opacity: .9;
+}
+
+/* BUILD is the conclusion surface's release line, not a third card. */
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+  position: relative;
+  z-index: 9;
+  width: min(100% - 15.5rem, 50rem);
+  margin: .42rem 0 0 .45rem !important;
+  padding: .5rem .7rem 0 !important;
+  border: 0 !important;
+  border-top: 1.5px solid color-mix(in srgb, var(--r4-interaction) 78%, #171715) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  grid-template-columns: 6.7rem minmax(0, 1fr) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child strong {
+  max-width: 52ch !important;
+  font-size: .92rem !important;
+  line-height: 1.18 !important;
+}
+
+/* Keep nodes physical, but slightly sharper and less SaaS-like. */
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button {
+  border-color: rgba(23,23,21,.42) !important;
+  background:
+    linear-gradient(128deg, rgba(255,255,255,.46), transparent 68%),
+    rgba(243,242,238,.97) !important;
+  box-shadow:
+    4px 5px 0 rgba(23,23,21,.026),
+    0 9px 18px rgba(23,23,21,.075),
+    inset 0 1px 0 rgba(255,255,255,.72) !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button:hover,
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] {
+  box-shadow:
+    5px 7px 0 rgba(23,23,21,.034),
+    0 15px 29px rgba(23,23,21,.12),
+    0 0 0 1px color-mix(in srgb, var(--fragment-accent) 22%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.8) !important;
+}
+
+/* The field becomes more legible because only two opaque planes interrupt it. */
+.fr-r4-focus-lens { opacity: .36 !important; }
+.fr-r4-capture-links path { opacity: .24; }
+.fr-r4-capture-links path[data-active="true"] { opacity: .62; }
+[data-today-r4="true"][data-open-state="open"] .fr-r4-live-field { opacity: .78 !important; }
+
+@media (max-width: 1180px) {
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+    grid-template-columns: minmax(0, 1fr) 10.5rem !important;
+    column-gap: 1rem !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+    width: calc(100% - 12rem);
+  }
+}
