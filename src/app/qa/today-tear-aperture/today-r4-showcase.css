@@ -191,6 +191,14 @@
   animation: r4TapeRelease 940ms cubic-bezier(.16,1,.3,1) both;
 }
 
+[data-today-r4="true"][data-open-state="opening"] [aria-label="Today R4 fixture signals"] {
+  animation: r4SignalsArrival 900ms cubic-bezier(.16,1,.3,1) both;
+}
+
+[data-today-r4="true"][data-open-state="opening"] article[aria-live="polite"] {
+  animation: r4ApertureArrival 900ms cubic-bezier(.16,1,.3,1) both !important;
+}
+
 [data-today-r4="true"][data-open-state="open"] .fr-r4-radar {
   opacity: .15;
 }
@@ -249,13 +257,35 @@
   100% { filter: blur(1px); opacity: .08; }
 }
 
+@keyframes r4SignalsArrival {
+  0%, 20% { opacity: 0; filter: blur(1.5px); }
+  52% { opacity: .56; filter: blur(.3px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+@keyframes r4ApertureArrival {
+  0%, 22% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(18px) scale(.985);
+  }
+  48% { opacity: .68; }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fr-r4-radar,
   .fr-r4-radar__sweep,
   .fr-r4-radar__blip,
   .fr-r4-signal-tape span,
   .fr-r4-release-flash,
-  [data-today-r4="true"] #today-r4-title > span {
+  [data-today-r4="true"] #today-r4-title > span,
+  [data-today-r4="true"] [aria-label="Today R4 fixture signals"],
+  [data-today-r4="true"] article[aria-live="polite"] {
     animation: none !important;
   }
 }
