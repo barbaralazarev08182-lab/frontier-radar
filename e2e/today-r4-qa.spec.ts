@@ -121,10 +121,11 @@ test("Today R4 opens on the first downward gesture and preserves the live cinema
   const fragmentCursor = await signalButtons.nth(3).evaluate((element) => getComputedStyle(element).cursor);
   expect(fragmentCursor, "Today R4 peripheral signals should advertise click affordance").toBe("pointer");
 
-  await signalButtons.nth(5).hover();
+  await signalButtons.nth(5).dispatchEvent("pointerenter");
   await expect(shell).toHaveAttribute("data-r4-hover-rank", "06");
   await page.waitForTimeout(260);
   await page.screenshot({ path: `${artifactDir}/31-today-r4-aperture.png`, fullPage: false });
+  await signalButtons.nth(5).dispatchEvent("pointerleave");
 
   await scrollToRatio(scroller, 0.88);
   await page.waitForTimeout(420);
