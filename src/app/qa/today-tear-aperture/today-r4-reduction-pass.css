@@ -196,6 +196,332 @@
 .fr-r4-capture-links path[data-active="true"] { opacity: .62; }
 [data-today-r4="true"][data-open-state="open"] .fr-r4-live-field { opacity: .78 !important; }
 
+/* -------------------------------------------------------------------------- */
+/* Signature Aperture Pass — one instrument, two depth planes, seven poses.   */
+/* This geometry is interaction choreography only; it does not encode data.   */
+/* -------------------------------------------------------------------------- */
+
+[data-today-r4="true"] {
+  --r4-aperture-x: 0%;
+  --r4-aperture-y: 0%;
+  --r4-aperture-rotate: -4deg;
+  --r4-aperture-sx: 1.02;
+  --r4-aperture-sy: .96;
+}
+
+[data-today-r4="true"][data-selected-rank="01"] { --r4-aperture-x: -2.4%; --r4-aperture-y: -1.4%; --r4-aperture-rotate: -7deg; --r4-aperture-sx: 1.02; --r4-aperture-sy: .96; }
+[data-today-r4="true"][data-selected-rank="02"] { --r4-aperture-x: -.4%; --r4-aperture-y: -2.7%; --r4-aperture-rotate: -1deg; --r4-aperture-sx: 1.05; --r4-aperture-sy: .94; }
+[data-today-r4="true"][data-selected-rank="03"] { --r4-aperture-x: 2.8%; --r4-aperture-y: -2.1%; --r4-aperture-rotate: 6deg; --r4-aperture-sx: 1.01; --r4-aperture-sy: .93; }
+[data-today-r4="true"][data-selected-rank="04"] { --r4-aperture-x: 4.2%; --r4-aperture-y: -.2%; --r4-aperture-rotate: 10deg; --r4-aperture-sx: 1.04; --r4-aperture-sy: .98; }
+[data-today-r4="true"][data-selected-rank="05"] { --r4-aperture-x: 3.1%; --r4-aperture-y: 2.4%; --r4-aperture-rotate: 6deg; --r4-aperture-sx: 1.07; --r4-aperture-sy: .95; }
+[data-today-r4="true"][data-selected-rank="06"] { --r4-aperture-x: .2%; --r4-aperture-y: 3%; --r4-aperture-rotate: -4deg; --r4-aperture-sx: 1.08; --r4-aperture-sy: .92; }
+[data-today-r4="true"][data-selected-rank="07"] { --r4-aperture-x: -4.1%; --r4-aperture-y: 1.1%; --r4-aperture-rotate: -11deg; --r4-aperture-sx: 1.03; --r4-aperture-sy: 1.01; }
+
+/* Back-plane instrument: much larger, off-axis and deliberately incomplete. */
+.fr-r4-focus-lens {
+  left: calc(50% + var(--r4-aperture-x)) !important;
+  top: calc(51% + var(--r4-aperture-y)) !important;
+  width: min(97vw, 1540px) !important;
+  aspect-ratio: 1.78 !important;
+  opacity: 0 !important;
+  transform:
+    translate(-50%, -50%)
+    translate3d(calc(var(--r4-mx) * 22px), calc(var(--r4-my) * 14px), 0)
+    rotate(var(--r4-aperture-rotate))
+    scaleX(var(--r4-aperture-sx))
+    scaleY(var(--r4-aperture-sy)) !important;
+  transform-origin: 50% 51%;
+  filter: drop-shadow(0 14px 24px rgba(23,23,21,.035));
+  transition:
+    left 820ms cubic-bezier(.16,1,.3,1),
+    top 820ms cubic-bezier(.16,1,.3,1),
+    transform 920ms cubic-bezier(.16,1,.3,1),
+    opacity 460ms ease,
+    filter 460ms ease !important;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-focus-lens {
+  opacity: .7 !important;
+}
+
+[data-today-r4="true"][data-open-state="opening"] .fr-r4-focus-lens {
+  animation: r4SignatureApertureRelease 920ms cubic-bezier(.16,1,.3,1) both;
+}
+
+.fr-r4-focus-lens i {
+  border: 0 !important;
+  border-radius: 50%;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.fr-r4-focus-lens i:nth-child(1) {
+  inset: 2.5% 1.5% !important;
+  background: conic-gradient(
+    from 12deg,
+    color-mix(in srgb, var(--r4-interaction) 66%, #171715) 0 11%,
+    transparent 11% 18%,
+    rgba(23,23,21,.34) 18% 43%,
+    transparent 43% 56%,
+    color-mix(in srgb, var(--r4-interaction) 52%, rgba(23,23,21,.35)) 56% 86%,
+    transparent 86% 100%
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.1px), #000 calc(100% - 1.2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.1px), #000 calc(100% - 1.2px));
+  opacity: .78;
+  animation: r4SignatureOrbitA 21s linear infinite !important;
+}
+
+.fr-r4-focus-lens i:nth-child(2) {
+  inset: 13% 8% !important;
+  background: repeating-conic-gradient(
+    from 48deg,
+    rgba(23,23,21,.28) 0 1.1deg,
+    transparent 1.1deg 4.7deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1.6px), #000 calc(100% - .9px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 1.6px), #000 calc(100% - .9px));
+  opacity: .48;
+  animation: r4SignatureOrbitB 31s linear infinite reverse !important;
+}
+
+.fr-r4-focus-lens i:nth-child(3) {
+  inset: 29% 23% !important;
+  background: conic-gradient(
+    from 188deg,
+    transparent 0 19%,
+    var(--r4-interaction) 19% 38%,
+    transparent 38% 69%,
+    rgba(23,23,21,.44) 69% 83%,
+    transparent 83% 100%
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 1.6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 1.6px));
+  opacity: .66;
+  animation: r4SignatureIris 10.5s cubic-bezier(.45,0,.55,1) infinite alternate !important;
+}
+
+/* The former needle becomes an iris slit: quiet at rest, decisive on selection. */
+.fr-r4-focus-lens b {
+  left: 49.1% !important;
+  top: 11% !important;
+  bottom: auto !important;
+  width: 6.5% !important;
+  height: 78% !important;
+  border-left: 1px solid color-mix(in srgb, var(--r4-interaction) 44%, rgba(23,23,21,.2));
+  border-right: 1px solid rgba(23,23,21,.13);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--r4-interaction) 3.5%, transparent), transparent) !important;
+  transform: skewX(-6deg) rotate(2deg) !important;
+  opacity: .72;
+  animation: r4SignatureSlit 8.8s cubic-bezier(.45,0,.55,1) infinite alternate !important;
+}
+
+.fr-r4-focus-lens b::before,
+.fr-r4-focus-lens b::after {
+  content: "";
+  position: absolute;
+  left: -42%;
+  width: 184%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--r4-interaction) 58%, rgba(23,23,21,.28)), transparent);
+}
+
+.fr-r4-focus-lens b::before { top: 0; transform: rotate(-5deg); }
+.fr-r4-focus-lens b::after { bottom: 0; transform: rotate(5deg); }
+
+.fr-r4-focus-lens::before {
+  content: "";
+  position: absolute;
+  left: -7%;
+  top: 50%;
+  width: 114%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0 7%, rgba(23,23,21,.12) 22%, color-mix(in srgb, var(--r4-interaction) 38%, rgba(23,23,21,.16)) 50%, rgba(23,23,21,.1) 78%, transparent 93% 100%);
+  transform: rotate(-3deg);
+  opacity: .66;
+}
+
+.fr-r4-focus-lens::after {
+  content: "";
+  position: absolute;
+  left: 45.5%;
+  top: 45%;
+  width: 9%;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--r4-interaction) 62%, rgba(23,23,21,.16));
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 8px color-mix(in srgb, var(--r4-interaction) 2.6%, transparent),
+    0 0 0 24px rgba(23,23,21,.012);
+  opacity: .68;
+  animation: r4SignatureLock 6.5s ease-in-out infinite alternate;
+}
+
+/* Front-plane fragments reuse the existing aperture-rules layer. They briefly
+   pass in front of the reading planes, creating controlled occlusion without
+   creating another UI surface. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) {
+  z-index: 12 !important;
+  inset: -10% -13% !important;
+  pointer-events: none;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 420ms ease !important;
+}
+
+[data-today-r4="true"][data-open-state="open"] article[aria-live="polite"] > div:nth-child(2) {
+  opacity: .82;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span {
+  position: absolute !important;
+  left: calc(50% + var(--r4-aperture-x)) !important;
+  top: calc(50% + var(--r4-aperture-y)) !important;
+  width: min(97vw, 1540px) !important;
+  height: auto !important;
+  aspect-ratio: 1.78;
+  border: 0 !important;
+  border-radius: 50%;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--r4-aperture-rotate))
+    scaleX(var(--r4-aperture-sx))
+    scaleY(var(--r4-aperture-sy)) !important;
+  transform-origin: center;
+  transition:
+    left 820ms cubic-bezier(.16,1,.3,1),
+    top 820ms cubic-bezier(.16,1,.3,1),
+    transform 920ms cubic-bezier(.16,1,.3,1),
+    opacity 360ms ease !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(1) {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 4%,
+    color-mix(in srgb, var(--r4-interaction) 82%, #171715) 4% 7.5%,
+    transparent 7.5% 48.5%,
+    rgba(23,23,21,.72) 48.5% 51.5%,
+    transparent 51.5% 100%
+  ) !important;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3.2px), #000 calc(100% - 1.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3.2px), #000 calc(100% - 1.5px));
+  opacity: .62 !important;
+  animation: r4SignatureFrontPulse 11s ease-in-out infinite alternate;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(2) {
+  background: conic-gradient(
+    from 26deg,
+    transparent 0 22%,
+    rgba(23,23,21,.42) 22% 25%,
+    transparent 25% 73%,
+    color-mix(in srgb, var(--r4-interaction) 68%, rgba(23,23,21,.28)) 73% 76%,
+    transparent 76% 100%
+  ) !important;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  opacity: .5 !important;
+  animation: r4SignatureFrontPulse 13.5s -4s ease-in-out infinite alternate;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(3) {
+  background: conic-gradient(
+    from 11deg,
+    transparent 0 11.5%,
+    var(--r4-interaction) 11.5% 13.2%,
+    transparent 13.2% 62%,
+    rgba(23,23,21,.55) 62% 63.4%,
+    transparent 63.4% 100%
+  ) !important;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 2.2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 2.2px));
+  opacity: .72 !important;
+  filter: drop-shadow(0 2px 2px rgba(23,23,21,.08));
+  animation: r4SignatureFrontPulse 9.5s -2.5s ease-in-out infinite alternate;
+}
+
+/* Lane accents alter the instrument's tension without recoloring the page. */
+[data-today-r4="true"][data-lane="adjacent"] .fr-r4-focus-lens i:nth-child(3),
+[data-today-r4="true"][data-lane="adjacent"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(3) {
+  opacity: .86 !important;
+}
+
+[data-today-r4="true"][data-lane="wildcard"] .fr-r4-focus-lens {
+  filter: drop-shadow(0 16px 28px rgba(255,91,33,.055));
+}
+
+[data-today-r4="true"][data-lane="wildcard"] .fr-r4-focus-lens i:nth-child(1) {
+  animation-duration: 17s !important;
+}
+
+/* Stronger spatial response: active specimen remains readable while the field
+   visibly leans toward it. */
+[data-today-r4="true"][data-open-state="open"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] {
+  border-color: color-mix(in srgb, var(--fragment-accent) 88%, rgba(23,23,21,.2)) !important;
+  box-shadow:
+    7px 10px 0 rgba(23,23,21,.035),
+    0 19px 36px rgba(23,23,21,.14),
+    0 0 0 1px color-mix(in srgb, var(--fragment-accent) 34%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.86) !important;
+}
+
+@keyframes r4SignatureApertureRelease {
+  0% {
+    opacity: 0;
+    transform:
+      translate(-50%, -50%)
+      translate3d(calc(var(--r4-mx) * 10px), calc(var(--r4-my) * 8px), 0)
+      rotate(calc(var(--r4-aperture-rotate) - 13deg))
+      scaleX(calc(var(--r4-aperture-sx) * .72))
+      scaleY(calc(var(--r4-aperture-sy) * .72));
+    filter: blur(4px) drop-shadow(0 0 0 transparent);
+  }
+  58% { opacity: .78; filter: blur(0) drop-shadow(0 18px 28px rgba(23,23,21,.045)); }
+  100% {
+    opacity: .7;
+    transform:
+      translate(-50%, -50%)
+      translate3d(calc(var(--r4-mx) * 22px), calc(var(--r4-my) * 14px), 0)
+      rotate(var(--r4-aperture-rotate))
+      scaleX(var(--r4-aperture-sx))
+      scaleY(var(--r4-aperture-sy));
+    filter: blur(0) drop-shadow(0 14px 24px rgba(23,23,21,.035));
+  }
+}
+
+@keyframes r4SignatureOrbitA {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes r4SignatureOrbitB {
+  from { transform: rotate(0deg) scale(.997); }
+  to { transform: rotate(360deg) scale(1.003); }
+}
+
+@keyframes r4SignatureIris {
+  0% { transform: rotate(-3deg) scale(.985); opacity: .48; }
+  46% { opacity: .76; }
+  100% { transform: rotate(4deg) scale(1.025); opacity: .62; }
+}
+
+@keyframes r4SignatureSlit {
+  from { transform: skewX(-6deg) rotate(1deg) translateX(-3%); opacity: .48; }
+  to { transform: skewX(-6deg) rotate(3deg) translateX(4%); opacity: .78; }
+}
+
+@keyframes r4SignatureLock {
+  from { transform: scale(.86); opacity: .34; }
+  to { transform: scale(1.08); opacity: .72; }
+}
+
+@keyframes r4SignatureFrontPulse {
+  0% { opacity: .34; filter: drop-shadow(0 0 0 transparent); }
+  52% { opacity: .78; }
+  100% { opacity: .52; filter: drop-shadow(0 3px 4px rgba(23,23,21,.09)); }
+}
+
 @media (max-width: 1180px) {
   [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
     grid-template-columns: minmax(0, 1fr) 10.5rem !important;
@@ -204,5 +530,21 @@
 
   [data-today-r4="true"] article[aria-live="polite"] > div:last-child {
     width: calc(100% - 12rem);
+  }
+
+  .fr-r4-focus-lens,
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span {
+    width: min(108vw, 1280px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-r4-focus-lens,
+  .fr-r4-focus-lens i,
+  .fr-r4-focus-lens b,
+  .fr-r4-focus-lens::after,
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span {
+    animation: none !important;
+    transition-duration: .01ms !important;
   }
 }
