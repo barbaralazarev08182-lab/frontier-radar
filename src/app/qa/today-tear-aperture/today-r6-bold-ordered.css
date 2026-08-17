@@ -1,0 +1,393 @@
+/* Gate 17B-R6 — Bold but Ordered.
+   Visual reset after the R5 owner rejection: keep the instrument bold, but enforce
+   one primary focus, one secondary conclusion and one narrow evidence rail.
+   This is an isolated visual-gate layer; no data or live /today semantics change. */
+
+[data-today-r4="true"] {
+  --r6-paper: #f1f0ec;
+  --r6-ink: #171715;
+  --r6-blue: #3150ff;
+  --r6-orange: #ff5b21;
+  --r6-active: var(--r4-interaction);
+}
+
+/* Give the field color presence without turning it into a gradient wallpaper. */
+[data-today-r4="true"] .fr-r4-live-field::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 2.5rem 2vw 2rem;
+  pointer-events: none;
+  background:
+    linear-gradient(108deg, rgba(49,80,255,.055), transparent 31%),
+    linear-gradient(288deg, rgba(255,91,33,.045), transparent 26%);
+  opacity: .9;
+}
+
+[data-today-r4="true"][data-lane="adjacent"] .fr-r4-live-field::before {
+  background:
+    linear-gradient(106deg, rgba(49,80,255,.13), transparent 44%),
+    linear-gradient(292deg, rgba(255,91,33,.028), transparent 25%);
+}
+
+[data-today-r4="true"][data-lane="wildcard"] .fr-r4-live-field::before {
+  background:
+    linear-gradient(106deg, rgba(49,80,255,.035), transparent 34%),
+    linear-gradient(292deg, rgba(255,91,33,.14), transparent 46%);
+}
+
+/* Main content stage: controlled asymmetric editorial composition. */
+[data-today-r4="true"] article[aria-live="polite"] {
+  top: 8.4% !important;
+  bottom: 7.3% !important;
+  left: 7.1% !important;
+  right: 7.1% !important;
+  padding: .2rem !important;
+  overflow: visible !important;
+  animation: none !important;
+}
+
+/* Identity line is tertiary instrumentation. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) {
+  position: absolute !important;
+  z-index: 10 !important;
+  left: 1.2% !important;
+  top: 1.2% !important;
+  width: 57.5% !important;
+  margin: 0 !important;
+  padding: .34rem .1rem .48rem !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(23,23,21,.72) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Reading layout: left specimen, lower-right conclusion, far-right rail. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 31%) !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: 1.05rem 2rem !important;
+  height: 100% !important;
+  padding: 2.65rem .2rem 4.8rem !important;
+  align-content: stretch !important;
+}
+
+/* Surface 01: one strong specimen. No giant overflow, no collision. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  justify-self: start !important;
+  position: relative !important;
+  z-index: 9 !important;
+  width: min(100%, 52rem) !important;
+  min-height: 22rem !important;
+  max-height: 31rem !important;
+  padding: 2.1rem 2.35rem 1.65rem 2.55rem !important;
+  overflow: hidden !important;
+  clip-path: polygon(0 0, 92% 0, 100% 14%, 100% 100%, 0 100%) !important;
+  border: 1px solid rgba(23,23,21,.28) !important;
+  border-left: .48rem solid var(--r6-active) !important;
+  background:
+    linear-gradient(118deg, rgba(255,255,255,.72), rgba(255,255,255,.3) 58%, transparent),
+    rgba(244,243,239,.97) !important;
+  box-shadow:
+    0 18px 42px rgba(23,23,21,.09),
+    8px 10px 0 rgba(23,23,21,.028),
+    inset 0 1px 0 rgba(255,255,255,.8) !important;
+  transform: none !important;
+}
+
+/* Two constant calibration bars add brand color without changing signal semantics. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 1.55rem !important;
+  right: 2rem !important;
+  width: 6.8rem !important;
+  height: .55rem !important;
+  background: linear-gradient(90deg, var(--r6-blue) 0 47%, transparent 47% 54%, var(--r6-orange) 54% 100%) !important;
+  box-shadow: 0 .45rem 0 rgba(23,23,21,.07) !important;
+  opacity: .82 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+  max-width: 11.4ch !important;
+  margin: 0 !important;
+  font-size: clamp(4rem, 5.15vw, 6.4rem) !important;
+  line-height: .84 !important;
+  letter-spacing: -.072em !important;
+  text-wrap: balance;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child > p {
+  max-width: 43ch !important;
+  margin: 1.15rem 0 0 !important;
+  padding-left: 1rem !important;
+  border-left: 2px solid color-mix(in srgb, var(--r6-active) 72%, rgba(23,23,21,.32)) !important;
+  font-size: clamp(.72rem, .8vw, .84rem) !important;
+  line-height: 1.42 !important;
+}
+
+/* Intelligence container stays structural only. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) {
+  display: contents !important;
+}
+
+/* Surface 02: one clear secondary focus, below the specimen instead of crossing it. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  align-self: end !important;
+  justify-self: end !important;
+  position: relative !important;
+  z-index: 9 !important;
+  width: min(84%, 44rem) !important;
+  min-height: 8.4rem !important;
+  margin: -2.1rem 0 0 !important;
+  padding: 1.25rem 1.55rem 1.35rem 1.6rem !important;
+  display: grid !important;
+  grid-template-columns: 5.1rem minmax(0, 1fr) !important;
+  gap: 1.05rem !important;
+  border: 1px solid rgba(23,23,21,.26) !important;
+  border-top: .32rem solid var(--r6-active) !important;
+  background:
+    linear-gradient(110deg, color-mix(in srgb, var(--r6-active) 7%, rgba(244,243,239,.98)), rgba(244,243,239,.98) 34%, rgba(244,243,239,.96)) !important;
+  box-shadow: 0 13px 28px rgba(23,23,21,.075), 6px 7px 0 rgba(23,23,21,.025) !important;
+  transform: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child strong {
+  max-width: 31ch !important;
+  font-size: clamp(1.42rem, 1.75vw, 2rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.035em !important;
+}
+
+/* Evidence rail: the only narrow technical cluster on the right. */
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  position: relative !important;
+  z-index: 8 !important;
+  min-height: 16rem !important;
+  margin: 1.2rem 0 0 !important;
+  padding: 1.1rem 1rem 1rem 1.15rem !important;
+  border: 0 !important;
+  border-left: 2px solid rgba(23,23,21,.72) !important;
+  border-top: 1px solid var(--r6-active) !important;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--r6-active) 5%, transparent), transparent 58%) !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] > div:not(:last-child) {
+  padding: .28rem 0 .92rem !important;
+  border-bottom: 1px solid rgba(23,23,21,.16) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] strong {
+  font-size: clamp(.86rem, 1vw, 1.05rem) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler {
+  margin-top: 1.5rem !important;
+  min-height: 2.6rem !important;
+}
+
+/* WHY YOU: plain marginal note below the evidence rail. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  align-self: start !important;
+  position: relative !important;
+  z-index: 8 !important;
+  width: 100% !important;
+  margin: -.25rem 0 0 !important;
+  padding: .8rem .25rem .25rem 1.15rem !important;
+  border: 0 !important;
+  border-left: 2px solid color-mix(in srgb, var(--r6-active) 55%, rgba(23,23,21,.15)) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) p {
+  max-width: 27ch !important;
+  font-size: .7rem !important;
+  line-height: 1.45 !important;
+}
+
+/* Build direction: quiet release line, never a competing panel. */
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+  position: absolute !important;
+  z-index: 9 !important;
+  left: 2.2% !important;
+  bottom: .3% !important;
+  width: min(58%, 48rem) !important;
+  margin: 0 !important;
+  padding: .65rem 0 0 !important;
+  border: 0 !important;
+  border-top: 2px solid rgba(23,23,21,.82) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  grid-template-columns: 7rem minmax(0, 1fr) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child strong {
+  max-width: 50ch !important;
+  font-size: .88rem !important;
+  line-height: 1.2 !important;
+}
+
+/* Remove R5's foreground occlusion. Aperture becomes a strong BACKGROUND organ. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) {
+  z-index: 2 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+[data-today-r4="true"] .fr-r4-focus-lens {
+  z-index: 2 !important;
+  left: 54% !important;
+  top: 51% !important;
+  width: min(82vw, 1320px) !important;
+  opacity: 0 !important;
+  filter: none !important;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-focus-lens {
+  opacity: .54 !important;
+}
+
+[data-today-r4="true"] .fr-r4-focus-lens i:nth-child(1) {
+  opacity: .72 !important;
+  filter: drop-shadow(0 0 0 transparent) !important;
+}
+
+[data-today-r4="true"] .fr-r4-focus-lens i:nth-child(2) {
+  opacity: .28 !important;
+}
+
+[data-today-r4="true"] .fr-r4-focus-lens i:nth-child(3) {
+  opacity: .52 !important;
+}
+
+[data-today-r4="true"] .fr-r4-focus-lens b {
+  opacity: .42 !important;
+}
+
+/* Capture links remain functional but cease competing with typography. */
+[data-today-r4="true"] .fr-r4-capture-links path {
+  opacity: .1 !important;
+}
+
+[data-today-r4="true"] .fr-r4-capture-links path[data-active="true"] {
+  opacity: .42 !important;
+  stroke-width: 1.25 !important;
+}
+
+/* Nodes form a calm perimeter. Only active node gets strong physical presence. */
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button {
+  opacity: .58 !important;
+  min-width: 9.7rem !important;
+  min-height: 2.35rem !important;
+  background: rgba(244,243,239,.94) !important;
+  border-color: rgba(23,23,21,.24) !important;
+  box-shadow: 0 6px 13px rgba(23,23,21,.055) !important;
+  filter: none !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button:hover {
+  opacity: .88 !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] {
+  opacity: 1 !important;
+  color: #f4f3ef !important;
+  background: var(--fragment-accent) !important;
+  border-color: var(--fragment-accent) !important;
+  box-shadow: 0 13px 26px rgba(23,23,21,.14), 5px 6px 0 rgba(23,23,21,.03) !important;
+  transform: scale(1.045) !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] b,
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] span,
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] em,
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]::before {
+  color: #f4f3ef !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]::after {
+  background: #f4f3ef !important;
+}
+
+/* Score stays visible, but tertiary. */
+[data-today-r4="true"] .scoreBlock strong {
+  font-size: clamp(3.5rem, 4.7vw, 5.7rem) !important;
+  line-height: .78 !important;
+  opacity: .88 !important;
+}
+
+/* Kill extra decorative clutter from the R5 reset. */
+[data-today-r4="true"] .fr-r4-release-flash,
+[data-today-r4="true"] .fr-r4-reticle,
+[data-today-r4="true"] .fr-r4-edge-meter,
+[data-today-r4="true"] .fr-r4-signal-tape {
+  opacity: .12 !important;
+}
+
+[data-today-r4="true"] .fr-r4-recalibration {
+  z-index: 4 !important;
+  opacity: .45;
+}
+
+@media (max-width: 1280px) {
+  [data-today-r4="true"] article[aria-live="polite"] {
+    left: 6.1% !important;
+    right: 6.1% !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 29%) !important;
+    column-gap: 1.25rem !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+    font-size: clamp(3.65rem, 5vw, 5.25rem) !important;
+  }
+}
+
+@media (max-width: 1080px) {
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+    grid-template-columns: minmax(0, 1fr) 13rem !important;
+    gap: .8rem !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+    min-height: 20rem !important;
+    padding: 1.65rem 1.7rem 1.35rem 1.9rem !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+    font-size: clamp(3.1rem, 4.8vw, 4.25rem) !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child {
+    width: 94% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-today-r4="true"] .fr-r4-focus-lens,
+  [data-today-r4="true"] .fr-r4-focus-lens i,
+  [data-today-r4="true"] .fr-r4-focus-lens b,
+  [data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button {
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+}
