@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
+import { FeedQueryError, FeedUnconfiguredError, getDataMode } from "@/lib/feed/provider";
+import { getCachedFeed } from "@/lib/feed/cached-feed";
 import type { FeedQuery, FeedResult, FrontierFeedItem } from "@/lib/feed/types";
 import {
   clusterProjectFeed,
@@ -56,8 +57,7 @@ export default async function TodayPage() {
   let totalDiscoveries = 0;
 
   try {
-    const provider = getFeedProvider();
-    feed = await provider.getFeed(query);
+    feed = await getCachedFeed(query);
     totalDiscoveries = feed.total;
 
     if (feed) {

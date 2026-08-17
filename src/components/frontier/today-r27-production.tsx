@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent } from "react";
+import { useRouter } from "next/navigation";
 import type { EditorialSignal, EditorialLane } from "@/components/frontier/today-editorial";
 import { trackFeedback } from "@/lib/personalization/browser";
 import { observeQualifiedDwell } from "@/lib/personalization/qualified-dwell";
@@ -62,7 +63,12 @@ function averageScore(signals: EditorialSignal[]) {
   return String(Math.round(values.reduce((sum, value) => sum + value, 0) / values.length));
 }
 
+function projectPath(signal: EditorialSignal) {
+  return `/project/${encodeURIComponent(signal.id)}`;
+}
+
 export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, signals }: TodayR27ProductionProps) {
+  const router = useRouter();
   const visibleSignals = useMemo(
     () => signals.slice(0, 7).sort((a, b) => LANE_ORDER[a.lane] - LANE_ORDER[b.lane]),
     [signals],
@@ -86,6 +92,11 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
     if (currentIndex >= 0) return;
     setSelectedRank(String(Math.min(3, visibleSignals.length)).padStart(2, "0"));
   }, [selectedRank, visibleSignals]);
+
+  useEffect(() => {
+    if (!selectedSignal) return;
+    router.prefetch(projectPath(selectedSignal));
+  }, [router, selectedSignal]);
 
   useEffect(() => {
     const onWheel = (event: WheelEvent) => {
@@ -170,7 +181,7 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
 
   function openProject(signal: EditorialSignal, rank: string) {
     trackFeedback(signal.id, "open_detail", undefined, { ...signal.metadata, rank: Number(rank) });
-    window.location.assign(`/project/${encodeURIComponent(signal.id)}`);
+    router.push(projectPath(signal));
   }
 
   function handleBandClick(event: ReactMouseEvent<HTMLButtonElement>, signal: EditorialSignal, rank: string) {
@@ -268,7 +279,14 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
               const active = opened && rank === selectedRank;
               return (
                 <section className="fr-band" data-active={active ? "true" : "false"} data-lane={signal.lane} key={signal.id}>
-                  <button className="fr-band-head" type="button" onClick={(event) => handleBandClick(event, signal, rank)} aria-expanded={active}>
+                  <button
+                    className="fr-band-head"
+                    type="button"
+                    onMouseEnter={() => router.prefetch(projectPath(signal))}
+                    onFocus={() => router.prefetch(projectPath(signal))}
+                    onClick={(event) => handleBandClick(event, signal, rank)}
+                    aria-expanded={active}
+                  >
                     <span className="fr-band-rank">{rank}</span>
                     <span className="fr-band-entity">{signal.title}</span>
                     <span className="fr-band-thesis">{thesisFrom(signal)}</span>
