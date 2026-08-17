@@ -1,0 +1,107 @@
+/* R22 — restrained chromatic rhythm for all seven signals.
+   01–02 cool teal, 03–05 dusty indigo, 06 cobalt, 07 orange. */
+
+.fr-stack-bands .fr-band{--row-accent:var(--lane)}
+.fr-stack-bands .fr-band:nth-child(1),
+.fr-stack-bands .fr-band:nth-child(2){--row-accent:#6f9e97}
+.fr-stack-bands .fr-band:nth-child(3),
+.fr-stack-bands .fr-band:nth-child(4),
+.fr-stack-bands .fr-band:nth-child(5){--row-accent:#777db4}
+.fr-stack-bands .fr-band:nth-child(6){--row-accent:#3150ff}
+.fr-stack-bands .fr-band:nth-child(7){--row-accent:#f15424}
+
+/* Let every collapsed row carry a quiet color signature instead of five neutral rows + two colored rows. */
+.fr-stack[data-open="true"] .fr-band:not([data-active="true"]){
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 7%,transparent),color-mix(in srgb,var(--row-accent) 2.2%,transparent) 30%,rgba(241,238,229,.72) 66%)!important;
+}
+.fr-stack[data-open="true"] .fr-band:not([data-active="true"]):hover{
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 11%,transparent),color-mix(in srgb,var(--row-accent) 3.8%,transparent) 38%,rgba(241,238,229,.72) 72%)!important;
+}
+.fr-stack[data-open="true"] .fr-band::before,
+.fr-stack[data-open="true"] .fr-band::after{background:var(--row-accent)!important}
+.fr-stack[data-open="true"] .fr-band-rank{color:color-mix(in srgb,var(--row-accent) 82%,#0b0b0b)!important}
+.fr-stack[data-open="true"] .fr-band-topic{color:color-mix(in srgb,var(--row-accent) 48%,rgba(11,11,11,.52))!important}
+
+/* Title plates inherit the row accent, with color kept in the material rather than the type. */
+.fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-entity{
+  border-left-color:color-mix(in srgb,var(--row-accent) 72%,transparent)!important;
+  background:
+    linear-gradient(104deg,color-mix(in srgb,var(--row-accent) 9%,rgba(255,255,255,.62)),rgba(255,255,255,.34) 70%,color-mix(in srgb,var(--row-accent) 5%,transparent))!important;
+  box-shadow:
+    0 7px 18px color-mix(in srgb,var(--row-accent) 8%,transparent),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 11%,transparent)!important;
+}
+.fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-head:hover .fr-band-entity{
+  box-shadow:
+    0 9px 22px color-mix(in srgb,var(--row-accent) 12%,transparent),
+    -5px 0 0 color-mix(in srgb,var(--row-accent) 14%,transparent),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 16%,transparent)!important;
+}
+
+/* OPEN / ENTER gates use the row's accent even for the five core signals. */
+.fr-stack[data-open="true"] .fr-band-gate{--gate:var(--row-accent)!important}
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="core"] .fr-band-gate{
+  color:var(--row-accent)!important;
+  background:color-mix(in srgb,var(--row-accent) 8%,rgba(255,255,255,.36))!important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 45%,transparent),
+    0 6px 18px color-mix(in srgb,var(--row-accent) 10%,transparent)!important;
+}
+
+/* Core active rows are no longer one identical white sheet. The tint remains translucent and readable. */
+.fr-stack[data-open="true"] .fr-band:nth-child(1)[data-active="true"],
+.fr-stack[data-open="true"] .fr-band:nth-child(2)[data-active="true"]{
+  background:
+    radial-gradient(ellipse at 61% 43%,rgba(111,158,151,.115),rgba(111,158,151,.045) 28%,transparent 55%),
+    linear-gradient(112deg,transparent 0 18%,rgba(111,158,151,.055) 18% 57%,transparent 57% 70%,rgba(119,125,180,.025) 70% 88%,transparent 88%),
+    rgba(248,246,240,.95)!important;
+}
+.fr-stack[data-open="true"] .fr-band:nth-child(3)[data-active="true"],
+.fr-stack[data-open="true"] .fr-band:nth-child(4)[data-active="true"],
+.fr-stack[data-open="true"] .fr-band:nth-child(5)[data-active="true"]{
+  background:
+    radial-gradient(ellipse at 59% 42%,rgba(119,125,180,.125),rgba(119,125,180,.048) 28%,transparent 56%),
+    linear-gradient(112deg,transparent 0 20%,rgba(119,125,180,.06) 20% 58%,transparent 58% 70%,rgba(111,158,151,.022) 70% 88%,transparent 88%),
+    rgba(248,246,240,.95)!important;
+}
+
+/* Strengthen the active title plate just enough to anchor the eye. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="core"] .fr-band-entity{
+  border-left-color:color-mix(in srgb,var(--row-accent) 78%,transparent)!important;
+  background:
+    linear-gradient(102deg,color-mix(in srgb,var(--row-accent) 13%,rgba(255,255,255,.78)),rgba(255,255,255,.38) 68%,color-mix(in srgb,var(--row-accent) 7%,transparent))!important;
+  box-shadow:
+    0 12px 28px color-mix(in srgb,var(--row-accent) 11%,transparent),
+    -7px 0 0 color-mix(in srgb,var(--row-accent) 18%,transparent),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 12%,transparent)!important;
+}
+
+/* The translucent content plates follow the active core accent instead of always defaulting to blue. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="core"] .fr-band-detail::before{
+  background:linear-gradient(138deg,color-mix(in srgb,var(--row-accent) 8%,transparent),rgba(255,255,255,.17) 58%,color-mix(in srgb,var(--row-accent) 3%,transparent))!important;
+  border-color:color-mix(in srgb,var(--row-accent) 10%,transparent)!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="core"] .fr-band-detail::after{
+  background:linear-gradient(160deg,color-mix(in srgb,var(--row-accent) 4%,transparent),rgba(255,255,255,.12) 58%,color-mix(in srgb,var(--row-accent) 2%,transparent))!important;
+  border-color:color-mix(in srgb,var(--row-accent) 7%,transparent)!important;
+}
+
+/* Cover state: the same real rows already carry their future color, but at a much quieter level. */
+.fr-stack:not([data-open="true"]) .fr-band{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 4.2%,transparent),transparent 35%)!important;
+}
+.fr-stack:not([data-open="true"]) .fr-band-head::after{
+  background:var(--row-accent)!important;
+  opacity:.46!important;
+}
+.fr-stack:not([data-open="true"]) .fr-band:nth-child(6) .fr-band-head::after,
+.fr-stack:not([data-open="true"]) .fr-band:nth-child(7) .fr-band-head::after{opacity:1!important}
+.fr-stack:not([data-open="true"]) .fr-band-head:hover{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 7%,transparent),transparent 48%)!important;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .fr-stack .fr-band{transition:none!important}
+}
