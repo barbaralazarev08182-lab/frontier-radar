@@ -1,5 +1,28 @@
 /* Production guardrails for live Today data. Keep the accepted R27 composition stable when titles and lanes change daily. */
 
+/* The production site nav is fixed at 48px. The approved QA stage lived below that nav,
+   so reserve that physical space instead of letting the live control bar sit behind it. */
+.today-r27-production{
+  margin-top:48px!important;
+  height:calc(100dvh - 48px)!important;
+}
+.today-r27-production .fr-stack{
+  height:calc(100dvh - 48px)!important;
+}
+
+/* Make the approved R27 live control strip explicit in production. */
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-shared .fr-stack-live-head{
+  display:flex!important;
+  flex:0 0 30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  opacity:1!important;
+  overflow:hidden!important;
+  pointer-events:auto!important;
+  transform:none!important;
+  border-bottom-color:var(--line)!important;
+}
+
 /* Cover is always seven equal rows. No selected/active styling is allowed to leak into the cover. */
 .today-r27-production .fr-stack:not([data-open="true"]) .fr-band,
 .today-r27-production .fr-stack:not([data-open="true"]) .fr-band[data-active="true"]{
