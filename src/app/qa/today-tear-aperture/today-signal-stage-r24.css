@@ -1,0 +1,26 @@
+/* R24 — restore the original Wildcard 07 color treatment.
+   Keep R23's larger typography, but return 07 to its original solid orange identity. */
+
+.fr-stack[data-open="true"] .fr-band:nth-child(7)[data-active="true"]{
+  background:var(--orange)!important;
+  color:#fff!important;
+}
+
+/* Restore the original white-on-orange title plate from the pre-R23 Wildcard treatment. */
+.fr-stack[data-open="true"] .fr-band:nth-child(7)[data-active="true"] .fr-band-entity{
+  border-left-color:rgba(255,255,255,.9)!important;
+  background:linear-gradient(102deg,rgba(255,255,255,.18),rgba(255,255,255,.07) 72%,rgba(255,255,255,.02))!important;
+  box-shadow:0 13px 30px rgba(0,0,0,.14),-7px 0 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(255,255,255,.18)!important;
+}
+
+/* Restore the original translucent white material plates for the orange field. */
+.fr-stack[data-open="true"] .fr-band:nth-child(7)[data-active="true"] .fr-band-detail::before{
+  opacity:.9!important;
+  background:linear-gradient(138deg,rgba(255,255,255,.13),rgba(255,255,255,.045) 62%,transparent)!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+.fr-stack[data-open="true"] .fr-band:nth-child(7)[data-active="true"] .fr-band-detail::after{
+  opacity:.72!important;
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.025) 68%,transparent)!important;
+  border-color:rgba(255,255,255,.11)!important;
+}
