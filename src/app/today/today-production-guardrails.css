@@ -1,0 +1,78 @@
+/* Production guardrails for live Today data. Keep the accepted R27 composition stable when titles and lanes change daily. */
+
+/* Cover is always seven equal rows. No selected/active styling is allowed to leak into the cover. */
+.today-r27-production .fr-stack:not([data-open="true"]) .fr-band,
+.today-r27-production .fr-stack:not([data-open="true"]) .fr-band[data-active="true"]{
+  height:calc(100% / var(--signal-count))!important;
+  min-height:0!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+}
+.today-r27-production .fr-stack:not([data-open="true"]) .fr-band[data-active="true"] .fr-band-detail{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.today-r27-production .fr-stack:not([data-open="true"]) .fr-band[data-active="true"] .fr-band-head{
+  height:100%!important;
+}
+
+/* Live titles are much longer than the QA fixtures. Give the active title real room instead of clipping it at 300px. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-head{
+  grid-template-columns:64px minmax(360px,34vw) minmax(300px,1fr) 160px 132px!important;
+  min-height:88px!important;
+  height:88px!important;
+  padding-top:7px!important;
+  padding-bottom:7px!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{
+  width:auto!important;
+  max-width:100%!important;
+  min-width:0!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  font-size:clamp(25px,1.85vw,34px)!important;
+  line-height:1.02!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-thesis{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden!important;
+  font-size:clamp(15px,1.05vw,18px)!important;
+  line-height:1.18!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+  height:calc(100% - 88px)!important;
+}
+
+/* Keep collapsed live rows compact even when incoming titles are extremely long. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-entity{
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+@media(max-width:1280px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-head{
+    grid-template-columns:54px minmax(300px,34vw) minmax(250px,1fr) 132px 118px!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{font-size:clamp(23px,2vw,30px)!important}
+}
+
+@media(max-width:980px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-head{
+    grid-template-columns:48px minmax(230px,1fr) 92px!important;
+    height:78px!important;
+    min-height:78px!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-thesis,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-topic{display:none!important}
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{height:calc(100% - 78px)!important}
+}
