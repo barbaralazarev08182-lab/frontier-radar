@@ -1,9 +1,9 @@
-/* Gate 17C — production-only wiring around the owner-approved R27 Today stage.
-   Keep the R27 visual contract; replace fixture readouts with live attributes and reconnect the Signal Weave below. */
+/* Gate 17C final — owner-approved R27 is the entire Today experience.
+   No legacy MotionLab, synthesis chapter, Signal Weave, or second screen. */
 
-body:has(.today-r27-production){overflow:auto!important;background:#f1eee5}
+body:has(.today-r27-production){overflow:hidden!important;background:#f1eee5}
 body:has(.today-r27-production)>div>main{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
-.today-r27-production{width:100%;overflow-x:clip;background:#f1eee5}
+.today-r27-production{width:100%;height:calc(100dvh - 48px);overflow:hidden;background:#f1eee5}
 .today-r27-production .fr-stack{margin-left:calc(50% - 50vw + 8px)}
 
 /* Production can truthfully render fewer than seven records during degraded scans. */
@@ -24,7 +24,7 @@ body:has(.today-r27-production)>div>main{width:100%!important;max-width:none!imp
 }
 
 /* QA happened to place Adjacent at 06 and Wildcard at 07. Production lanes move every day.
-   Preserve the user's color rhythm for Core, but bind cobalt/orange to semantics rather than rank. */
+   Preserve the accepted color rhythm while binding cobalt/orange to meaning rather than rank. */
 .today-r27-production .fr-band[data-lane="core"]{--row-accent:#777db4!important}
 .today-r27-production .fr-band:nth-child(1)[data-lane="core"],
 .today-r27-production .fr-band:nth-child(2)[data-lane="core"]{--row-accent:#6f9e97!important}
@@ -68,7 +68,7 @@ body:has(.today-r27-production)>div>main{width:100%!important;max-width:none!imp
   color:#fff!important;
 }
 
-/* Wildcard keeps the owner-approved original solid orange wherever it lands. */
+/* Wildcard keeps the accepted original solid orange wherever it lands. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="wildcard"][data-active="true"]{
   background:var(--orange)!important;
   color:#fff!important;
@@ -89,65 +89,10 @@ body:has(.today-r27-production)>div>main{width:100%!important;max-width:none!imp
   border-color:rgba(255,255,255,.11)!important;
 }
 
-/* The first physical gesture opens the shared stack; subsequent scrolling continues to the existing synthesis endpoint. */
 .today-r27-production .fr-stack[data-open="true"]{
   box-shadow:0 30px 80px rgba(17,18,23,.075);
-}
-.today-r27-weave{
-  position:relative;
-  z-index:1;
-  width:100%;
-  min-height:100vh;
-  overflow:hidden;
-  border-top:1px solid rgba(11,11,11,.13);
-  background:#f0efeb;
-}
-.today-r27-weave::before{
-  content:"SIGNAL WEAVE / TODAY'S SYNTHESIS";
-  position:absolute;
-  top:18px;
-  left:24px;
-  z-index:3;
-  color:rgba(28,28,26,.45);
-  font:800 7px/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-  letter-spacing:.14em;
-  pointer-events:none;
-}
-.today-r27-synthesis-state{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  padding:48px;
-  text-align:center;
-  color:#1c1c1a;
-  background:
-    radial-gradient(circle at 50% 44%,rgba(49,80,255,.065),transparent 28%),
-    repeating-linear-gradient(90deg,transparent 0 79px,rgba(28,28,26,.035) 79px 80px),
-    repeating-linear-gradient(0deg,transparent 0 79px,rgba(28,28,26,.035) 79px 80px),
-    #f0efeb;
-}
-.today-r27-synthesis-state>span{
-  color:rgba(28,28,26,.46);
-  font:800 8px/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-  letter-spacing:.14em;
-}
-.today-r27-synthesis-state>strong{
-  font-size:clamp(38px,5vw,78px);
-  line-height:.92;
-  letter-spacing:-.055em;
-}
-.today-r27-synthesis-state>p{
-  max-width:54ch;
-  margin:0;
-  color:rgba(28,28,26,.58);
-  font-size:13px;
-  line-height:1.6;
 }
 
 @media(max-width:820px){
   .today-r27-production .fr-stack{margin-left:calc(50% - 50vw + 8px)}
-  .today-r27-synthesis-state{padding:30px 20px}
 }
