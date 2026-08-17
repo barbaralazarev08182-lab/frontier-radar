@@ -26,6 +26,7 @@ export function TodaySignalStage() {
   const [switching, setSwitching] = useState(false);
   const [transitionState, setTransitionState] = useState<TransitionState>("idle");
   const selectedIndex = useMemo(() => SIGNALS.findIndex((signal) => signal.rank === selectedRank), [selectedRank]);
+  const selectedSignal = SIGNALS[selectedIndex] ?? SIGNALS[2]!;
 
   useEffect(() => {
     const onWheel = (event: WheelEvent) => {
@@ -94,7 +95,41 @@ export function TodaySignalStage() {
   }
 
   return (
-    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"} data-transition={transitionState}>
+    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"} data-transition={transitionState} data-selected-lane={selectedSignal.lane}>
+      <div className="fr-stack-atmosphere" aria-hidden="true">
+        <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+          <g className="fr-stack-atmosphere__left">
+            <path className="fr-stack-atmosphere__wire fr-stack-atmosphere__wire--major" d="M-120 790 C 40 510, 210 410, 430 430 C 610 448, 688 576, 748 770" />
+            <path className="fr-stack-atmosphere__wire" d="M-90 850 C 88 548, 260 482, 445 505 C 590 523, 680 625, 720 846" />
+            <path className="fr-stack-atmosphere__construction" d="M170 354 L170 720 M118 622 L262 622 M170 622 L282 522" />
+            <circle className="fr-stack-atmosphere__node" cx="170" cy="622" r="4" />
+            <circle className="fr-stack-atmosphere__node" cx="282" cy="522" r="3" />
+            <circle className="fr-stack-atmosphere__node" cx="348" cy="690" r="4" />
+          </g>
+
+          <g className="fr-stack-atmosphere__orbit">
+            <ellipse className="fr-stack-atmosphere__orbit-line" cx="1170" cy="250" rx="390" ry="205" />
+            <ellipse className="fr-stack-atmosphere__orbit-line" cx="1170" cy="250" rx="305" ry="154" />
+            <ellipse className="fr-stack-atmosphere__orbit-line" cx="1170" cy="250" rx="220" ry="106" />
+            <ellipse className="fr-stack-atmosphere__orbit-line" cx="1170" cy="250" rx="138" ry="64" />
+            <path className="fr-stack-atmosphere__trace" pathLength="1" d="M820 250 C 925 160, 1040 126, 1170 145 C 1300 164, 1408 232, 1505 356" />
+            <circle className="fr-stack-atmosphere__beacon" cx="1417" cy="292" r="4.2" />
+            <circle className="fr-stack-atmosphere__node" cx="1306" cy="206" r="2.6" />
+            <circle className="fr-stack-atmosphere__node" cx="1016" cy="176" r="2.6" />
+          </g>
+
+          <g className="fr-stack-atmosphere__calibration">
+            <path d="M1450 120 h72 M1486 84 v72 M88 390 h46 M111 367 v46" />
+            <path d="M930 688 h58 M959 659 v58" />
+          </g>
+
+          <g className="fr-stack-atmosphere__ticks">
+            {Array.from({ length: 9 }).map((_, index) => <line key={`l-${index}`} x1={24 + index * 13} y1={510} x2={24 + index * 13} y2={index % 3 === 0 ? 531 : 522} />)}
+            {Array.from({ length: 8 }).map((_, index) => <line key={`r-${index}`} x1={1540} y1={590 + index * 17} x2={index % 3 === 0 ? 1562 : 1553} y2={590 + index * 17} />)}
+          </g>
+        </svg>
+      </div>
+
       <div className="fr-cover-transition" data-state={transitionState} aria-hidden="true">
         {SIGNALS.map((signal) => <i key={signal.rank} data-lane={signal.lane} />)}
       </div>
