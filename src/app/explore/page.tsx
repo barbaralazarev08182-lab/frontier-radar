@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { FeedQueryError, FeedUnconfiguredError, getDataMode, getFeedProvider } from "@/lib/feed/provider";
+import { FeedQueryError, FeedUnconfiguredError, getDataMode } from "@/lib/feed/provider";
+import { getCachedFeed } from "@/lib/feed/cached-feed";
 import type { FeedResult } from "@/lib/feed/types";
 import { parseFeedQuery, type SearchParamValue } from "@/lib/feed/query-params";
 import { clusterProjectFeed, promoteCrossSourceEvidence } from "@/lib/feed/project-entities";
@@ -37,8 +38,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   let personalizedApplied = false;
 
   try {
-    const provider = getFeedProvider();
-    feed = await provider.getFeed(query);
+    feed = await getCachedFeed(query);
     totalDiscoveries = feed.total;
 
     const cookieStore = await cookies();
