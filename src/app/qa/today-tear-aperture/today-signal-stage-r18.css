@@ -1,0 +1,52 @@
+/* R18 — color hierarchy, translucent signal washes, and explicit Signal Gates */
+
+/* Cover: keep the typographic mass, but give the system two controlled chromatic moments. */
+.fr-stack-cover h1 strong{font:inherit;font-weight:inherit;letter-spacing:inherit}
+.fr-cover-word-next{display:inline-block;color:#3150ff;background:linear-gradient(180deg,transparent 0 76%,rgba(49,80,255,.11) 76% 100%);text-shadow:4px 4px 0 rgba(49,80,255,.055)}
+.fr-cover-period{display:inline-block;color:#f15424;text-shadow:3px 3px 0 rgba(241,84,36,.06)}
+
+/* Live bands: reserve a real right-hand entry zone instead of hiding the affordance in the row. */
+.fr-band-head{grid-template-columns:64px minmax(230px,300px) minmax(340px,1fr) 176px 154px}
+.fr-band-tail{display:flex;align-items:center;justify-content:flex-end;gap:13px;min-width:0}
+.fr-band-score{flex:0 0 auto;min-width:24px}
+.fr-band-gate{--gate:var(--lane);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:space-between;width:88px;height:27px;padding:0 10px 0 12px;overflow:hidden;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,7px 50%);background:color-mix(in srgb,var(--gate) 7%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gate) 44%,transparent);color:var(--gate);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:7px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;transition:color .28s ease,box-shadow .28s ease,transform .28s cubic-bezier(.16,1,.3,1)}
+.fr-band-gate::before{content:"";position:absolute;z-index:-1;inset:0;background:var(--gate);transform:translateX(105%);transition:transform .34s cubic-bezier(.16,1,.3,1)}
+.fr-band-gate b{font-size:13px;line-height:1;font-weight:500;transition:transform .34s cubic-bezier(.16,1,.3,1)}
+.fr-band:not([data-active="true"]) .fr-band-head:hover .fr-band-gate{color:#fff;box-shadow:inset 0 0 0 1px var(--gate),0 5px 16px color-mix(in srgb,var(--gate) 13%,transparent);transform:translateX(-3px)}
+.fr-band:not([data-active="true"]) .fr-band-head:hover .fr-band-gate::before{transform:none}
+.fr-band:not([data-active="true"]) .fr-band-head:hover .fr-band-gate b{transform:translate(3px,-2px)}
+.fr-band[data-active="true"] .fr-band-gate{background:rgba(11,11,11,.055);box-shadow:inset 0 0 0 1px rgba(11,11,11,.14);color:rgba(11,11,11,.46)}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-gate,.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-gate{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.34);color:rgba(255,255,255,.75)}
+
+/* Core active signal: translucent material rather than a flat blank sheet. */
+.fr-band[data-active="true"][data-lane="core"]{background:
+  radial-gradient(ellipse at 61% 42%,rgba(49,80,255,.055) 0,rgba(49,80,255,.025) 24%,transparent 53%),
+  linear-gradient(112deg,transparent 0 20%,rgba(49,80,255,.026) 20% 58%,transparent 58% 67%,rgba(241,84,36,.018) 67% 88%,transparent 88%),
+  rgba(248,246,240,.94)}
+.fr-band[data-active="true"]{box-shadow:0 -12px 28px rgba(15,18,20,.035),0 14px 32px rgba(15,18,20,.055),inset 0 1px rgba(255,255,255,.68),inset 0 -1px rgba(11,11,11,.035)}
+
+/* Detail plates sit behind copy. They borrow Explore/Project surface language without becoming cards. */
+.fr-band-detail::before,.fr-band-detail::after{content:"";position:absolute;z-index:0;pointer-events:none;transition:background .45s ease,opacity .45s ease,transform .8s cubic-bezier(.16,1,.3,1)}
+.fr-band-detail::before{left:25%;top:10%;width:41%;height:76%;clip-path:polygon(0 8%,94% 0,100% 82%,8% 100%);background:linear-gradient(138deg,rgba(49,80,255,.045),rgba(255,255,255,.16) 58%,rgba(49,80,255,.018));border:1px solid rgba(49,80,255,.045);opacity:.9}
+.fr-band-detail::after{right:2.2%;top:14%;width:28%;height:67%;clip-path:polygon(7% 0,100% 9%,94% 100%,0 88%);background:linear-gradient(160deg,rgba(241,84,36,.025),rgba(255,255,255,.12) 58%,rgba(49,80,255,.018));border:1px solid rgba(11,11,11,.035);opacity:.72}
+.fr-band-detail>.fr-band-summary,.fr-band-detail>.fr-band-why,.fr-band-detail>.fr-band-secondary{position:relative;z-index:1}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-detail::before,.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-detail::before{background:linear-gradient(138deg,rgba(255,255,255,.13),rgba(255,255,255,.045) 62%,transparent);border-color:rgba(255,255,255,.14)}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-detail::after,.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-detail::after{background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.025) 68%,transparent);border-color:rgba(255,255,255,.11)}
+
+/* Give the two special lanes a quiet preview even before opening. */
+.fr-band[data-lane="adjacent"]:not([data-active="true"]){background:linear-gradient(90deg,rgba(49,80,255,.035),rgba(49,80,255,.008) 24%,rgba(241,238,229,.72) 54%)}
+.fr-band[data-lane="wildcard"]:not([data-active="true"]){background:linear-gradient(90deg,rgba(241,84,36,.04),rgba(241,84,36,.008) 28%,rgba(241,238,229,.72) 58%)}
+
+@media(max-width:1280px){
+  .fr-band-head{grid-template-columns:54px minmax(190px,250px) minmax(260px,1fr) 138px 126px}
+  .fr-band-tail{gap:9px}
+  .fr-band-gate{width:72px;height:25px;padding-left:10px;padding-right:8px;font-size:6px}
+}
+@media(max-width:980px){
+  .fr-band-head{grid-template-columns:48px minmax(160px,220px) 1fr 100px}
+  .fr-band-topic{display:none}
+  .fr-band-gate{width:62px}
+  .fr-band-tail{gap:7px}
+  .fr-band-detail::after{display:none}
+}
+@media(prefers-reduced-motion:reduce){.fr-band-gate,.fr-band-gate::before,.fr-band-gate b{transition:none!important}}
