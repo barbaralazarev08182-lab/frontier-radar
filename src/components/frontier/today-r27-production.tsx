@@ -2,13 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent } from "react";
 import type { EditorialSignal, EditorialLane } from "@/components/frontier/today-editorial";
-import { TodaySignalWeave } from "@/components/frontier/today-signal-weave";
-import type { DailySynthesisSignalInput, DailySynthesisSnapshot } from "@/lib/ai/daily-synthesis";
 import { trackFeedback } from "@/lib/personalization/browser";
 import { observeQualifiedDwell } from "@/lib/personalization/qualified-dwell";
 
-type ResolveSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
-type LoadSynthesisAction = () => Promise<DailySynthesisSnapshot | null>;
 type TransitionState = "idle" | "opening" | "closing";
 
 interface TodayR27ProductionProps {
@@ -16,10 +12,6 @@ interface TodayR27ProductionProps {
   dataLabel: string;
   totalDiscoveries: number;
   signals: EditorialSignal[];
-  synthesisSignals: DailySynthesisSignalInput[];
-  initialSnapshot: DailySynthesisSnapshot | null;
-  resolveSynthesisAction: ResolveSynthesisAction | null;
-  loadSynthesisAction: LoadSynthesisAction | null;
 }
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -35,11 +27,6 @@ const LANE_LABEL: Record<EditorialLane, string> = {
   adjacent: "ADJACENT",
   wildcard: "WILDCARD",
 };
-
-const SYNTHESIS_POLL_INTERVAL_MS = 2_500;
-const SYNTHESIS_POLL_WINDOW_MS = 120_000;
-const SYNTHESIS_GENERATION_RETRY_DELAY_MS = 12_000;
-const SYNTHESIS_MAX_GENERATION_ATTEMPTS = 2;
 
 function sourceLabel(source: string) {
   return SOURCE_LABEL[source] ?? source.toUpperCase();
@@ -69,26 +56,14 @@ function averageScore(signals: EditorialSignal[]) {
   return String(Math.round(values.reduce((sum, value) => sum + value, 0) / values.length));
 }
 
-export function TodayR27Production({
-  dateLabel,
-  dataLabel,
-  totalDiscoveries,
-  signals,
-  synthesisSignals,
-  initialSnapshot,
-  resolveSynthesisAction,
-  loadSynthesisAction,
-}: TodayR27ProductionProps) {
+export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, signals }: TodayR27ProductionProps) {
   const visibleSignals = useMemo(() => signals.slice(0, 7), [signals]);
   const [opened, setOpened] = useState(false);
   const [selectedRank, setSelectedRank] = useState("03");
   const [switching, setSwitching] = useState(false);
   const [transitionState, setTransitionState] = useState<TransitionState>("idle");
-  const [snapshot, setSnapshot] = useState<DailySynthesisSnapshot | null>(initialSnapshot);
-  const [synthesisUnavailable, setSynthesisUnavailable] = useState(false);
   const switchTimerRef = useRef<number | null>(null);
   const transitionTimerRef = useRef<number | null>(null);
-  const requestedRef = useRef(false);
 
   const selectedIndex = useMemo(() => {
     const index = visibleSignals.findIndex((_, signalIndex) => String(signalIndex + 1).padStart(2, "0") === selectedRank);
@@ -151,94 +126,11 @@ export function TodayR27Production({
     bands.forEach((band, index) => {
       const signal = visibleSignals[index];
       if (!signal) return;
-      const stopDwell = observeQualifiedDwell(band, signal.id, signal.metadata);
-      cleanups.push(stopDwell);
+      cleanups.push(observeQualifiedDwell(band, signal.id, signal.metadata));
     });
 
     return () => cleanups.forEach((cleanup) => cleanup());
   }, [visibleSignals]);
-
-  useEffect(() => {
-    if (snapshot || (!resolveSynthesisAction && !loadSynthesisAction)) return;
-
-    let disposed = false;
-    let generationAttempts = 0;
-    let generationRetryTimer = 0;
-    let pollTimer = 0;
-    const pollStartedAt = Date.now();
-
-    const markUnavailable = () => {
-      if (!disposed) setSynthesisUnavailable(true);
-    };
-
-    const schedulePoll = () => {
-      if (disposed || !loadSynthesisAction) return;
-      if (Date.now() - pollStartedAt >= SYNTHESIS_POLL_WINDOW_MS) {
-        if (!resolveSynthesisAction || generationAttempts >= SYNTHESIS_MAX_GENERATION_ATTEMPTS) markUnavailable();
-        return;
-      }
-      window.clearTimeout(pollTimer);
-      pollTimer = window.setTimeout(pollPersistedSnapshot, SYNTHESIS_POLL_INTERVAL_MS);
-    };
-
-    const pollPersistedSnapshot = () => {
-      if (disposed || !loadSynthesisAction) return;
-      void loadSynthesisAction()
-        .then((result) => {
-          if (disposed) return;
-          if (result) {
-            setSynthesisUnavailable(false);
-            setSnapshot(result);
-            return;
-          }
-          schedulePoll();
-        })
-        .catch(schedulePoll);
-    };
-
-    const launchGeneration = () => {
-      if (disposed || !resolveSynthesisAction || requestedRef.current || generationAttempts >= SYNTHESIS_MAX_GENERATION_ATTEMPTS) return;
-      requestedRef.current = true;
-      generationAttempts += 1;
-
-      void resolveSynthesisAction()
-        .then((result) => {
-          if (disposed) return;
-          requestedRef.current = false;
-          if (result) {
-            setSynthesisUnavailable(false);
-            setSnapshot(result);
-            return;
-          }
-          if (generationAttempts < SYNTHESIS_MAX_GENERATION_ATTEMPTS) {
-            window.clearTimeout(generationRetryTimer);
-            generationRetryTimer = window.setTimeout(launchGeneration, SYNTHESIS_GENERATION_RETRY_DELAY_MS);
-            return;
-          }
-          markUnavailable();
-        })
-        .catch(() => {
-          if (disposed) return;
-          requestedRef.current = false;
-          if (generationAttempts < SYNTHESIS_MAX_GENERATION_ATTEMPTS) {
-            window.clearTimeout(generationRetryTimer);
-            generationRetryTimer = window.setTimeout(launchGeneration, SYNTHESIS_GENERATION_RETRY_DELAY_MS);
-            return;
-          }
-          markUnavailable();
-        });
-    };
-
-    pollPersistedSnapshot();
-    launchGeneration();
-
-    return () => {
-      disposed = true;
-      requestedRef.current = false;
-      window.clearTimeout(generationRetryTimer);
-      window.clearTimeout(pollTimer);
-    };
-  }, [loadSynthesisAction, resolveSynthesisAction, snapshot]);
 
   function finishTransition() {
     if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
@@ -256,7 +148,6 @@ export function TodayR27Production({
     if (!opened) return;
     setTransitionState("closing");
     setOpened(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
     finishTransition();
   }
 
@@ -283,18 +174,16 @@ export function TodayR27Production({
       openProject(signal);
       return;
     }
+
     if (!opened) {
       setSelectedRank(rank);
       openToday();
       return;
     }
+
     choose(rank);
   }
 
-  const counts = visibleSignals.reduce(
-    (acc, signal) => ({ ...acc, [signal.lane]: acc[signal.lane] + 1 }),
-    { core: 0, adjacent: 0, wildcard: 0 }
-  );
   const selectedRankNumber = String(selectedIndex + 1).padStart(2, "0");
   const currentReadout = selectedSignal
     ? `CURRENT / ${selectedRankNumber} / ${selectedSignal.title.toUpperCase()} / ${topicLabel(selectedSignal)} / ${scoreLabel(selectedSignal.score)}`
@@ -361,7 +250,7 @@ export function TodayR27Production({
               <button className="fr-stack-home" type="button" onClick={closeToday} aria-label="Back to Today cover"><span>← COVER</span><b>TODAY</b></button>
               <span>{String(visibleSignals.length).padStart(2, "0")} SIGNALS / DAILY DISCOVERY</span>
             </div>
-            <div><span>J / K TO MOVE</span><span>ESC TO COVER</span><span>SCROLL DOWN FOR SIGNAL WEAVE</span></div>
+            <div><span>J / K TO MOVE</span><span>ESC TO COVER</span><span>CLICK A SIGNAL TO OPEN</span></div>
           </header>
 
           <main className="fr-stack-bands">
@@ -403,24 +292,6 @@ export function TodayR27Production({
             })}
           </main>
         </div>
-      </section>
-
-      <section className="today-r27-weave" aria-label="Today signal synthesis">
-        {snapshot ? (
-          <TodaySignalWeave signals={synthesisSignals} initialSnapshot={snapshot} resolveSynthesisAction={null} />
-        ) : synthesisUnavailable ? (
-          <div className="today-r27-synthesis-state">
-            <span>FR / TODAY&apos;S SYNTHESIS</span>
-            <strong>SYNTHESIS UNAVAILABLE</strong>
-            <p>Today&apos;s selected signals remain available above. The synthesis layer can retry on a later visit.</p>
-          </div>
-        ) : (
-          <div className="today-r27-synthesis-state" aria-live="polite" aria-busy="true">
-            <span>FR / TODAY&apos;S SYNTHESIS</span>
-            <strong>{String(synthesisSignals.length).padStart(2, "0")} SIGNALS → SYNTHESIS</strong>
-            <p>Preparing today&apos;s signal relationships…</p>
-          </div>
-        )}
       </section>
     </div>
   );
