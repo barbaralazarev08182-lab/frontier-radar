@@ -68,7 +68,7 @@ export function SiteNav() {
       className={[
         "inset-x-0 top-0 z-[120] transition-colors",
         project
-          ? "pointer-events-none fixed border-transparent bg-transparent text-[#111214]"
+          ? "pointer-events-none fixed border-transparent bg-[#f5f1e8]/90 text-[#111214] backdrop-blur-xl"
           : lightEditorial
             ? "sticky border-b border-black/10 bg-[#f3f0e7] text-[#111214] shadow-[0_1px_0_rgba(255,255,255,.6)]"
             : "sticky border-b border-white/[0.06] bg-background/82 text-foreground backdrop-blur-xl",
