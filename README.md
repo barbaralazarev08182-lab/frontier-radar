@@ -175,7 +175,6 @@ Signal-to-Direction Workbench
 Saved Signal → Pinned Signal → Working Note → Personal Direction
 SEED / SHAPING / BUILDING
 frontier_radar_ideas_v1
-src/lib/ideas/browser.ts
 ```
 
 If a Saved source is later removed, an existing Idea remains and shows `SOURCE NO LONGER SAVED`.
@@ -236,3 +235,5 @@ Rules:
 4. do not auto-merge
 5. do not perform destructive cleanup without explicit approval
 6. clearly label anything unverified or tool-blocked
+
+<!-- deploy-trigger: 2026-08-17T22:16+08:00 -->
