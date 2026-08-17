@@ -1,0 +1,639 @@
+.radar {
+  min-height: calc(100vh - var(--fr-system-header-h));
+  background: var(--fr-system-paper);
+  color: var(--fr-system-ink);
+  padding: 1.15rem clamp(1.25rem, 2.6vw, 3rem) .85rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(15rem, .4fr);
+  gap: clamp(1.5rem, 4vw, 4.5rem);
+  align-items: end;
+  max-width: 98rem;
+  margin: 0 auto;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--fr-system-ink);
+}
+
+.heroCopy {
+  max-width: 72rem;
+}
+
+.kicker,
+.instrumentStrip span,
+.sectionHead span,
+.chartSource,
+.footer,
+.loading span,
+.rowIndex,
+.morphRail span,
+.morphReadout span,
+.morphSource,
+.morphLoading {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+}
+
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem 1.2rem;
+  margin-bottom: .65rem;
+  font-size: .58rem;
+  font-weight: 800;
+}
+
+.kicker span:last-child {
+  color: var(--fr-system-cobalt);
+}
+
+.hero h1 {
+  max-width: 22ch;
+  margin: 0;
+  font-size: clamp(2.15rem, 4.2vw, 5.1rem);
+  line-height: .9;
+  letter-spacing: -.058em;
+  font-weight: 770;
+}
+
+.heroCopy > p {
+  max-width: 62rem;
+  margin: .72rem 0 0;
+  color: color-mix(in srgb, var(--fr-system-ink) 58%, transparent);
+  font-size: clamp(.76rem, .9vw, .9rem);
+  line-height: 1.48;
+}
+
+.confidenceReadout {
+  display: grid;
+  align-content: end;
+  gap: .35rem;
+  padding-bottom: .05rem;
+}
+
+.confidenceReadout > span,
+.confidenceReadout small {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: .52rem;
+  font-weight: 760;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--fr-system-muted);
+}
+
+.confidenceReadout strong {
+  font-size: clamp(2.65rem, 4.5vw, 5rem);
+  line-height: .8;
+  letter-spacing: -.065em;
+  font-weight: 790;
+}
+
+.confidenceReadout i {
+  --radar-confidence: 0;
+  position: relative;
+  display: block;
+  height: 7px;
+  margin: .12rem 0;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--fr-system-grid) 0 1px,
+    transparent 1px 8px
+  );
+}
+
+.confidenceReadout i::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--radar-confidence) * 100%);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--fr-system-ink) 0 1px,
+    transparent 1px 8px
+  );
+  animation: confidenceIn var(--fr-system-motion-focus) var(--fr-system-ease-focus) both;
+}
+
+@keyframes confidenceIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+
+.instrumentStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 98rem;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--fr-system-grid);
+}
+
+.instrumentStrip > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .7rem;
+  align-items: center;
+  min-height: 2.8rem;
+  padding: 0 .9rem;
+  border-right: 1px solid var(--fr-system-grid);
+}
+
+.instrumentStrip > div:first-child {
+  padding-left: 0;
+}
+
+.instrumentStrip > div:last-child {
+  border-right: 0;
+}
+
+.instrumentStrip span {
+  color: var(--fr-system-muted);
+  font-size: .48rem;
+  font-weight: 700;
+}
+
+.instrumentStrip strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .66rem;
+  font-weight: 760;
+}
+
+.morphSection {
+  max-width: 98rem;
+  margin: 0 auto;
+  padding: .85rem 0 .55rem;
+  border-bottom: 1px solid var(--fr-system-ink);
+}
+
+.morphWorkspace {
+  display: grid;
+  grid-template-columns: minmax(12rem, .72fr) minmax(34rem, 2.1fr) minmax(15rem, .85fr);
+  min-height: clamp(28rem, 61vh, 39rem);
+  border-top: 1px solid var(--fr-system-grid);
+  border-left: 1px solid var(--fr-system-grid);
+}
+
+.morphRail,
+.morphReadout,
+.morphPlotWrap {
+  min-width: 0;
+  border-right: 1px solid var(--fr-system-grid);
+  border-bottom: 1px solid var(--fr-system-grid);
+}
+
+.morphRail {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  padding: 1.15rem .95rem .85rem;
+}
+
+.morphRailHead > span,
+.morphReadoutHead > span {
+  display: block;
+  margin-bottom: .48rem;
+  color: var(--fr-system-cobalt);
+  font-size: .5rem;
+  font-weight: 800;
+}
+
+.morphRailHead strong {
+  display: block;
+  max-width: 15ch;
+  font-size: clamp(1.15rem, 1.7vw, 1.85rem);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+
+.morphRailHead p {
+  margin: .65rem 0 0;
+  color: var(--fr-system-muted);
+  font-size: .68rem;
+  line-height: 1.5;
+}
+
+.morphButtons {
+  display: grid;
+  margin-top: 1.1rem;
+  border-top: 1px solid var(--fr-system-grid);
+}
+
+.morphButtons button {
+  display: grid;
+  gap: .28rem;
+  min-height: 4.1rem;
+  padding: .72rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--fr-system-grid);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.morphButtons button span {
+  color: var(--fr-system-muted);
+  font-size: .5rem;
+  font-weight: 800;
+}
+
+.morphButtons button b {
+  font-size: .67rem;
+  letter-spacing: -.01em;
+}
+
+.morphButtons button:hover span,
+.morphButtonActive span {
+  color: var(--fr-system-cobalt) !important;
+}
+
+.morphButtonActive {
+  position: relative;
+}
+
+.morphButtonActive::before {
+  content: "";
+  position: absolute;
+  left: -.95rem;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--fr-system-cobalt);
+}
+
+.morphLegend {
+  display: grid;
+  align-content: end;
+  gap: .45rem;
+  padding-top: 1rem;
+  color: var(--fr-system-faint);
+}
+
+.morphLegend span {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .44rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.morphLegend i {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fr-system-muted);
+}
+
+.morphLegend .legendHero {
+  background: var(--fr-system-cobalt);
+}
+
+.morphPlotWrap {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+}
+
+.morphPlot {
+  width: 100%;
+  min-height: clamp(25rem, 57vh, 36rem);
+}
+
+.morphLoading {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  color: var(--fr-system-faint);
+  font-size: .52rem;
+  font-weight: 800;
+}
+
+.morphSource {
+  padding: .4rem .65rem .5rem;
+  color: var(--fr-system-faint);
+  font-size: .44rem;
+  font-weight: 700;
+  border-top: 1px solid var(--fr-system-grid);
+}
+
+.morphReadout {
+  padding: 1.15rem .85rem .75rem;
+}
+
+.morphReadoutHead {
+  margin-bottom: .75rem;
+}
+
+.morphReadoutHead strong {
+  display: block;
+  font-size: .72rem;
+  letter-spacing: -.01em;
+}
+
+.morphReadoutLabels,
+.morphReadoutRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.4rem 1.8rem 2.8rem;
+  gap: .35rem;
+  align-items: center;
+}
+
+.morphReadoutLabels {
+  min-height: 1.6rem;
+  border-top: 1px solid var(--fr-system-grid);
+  border-bottom: 1px solid var(--fr-system-grid);
+  color: var(--fr-system-faint);
+}
+
+.morphReadoutLabels span {
+  font-size: .42rem;
+  font-weight: 700;
+}
+
+.morphReadoutRow {
+  min-height: 2.65rem;
+  border-bottom: 1px solid var(--fr-system-grid);
+}
+
+.morphReadoutRow strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .61rem;
+  font-weight: 720;
+}
+
+.morphReadoutRow span {
+  color: var(--fr-system-muted);
+  font-size: .48rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-align: right;
+}
+
+.morphReadout > p {
+  margin: .65rem 0 0;
+  color: var(--fr-system-faint);
+  font-size: .56rem;
+  line-height: 1.5;
+}
+
+.priorField {
+  max-width: 98rem;
+  margin: 0 auto;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--fr-system-ink);
+}
+
+.sectionHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 30rem);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.sectionHead span {
+  display: block;
+  margin-bottom: .45rem;
+  color: var(--fr-system-cobalt);
+  font-size: .52rem;
+  font-weight: 800;
+}
+
+.sectionHead h2 {
+  margin: 0;
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+.sectionHead p {
+  margin: 0;
+  color: color-mix(in srgb, var(--fr-system-ink) 56%, transparent);
+  font-size: .7rem;
+  line-height: 1.5;
+}
+
+.priorRows {
+  border-top: 1px solid var(--fr-system-grid);
+}
+
+.priorRow {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(12rem, 21rem) minmax(2rem, 1fr) 4rem;
+  gap: 1rem;
+  align-items: center;
+  min-height: 2.8rem;
+  border-bottom: 1px solid var(--fr-system-grid);
+}
+
+.rowIndex {
+  color: var(--fr-system-faint);
+  font-size: .54rem;
+  font-weight: 700;
+}
+
+.priorRow strong {
+  font-size: .7rem;
+}
+
+.priorRule {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--fr-system-faint) 0 1px, transparent 1px 7px);
+}
+
+.priorRow b {
+  text-align: right;
+  font-size: .84rem;
+}
+
+.chartSource {
+  margin-top: .35rem;
+  color: var(--fr-system-faint);
+  font-size: .48rem;
+  font-weight: 700;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .45rem 2rem;
+  max-width: 98rem;
+  margin: 0 auto;
+  padding: .58rem 0 0;
+  color: var(--fr-system-faint);
+  font-size: .43rem;
+  font-weight: 700;
+}
+
+.loading {
+  display: grid;
+  min-height: calc(100vh - var(--fr-system-header-h));
+  place-content: center;
+  gap: .8rem;
+  background: var(--fr-system-paper);
+  color: var(--fr-system-ink);
+  text-align: center;
+}
+
+.loading span {
+  color: var(--fr-system-muted);
+  font-size: .58rem;
+  font-weight: 800;
+}
+
+.loading strong {
+  font-size: clamp(1.4rem, 3vw, 2.8rem);
+  letter-spacing: -.04em;
+}
+
+.loading button {
+  justify-self: center;
+  margin-top: .5rem;
+  padding: .6rem 1rem;
+  border: 1px solid var(--fr-system-ink);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .68rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (max-width: 1120px) {
+  .morphWorkspace {
+    grid-template-columns: 13rem minmax(0, 1fr);
+  }
+
+  .morphReadout {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 1rem;
+  }
+
+  .morphReadoutLabels,
+  .morphReadoutRow,
+  .morphReadout > p {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .sectionHead {
+    grid-template-columns: 1fr;
+  }
+
+  .confidenceReadout {
+    max-width: 28rem;
+  }
+
+  .instrumentStrip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .instrumentStrip > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .instrumentStrip > div:nth-child(-n+2) {
+    border-bottom: 1px solid var(--fr-system-grid);
+  }
+
+  .morphWorkspace {
+    grid-template-columns: 1fr;
+  }
+
+  .morphRail,
+  .morphPlotWrap,
+  .morphReadout {
+    grid-column: 1;
+  }
+
+  .morphRail {
+    grid-template-columns: 1fr;
+  }
+
+  .morphButtons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .morphButtons button {
+    padding-right: .6rem;
+    border-right: 1px solid var(--fr-system-grid);
+  }
+
+  .morphButtonActive::before {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: -1px;
+    width: auto;
+    height: 3px;
+  }
+
+  .morphLegend {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-top: .75rem;
+  }
+
+  .morphReadout {
+    display: block;
+  }
+
+  .morphReadoutLabels,
+  .morphReadoutRow,
+  .morphReadout > p {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .radar {
+    padding-inline: .85rem;
+  }
+
+  .instrumentStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .instrumentStrip > div {
+    padding-inline: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--fr-system-grid);
+  }
+
+  .morphButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .morphPlot {
+    min-height: 26rem;
+  }
+
+  .morphLegend {
+    grid-template-columns: 1fr;
+  }
+
+  .priorRow {
+    grid-template-columns: 2rem 1fr 3rem;
+  }
+
+  .priorRule {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confidenceReadout i::after {
+    animation: none !important;
+  }
+}
