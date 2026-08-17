@@ -7,12 +7,13 @@ import { PersonalMemoryNavTools } from "@/components/personal-memory-nav-tools";
 const NAV_ITEMS = [
   { href: "/today", label: "Today", short: "T" },
   { href: "/explore", label: "Explore", short: "E" },
+  { href: "/radar", label: "Radar", short: "R" },
   { href: "/saved", label: "Saved", short: "S" },
   { href: "/idea-lab", label: "Idea Lab", short: "I" },
 ];
 
 function shouldEagerPrefetch(href: string) {
-  return href === "/today" || href === "/explore";
+  return href === "/today" || href === "/explore" || href === "/radar";
 }
 
 export function SiteNav() {
@@ -20,8 +21,9 @@ export function SiteNav() {
   const today = pathname === "/today";
   const project = pathname.startsWith("/project/");
   const explore = pathname === "/explore" || pathname.startsWith("/explore/");
+  const radar = pathname === "/radar" || pathname.startsWith("/radar/");
   const memorySurface = pathname === "/saved" || pathname.startsWith("/idea-lab");
-  const lightEditorial = explore;
+  const lightEditorial = explore || radar;
 
   if (today) {
     return (
@@ -41,7 +43,7 @@ export function SiteNav() {
             </div>
           </div>
 
-          <nav className="flex items-center gap-6 font-mono text-[9px] font-extrabold uppercase tracking-[0.14em]" aria-label="Primary navigation">
+          <nav className="flex items-center gap-5 font-mono text-[9px] font-extrabold uppercase tracking-[0.14em]" aria-label="Primary navigation">
             {NAV_ITEMS.map((item) => {
               const active = pathname === item.href || (item.href !== "/today" && pathname.startsWith(`${item.href}/`));
               return (
