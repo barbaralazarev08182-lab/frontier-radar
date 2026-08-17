@@ -1,0 +1,180 @@
+/* R27 — Shadow Depth Pass.
+   No layout or color-system redesign: add spatial depth to the existing cover and opened Signal surfaces.
+   Shadows are intentionally hierarchical: atmosphere < title plate < secondary surfaces < WHY NOW / active field. */
+
+/* COVER — the headline now occupies physical air, not just a flat type layer. */
+.fr-stack:not([data-open="true"]) .fr-stack-cover-copy h1{
+  position:relative;
+  z-index:2;
+  isolation:isolate;
+  filter:drop-shadow(0 18px 28px rgba(15,18,20,.055));
+}
+.fr-stack:not([data-open="true"]) .fr-stack-cover-copy h1::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-5% -13% -8% -8%;
+  pointer-events:none;
+  border-radius:42%;
+  background:
+    radial-gradient(ellipse at 38% 42%,rgba(13,18,25,.085),transparent 42%),
+    radial-gradient(ellipse at 62% 58%,rgba(var(--cover-rgb),.085),transparent 52%);
+  filter:blur(28px);
+  opacity:.72;
+  transform:translate3d(8px,14px,0) rotate(-1.2deg);
+  transition:background .3s ease,opacity .3s ease;
+}
+
+/* The real seven-Signal membrane floats as one physical object. */
+.fr-stack:not([data-open="true"]) .fr-stack-shared{
+  box-shadow:
+    -38px 4px 96px rgba(var(--cover-rgb),.085),
+    0 34px 86px rgba(17,18,23,.105),
+    0 9px 24px rgba(17,18,23,.055),
+    inset 0 1px rgba(255,255,255,.34),
+    inset 1px 0 rgba(255,255,255,.18)!important;
+}
+.fr-stack:not([data-open="true"]) .fr-stack-bands::after{
+  box-shadow:
+    0 34px 72px rgba(var(--cover-rgb),.075),
+    13px 18px 36px rgba(20,18,14,.055),
+    inset 0 1px rgba(255,255,255,.2)!important;
+}
+
+/* Physical tabs/slips get more depth than the membrane, so they read as inserted material. */
+.fr-stack:not([data-open="true"]) .fr-stack-shared::before{
+  box-shadow:
+    0 16px 34px rgba(0,0,0,.24),
+    7px 6px 0 rgba(var(--cover-rgb),.055),
+    inset 0 1px rgba(255,255,255,.065)!important;
+}
+.fr-stack:not([data-open="true"]) .fr-stack-shared::after{
+  box-shadow:
+    5px 5px 0 color-mix(in srgb,var(--cover-accent) 66%,transparent),
+    0 18px 34px rgba(55,43,29,.20),
+    0 4px 9px rgba(55,43,29,.12),
+    inset 0 1px rgba(255,255,255,.4)!important;
+}
+
+/* Rows lift slightly on inspection instead of only changing their boundary. */
+.fr-stack:not([data-open="true"]) .fr-band-head:hover{
+  filter:drop-shadow(0 10px 14px color-mix(in srgb,var(--row-accent) 13%,rgba(15,18,20,.07)));
+}
+
+/* OPEN — the selected Signal casts an environmental shadow into surrounding rows. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"]{
+  z-index:3;
+  box-shadow:
+    0 -10px 26px rgba(15,18,20,.045),
+    0 34px 88px color-mix(in srgb,var(--row-accent) 15%,transparent),
+    0 16px 38px rgba(15,18,20,.075),
+    inset 0 1px rgba(255,255,255,.22),
+    inset 0 -1px rgba(11,11,11,.045)!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"]{
+  box-shadow:
+    0 -12px 28px rgba(20,28,92,.10),
+    0 38px 96px rgba(49,80,255,.22),
+    0 17px 42px rgba(22,30,86,.15),
+    inset 0 1px rgba(255,255,255,.24),
+    inset 0 -1px rgba(18,26,84,.14)!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"]{
+  box-shadow:
+    0 -12px 28px rgba(112,48,24,.09),
+    0 38px 96px rgba(241,84,36,.20),
+    0 17px 42px rgba(108,47,25,.13),
+    inset 0 1px rgba(255,255,255,.22),
+    inset 0 -1px rgba(112,48,24,.13)!important;
+}
+
+/* Title plates become tangible slips. This preserves each row's existing color identity. */
+.fr-stack[data-open="true"] .fr-band .fr-band-entity{
+  box-shadow:
+    0 13px 30px color-mix(in srgb,var(--row-accent) 15%,transparent),
+    0 4px 10px rgba(15,18,20,.055),
+    inset 0 1px rgba(255,255,255,.32),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 12%,transparent)!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{
+  box-shadow:
+    0 22px 46px color-mix(in srgb,var(--row-accent) 20%,transparent),
+    0 7px 16px rgba(15,18,20,.08),
+    -8px 7px 0 color-mix(in srgb,var(--row-accent) 9%,transparent),
+    inset 0 1px rgba(255,255,255,.38),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 16%,transparent)!important;
+}
+
+/* The two large translucent plates behind the intelligence field now carry depth of their own. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::before{
+  box-shadow:
+    0 34px 76px color-mix(in srgb,var(--row-accent) 12%,transparent),
+    0 12px 28px rgba(15,18,20,.055),
+    inset 0 1px rgba(255,255,255,.24)!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::after{
+  box-shadow:
+    0 24px 54px color-mix(in srgb,var(--row-accent) 9%,transparent),
+    0 8px 20px rgba(15,18,20,.045),
+    inset 0 1px rgba(255,255,255,.19)!important;
+}
+
+/* Intelligence sections gain soft material underlays; the shadow is not tied to borders. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build{
+  position:relative;
+  isolation:isolate;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  inset:-15px -18px;
+  background:
+    linear-gradient(132deg,
+      color-mix(in srgb,var(--row-accent) 5%,rgba(255,255,255,.20)),
+      rgba(255,255,255,.055) 58%,
+      transparent 100%);
+  box-shadow:
+    0 20px 44px color-mix(in srgb,var(--row-accent) 7%,transparent),
+    0 7px 17px rgba(15,18,20,.035),
+    inset 0 1px rgba(255,255,255,.16);
+  clip-path:polygon(2% 0,100% 3%,97% 100%,0 96%);
+  opacity:.66;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before{
+  inset:-22px -26px;
+  opacity:.88;
+  box-shadow:
+    0 30px 68px color-mix(in srgb,var(--row-accent) 11%,transparent),
+    0 10px 24px rgba(15,18,20,.055),
+    inset 0 1px rgba(255,255,255,.22);
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  opacity:.56;
+}
+
+/* White type on the chromatic 06/07 fields gets a very small atmospheric shadow for readability. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-detail p,
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-detail p{
+  text-shadow:0 3px 12px rgba(21,20,24,.12);
+}
+
+@media(max-width:1100px){
+  .fr-stack:not([data-open="true"]) .fr-stack-shared{box-shadow:0 24px 58px rgba(17,18,23,.09),-20px 0 56px rgba(var(--cover-rgb),.06)!important}
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before,
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{inset:-10px -12px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .fr-stack-cover-copy h1::before{transition:none!important}
+}
