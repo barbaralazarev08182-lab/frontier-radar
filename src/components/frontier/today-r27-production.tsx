@@ -28,6 +28,12 @@ const LANE_LABEL: Record<EditorialLane, string> = {
   wildcard: "WILDCARD",
 };
 
+const LANE_ORDER: Record<EditorialLane, number> = {
+  core: 0,
+  adjacent: 1,
+  wildcard: 2,
+};
+
 function sourceLabel(source: string) {
   return SOURCE_LABEL[source] ?? source.toUpperCase();
 }
@@ -57,7 +63,10 @@ function averageScore(signals: EditorialSignal[]) {
 }
 
 export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, signals }: TodayR27ProductionProps) {
-  const visibleSignals = useMemo(() => signals.slice(0, 7), [signals]);
+  const visibleSignals = useMemo(
+    () => signals.slice(0, 7).sort((a, b) => LANE_ORDER[a.lane] - LANE_ORDER[b.lane]),
+    [signals],
+  );
   const [opened, setOpened] = useState(false);
   const [selectedRank, setSelectedRank] = useState("03");
   const [switching, setSwitching] = useState(false);
@@ -126,7 +135,7 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
     bands.forEach((band, index) => {
       const signal = visibleSignals[index];
       if (!signal) return;
-      cleanups.push(observeQualifiedDwell(band, signal.id, signal.metadata));
+      cleanups.push(observeQualifiedDwell(band, signal.id, { ...signal.metadata, rank: index + 1 }));
     });
 
     return () => cleanups.forEach((cleanup) => cleanup());
@@ -159,8 +168,8 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
     switchTimerRef.current = window.setTimeout(() => setSwitching(false), 700);
   }
 
-  function openProject(signal: EditorialSignal) {
-    trackFeedback(signal.id, "open_detail", undefined, signal.metadata);
+  function openProject(signal: EditorialSignal, rank: string) {
+    trackFeedback(signal.id, "open_detail", undefined, { ...signal.metadata, rank: Number(rank) });
     window.location.assign(`/project/${encodeURIComponent(signal.id)}`);
   }
 
@@ -171,7 +180,7 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
 
     if (active && gateClicked) {
       event.preventDefault();
-      openProject(signal);
+      openProject(signal, rank);
       return;
     }
 
@@ -256,21 +265,21 @@ export function TodayR27Production({ dateLabel, dataLabel, totalDiscoveries, sig
           <main className="fr-stack-bands">
             {visibleSignals.map((signal, index) => {
               const rank = String(index + 1).padStart(2, "0");
-              const active = rank === selectedRank;
+              const active = opened && rank === selectedRank;
               return (
                 <section className="fr-band" data-active={active ? "true" : "false"} data-lane={signal.lane} key={signal.id}>
-                  <button className="fr-band-head" type="button" onClick={(event) => handleBandClick(event, signal, rank)} aria-expanded={opened && active}>
+                  <button className="fr-band-head" type="button" onClick={(event) => handleBandClick(event, signal, rank)} aria-expanded={active}>
                     <span className="fr-band-rank">{rank}</span>
                     <span className="fr-band-entity">{signal.title}</span>
                     <span className="fr-band-thesis">{thesisFrom(signal)}</span>
                     <span className="fr-band-topic">{topicLabel(signal)}</span>
                     <span className="fr-band-tail">
                       <span className="fr-band-score">{scoreLabel(signal.score)}</span>
-                      <span className="fr-band-gate"><span>{opened && active ? "ENTER" : "OPEN"}</span><b>↗</b></span>
+                      <span className="fr-band-gate"><span>{active ? "ENTER" : "OPEN"}</span><b>↗</b></span>
                     </span>
                   </button>
 
-                  <div className="fr-band-detail" aria-hidden={!opened || !active}>
+                  <div className="fr-band-detail" aria-hidden={!active}>
                     <div className="fr-band-summary"><span>THE SIGNAL</span><p>{signal.summary}</p></div>
                     <div className="fr-band-why"><span>{signal.whyNow ? `WHY NOW / ${rank}` : `CONTEXT / ${rank}`}</span><p>{signal.whyNow ?? signal.summary}</p></div>
                     <aside className="fr-band-secondary">
