@@ -33,6 +33,10 @@ const SIGNALS: Signal[] = [
 ];
 
 const LANE_LABEL: Record<Lane,string> = { core:"CORE", adjacent:"ADJACENT", wildcard:"WILDCARD" };
+const LANE_COUNTS = SIGNALS.reduce<Record<Lane, number>>((acc, signal) => {
+  acc[signal.lane] += 1;
+  return acc;
+}, { core:0, adjacent:0, wildcard:0 });
 
 export function TodaySignalStage() {
   const timerRef = useRef<number | null>(null);
@@ -40,6 +44,7 @@ export function TodaySignalStage() {
   const [selectedRank, setSelectedRank] = useState("03");
   const [switching, setSwitching] = useState(false);
   const selectedIndex = useMemo(() => SIGNALS.findIndex((signal) => signal.rank === selectedRank), [selectedRank]);
+  const selected = SIGNALS[selectedIndex] ?? SIGNALS[2]!;
 
   useEffect(() => {
     const onWheel = (event: WheelEvent) => {
@@ -83,7 +88,28 @@ export function TodaySignalStage() {
   }
 
   return (
-    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"}>
+    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"} data-selected-lane={selected.lane}>
+      <aside className="fr-edge fr-edge-left" aria-hidden="true">
+        <span className="fr-edge-kicker">DAILY / 07</span>
+        <div className="fr-edge-track">
+          {SIGNALS.map((signal) => <i key={signal.rank} data-active={signal.rank === selectedRank ? "true" : "false"} data-lane={signal.lane} />)}
+        </div>
+        <span className="fr-edge-caption">FRONTIER<br/>RADAR</span>
+      </aside>
+
+      <aside className="fr-edge fr-edge-right" aria-hidden="true">
+        <div className="fr-edge-lanes">
+          <span>{String(LANE_COUNTS.core).padStart(2,"0")} CORE</span>
+          <span data-lane="adjacent">{String(LANE_COUNTS.adjacent).padStart(2,"0")} ADJ</span>
+          <span data-lane="wildcard">{String(LANE_COUNTS.wildcard).padStart(2,"0")} WILD</span>
+        </div>
+        <div className="fr-edge-current">
+          <b>{selected.rank}</b>
+          <span>{selected.topic}</span>
+          <small>{selected.source} · {selected.age}</small>
+        </div>
+      </aside>
+
       <div className="fr-stack-cover" aria-hidden={opened}>
         <div className="fr-stack-cover-copy">
           <span>FRONTIER RADAR / TODAY</span>
