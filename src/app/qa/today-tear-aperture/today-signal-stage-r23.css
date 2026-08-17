@@ -1,0 +1,158 @@
+/* R23 — stronger opened-state color + larger detail typography.
+   Collapsed rows remain restrained; only the active signal gets deeper color support. */
+
+/* Stronger depth without turning the active band into a card. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"]{
+  box-shadow:
+    0 -12px 30px rgba(15,18,20,.045),
+    0 18px 38px rgba(15,18,20,.075),
+    inset 0 1px rgba(255,255,255,.58),
+    inset 0 -1px rgba(11,11,11,.055)!important;
+}
+
+/* 01–02: cool teal becomes clearly visible once opened. */
+.fr-stack[data-open="true"] .fr-band:nth-child(1)[data-active="true"],
+.fr-stack[data-open="true"] .fr-band:nth-child(2)[data-active="true"]{
+  background:
+    radial-gradient(ellipse at 60% 43%,rgba(93,145,137,.205) 0,rgba(93,145,137,.105) 30%,transparent 58%),
+    linear-gradient(112deg,rgba(93,145,137,.075) 0 18%,rgba(93,145,137,.115) 18% 57%,transparent 57% 69%,rgba(119,125,180,.045) 69% 88%,transparent 88%),
+    rgba(244,246,241,.97)!important;
+}
+
+/* 03–05: dusty indigo gets a deeper, calmer reading field. */
+.fr-stack[data-open="true"] .fr-band:nth-child(3)[data-active="true"],
+.fr-stack[data-open="true"] .fr-band:nth-child(4)[data-active="true"],
+.fr-stack[data-open="true"] .fr-band:nth-child(5)[data-active="true"]{
+  background:
+    radial-gradient(ellipse at 58% 43%,rgba(105,108,165,.215) 0,rgba(105,108,165,.11) 30%,transparent 58%),
+    linear-gradient(112deg,rgba(105,108,165,.075) 0 19%,rgba(105,108,165,.12) 19% 58%,transparent 58% 69%,rgba(93,145,137,.04) 69% 88%,transparent 88%),
+    rgba(245,244,242,.97)!important;
+}
+
+/* 06 keeps its cobalt identity, but gains tonal variation rather than a flat slab. */
+.fr-stack[data-open="true"] .fr-band:nth-child(6)[data-active="true"]{
+  background:
+    radial-gradient(ellipse at 58% 44%,rgba(112,132,255,.32) 0,rgba(86,108,255,.18) 33%,transparent 64%),
+    linear-gradient(112deg,rgba(38,61,218,.96) 0 18%,rgba(49,80,255,.96) 18% 63%,rgba(44,70,232,.97) 63% 100%)!important;
+}
+
+/* 07 becomes warmer and more substantial when opened, without becoming neon. */
+.fr-stack[data-open="true"] .fr-band:nth-child(7)[data-active="true"]{
+  background:
+    radial-gradient(ellipse at 58% 44%,rgba(241,96,46,.24) 0,rgba(241,96,46,.12) 31%,transparent 61%),
+    linear-gradient(112deg,rgba(241,96,46,.095) 0 20%,rgba(241,96,46,.14) 20% 59%,transparent 59% 72%,rgba(255,184,139,.075) 72% 100%),
+    rgba(248,240,234,.98)!important;
+}
+
+/* Active material plates become more legible so text does not float in empty space. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::before{
+  opacity:1!important;
+  border-color:color-mix(in srgb,var(--row-accent) 18%,transparent)!important;
+  background:
+    linear-gradient(138deg,
+      color-mix(in srgb,var(--row-accent) 15%,rgba(255,255,255,.08)),
+      rgba(255,255,255,.16) 57%,
+      color-mix(in srgb,var(--row-accent) 6%,transparent))!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::after{
+  opacity:.92!important;
+  border-color:color-mix(in srgb,var(--row-accent) 12%,transparent)!important;
+  background:
+    linear-gradient(160deg,
+      color-mix(in srgb,var(--row-accent) 8%,rgba(255,255,255,.05)),
+      rgba(255,255,255,.115) 60%,
+      color-mix(in srgb,var(--row-accent) 4%,transparent))!important;
+}
+
+/* Keep white-on-color material treatment for 06, and any saturated special lane. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-detail::before,
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-detail::after{
+  border-color:rgba(255,255,255,.16)!important;
+}
+
+/* Active title plate carries more of the row color. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{
+  background:
+    linear-gradient(102deg,
+      color-mix(in srgb,var(--row-accent) 18%,rgba(255,255,255,.80)),
+      rgba(255,255,255,.40) 67%,
+      color-mix(in srgb,var(--row-accent) 10%,transparent))!important;
+  box-shadow:
+    0 13px 30px color-mix(in srgb,var(--row-accent) 13%,transparent),
+    -7px 0 0 color-mix(in srgb,var(--row-accent) 24%,transparent),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 16%,transparent)!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-entity{
+  background:linear-gradient(102deg,rgba(255,255,255,.21),rgba(255,255,255,.085) 70%,rgba(255,255,255,.025))!important;
+  box-shadow:0 13px 30px rgba(0,0,0,.16),-7px 0 0 rgba(255,255,255,.23),inset 0 0 0 1px rgba(255,255,255,.20)!important;
+}
+
+/* Typography: the four real content blocks now use the space they are given. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary > span,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why > span,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you > span,
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build > span{
+  font-size:9px!important;
+  line-height:1.2!important;
+  letter-spacing:.14em!important;
+}
+
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary p{
+  font-size:clamp(17px,1.12vw,20px)!important;
+  line-height:1.50!important;
+  max-width:34ch;
+}
+
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
+  font-size:clamp(28px,2vw,36px)!important;
+  line-height:1.13!important;
+  letter-spacing:-.034em!important;
+  font-weight:760!important;
+  max-width:31ch;
+}
+
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you p{
+  font-size:clamp(16px,1.02vw,19px)!important;
+  line-height:1.48!important;
+  max-width:34ch;
+}
+
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build p{
+  font-size:clamp(17px,1.12vw,20px)!important;
+  line-height:1.40!important;
+  letter-spacing:-.012em!important;
+  font-weight:680!important;
+  max-width:34ch;
+}
+
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-evidence{
+  gap:11px!important;
+}
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-evidence span{
+  font-size:8px!important;
+  line-height:1.25!important;
+  letter-spacing:.09em!important;
+}
+
+/* Slightly rebalance the three detail columns for the larger type. */
+.fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+  grid-template-columns:minmax(260px,.78fr) minmax(470px,1.42fr) minmax(300px,.9fr)!important;
+  column-gap:clamp(34px,4vw,74px)!important;
+}
+
+@media(max-width:1280px){
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{font-size:clamp(25px,2.1vw,31px)!important}
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary p{font-size:17px!important}
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you p{font-size:16px!important}
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build p{font-size:17px!important}
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{grid-template-columns:minmax(220px,.75fr) minmax(390px,1.4fr) minmax(260px,.9fr)!important;column-gap:32px!important}
+}
+
+@media(max-width:980px){
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{font-size:24px!important}
+  .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{grid-template-columns:1fr!important;row-gap:18px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .fr-stack[data-open="true"] .fr-band[data-active="true"]{transition:none!important}
+}

@@ -1,0 +1,79 @@
+/* R19 — persistent ENTER gate + lane-aware title plates */
+
+/* The entity name becomes a small floating material surface rather than plain type. */
+.fr-band-entity{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  max-width:100%;
+  min-height:30px;
+  margin-left:-10px;
+  padding:4px 14px 5px 12px;
+  border-left:2px solid color-mix(in srgb,var(--lane) 76%,transparent);
+  background:linear-gradient(104deg,rgba(255,255,255,.62),rgba(255,255,255,.30) 72%,color-mix(in srgb,var(--lane) 5%,transparent));
+  box-shadow:0 7px 18px rgba(17,18,20,.055),inset 0 0 0 1px rgba(11,11,11,.045);
+  clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  transition:background .34s ease,box-shadow .34s ease,transform .34s cubic-bezier(.16,1,.3,1),border-color .34s ease;
+}
+.fr-band:not([data-active="true"]) .fr-band-head:hover .fr-band-entity{
+  transform:translateX(4px);
+  box-shadow:0 9px 22px rgba(17,18,20,.075),-5px 0 0 color-mix(in srgb,var(--lane) 11%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--lane) 13%,transparent);
+}
+.fr-band[data-active="true"] .fr-band-entity{
+  min-height:46px;
+  padding:5px 20px 7px 16px;
+  margin-left:-16px;
+  background:linear-gradient(102deg,rgba(255,255,255,.77),rgba(255,255,255,.37) 68%,color-mix(in srgb,var(--lane) 7%,transparent));
+  box-shadow:0 12px 28px rgba(17,18,20,.08),-7px 0 0 color-mix(in srgb,var(--lane) 15%,transparent),inset 0 0 0 1px rgba(11,11,11,.05);
+}
+.fr-band[data-lane="adjacent"]:not([data-active="true"]) .fr-band-entity{
+  background:linear-gradient(104deg,rgba(49,80,255,.09),rgba(255,255,255,.38) 72%,rgba(49,80,255,.05));
+  box-shadow:0 7px 18px rgba(49,80,255,.07),inset 0 0 0 1px rgba(49,80,255,.09);
+}
+.fr-band[data-lane="wildcard"]:not([data-active="true"]) .fr-band-entity{
+  background:linear-gradient(104deg,rgba(241,84,36,.09),rgba(255,255,255,.38) 72%,rgba(241,84,36,.05));
+  box-shadow:0 7px 18px rgba(241,84,36,.065),inset 0 0 0 1px rgba(241,84,36,.09);
+}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-entity,
+.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-entity{
+  border-left-color:rgba(255,255,255,.9);
+  background:linear-gradient(102deg,rgba(255,255,255,.18),rgba(255,255,255,.07) 72%,rgba(255,255,255,.02));
+  box-shadow:0 13px 30px rgba(0,0,0,.14),-7px 0 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
+/* Active rows keep a real destination affordance instead of becoming a dead ACTIVE badge. */
+.fr-band[data-active="true"] .fr-band-gate{
+  cursor:pointer;
+  color:var(--lane);
+  background:color-mix(in srgb,var(--lane) 8%,rgba(255,255,255,.34));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lane) 48%,transparent),0 6px 18px color-mix(in srgb,var(--lane) 10%,transparent);
+}
+.fr-band[data-active="true"] .fr-band-gate::before{transform:translateX(105%)}
+.fr-band[data-active="true"] .fr-band-gate:hover{
+  color:#fff;
+  transform:translateX(-4px);
+  box-shadow:inset 0 0 0 1px var(--lane),0 9px 24px color-mix(in srgb,var(--lane) 16%,transparent);
+}
+.fr-band[data-active="true"] .fr-band-gate:hover::before{transform:none}
+.fr-band[data-active="true"] .fr-band-gate:hover b{transform:translate(3px,-2px)}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-gate,
+.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-gate{
+  --gate:#fff;
+  color:#fff;
+  background:rgba(255,255,255,.10);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.48),0 8px 20px rgba(0,0,0,.10);
+}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-gate::before,
+.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-gate::before{background:#fff}
+.fr-band[data-active="true"][data-lane="adjacent"] .fr-band-gate:hover,
+.fr-band[data-active="true"][data-lane="wildcard"] .fr-band-gate:hover{color:var(--lane);box-shadow:0 10px 25px rgba(0,0,0,.16)}
+
+@media(max-width:980px){
+  .fr-band-entity{padding-left:10px;padding-right:12px;margin-left:-8px}
+  .fr-band[data-active="true"] .fr-band-entity{padding-left:12px;padding-right:15px;margin-left:-12px}
+}
+
+@media(prefers-reduced-motion:reduce){.fr-band-entity{transition:none!important}}
