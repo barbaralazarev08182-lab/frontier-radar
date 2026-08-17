@@ -8,6 +8,7 @@ import "./today-signal-stage-r19.css";
 import "./today-signal-stage-r21.css";
 import "./today-signal-stage-r22.css";
 import "./today-signal-stage-r23.css";
+import "./today-signal-stage-r24.css";
 
 export const metadata = { title: "Today Signal Stage QA · Frontier Radar" };
 
