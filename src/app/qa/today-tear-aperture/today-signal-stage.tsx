@@ -3,24 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Lane = "core" | "adjacent" | "wildcard";
-
-type Signal = {
-  rank: string;
-  lane: Lane;
-  topic: string;
-  entity: string;
-  thesis: string;
-  score: number;
-  source: string;
-  age: string;
-  summary: string;
-  whyNow: string;
-  whyYou?: string;
-  build: string;
-  sourceCount: number;
-  code: boolean;
-  demo: boolean;
-};
+type Signal = { rank:string; lane:Lane; topic:string; entity:string; thesis:string; score:number; source:string; age:string; summary:string; whyNow:string; whyYou?:string; build:string; sourceCount:number; code:boolean; demo:boolean };
 
 const SIGNALS: Signal[] = [
   { rank:"01", lane:"core", topic:"LOCAL-FIRST", entity:"Weyna", thesis:"Local-first runtime dashboard for Node.js back ends.", score:75, source:"SHOW HN", age:"2H AGO", summary:"A local-first operations surface that keeps runtime state close to the developer instead of pushing every inspection loop into a hosted control plane.", whyNow:"Local-first tooling is moving from a privacy preference into infrastructure: observability, agent memory and developer control are beginning to converge in the same local runtime.", whyYou:"It intersects directly with developer tools, local-first systems and agent infrastructure without depending on a long-term personality claim.", build:"Combine local runtime telemetry, agent memory and project state into one inspectable development surface.", sourceCount:3, code:true, demo:false },
@@ -33,10 +16,6 @@ const SIGNALS: Signal[] = [
 ];
 
 const LANE_LABEL: Record<Lane,string> = { core:"CORE", adjacent:"ADJACENT", wildcard:"WILDCARD" };
-const LANE_COUNTS = SIGNALS.reduce<Record<Lane, number>>((acc, signal) => {
-  acc[signal.lane] += 1;
-  return acc;
-}, { core:0, adjacent:0, wildcard:0 });
 
 export function TodaySignalStage() {
   const timerRef = useRef<number | null>(null);
@@ -44,31 +23,18 @@ export function TodaySignalStage() {
   const [selectedRank, setSelectedRank] = useState("03");
   const [switching, setSwitching] = useState(false);
   const selectedIndex = useMemo(() => SIGNALS.findIndex((signal) => signal.rank === selectedRank), [selectedRank]);
-  const selected = SIGNALS[selectedIndex] ?? SIGNALS[2]!;
 
   useEffect(() => {
+    const open = () => setOpened(true);
     const onWheel = (event: WheelEvent) => {
-      if (!opened && event.deltaY > 0) {
-        event.preventDefault();
-        setOpened(true);
-      }
+      if (!opened && event.deltaY > 0) { event.preventDefault(); open(); }
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (!opened && ["ArrowDown", "PageDown", " "].includes(event.key)) {
-        event.preventDefault();
-        setOpened(true);
-        return;
-      }
+      if (!opened && ["ArrowDown", "PageDown", " "].includes(event.key)) { event.preventDefault(); open(); return; }
       if (!opened) return;
       const key = event.key.toLowerCase();
-      if (key === "j" || event.key === "ArrowDown") {
-        event.preventDefault();
-        choose(SIGNALS[Math.min(SIGNALS.length - 1, selectedIndex + 1)]!.rank);
-      }
-      if (key === "k" || event.key === "ArrowUp") {
-        event.preventDefault();
-        choose(SIGNALS[Math.max(0, selectedIndex - 1)]!.rank);
-      }
+      if (key === "j" || event.key === "ArrowDown") { event.preventDefault(); choose(SIGNALS[Math.min(SIGNALS.length - 1, selectedIndex + 1)]!.rank); }
+      if (key === "k" || event.key === "ArrowUp") { event.preventDefault(); choose(SIGNALS[Math.max(0, selectedIndex - 1)]!.rank); }
     };
     window.addEventListener("wheel", onWheel, { passive:false });
     window.addEventListener("keydown", onKeyDown);
@@ -79,37 +45,16 @@ export function TodaySignalStage() {
     };
   }, [opened, selectedIndex]);
 
-  function choose(rank: string) {
+  function choose(rank:string) {
     if (rank === selectedRank) return;
     setSwitching(true);
     setSelectedRank(rank);
     if (timerRef.current !== null) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => setSwitching(false), 680);
+    timerRef.current = window.setTimeout(() => setSwitching(false), 700);
   }
 
   return (
-    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"} data-selected-lane={selected.lane}>
-      <aside className="fr-edge fr-edge-left" aria-hidden="true">
-        <span className="fr-edge-kicker">DAILY / 07</span>
-        <div className="fr-edge-track">
-          {SIGNALS.map((signal) => <i key={signal.rank} data-active={signal.rank === selectedRank ? "true" : "false"} data-lane={signal.lane} />)}
-        </div>
-        <span className="fr-edge-caption">FRONTIER<br/>RADAR</span>
-      </aside>
-
-      <aside className="fr-edge fr-edge-right" aria-hidden="true">
-        <div className="fr-edge-lanes">
-          <span>{String(LANE_COUNTS.core).padStart(2,"0")} CORE</span>
-          <span data-lane="adjacent">{String(LANE_COUNTS.adjacent).padStart(2,"0")} ADJ</span>
-          <span data-lane="wildcard">{String(LANE_COUNTS.wildcard).padStart(2,"0")} WILD</span>
-        </div>
-        <div className="fr-edge-current">
-          <b>{selected.rank}</b>
-          <span>{selected.topic}</span>
-          <small>{selected.source} · {selected.age}</small>
-        </div>
-      </aside>
-
+    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"}>
       <div className="fr-stack-cover" aria-hidden={opened}>
         <div className="fr-stack-cover-copy">
           <span>FRONTIER RADAR / TODAY</span>
@@ -119,7 +64,7 @@ export function TodaySignalStage() {
         <div className="fr-stack-cover-index" aria-hidden="true">
           {SIGNALS.map((signal) => (
             <div key={signal.rank} data-lane={signal.lane}>
-              <b>{signal.rank}</b><span>{signal.entity}</span><em>{signal.topic}</em>
+              <b>{signal.rank}</b><span>{signal.entity}</span><em>{signal.topic}</em><i />
             </div>
           ))}
         </div>
@@ -146,21 +91,13 @@ export function TodaySignalStage() {
                 </button>
 
                 <div className="fr-band-detail" aria-hidden={!active}>
-                  <div className="fr-band-primary">
-                    <div className="fr-band-summary"><span>THE SIGNAL</span><p>{signal.summary}</p></div>
-                    <div className="fr-band-why"><span>WHY NOW / {signal.rank}</span><p>{signal.whyNow}</p></div>
-                  </div>
+                  <div className="fr-band-summary"><span>THE SIGNAL</span><p>{signal.summary}</p></div>
+                  <div className="fr-band-why"><span>WHY NOW / {signal.rank}</span><p>{signal.whyNow}</p></div>
                   <aside className="fr-band-secondary">
                     {signal.whyYou ? <div className="fr-band-you"><span>WHY YOU</span><p>{signal.whyYou}</p></div> : null}
                     <div className="fr-band-build"><span>BUILD DIRECTION</span><p>{signal.build}</p></div>
                     <div className="fr-band-evidence">
-                      <span>{LANE_LABEL[signal.lane]}</span>
-                      <span>{signal.source}</span>
-                      <span>{signal.sourceCount} SOURCE{signal.sourceCount === 1 ? "" : "S"}</span>
-                      <span>SCORE {signal.score}</span>
-                      <span>{signal.code ? "CODE" : "CODE —"}</span>
-                      <span>{signal.demo ? "DEMO" : "DEMO —"}</span>
-                      <span>{signal.age}</span>
+                      <span>{LANE_LABEL[signal.lane]}</span><span>{signal.source}</span><span>{signal.sourceCount} SOURCE{signal.sourceCount === 1 ? "" : "S"}</span><span>SCORE {signal.score}</span><span>{signal.code ? "CODE" : "CODE —"}</span><span>{signal.demo ? "DEMO" : "DEMO —"}</span><span>{signal.age}</span>
                     </div>
                   </aside>
                 </div>
