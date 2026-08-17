@@ -21,7 +21,7 @@ import type { InterestKey } from "@/config/interest-profile";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
 import type { EditorialSignal } from "@/components/frontier/today-editorial";
-import { TodayMotionProduction } from "@/components/frontier/today-motion-production";
+import { TodayR27Production } from "@/components/frontier/today-r27-production";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { personalizeFeed } from "@/lib/personalization/server";
 import { loadTodaySynthesis, resolveTodaySynthesis } from "./actions";
@@ -193,17 +193,15 @@ export default async function TodayPage() {
     .toUpperCase();
 
   return (
-    <div className="today-production-shell">
-      <TodayMotionProduction
-        dateLabel={dateLabel}
-        dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
-        totalDiscoveries={totalDiscoveries}
-        signals={signals}
-        synthesisSignals={synthesisSignals}
-        initialSnapshot={initialSynthesis}
-        resolveSynthesisAction={resolveSynthesisAction}
-        loadSynthesisAction={loadSynthesisAction}
-      />
-    </div>
+    <TodayR27Production
+      dateLabel={dateLabel}
+      dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
+      totalDiscoveries={totalDiscoveries}
+      signals={signals}
+      synthesisSignals={synthesisSignals}
+      initialSnapshot={initialSynthesis}
+      resolveSynthesisAction={resolveSynthesisAction}
+      loadSynthesisAction={loadSynthesisAction}
+    />
   );
 }
