@@ -1,0 +1,37 @@
+/* Surface Pass 5 — owner corrections.
+   Explore and Project share exactly one paper tone.
+   The global light nav is translucent glass, not a separate opaque strip. */
+
+:root {
+  --fr-surface-paper: var(--fr-system-paper);
+  --fr-surface-paper-rgb: var(--fr-system-paper-rgb);
+}
+
+body:has(.lf4),
+body:has(.pr-shell) {
+  background: var(--fr-surface-paper) !important;
+}
+
+body:has(.lf4) .lf4.lf4,
+body:has(.pr-shell) .pr-shell.pr-shell {
+  --paper: var(--fr-surface-paper);
+  background-color: transparent;
+}
+
+body:has(.lf4) .lf4.lf4 {
+  background: var(--fr-surface-paper);
+}
+
+body:has(.lf4) .lf4-controls,
+body:has(.pr-shell) .pr-stage-nav {
+  background-color: rgba(var(--fr-surface-paper-rgb), .94);
+}
+
+/* Owner correction: the top product nav should remain visibly present,
+   but it should read as glass over the same paper rather than a tinted bar. */
+.fr-site-nav[data-fr-tone="light"] {
+  background: rgba(var(--fr-surface-paper-rgb), .60) !important;
+  backdrop-filter: blur(14px) saturate(108%);
+  -webkit-backdrop-filter: blur(14px) saturate(108%);
+  border-bottom-color: rgba(17, 18, 20, .11);
+}

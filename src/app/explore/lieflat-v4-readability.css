@@ -1,0 +1,148 @@
+/* Gate 15A readability + balance pass.
+   Keep the L12 geometry and viewport composition, but let the focus aperture
+   breathe horizontally so larger type does not force a cramped card layout. */
+@media (min-width: 901px) {
+  .lf4-hero-compact .lf4-kicker {
+    font-size: 8px;
+  }
+
+  .lf4-hero-compact .lf4-compact-thesis h1 {
+    font-size: 22.5px;
+  }
+
+  .lf4-compact-thesis p {
+    max-width: 690px;
+    font-size: 9px;
+    line-height: 1.42;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta {
+    flex-basis: 320px;
+    width: 320px;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta strong {
+    font-size: 18.5px;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta span {
+    font-size: 7.2px;
+  }
+
+  .lf4-viewport .lf4-lenses button,
+  .lf4-viewport .lf4-tool {
+    font-size: 9px;
+  }
+
+  .lf4-viewport .lf4-canvas-head strong {
+    font-size: 8.5px;
+  }
+
+  .lf4-viewport .lf4-canvas-head span {
+    font-size: 8px;
+  }
+
+  .lf4-rank {
+    font-size: 8.7px;
+  }
+
+  .lf4-score {
+    font-size: 8.3px;
+  }
+
+  .lf4-title {
+    font-size: 10.2px;
+  }
+
+  .lf4-inline-readout {
+    font-size: 6.8px;
+  }
+
+  .lf4-group-name {
+    font-size: 9.6px;
+  }
+
+  .lf4-group-count {
+    font-size: 7.8px;
+  }
+
+  .lf4-aperture-body {
+    padding: 8px 11px;
+  }
+
+  .lf4-aperture-kicker {
+    gap: 11px;
+    font-size: 6.8px;
+  }
+
+  .lf4-aperture-grid {
+    grid-template-columns: minmax(0, 1fr) 226px;
+    gap: 22px;
+  }
+
+  .lf4-aperture-copy h2 {
+    font-size: 17.5px;
+  }
+
+  .lf4-aperture-copy > p {
+    max-width: 650px;
+    font-size: 7.9px;
+    line-height: 1.4;
+  }
+
+  .lf4-aperture-scores span {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 6.1px;
+  }
+
+  .lf4-aperture-scores b {
+    font-size: 8.2px;
+  }
+
+  .lf4-aperture-bottom {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 16px;
+  }
+
+  .lf4-aperture-reason > span {
+    font-size: 6.1px;
+  }
+
+  .lf4-aperture-reason p {
+    font-size: 7px;
+    line-height: 1.34;
+  }
+
+  .lf4-aperture-actions {
+    gap: 5px;
+  }
+
+  .lf4-aperture-actions .lf4-open,
+  .lf4-aperture-actions .lf4-save,
+  .lf4-aperture-actions button {
+    min-width: 52px;
+    min-height: 24px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 6.5px;
+  }
+
+  .lf4-aperture-actions .lf4-open {
+    min-width: 58px;
+  }
+
+  .lf4-viewport .lf4-canvas figcaption {
+    font-size: 7.4px;
+  }
+
+  .lf4-viewport .lf4-footer {
+    font-size: 7px;
+  }
+
+  .lf4[data-focus="pinned"] .lf4-canvas-head > div:last-child span::after {
+    content: " · WHEEL / TRACKPAD ALSO SWITCHES";
+    color: var(--ink);
+    font-weight: 700;
+  }
+}

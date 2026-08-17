@@ -1,0 +1,6 @@
+/* SVG2 treats CSS width/height as geometry properties on foreignObject.
+   Keep the Focus Aperture's rendered box aligned with its L12 user-space geometry. */
+.lf4-aperture.lf4-sheet {
+  width: 820px;
+  height: 116px;
+}

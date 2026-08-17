@@ -1,0 +1,778 @@
+.lf4 {
+  --paper: #f0efeb;
+  --ink: #1c1c1a;
+  --muted: #8f8e88;
+  --faint: #c6c5bf;
+  --grid: #deddd6;
+  --mid: #6a6963;
+  --cobalt: #315efb;
+  --wildcard: #ff5a1f;
+  position: relative;
+  min-height: calc(100vh - 48px);
+  overflow-x: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.lf4 *,
+.lf4 *::before,
+.lf4 *::after {
+  box-sizing: border-box;
+}
+
+.lf4 button,
+.lf4 input {
+  font: inherit;
+}
+
+.lf4 button:focus-visible,
+.lf4 input:focus-visible,
+.lf4 [role="button"]:focus-visible,
+.lf4 a:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 3px;
+}
+
+.lf4-hero {
+  padding: 27px 46px 34px;
+  border-bottom: 1px solid var(--grid);
+}
+
+.lf4-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-bottom: clamp(34px, 5vw, 78px);
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.lf4-kicker span:first-child {
+  color: var(--ink);
+}
+
+.lf4-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, .72fr);
+  gap: clamp(44px, 8vw, 132px);
+  align-items: end;
+}
+
+.lf4-hero h1 {
+  max-width: 990px;
+  margin: 0;
+  font-size: clamp(58px, 8vw, 116px);
+  font-weight: 800;
+  line-height: .82;
+  letter-spacing: -.075em;
+}
+
+.lf4-intro {
+  padding-bottom: 6px;
+}
+
+.lf4-intro > p {
+  max-width: 510px;
+  margin: 0 0 32px;
+  color: #4a4944;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.lf4-intro strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.lf4-hero-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  border-top: 1px solid var(--grid);
+  padding-top: 14px;
+}
+
+.lf4-hero-meta strong {
+  display: block;
+  font-size: 26px;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+
+.lf4-hero-meta span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+
+.lf4-controls {
+  position: sticky;
+  top: 48px;
+  z-index: 20;
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 7px 46px;
+  border-bottom: 1px solid var(--grid);
+  background: var(--paper);
+}
+
+.lf4-lenses {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lf4-lenses button,
+.lf4-tool {
+  min-height: 30px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0 9px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.lf4-lenses button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.lf4-lenses button i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--faint);
+  transition: transform .18s cubic-bezier(.25,.8,.25,1), background .18s ease;
+}
+
+.lf4-lenses button:hover,
+.lf4-lenses button:focus-visible,
+.lf4-lenses button.is-active {
+  color: var(--ink);
+}
+
+.lf4-lenses button.is-active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lf4-lenses button.is-active i {
+  background: var(--paper);
+  transform: scale(1.25);
+}
+
+.lf4[data-lens="wildcard"] .lf4-lenses button.is-active {
+  background: var(--wildcard);
+  color: var(--ink);
+}
+
+.lf4[data-lens="wildcard"] .lf4-lenses button.is-active i {
+  background: var(--ink);
+}
+
+.lf4[data-lens="adjacent"] .lf4-lenses button.is-active {
+  background: var(--cobalt);
+  color: #fff;
+}
+
+.lf4-tools {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.lf4-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.lf4-tool:hover {
+  color: var(--ink);
+}
+
+.lf4-tool svg {
+  width: 13px;
+  height: 13px;
+}
+
+.lf4-search {
+  display: flex;
+  width: min(330px, 31vw);
+  min-height: 32px;
+  align-items: center;
+  gap: 7px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.lf4-search > svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+}
+
+.lf4-search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.lf4-search input::placeholder {
+  color: var(--muted);
+}
+
+.lf4-search button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lf4-search button svg {
+  width: 13px;
+  height: 13px;
+}
+
+.lf4-canvas {
+  position: relative;
+  margin: 0;
+  padding: 36px 46px 25px;
+  min-height: 720px;
+}
+
+.lf4-canvas-head {
+  display: grid;
+  grid-template-columns: minmax(0, .63fr) minmax(0, .37fr);
+  gap: 80px;
+  align-items: end;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--grid);
+}
+
+.lf4-canvas-head > div:last-child {
+  padding-left: 20px;
+}
+
+.lf4-canvas-head strong,
+.lf4-canvas-head span {
+  display: block;
+}
+
+.lf4-canvas-head strong {
+  margin-bottom: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.lf4-canvas-head span {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.lf4-colonnade {
+  display: block;
+  width: 100%;
+  min-width: 1080px;
+  max-height: 780px;
+  margin-top: 14px;
+  overflow: visible;
+}
+
+.lf4-spine,
+.lf4-hub-spine {
+  stroke: var(--grid);
+  stroke-width: .8;
+}
+
+.lf4-rank,
+.lf4-score,
+.lf4-title,
+.lf4-group-name,
+.lf4-group-count {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.lf4-rank {
+  fill: var(--faint);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.lf4-score {
+  fill: var(--muted);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.lf4-score tspan:first-child {
+  fill: #4a4944;
+}
+
+.lf4-title {
+  fill: #5b5a55;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+.lf4-record-mark {
+  fill: #b0afa9;
+  transition: fill .16s ease, transform .16s cubic-bezier(.22,.75,.28,1);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lf4-thread {
+  fill: none;
+  stroke: #aaa9a2;
+  stroke-width: .68;
+  opacity: .53;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: lf4-draw .72s cubic-bezier(.4,0,.2,1) forwards;
+  transition: stroke .14s ease, stroke-width .14s ease, opacity .14s ease;
+}
+
+.lf4-endpoint {
+  fill: #a6a59e;
+  opacity: .65;
+  transition: fill .14s ease, r .14s ease, opacity .14s ease;
+}
+
+.lf4-row {
+  cursor: pointer;
+  outline: none;
+}
+
+.lf4-row.is-active .lf4-rank,
+.lf4-row.is-selected .lf4-rank {
+  fill: var(--ink);
+}
+
+.lf4-row.is-active .lf4-title,
+.lf4-row.is-selected .lf4-title {
+  fill: var(--ink);
+  font-weight: 800;
+}
+
+.lf4-row.is-active .lf4-score,
+.lf4-row.is-selected .lf4-score,
+.lf4-row.is-active .lf4-score tspan:first-child,
+.lf4-row.is-selected .lf4-score tspan:first-child {
+  fill: var(--ink);
+}
+
+.lf4-row.is-active .lf4-record-mark,
+.lf4-row.is-selected .lf4-record-mark {
+  fill: var(--ink);
+  transform: scaleX(1.55) scaleY(1.45);
+}
+
+.lf4-row.is-active .lf4-thread,
+.lf4-row.is-selected .lf4-thread {
+  stroke: var(--ink);
+  stroke-width: 1.25;
+  opacity: .92;
+}
+
+.lf4-row.is-active .lf4-endpoint,
+.lf4-row.is-selected .lf4-endpoint {
+  fill: var(--ink);
+  opacity: 1;
+  r: 3.4px;
+}
+
+.lf4-group-dot {
+  fill: #797873;
+  animation: lf4-pop .42s cubic-bezier(.2,.7,.3,1.22) both;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill .15s ease, transform .15s cubic-bezier(.22,.75,.28,1);
+}
+
+.lf4-group-rule {
+  stroke: var(--faint);
+  stroke-width: .7;
+  stroke-dasharray: 1.5 3;
+}
+
+.lf4-group-name {
+  fill: #4a4944;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+
+.lf4-group-count {
+  fill: var(--muted);
+  font-size: 6.8px;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+
+.lf4-group.is-active .lf4-group-dot {
+  fill: var(--ink);
+  transform: scale(1.13);
+}
+
+.lf4-group.is-active .lf4-group-name {
+  fill: var(--ink);
+}
+
+.lf4[data-lens="wildcard"] .lf4-row.is-active .lf4-record-mark,
+.lf4[data-lens="wildcard"] .lf4-row.is-selected .lf4-record-mark,
+.lf4[data-lens="wildcard"] .lf4-row.is-active .lf4-endpoint,
+.lf4[data-lens="wildcard"] .lf4-row.is-selected .lf4-endpoint,
+.lf4[data-lens="wildcard"] .lf4-group.is-active .lf4-group-dot {
+  fill: var(--wildcard);
+}
+
+.lf4[data-lens="wildcard"] .lf4-row.is-active .lf4-thread,
+.lf4[data-lens="wildcard"] .lf4-row.is-selected .lf4-thread {
+  stroke: var(--wildcard);
+}
+
+.lf4[data-lens="adjacent"] .lf4-row.is-active .lf4-record-mark,
+.lf4[data-lens="adjacent"] .lf4-row.is-selected .lf4-record-mark,
+.lf4[data-lens="adjacent"] .lf4-row.is-active .lf4-endpoint,
+.lf4[data-lens="adjacent"] .lf4-row.is-selected .lf4-endpoint,
+.lf4[data-lens="adjacent"] .lf4-group.is-active .lf4-group-dot {
+  fill: var(--cobalt);
+}
+
+.lf4[data-lens="adjacent"] .lf4-row.is-active .lf4-thread,
+.lf4[data-lens="adjacent"] .lf4-row.is-selected .lf4-thread {
+  stroke: var(--cobalt);
+}
+
+.lf4-canvas figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--grid);
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.lf4-zero {
+  position: absolute;
+  inset: 104px 46px 64px;
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  background: var(--paper);
+  text-align: center;
+}
+
+.lf4-zero strong {
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+
+.lf4-zero button {
+  justify-self: center;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+  padding: 5px 0;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.lf4-sheet {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 40;
+  width: min(490px, calc(100vw - 56px));
+  max-height: calc(100vh - 104px);
+  overflow: auto;
+  border: 1px solid var(--ink);
+  border-radius: 22px;
+  background: var(--paper);
+  padding: 26px 27px 24px;
+  box-shadow: none;
+  animation: lf4-sheet-in .24s cubic-bezier(.22,.75,.28,1) both;
+}
+
+.lf4-sheet-close {
+  position: absolute;
+  top: 17px;
+  right: 17px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lf4-sheet-close:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lf4-sheet-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.lf4-sheet-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 14px;
+  padding-right: 40px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.lf4-sheet h2 {
+  max-width: 390px;
+  margin: 18px 0 12px;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: .98;
+  letter-spacing: -.05em;
+}
+
+.lf4-summary {
+  margin: 0;
+  color: #55544f;
+  font-size: 11.5px;
+  line-height: 1.68;
+}
+
+.lf4-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 23px 0 0;
+  border-top: 1px solid var(--grid);
+  border-bottom: 1px solid var(--grid);
+}
+
+.lf4-stats div {
+  min-width: 0;
+  padding: 13px 10px 13px 0;
+}
+
+.lf4-stats div + div {
+  border-left: 1px solid var(--grid);
+  padding-left: 12px;
+}
+
+.lf4-stats dt {
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.lf4-stats dd {
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lf4-reasons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.lf4-reasons span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.lf4-reasons p {
+  margin: 0;
+  color: #55544f;
+  font-size: 9.5px;
+  line-height: 1.55;
+}
+
+.lf4-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.lf4-open,
+.lf4-save,
+.lf4-secondary button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  cursor: pointer;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-decoration: none;
+}
+
+.lf4-open {
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lf4-open svg {
+  width: 13px;
+  height: 13px;
+}
+
+.lf4-secondary {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr;
+  gap: 6px;
+}
+
+.lf4-save,
+.lf4-secondary button {
+  border: 1px solid var(--grid);
+  background: transparent;
+  color: var(--ink);
+}
+
+.lf4-secondary button svg,
+.lf4-save svg {
+  width: 12px;
+  height: 12px;
+}
+
+.lf4-secondary button:hover,
+.lf4-save:hover,
+.lf4-secondary button.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lf4-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 17px 46px 22px;
+  border-top: 1px solid var(--grid);
+  color: var(--muted);
+  font-size: 7.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: .09em;
+}
+
+@keyframes lf4-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes lf4-pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes lf4-sheet-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 1180px) {
+  .lf4-hero,
+  .lf4-controls,
+  .lf4-canvas,
+  .lf4-footer {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .lf4-hero-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+    gap: 46px;
+  }
+
+  .lf4-hero h1 {
+    font-size: clamp(56px, 7.4vw, 86px);
+  }
+
+  .lf4-canvas {
+    overflow-x: auto;
+  }
+
+  .lf4-canvas figcaption {
+    min-width: 1080px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lf4 *,
+  .lf4 *::before,
+  .lf4 *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .lf4-thread {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}

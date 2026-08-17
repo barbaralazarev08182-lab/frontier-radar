@@ -17,6 +17,8 @@ export interface ExploreCandidate {
   source: FrontierFeedItem["source"];
   contentType: FrontierFeedItem["contentType"];
   canonicalUrl: string;
+  firstSeenAt: string | null;
+  latestSeenAt: string | null;
   tags: string[];
   sourceEvidence: FrontierFeedItem["source"][];
   sourceCount: number;
@@ -157,6 +159,8 @@ export function buildExploreCandidates(
       source: item.source,
       contentType: item.contentType,
       canonicalUrl: item.canonicalUrl,
+      firstSeenAt: entity?.firstSeenAt ?? item.publishedAt ?? item.updatedAt,
+      latestSeenAt: entity?.latestSeenAt ?? item.updatedAt ?? item.publishedAt,
       tags: item.tags.slice(0, 5),
       sourceEvidence: entity?.sources ?? [item.source],
       sourceCount: entity?.sources.length ?? 1,

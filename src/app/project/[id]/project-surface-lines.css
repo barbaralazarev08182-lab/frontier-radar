@@ -1,0 +1,172 @@
+/* Gate 15B line-surface pass.
+   Replaces the rejected color-breathing background with restrained editorial linework.
+   Paper color stays fixed. Motion belongs to the lines only.
+*/
+
+body .pr-shell.pr-shell {
+  background: var(--paper);
+}
+
+/* The drama layer already owns ::before for the active-stage wash.
+   This ::after layer is reserved for structural line art only. */
+body .pr-shell .pr-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: .72;
+  transform: translate3d(0, 0, 0);
+  transform-origin: center;
+}
+
+/* CAPTURE — cover geometry: off-axis arc + one cobalt registration rule. */
+body .pr-shell #capture::after {
+  background-image:
+    radial-gradient(circle at 91% 42%,
+      transparent 0 132px,
+      rgba(29, 29, 27, .060) 133px 134px,
+      transparent 135px 196px,
+      rgba(29, 29, 27, .030) 197px 198px,
+      transparent 199px 258px,
+      rgba(49, 94, 251, .045) 259px 260px,
+      transparent 261px),
+    linear-gradient(121deg,
+      transparent 0 75.0%,
+      rgba(29, 29, 27, .042) 75.08% 75.16%,
+      transparent 75.25% 100%),
+    linear-gradient(90deg,
+      transparent 0 calc(87% - .5px),
+      rgba(49, 94, 251, .075) calc(87% - .5px) calc(87% + .5px),
+      transparent calc(87% + .5px) 100%);
+}
+
+/* EVIDENCE — archive rail and sparse ledger ticks, all confined to the margin zone. */
+body .pr-shell #evidence::after {
+  background-image:
+    linear-gradient(rgba(29, 29, 27, .050), rgba(29, 29, 27, .012)),
+    repeating-linear-gradient(0deg,
+      transparent 0 94px,
+      rgba(29, 29, 27, .020) 94px 95px),
+    linear-gradient(148deg,
+      transparent 0 88.2%,
+      rgba(49, 94, 251, .040) 88.28% 88.36%,
+      transparent 88.44% 100%);
+  background-size:
+    1px 84%,
+    252px 100%,
+    42% 100%;
+  background-position:
+    205px 8%,
+    0 0,
+    100% 0;
+  background-repeat: no-repeat;
+}
+
+/* INTERROGATION — crossing analytical threads.
+   Orange appears only here because the section itself represents inference/open questions. */
+body .pr-shell #interrogation::after {
+  background-image:
+    linear-gradient(124deg,
+      transparent 0 49.1%,
+      rgba(245, 87, 47, .075) 49.18% 49.28%,
+      transparent 49.36% 100%),
+    linear-gradient(58deg,
+      transparent 0 55.4%,
+      rgba(29, 29, 27, .038) 55.48% 55.56%,
+      transparent 55.64% 100%),
+    radial-gradient(circle at 94% 50%,
+      transparent 0 108px,
+      rgba(29, 29, 27, .030) 109px 110px,
+      transparent 111px);
+  background-size:
+    39% 100%,
+    43% 100%,
+    100% 100%;
+  background-position:
+    100% 0,
+    92% 0,
+    0 0;
+  background-repeat: no-repeat;
+}
+
+/* RESOLUTION — verdict arc and a single technical rail behind the right margin. */
+body .pr-shell #resolution::after {
+  background-image:
+    radial-gradient(circle at 89% 50%,
+      transparent 0 146px,
+      rgba(29, 29, 27, .055) 147px 148px,
+      transparent 149px 212px,
+      rgba(49, 94, 251, .048) 213px 214px,
+      transparent 215px 286px,
+      rgba(29, 29, 27, .025) 287px 288px,
+      transparent 289px),
+    linear-gradient(rgba(49, 94, 251, .070), rgba(29, 29, 27, .012));
+  background-size:
+    100% 100%,
+    1px 68%;
+  background-position:
+    0 0,
+    72% 17%;
+  background-repeat: no-repeat;
+}
+
+/* BUILD — quiet convergence: three construction lines resolve toward the action edge. */
+body .pr-shell #build::after {
+  background-image:
+    linear-gradient(151deg,
+      transparent 0 64.2%,
+      rgba(29, 29, 27, .040) 64.28% 64.36%,
+      transparent 64.44% 100%),
+    linear-gradient(160deg,
+      transparent 0 70.0%,
+      rgba(29, 29, 27, .026) 70.08% 70.16%,
+      transparent 70.24% 100%),
+    linear-gradient(169deg,
+      transparent 0 78.0%,
+      rgba(49, 94, 251, .045) 78.08% 78.16%,
+      transparent 78.24% 100%);
+  background-size:
+    52% 100%,
+    46% 100%,
+    42% 100%;
+  background-position:
+    100% 0,
+    100% 0,
+    100% 0;
+  background-repeat: no-repeat;
+}
+
+/* The only background motion: lines drift a few pixels when their chapter is active.
+   No hue, saturation, brightness, or paper-color animation. */
+@media (prefers-reduced-motion: no-preference) {
+  body .pr-shell[data-active-stage="capture"] #capture::after,
+  body .pr-shell[data-active-stage="evidence"] #evidence::after,
+  body .pr-shell[data-active-stage="interrogation"] #interrogation::after,
+  body .pr-shell[data-active-stage="resolution"] #resolution::after,
+  body .pr-shell[data-active-stage="build"] #build::after {
+    animation: pr-line-field 11s ease-in-out infinite alternate;
+  }
+
+  @keyframes pr-line-field {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: .64;
+    }
+    52% {
+      transform: translate3d(3px, -2px, 0);
+      opacity: .82;
+    }
+    100% {
+      transform: translate3d(-2px, 2px, 0);
+      opacity: .70;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .pr-shell .pr-section::after {
+    animation: none;
+    transform: none;
+  }
+}
