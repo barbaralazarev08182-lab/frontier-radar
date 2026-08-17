@@ -548,3 +548,442 @@
     transition-duration: .01ms !important;
   }
 }
+
+/* ========================================================================== */
+/* Gate 17B-R5 — BOLD EDITORIAL RESET                                         */
+/* Keep the product contract; replace the timid composition.                  */
+/* ========================================================================== */
+
+[data-today-r4="true"] {
+  --r5-blue: #3150ff;
+  --r5-orange: #ff5b21;
+  --r5-paper: #f0efeb;
+  --r5-ink: #171715;
+  --r5-lane-wash: rgba(23,23,21,.06);
+  --r5-lane-strong: #171715;
+}
+
+[data-today-r4="true"][data-lane="adjacent"] {
+  --r5-lane-wash: rgba(49,80,255,.14);
+  --r5-lane-strong: #3150ff;
+}
+
+[data-today-r4="true"][data-lane="wildcard"] {
+  --r5-lane-wash: rgba(255,91,33,.16);
+  --r5-lane-strong: #ff5b21;
+}
+
+/* Let colour participate in the field itself, not only in hairlines. */
+[data-today-r4="true"] .fr-r4-live-field {
+  background:
+    radial-gradient(ellipse at 22% 43%, rgba(49,80,255,.12), transparent 34%),
+    radial-gradient(ellipse at 82% 63%, rgba(255,91,33,.11), transparent 32%),
+    linear-gradient(116deg, transparent 8%, rgba(49,80,255,.035) 35%, transparent 49%, rgba(255,91,33,.045) 72%, transparent 92%);
+  transition: background 720ms ease, opacity 420ms ease, filter 720ms ease;
+}
+
+[data-today-r4="true"][data-lane="adjacent"] .fr-r4-live-field {
+  background:
+    radial-gradient(ellipse at 28% 45%, rgba(49,80,255,.22), transparent 38%),
+    radial-gradient(ellipse at 83% 68%, rgba(255,91,33,.07), transparent 26%),
+    linear-gradient(112deg, rgba(49,80,255,.035), transparent 44%, rgba(49,80,255,.08) 72%, transparent 94%);
+}
+
+[data-today-r4="true"][data-lane="wildcard"] .fr-r4-live-field {
+  background:
+    radial-gradient(ellipse at 24% 39%, rgba(49,80,255,.075), transparent 29%),
+    radial-gradient(ellipse at 77% 58%, rgba(255,91,33,.25), transparent 39%),
+    linear-gradient(112deg, transparent 12%, rgba(255,91,33,.045) 46%, rgba(255,91,33,.09) 73%, transparent 96%);
+}
+
+/* Recompose the focus article as an asymmetric editorial instrument. */
+[data-today-r4="true"] article[aria-live="polite"] {
+  top: 4.2% !important;
+  bottom: 3.8% !important;
+  left: 5.2% !important;
+  right: 5.2% !important;
+  padding: .25rem .35rem .3rem !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) {
+  margin: 0 0 .65rem !important;
+  padding: .16rem .15rem .62rem !important;
+  border-top: 2px solid var(--r5-lane-strong) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) > div:first-child > span {
+  color: var(--r5-lane-strong) !important;
+  font-size: .56rem !important;
+  letter-spacing: .14em !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) > div:first-child > strong {
+  font-size: .7rem !important;
+  letter-spacing: .16em !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(3) > div:last-child strong {
+  color: var(--r5-lane-strong) !important;
+  font-size: clamp(3.6rem, 5.5vw, 6.6rem) !important;
+  line-height: .72 !important;
+  letter-spacing: -.08em !important;
+  text-shadow: 12px 14px 0 color-mix(in srgb, var(--r5-lane-strong) 8%, transparent);
+}
+
+/* Twelve-column canvas: specimen left, conclusion crosses centre, instrument rail right. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) {
+  display: grid !important;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 1rem 1.1rem !important;
+  min-height: 0;
+  padding: 0 !important;
+}
+
+/* Surface 01 becomes a cut specimen, not a white card. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+  position: relative;
+  grid-column: 1 / span 7 !important;
+  grid-row: 1 !important;
+  width: auto !important;
+  align-self: start;
+  padding: clamp(1.35rem, 2.4vw, 2.5rem) clamp(1.4rem, 2.6vw, 2.9rem) clamp(1.25rem, 2vw, 2rem) !important;
+  overflow: visible !important;
+  isolation: isolate;
+  clip-path: polygon(0 0, 92% 0, 100% 12%, 97% 100%, 5% 96%, 0 81%);
+  border: 1px solid rgba(23,23,21,.48) !important;
+  border-left: 9px solid var(--r5-lane-strong) !important;
+  background:
+    linear-gradient(112deg, var(--r5-lane-wash) 0 16%, rgba(255,255,255,.64) 16% 41%, rgba(244,243,239,.97) 74%),
+    var(--r5-paper) !important;
+  box-shadow:
+    17px 19px 0 color-mix(in srgb, var(--r5-lane-strong) 8%, rgba(23,23,21,.025)),
+    0 28px 58px rgba(23,23,21,.12),
+    inset 0 1px 0 rgba(255,255,255,.82) !important;
+  transform: translate3d(-1.15vw, 1.6vh, 0) rotate(-.35deg);
+  transition: transform 760ms cubic-bezier(.16,1,.3,1), background 520ms ease, border-color 520ms ease, box-shadow 520ms ease;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child::before {
+  content: "ACTIVE / SPECIMEN";
+  position: absolute;
+  z-index: -1;
+  top: 1.1rem;
+  right: -2.1rem;
+  width: 9rem;
+  padding: .34rem .45rem;
+  background: var(--r5-lane-strong);
+  color: #fff;
+  font: 900 .38rem/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .16em;
+  text-align: center;
+  transform: rotate(90deg) translateX(100%);
+  transform-origin: top right;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child::after {
+  content: "";
+  position: absolute;
+  right: 5.5%;
+  top: 9%;
+  width: 18%;
+  height: 7px;
+  background:
+    linear-gradient(90deg, var(--r5-blue) 0 43%, transparent 43% 49%, var(--r5-orange) 49% 86%, transparent 86%);
+  opacity: .88;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+  max-width: 10.4ch !important;
+  margin: 0 !important;
+  font-size: clamp(4rem, 5.9vw, 7.25rem) !important;
+  font-weight: 950 !important;
+  line-height: .77 !important;
+  letter-spacing: -.078em !important;
+  text-wrap: balance;
+}
+
+[data-today-r4="true"][data-selected-rank="03"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2,
+[data-today-r4="true"][data-selected-rank="04"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+  font-size: clamp(3.55rem, 5.15vw, 6.15rem) !important;
+  max-width: 12ch !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child > p {
+  max-width: 39ch !important;
+  margin-top: 1.2rem !important;
+  padding-left: 1rem;
+  border-left: 3px solid var(--r5-lane-strong);
+  font-size: clamp(.75rem, .82vw, .92rem) !important;
+  font-weight: 700;
+  line-height: 1.38 !important;
+}
+
+/* Surface 02 crosses the centre and creates the second strong visual weight. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child {
+  position: relative;
+  grid-column: 4 / span 7 !important;
+  grid-row: 2 !important;
+  justify-self: stretch !important;
+  width: auto !important;
+  display: grid !important;
+  grid-template-columns: 5.5rem minmax(0, 1fr) !important;
+  gap: 1rem !important;
+  margin-top: -2.15rem;
+  padding: 1.1rem 1.3rem 1.2rem !important;
+  clip-path: polygon(2% 0, 100% 4%, 98% 100%, 0 94%);
+  border: 1px solid rgba(23,23,21,.5) !important;
+  border-top: 7px solid var(--r5-lane-strong) !important;
+  background:
+    linear-gradient(116deg, color-mix(in srgb, var(--r5-lane-strong) 11%, #f0efeb) 0 31%, rgba(245,244,240,.98) 31% 100%) !important;
+  box-shadow:
+    -11px 13px 0 color-mix(in srgb, var(--r5-lane-strong) 7%, rgba(23,23,21,.025)),
+    0 24px 46px rgba(23,23,21,.105),
+    inset 0 1px 0 rgba(255,255,255,.76) !important;
+  transform: rotate(.32deg);
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child > span {
+  color: var(--r5-lane-strong) !important;
+  font-size: .46rem !important;
+  letter-spacing: .15em !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child strong {
+  max-width: 31ch !important;
+  font-size: clamp(1.55rem, 2vw, 2.25rem) !important;
+  font-weight: 850 !important;
+  line-height: 1.01 !important;
+  letter-spacing: -.035em;
+}
+
+/* Right rail: precise, vertical, chromatic — still instrumentation, never a card. */
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] {
+  position: relative;
+  grid-column: 10 / span 3 !important;
+  grid-row: 1 !important;
+  align-self: end !important;
+  min-height: 16.5rem;
+  margin-top: 4.4rem;
+  padding: 1rem .3rem .7rem 1.1rem !important;
+  border-left: 2px solid var(--r5-lane-strong) !important;
+  border-top: 1px solid rgba(23,23,21,.65) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--r5-lane-strong) 13%, transparent), transparent);
+  pointer-events: none;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] > div:not(:last-child) {
+  padding: .4rem 0 .9rem !important;
+  border-bottom-color: rgba(23,23,21,.2) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] span {
+  color: var(--r5-lane-strong) !important;
+  letter-spacing: .13em !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] strong {
+  font-size: clamp(.88rem, 1vw, 1.1rem) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler {
+  display: flex !important;
+  align-items: end;
+  gap: 3px;
+  min-height: 4.6rem !important;
+  margin-top: .8rem !important;
+  padding-top: .6rem;
+  border-top: 1px solid rgba(23,23,21,.18);
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler i {
+  width: 4px !important;
+  min-height: 12% !important;
+  background: rgba(23,23,21,.15) !important;
+  transform-origin: bottom;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler i:nth-child(3n+1) { height: 34%; }
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler i:nth-child(4n+2) { height: 58%; }
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler i:nth-child(5n+3) { height: 82%; }
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"] .ruler i[data-on="true"] { background: var(--r5-lane-strong) !important; }
+
+/* WHY YOU becomes a deliberate marginal note under the rail. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) {
+  grid-column: 10 / span 3 !important;
+  grid-row: 2 !important;
+  width: auto;
+  margin-top: .1rem;
+  padding: .9rem .4rem .55rem 1.05rem !important;
+  border-left: 2px solid var(--r5-lane-strong) !important;
+  border-top: 1px solid rgba(23,23,21,.34) !important;
+  border-bottom: 1px solid rgba(23,23,21,.15) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) p {
+  max-width: 23ch !important;
+  font-size: clamp(.68rem, .76vw, .82rem) !important;
+  font-weight: 650;
+  line-height: 1.38 !important;
+}
+
+/* Build is a release command, not another box. */
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child {
+  width: min(62%, 58rem) !important;
+  margin: .75rem 0 0 1.2rem !important;
+  padding: .55rem 0 0 !important;
+  border-top: 2px solid var(--r5-lane-strong) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  grid-template-columns: 7.5rem minmax(0, 1fr) !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child > span {
+  width: fit-content;
+  padding: .35rem .48rem;
+  background: var(--r5-lane-strong);
+  color: #fff !important;
+  letter-spacing: .12em !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:last-child strong {
+  max-width: 46ch !important;
+  font-size: clamp(.95rem, 1.08vw, 1.18rem) !important;
+  line-height: 1.12 !important;
+}
+
+/* Colourful selected objects: the semantic lane becomes immediately visible. */
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] {
+  color: #fff !important;
+  border-color: var(--fragment-accent) !important;
+  background: var(--fragment-accent) !important;
+  box-shadow:
+    9px 11px 0 color-mix(in srgb, var(--fragment-accent) 18%, rgba(23,23,21,.035)),
+    0 20px 38px color-mix(in srgb, var(--fragment-accent) 18%, rgba(23,23,21,.12)),
+    inset 0 1px 0 rgba(255,255,255,.2) !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"] b,
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]::before {
+  color: #fff !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-active="true"]::after {
+  background: #fff !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-lane="adjacent"]:not([data-active="true"]) {
+  border-top: 3px solid var(--r5-blue) !important;
+}
+
+[data-today-r4="true"] nav[aria-label="Today R4 fixture signals"] button[data-lane="wildcard"]:not([data-active="true"]) {
+  border-top: 3px solid var(--r5-orange) !important;
+}
+
+/* The lens finally carries real chromatic weight. */
+.fr-r4-focus-lens i:nth-child(1) {
+  background: conic-gradient(
+    from 8deg,
+    var(--r5-blue) 0 8%,
+    transparent 8% 17%,
+    rgba(23,23,21,.62) 17% 35%,
+    transparent 35% 50%,
+    var(--r5-orange) 50% 58%,
+    transparent 58% 67%,
+    color-mix(in srgb, var(--r5-lane-strong) 72%, rgba(23,23,21,.3)) 67% 89%,
+    transparent 89% 100%
+  ) !important;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4.2px), #000 calc(100% - 1.8px)) !important;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4.2px), #000 calc(100% - 1.8px)) !important;
+  opacity: .9 !important;
+}
+
+.fr-r4-focus-lens i:nth-child(2) {
+  opacity: .6 !important;
+}
+
+.fr-r4-focus-lens i:nth-child(3) {
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 2px)) !important;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 2px)) !important;
+  opacity: .84 !important;
+}
+
+[data-today-r4="true"][data-open-state="open"] .fr-r4-focus-lens {
+  opacity: .9 !important;
+  filter: drop-shadow(0 19px 30px color-mix(in srgb, var(--r5-lane-strong) 10%, rgba(23,23,21,.04)));
+}
+
+[data-today-r4="true"][data-open-state="open"] article[aria-live="polite"] > div:nth-child(2) {
+  opacity: .94 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(1) {
+  opacity: .82 !important;
+}
+
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(2) span:nth-child(3) {
+  opacity: .9 !important;
+}
+
+/* Selection itself is a short editorial hit before the field settles. */
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child,
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child,
+[data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"],
+[data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) {
+  animation: r5EditorialSettle 680ms cubic-bezier(.16,1,.3,1) both;
+}
+
+@keyframes r5EditorialSettle {
+  0% { opacity: .15; filter: blur(2.8px); }
+  42% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+@media (max-width: 1180px) {
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child {
+    grid-column: 1 / span 8 !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child {
+    grid-column: 3 / span 8 !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"],
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) {
+    grid-column: 10 / span 3 !important;
+  }
+
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child h2 {
+    font-size: clamp(3.2rem, 5.1vw, 5.4rem) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:first-child,
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:first-child,
+  [data-today-r4="true"] article[aria-live="polite"] aside[aria-label="Signal evidence measurements"],
+  [data-today-r4="true"] article[aria-live="polite"] > div:nth-child(4) > div:nth-child(2) > section:nth-child(2) {
+    animation: none !important;
+  }
+}
