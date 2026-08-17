@@ -7,8 +7,6 @@ import {
   type ProjectEntity,
 } from "@/lib/feed/project-entities";
 import { tryLoadPersistentProjectFeed } from "@/lib/feed/persistent-project-entities";
-import { tryLoadDailySynthesis } from "@/lib/feed/daily-synthesis";
-import type { DailySynthesisSignalInput } from "@/lib/ai/daily-synthesis";
 import {
   getDiscoveryExplanations,
   type DiscoveryExplanation,
@@ -24,7 +22,6 @@ import type { EditorialSignal } from "@/components/frontier/today-editorial";
 import { TodayR27Production } from "@/components/frontier/today-r27-production";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { personalizeFeed } from "@/lib/personalization/server";
-import { loadTodaySynthesis, resolveTodaySynthesis } from "./actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Today · Frontier Radar" };
@@ -44,15 +41,6 @@ function metricLabel(item: FrontierFeedItem): string | null {
   if (item.metrics.likes != null) return `${compact(item.metrics.likes)} likes`;
   if (item.metrics.forks != null) return `${compact(item.metrics.forks)} forks`;
   return null;
-}
-
-function businessDateShanghai(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
 }
 
 export default async function TodayPage() {
@@ -159,29 +147,6 @@ export default async function TodayPage() {
     };
   });
 
-  const editionDate = businessDateShanghai();
-  const synthesisSignals: DailySynthesisSignalInput[] = signals.slice(0, DAILY_RADAR_LIMIT).map((signal, index) => ({
-    id: signal.id,
-    rank: index + 1,
-    title: signal.title,
-    summary: signal.summary,
-    tags: signal.tags,
-    lane: signal.lane,
-    whyNow: signal.whyNow,
-    score: signal.score,
-  }));
-  const synthesisSignalIds = synthesisSignals.map((signal) => signal.id);
-
-  const initialSynthesis = mode === "supabase"
-    ? await tryLoadDailySynthesis(editionDate, synthesisSignalIds)
-    : null;
-  const resolveSynthesisAction = mode === "supabase"
-    ? resolveTodaySynthesis.bind(null, editionDate, synthesisSignals)
-    : null;
-  const loadSynthesisAction = mode === "supabase"
-    ? loadTodaySynthesis.bind(null, editionDate, synthesisSignalIds)
-    : null;
-
   const dateLabel = new Date()
     .toLocaleDateString("en-GB", {
       timeZone: "Asia/Shanghai",
@@ -198,10 +163,6 @@ export default async function TodayPage() {
       dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
       totalDiscoveries={totalDiscoveries}
       signals={signals}
-      synthesisSignals={synthesisSignals}
-      initialSnapshot={initialSynthesis}
-      resolveSynthesisAction={resolveSynthesisAction}
-      loadSynthesisAction={loadSynthesisAction}
     />
   );
 }
