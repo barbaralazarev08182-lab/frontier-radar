@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Lane = "core" | "adjacent" | "wildcard";
+type TransitionState = "idle" | "opening" | "closing";
 type Signal = { rank:string; lane:Lane; topic:string; entity:string; thesis:string; score:number; source:string; age:string; summary:string; whyNow:string; whyYou?:string; build:string; sourceCount:number; code:boolean; demo:boolean };
 
 const SIGNALS: Signal[] = [
@@ -18,43 +19,86 @@ const SIGNALS: Signal[] = [
 const LANE_LABEL: Record<Lane,string> = { core:"CORE", adjacent:"ADJACENT", wildcard:"WILDCARD" };
 
 export function TodaySignalStage() {
-  const timerRef = useRef<number | null>(null);
+  const switchTimerRef = useRef<number | null>(null);
+  const transitionTimerRef = useRef<number | null>(null);
   const [opened, setOpened] = useState(false);
   const [selectedRank, setSelectedRank] = useState("03");
   const [switching, setSwitching] = useState(false);
+  const [transitionState, setTransitionState] = useState<TransitionState>("idle");
   const selectedIndex = useMemo(() => SIGNALS.findIndex((signal) => signal.rank === selectedRank), [selectedRank]);
 
   useEffect(() => {
-    const open = () => setOpened(true);
     const onWheel = (event: WheelEvent) => {
-      if (!opened && event.deltaY > 0) { event.preventDefault(); open(); }
+      if (!opened && event.deltaY > 0) {
+        event.preventDefault();
+        openToday();
+      }
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (!opened && ["ArrowDown", "PageDown", " "].includes(event.key)) { event.preventDefault(); open(); return; }
+      if (!opened && ["ArrowDown", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        openToday();
+        return;
+      }
+      if (opened && event.key === "Escape") {
+        event.preventDefault();
+        closeToday();
+        return;
+      }
       if (!opened) return;
       const key = event.key.toLowerCase();
-      if (key === "j" || event.key === "ArrowDown") { event.preventDefault(); choose(SIGNALS[Math.min(SIGNALS.length - 1, selectedIndex + 1)]!.rank); }
-      if (key === "k" || event.key === "ArrowUp") { event.preventDefault(); choose(SIGNALS[Math.max(0, selectedIndex - 1)]!.rank); }
+      if (key === "j" || event.key === "ArrowDown") {
+        event.preventDefault();
+        choose(SIGNALS[Math.min(SIGNALS.length - 1, selectedIndex + 1)]!.rank);
+      }
+      if (key === "k" || event.key === "ArrowUp") {
+        event.preventDefault();
+        choose(SIGNALS[Math.max(0, selectedIndex - 1)]!.rank);
+      }
     };
     window.addEventListener("wheel", onWheel, { passive:false });
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
-      if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+      if (switchTimerRef.current !== null) window.clearTimeout(switchTimerRef.current);
+      if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
     };
   }, [opened, selectedIndex]);
+
+  function finishTransition() {
+    if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
+    transitionTimerRef.current = window.setTimeout(() => setTransitionState("idle"), 820);
+  }
+
+  function openToday() {
+    if (opened) return;
+    setTransitionState("opening");
+    setOpened(true);
+    finishTransition();
+  }
+
+  function closeToday() {
+    if (!opened) return;
+    setTransitionState("closing");
+    setOpened(false);
+    finishTransition();
+  }
 
   function choose(rank:string) {
     if (rank === selectedRank) return;
     setSwitching(true);
     setSelectedRank(rank);
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => setSwitching(false), 700);
+    if (switchTimerRef.current !== null) window.clearTimeout(switchTimerRef.current);
+    switchTimerRef.current = window.setTimeout(() => setSwitching(false), 700);
   }
 
   return (
     <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"}>
+      <div className="fr-cover-transition" data-state={transitionState} aria-hidden="true">
+        {SIGNALS.map((signal) => <i key={signal.rank} data-lane={signal.lane} />)}
+      </div>
+
       <div className="fr-stack-cover" aria-hidden={opened}>
         <div className="fr-stack-cover-copy">
           <span>FRONTIER RADAR / TODAY</span>
@@ -73,8 +117,11 @@ export function TodaySignalStage() {
 
       <div className="fr-stack-live" aria-hidden={!opened}>
         <header className="fr-stack-live-head">
-          <div><b>TODAY</b><span>07 SIGNALS / DAILY DISCOVERY</span></div>
-          <div><span>J / K TO MOVE</span><span>CLICK A SIGNAL TO OPEN</span></div>
+          <div>
+            <button className="fr-stack-home" type="button" onClick={closeToday} aria-label="Back to Today cover"><b>TODAY</b><span>↑ COVER</span></button>
+            <span>07 SIGNALS / DAILY DISCOVERY</span>
+          </div>
+          <div><span>J / K TO MOVE</span><span>ESC TO COVER</span><span>CLICK A SIGNAL TO OPEN</span></div>
         </header>
 
         <main className="fr-stack-bands">
