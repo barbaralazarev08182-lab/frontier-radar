@@ -1,0 +1,138 @@
+/* R25 — enrich the cover without adding another card system.
+   Borrow from Explore's hero-meta + Project's verdict/readout language:
+   one daily-field status row, one signal-mix ledger, one slow scan, one hover-linked accent. */
+
+/* Cover metadata floating above the SAME seven-row object. */
+.fr-stack:not([data-open="true"]) .fr-stack-shared{overflow:visible}
+.fr-stack:not([data-open="true"]) .fr-stack-shared::before{
+  content:"TODAY'S FIELD   /   07 SIGNALS   /   05 CORE · 01 ADJ · 01 WILD";
+  position:absolute;
+  left:18px;
+  top:-27px;
+  z-index:4;
+  color:rgba(11,11,11,.52);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:7.5px;
+  font-weight:800;
+  letter-spacing:.13em;
+  white-space:nowrap;
+}
+.fr-stack:not([data-open="true"]) .fr-stack-shared::after{
+  content:"SCAN ACTIVE   ·   13H WINDOW   ·   AVG SCORE 77";
+  position:absolute;
+  right:18px;
+  top:-27px;
+  z-index:4;
+  color:rgba(11,11,11,.38);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:7px;
+  font-weight:760;
+  letter-spacing:.12em;
+  white-space:nowrap;
+}
+
+/* A real signal-mix ledger under the editorial deck rather than another decorative box. */
+.fr-stack:not([data-open="true"]) .fr-stack-cover-copy p{
+  position:relative;
+  padding-bottom:54px;
+}
+.fr-stack:not([data-open="true"]) .fr-stack-cover-copy p::before{
+  content:"SIGNAL MIX";
+  position:absolute;
+  left:0;
+  bottom:31px;
+  color:rgba(11,11,11,.48);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:7px;
+  font-weight:850;
+  letter-spacing:.14em;
+}
+.fr-stack:not([data-open="true"]) .fr-stack-cover-copy p::after{
+  content:"05 CORE      01 ADJ      01 WILD          ·          77 AVG          ·          13H WINDOW";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:min(510px,35vw);
+  min-width:390px;
+  padding:10px 0 7px;
+  border-top:1px solid rgba(11,11,11,.14);
+  color:rgba(11,11,11,.53);
+  background:
+    linear-gradient(90deg,
+      rgba(28,28,26,.40) 0 71.4%,
+      #3150ff 71.4% 85.7%,
+      #f15424 85.7% 100%)
+    left bottom / 100% 2px no-repeat;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  font-size:7.5px;
+  font-weight:800;
+  letter-spacing:.105em;
+  white-space:nowrap;
+}
+
+/* Slow scan sheen across the actual index object. No overlay clone. */
+.fr-stack:not([data-open="true"]) .fr-stack-bands{
+  background:
+    linear-gradient(104deg,
+      transparent 0 37%,
+      rgba(255,255,255,.00) 40%,
+      rgba(255,255,255,.34) 49%,
+      rgba(49,80,255,.026) 51%,
+      rgba(255,255,255,.00) 61%,
+      transparent 64%) 0 0 / 240% 100% no-repeat,
+    rgba(255,255,255,.012);
+}
+@media(prefers-reduced-motion:no-preference){
+  .fr-stack:not([data-open="true"]) .fr-stack-bands{animation:frR25Scan 12.5s cubic-bezier(.45,0,.55,1) infinite}
+}
+@keyframes frR25Scan{
+  0%,10%{background-position:135% 0,0 0}
+  62%{background-position:-55% 0,0 0}
+  100%{background-position:-55% 0,0 0}
+}
+
+/* The headline and index are one visual system: hovering a signal changes NEXT's accent. */
+.fr-cover-word-next{
+  transition:color .34s ease,text-shadow .34s ease,background-color .34s ease;
+}
+.fr-stack:has(.fr-band:nth-child(1):hover) .fr-cover-word-next,
+.fr-stack:has(.fr-band:nth-child(2):hover) .fr-cover-word-next{
+  color:#6f9e97;
+  background:linear-gradient(180deg,transparent 0 76%,rgba(111,158,151,.14) 76% 100%);
+  text-shadow:4px 4px 0 rgba(111,158,151,.07);
+}
+.fr-stack:has(.fr-band:nth-child(3):hover) .fr-cover-word-next,
+.fr-stack:has(.fr-band:nth-child(4):hover) .fr-cover-word-next,
+.fr-stack:has(.fr-band:nth-child(5):hover) .fr-cover-word-next{
+  color:#777db4;
+  background:linear-gradient(180deg,transparent 0 76%,rgba(119,125,180,.14) 76% 100%);
+  text-shadow:4px 4px 0 rgba(119,125,180,.07);
+}
+.fr-stack:has(.fr-band:nth-child(6):hover) .fr-cover-word-next{
+  color:#3150ff;
+  background:linear-gradient(180deg,transparent 0 76%,rgba(49,80,255,.13) 76% 100%);
+  text-shadow:4px 4px 0 rgba(49,80,255,.07);
+}
+.fr-stack:has(.fr-band:nth-child(7):hover) .fr-cover-word-next{
+  color:#f15424;
+  background:linear-gradient(180deg,transparent 0 76%,rgba(241,84,36,.13) 76% 100%);
+  text-shadow:4px 4px 0 rgba(241,84,36,.07);
+}
+
+/* Slightly stronger focus event on the cover rows, still restrained. */
+.fr-stack:not([data-open="true"]) .fr-band-head{transition:background .28s ease,transform .34s cubic-bezier(.16,1,.3,1)!important}
+.fr-stack:not([data-open="true"]) .fr-band-head:hover{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 8%,rgba(255,255,255,.12)),rgba(255,255,255,.03) 55%,transparent)!important;
+  transform:translateX(-3px);
+}
+
+@media(max-width:1100px){
+  .fr-stack:not([data-open="true"]) .fr-stack-shared::before{content:"TODAY'S FIELD / 07 SIGNALS"}
+  .fr-stack:not([data-open="true"]) .fr-stack-shared::after{content:"13H WINDOW · AVG 77"}
+  .fr-stack:not([data-open="true"]) .fr-stack-cover-copy p::after{width:390px;font-size:7px;letter-spacing:.075em}
+}
+@media(max-width:820px){
+  .fr-stack:not([data-open="true"]) .fr-stack-shared::before,
+  .fr-stack:not([data-open="true"]) .fr-stack-shared::after{display:none}
+  .fr-stack:not([data-open="true"]) .fr-stack-cover-copy p::after{min-width:0;width:100%;white-space:normal;line-height:1.5}
+}
