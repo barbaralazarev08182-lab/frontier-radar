@@ -23,6 +23,72 @@ body:has(.today-r27-production)>div>main{width:100%!important;max-width:none!imp
   content:attr(data-stats)!important;
 }
 
+/* QA happened to place Adjacent at 06 and Wildcard at 07. Production lanes move every day.
+   Preserve the user's color rhythm for Core, but bind cobalt/orange to semantics rather than rank. */
+.today-r27-production .fr-band[data-lane="core"]{--row-accent:#777db4!important}
+.today-r27-production .fr-band:nth-child(1)[data-lane="core"],
+.today-r27-production .fr-band:nth-child(2)[data-lane="core"]{--row-accent:#6f9e97!important}
+.today-r27-production .fr-band[data-lane="adjacent"]{--row-accent:#3150ff!important}
+.today-r27-production .fr-band[data-lane="wildcard"]{--row-accent:#f15424!important}
+
+.today-r27-production .fr-stack:not([data-open="true"])[data-selected-lane="adjacent"],
+.today-r27-production .fr-stack:not([data-open="true"]):has(.fr-band[data-lane="adjacent"]:hover){
+  --cover-accent:#3150ff!important;
+  --cover-rgb:49,80,255!important;
+  --fr-atmos-accent:49,80,255!important;
+}
+.today-r27-production .fr-stack:not([data-open="true"])[data-selected-lane="wildcard"],
+.today-r27-production .fr-stack:not([data-open="true"]):has(.fr-band[data-lane="wildcard"]:hover){
+  --cover-accent:#f15424!important;
+  --cover-rgb:241,84,36!important;
+  --fr-atmos-accent:241,84,36!important;
+}
+
+/* Core opened fields: first two keep cool teal; remaining Core records use dusty indigo. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="core"][data-active="true"]{
+  background:
+    radial-gradient(ellipse at 58% 43%,rgba(105,108,165,.215) 0,rgba(105,108,165,.11) 30%,transparent 58%),
+    linear-gradient(112deg,rgba(105,108,165,.075) 0 19%,rgba(105,108,165,.12) 19% 58%,transparent 58% 69%,rgba(93,145,137,.04) 69% 88%,transparent 88%),
+    rgba(245,244,242,.97)!important;
+  color:var(--ink)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(1)[data-lane="core"][data-active="true"],
+.today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(2)[data-lane="core"][data-active="true"]{
+  background:
+    radial-gradient(ellipse at 60% 43%,rgba(93,145,137,.205) 0,rgba(93,145,137,.105) 30%,transparent 58%),
+    linear-gradient(112deg,rgba(93,145,137,.075) 0 18%,rgba(93,145,137,.115) 18% 57%,transparent 57% 69%,rgba(119,125,180,.045) 69% 88%,transparent 88%),
+    rgba(244,246,241,.97)!important;
+}
+
+/* Adjacent is cobalt wherever it lands. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="adjacent"][data-active="true"]{
+  background:
+    radial-gradient(ellipse at 58% 44%,rgba(112,132,255,.32) 0,rgba(86,108,255,.18) 33%,transparent 64%),
+    linear-gradient(112deg,rgba(38,61,218,.96) 0 18%,rgba(49,80,255,.96) 18% 63%,rgba(44,70,232,.97) 63% 100%)!important;
+  color:#fff!important;
+}
+
+/* Wildcard keeps the owner-approved original solid orange wherever it lands. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="wildcard"][data-active="true"]{
+  background:var(--orange)!important;
+  color:#fff!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="wildcard"][data-active="true"] .fr-band-entity{
+  border-left-color:rgba(255,255,255,.9)!important;
+  background:linear-gradient(102deg,rgba(255,255,255,.18),rgba(255,255,255,.07) 72%,rgba(255,255,255,.02))!important;
+  box-shadow:0 13px 30px rgba(0,0,0,.14),-7px 0 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(255,255,255,.18)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="wildcard"][data-active="true"] .fr-band-detail::before{
+  opacity:.9!important;
+  background:linear-gradient(138deg,rgba(255,255,255,.13),rgba(255,255,255,.045) 62%,transparent)!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-lane="wildcard"][data-active="true"] .fr-band-detail::after{
+  opacity:.72!important;
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.025) 68%,transparent)!important;
+  border-color:rgba(255,255,255,.11)!important;
+}
+
 /* The first physical gesture opens the shared stack; subsequent scrolling continues to the existing synthesis endpoint. */
 .today-r27-production .fr-stack[data-open="true"]{
   box-shadow:0 30px 80px rgba(17,18,23,.075);
