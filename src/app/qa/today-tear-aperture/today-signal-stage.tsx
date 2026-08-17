@@ -68,7 +68,7 @@ export function TodaySignalStage() {
 
   function finishTransition() {
     if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
-    transitionTimerRef.current = window.setTimeout(() => setTransitionState("idle"), 820);
+    transitionTimerRef.current = window.setTimeout(() => setTransitionState("idle"), 1080);
   }
 
   function openToday() {
@@ -94,7 +94,7 @@ export function TodaySignalStage() {
   }
 
   return (
-    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"}>
+    <section className="fr-stack" data-open={opened ? "true" : "false"} data-switching={switching ? "true" : "false"} data-transition={transitionState}>
       <div className="fr-cover-transition" data-state={transitionState} aria-hidden="true">
         {SIGNALS.map((signal) => <i key={signal.rank} data-lane={signal.lane} />)}
       </div>
@@ -118,7 +118,7 @@ export function TodaySignalStage() {
       <div className="fr-stack-live" aria-hidden={!opened}>
         <header className="fr-stack-live-head">
           <div>
-            <button className="fr-stack-home" type="button" onClick={closeToday} aria-label="Back to Today cover"><b>TODAY</b><span>↑ COVER</span></button>
+            <button className="fr-stack-home" type="button" onClick={closeToday} aria-label="Back to Today cover"><span>← COVER</span><b>TODAY</b></button>
             <span>07 SIGNALS / DAILY DISCOVERY</span>
           </div>
           <div><span>J / K TO MOVE</span><span>ESC TO COVER</span><span>CLICK A SIGNAL TO OPEN</span></div>
