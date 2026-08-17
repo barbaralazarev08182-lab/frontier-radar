@@ -1,0 +1,272 @@
+/* Gate 15B — chart motion + chapter boundaries.
+   Charts borrow Lieflat's draw / stagger / pop grammar.
+   Chapter breaks are editorial rails, not card borders. */
+
+/* --------------------------------------------------------------------------
+   Chapter dividers
+   -------------------------------------------------------------------------- */
+
+body .pr-shell #evidence,
+body .pr-shell #interrogation,
+body .pr-shell #resolution,
+body .pr-shell #build {
+  --chapter-accent: var(--cobalt);
+  position: relative;
+  border-top: 0;
+}
+
+body .pr-shell #interrogation {
+  --chapter-accent: var(--signal);
+}
+
+body .pr-shell #evidence::after,
+body .pr-shell #interrogation::after,
+body .pr-shell #resolution::after,
+body .pr-shell #build::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 9px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg,
+      var(--chapter-accent) 0 92px,
+      rgba(29, 29, 27, .34) 92px calc(100% - 42px),
+      transparent calc(100% - 42px)) 0 0 / 100% 2px no-repeat,
+    repeating-linear-gradient(90deg,
+      rgba(29, 29, 27, .19) 0 1px,
+      transparent 1px 22px) 0 4px / calc(100% - 42px) 5px no-repeat;
+  opacity: .78;
+  transition: opacity .38s ease, filter .38s ease;
+}
+
+body .pr-shell[data-active-stage="evidence"] #evidence::after,
+body .pr-shell[data-active-stage="interrogation"] #interrogation::after,
+body .pr-shell[data-active-stage="resolution"] #resolution::after,
+body .pr-shell[data-active-stage="build"] #build::after {
+  opacity: 1;
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.65));
+}
+
+body .pr-shell #evidence .pr-section-label > strong,
+body .pr-shell #interrogation .pr-section-label > strong,
+body .pr-shell #resolution .pr-section-label > strong,
+body .pr-shell #build .pr-section-label > strong {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body .pr-shell #evidence .pr-section-label > strong::after,
+body .pr-shell #interrogation .pr-section-label > strong::after,
+body .pr-shell #resolution .pr-section-label > strong::after,
+body .pr-shell #build .pr-section-label > strong::after {
+  content: "";
+  width: 46px;
+  height: 1px;
+  flex: 0 0 auto;
+  background: linear-gradient(90deg, var(--chapter-accent), transparent);
+  transform: scaleX(.45);
+  transform-origin: left;
+  opacity: .62;
+  transition: transform .48s cubic-bezier(.16, 1, .3, 1), opacity .3s ease;
+}
+
+body .pr-shell[data-active-stage="evidence"] #evidence .pr-section-label > strong::after,
+body .pr-shell[data-active-stage="interrogation"] #interrogation .pr-section-label > strong::after,
+body .pr-shell[data-active-stage="resolution"] #resolution .pr-section-label > strong::after,
+body .pr-shell[data-active-stage="build"] #build .pr-section-label > strong::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+body .pr-shell #evidence .pr-section-label,
+body .pr-shell #interrogation .pr-section-label,
+body .pr-shell #resolution .pr-section-label,
+body .pr-shell #build .pr-section-label {
+  padding-top: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   F2 hairline — draw, calendar reveal, dot cadence
+   -------------------------------------------------------------------------- */
+
+body .pr-shell.is-reading-enhanced .pr-evidence-row .pr-history svg > g,
+body .pr-shell.is-reading-enhanced .pr-evidence-row .pr-history svg > .pr-history-dot {
+  opacity: 0;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history-line {
+  animation: pr-chart-line-draw 1.32s cubic-bezier(.4, 0, .2, 1) .08s both;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > g {
+  animation: pr-chart-calendar-in .5s ease .36s both;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pr-chart-dot-in .48s cubic-bezier(.2, .75, .3, 1.25) both;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(1) { animation-delay: .48s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(2) { animation-delay: .56s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(3) { animation-delay: .64s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(4) { animation-delay: .72s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(5) { animation-delay: .80s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(6) { animation-delay: .88s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(7) { animation-delay: .96s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(8) { animation-delay: 1.04s; }
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:nth-of-type(n+9) { animation-delay: 1.10s; }
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:last-of-type {
+  fill: var(--cobalt);
+  animation:
+    pr-chart-dot-in .5s cubic-bezier(.2, .75, .3, 1.25) 1.02s both,
+    pr-chart-last-pulse 3.8s ease-in-out 1.7s infinite;
+}
+
+body .pr-shell .pr-history-head strong {
+  display: inline-block;
+  transform-origin: right center;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history-head strong {
+  animation: pr-chart-value-settle .56s cubic-bezier(.16, 1, .3, 1) .58s both;
+}
+
+/* --------------------------------------------------------------------------
+   F5 tick rows — row entrance, tick build, value pop, hover focus
+   -------------------------------------------------------------------------- */
+
+body .pr-shell.is-reading-enhanced .pr-score-visual:not(.is-revealed) svg > g {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+body .pr-shell .pr-score-visual.is-revealed svg > g {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: pr-score-row-in .62s cubic-bezier(.16, 1, .3, 1) both;
+  transition: opacity .2s ease, transform .24s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(1) { animation-delay: .05s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(2) { animation-delay: .11s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(3) { animation-delay: .17s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(4) { animation-delay: .23s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(5) { animation-delay: .29s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(6) { animation-delay: .35s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(7) { animation-delay: .41s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(8) { animation-delay: .47s; }
+
+body .pr-shell .pr-score-visual.is-revealed .pr-score-baseline {
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  animation: pr-score-baseline-draw .85s cubic-bezier(.4, 0, .2, 1) .12s forwards;
+}
+
+body .pr-shell .pr-score-visual.is-revealed .pr-score-tick {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pr-score-tick-grow .5s cubic-bezier(.2, .75, .3, 1.18) both;
+}
+
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(1) .pr-score-tick { animation-delay: .16s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(2) .pr-score-tick { animation-delay: .22s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(3) .pr-score-tick { animation-delay: .28s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(4) .pr-score-tick { animation-delay: .34s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(5) .pr-score-tick { animation-delay: .40s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(6) .pr-score-tick { animation-delay: .46s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(7) .pr-score-tick { animation-delay: .52s; }
+body .pr-shell .pr-score-visual.is-revealed svg > g:nth-child(8) .pr-score-tick { animation-delay: .58s; }
+
+body .pr-shell .pr-score-visual.is-revealed .pr-score-value {
+  animation: pr-score-value-pop .5s cubic-bezier(.2, .75, .3, 1.24) .5s both;
+  transform-box: fill-box;
+  transform-origin: right center;
+}
+
+body .pr-shell .pr-score-visual:hover svg > g:not(:hover) {
+  opacity: .58;
+}
+
+body .pr-shell .pr-score-visual svg > g:hover {
+  transform: translateX(5px);
+}
+
+body .pr-shell .pr-score-visual svg > g:hover .pr-score-tick.is-filled,
+body .pr-shell .pr-score-visual svg > g:hover .pr-score-value {
+  color: var(--cobalt);
+  fill: var(--cobalt);
+  stroke: var(--cobalt);
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes
+   -------------------------------------------------------------------------- */
+
+@keyframes pr-chart-line-draw {
+  from { stroke-dashoffset: 1400; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pr-chart-calendar-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pr-chart-dot-in {
+  from { opacity: 0; transform: scale(.25); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pr-chart-last-pulse {
+  0%, 72%, 100% { filter: drop-shadow(0 0 0 rgba(49,94,251,0)); transform: scale(1); }
+  82% { filter: drop-shadow(0 0 5px rgba(49,94,251,.35)); transform: scale(1.18); }
+  90% { filter: drop-shadow(0 0 2px rgba(49,94,251,.18)); transform: scale(1.04); }
+}
+
+@keyframes pr-chart-value-settle {
+  from { opacity: 0; transform: translateY(5px) scale(.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pr-score-row-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pr-score-baseline-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pr-score-tick-grow {
+  from { opacity: 0; transform: scaleY(.08); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes pr-score-value-pop {
+  from { opacity: 0; transform: translateX(6px) scale(.82); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .pr-shell .pr-evidence-row .pr-history-line,
+  body .pr-shell .pr-evidence-row .pr-history svg > g,
+  body .pr-shell .pr-evidence-row .pr-history svg > .pr-history-dot,
+  body .pr-shell .pr-history-head strong,
+  body .pr-shell .pr-score-visual svg > g,
+  body .pr-shell .pr-score-visual .pr-score-baseline,
+  body .pr-shell .pr-score-visual .pr-score-tick,
+  body .pr-shell .pr-score-visual .pr-score-value {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}

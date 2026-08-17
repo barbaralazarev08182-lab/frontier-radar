@@ -1,0 +1,693 @@
+/* Gate 15B reading layer
+   Lieflat-native principles used here:
+   - paper + ink remain the field
+   - cobalt = verified/current focus
+   - editorial orange = inference/open question
+   - one focal accent per chart/read state
+   - reveal and hover motion guide reading instead of decorating it
+*/
+
+body:has(.pr-shell) {
+  overflow-x: clip;
+}
+
+body .pr-shell.pr-shell {
+  --paper: #f1efe9;
+  --paper-2: #ebe8df;
+  --ink: #1d1d1b;
+  --muted: #716f68;
+  --faint: #b5b1a8;
+  --grid: #d8d4ca;
+  --mid: #55534d;
+  --cobalt: #315efb;
+  --cobalt-soft: rgba(49, 94, 251, .10);
+  --cobalt-faint: rgba(49, 94, 251, .25);
+  --signal: #f5572f;
+  --signal-soft: rgba(245, 87, 47, .09);
+  --reading-progress: 0%;
+  overflow-x: clip;
+}
+
+body .pr-shell .pr-stage-nav {
+  min-height: 46px;
+  border-bottom-color: rgba(29, 29, 27, .14);
+  background: rgba(241, 239, 233, .955);
+  backdrop-filter: blur(8px);
+}
+
+body .pr-shell .pr-stage-nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: var(--reading-progress);
+  height: 2px;
+  background: var(--cobalt);
+  transition: width .12s linear;
+}
+
+body .pr-shell .pr-stage-links a {
+  position: relative;
+  padding-block: 15px 13px;
+  color: #77746d;
+  transition: color .2s ease, transform .2s ease;
+}
+
+body .pr-shell .pr-stage-links a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--cobalt);
+  opacity: 0;
+  transform: translate(-50%, 3px) scale(.55);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+body .pr-shell .pr-stage-links a.is-active,
+body .pr-shell .pr-stage-links a[aria-current="step"] {
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+body .pr-shell .pr-stage-links a.is-active::after,
+body .pr-shell .pr-stage-links a[aria-current="step"]::after {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+body .pr-shell .pr-stage-links a.is-active span,
+body .pr-shell .pr-stage-links a[aria-current="step"] span {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-back:hover,
+body .pr-shell .pr-stage-links a:hover {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-capture {
+  position: relative;
+  grid-template-columns: minmax(0, 1.72fr) minmax(330px, .62fr);
+  gap: clamp(52px, 7vw, 108px);
+  min-height: 535px;
+  padding-top: clamp(56px, 5.2vw, 78px);
+  background:
+    linear-gradient(to right, transparent 0, transparent calc(100% - 1px), rgba(29, 29, 27, .025) calc(100% - 1px));
+}
+
+body .pr-shell .pr-capture-main::before {
+  content: "START HERE  ·  WHAT IS IT / SHOULD I CARE / CAN I VERIFY IT?";
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin-bottom: 22px;
+  padding: 6px 9px 5px;
+  border: 1px solid var(--cobalt-faint);
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .095em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+body .pr-shell .pr-kicker {
+  margin-bottom: 22px;
+  color: #77746d;
+}
+
+body .pr-shell .pr-kicker span:first-child {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-capture h1 {
+  max-width: 970px;
+  font-size: clamp(62px, 5.7vw, 98px);
+  line-height: .9;
+}
+
+body .pr-shell .pr-deck {
+  max-width: 760px;
+  color: #45433e;
+  font-size: clamp(16px, 1.15vw, 19px);
+  line-height: 1.62;
+}
+
+body .pr-shell .pr-primary-action {
+  border-color: var(--ink);
+  background: var(--ink);
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+body .pr-shell .pr-primary-action:hover {
+  border-color: var(--cobalt);
+  background: var(--cobalt);
+  transform: translateY(-2px);
+}
+
+body .pr-shell .pr-secondary-action {
+  transition: color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+body .pr-shell .pr-secondary-action:hover {
+  border-color: var(--cobalt);
+  background: transparent;
+  color: var(--cobalt);
+  transform: translateY(-2px);
+}
+
+body .pr-shell .pr-verdict {
+  position: relative;
+  border-top: 2px solid var(--cobalt);
+  padding-top: 14px;
+}
+
+body .pr-shell .pr-verdict::before {
+  content: "READ THE VERDICT FIRST";
+  position: absolute;
+  top: -27px;
+  right: 0;
+  color: var(--cobalt);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+body .pr-shell .pr-verdict-score {
+  color: var(--cobalt);
+  font-size: clamp(82px, 7.4vw, 118px);
+  text-shadow: 0 0 0 transparent;
+}
+
+body .pr-shell .pr-verdict h2 {
+  max-width: 390px;
+  font-size: clamp(18px, 1.55vw, 25px);
+}
+
+body .pr-shell .pr-verdict dl {
+  border-top-color: rgba(49, 94, 251, .18);
+}
+
+body .pr-shell .pr-verdict dl div:nth-child(1) dd,
+body .pr-shell .pr-verdict dl div:nth-child(2) dd {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-ledger-section,
+body .pr-shell .pr-resolution {
+  position: relative;
+  grid-template-columns: 218px minmax(0, 1fr);
+  gap: clamp(44px, 5.4vw, 82px);
+  padding-top: 62px;
+  padding-bottom: 72px;
+}
+
+body .pr-shell .pr-section-label {
+  top: 112px;
+}
+
+body .pr-shell .pr-section-label > span {
+  color: var(--cobalt);
+  font-size: 13px;
+}
+
+body .pr-shell .pr-section-label > strong {
+  margin-top: 7px;
+  font-size: 26px;
+}
+
+body .pr-shell .pr-section-label > p {
+  max-width: 196px;
+  color: #77746d;
+  font-size: 10.5px;
+  line-height: 1.58;
+}
+
+body .pr-shell .pr-section-label::after {
+  display: block;
+  max-width: 196px;
+  margin-top: 22px;
+  padding-top: 10px;
+  border-top: 1px solid var(--grid);
+  color: var(--cobalt);
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  line-height: 1.55;
+  text-transform: uppercase;
+}
+
+body .pr-shell #evidence .pr-section-label::after {
+  content: "TRACE THE CLAIM → SOURCE → METRIC";
+}
+
+body .pr-shell #interrogation .pr-section-label::after {
+  content: "BLUE = OBSERVED · ORANGE = INFERENCE / OPEN";
+}
+
+body .pr-shell #resolution .pr-section-label::after {
+  content: "READ THE SCORE SHAPE BEFORE THE TOTAL";
+}
+
+body .pr-shell #build .pr-section-label::after {
+  content: "ACT ONLY WHERE THE EVIDENCE SUPPORTS IT";
+}
+
+body .pr-shell .pr-section-intro {
+  position: relative;
+  align-items: end;
+  padding: 0 0 24px;
+}
+
+body .pr-shell .pr-section-intro::before {
+  content: "READING ORDER";
+  position: absolute;
+  top: -18px;
+  left: 0;
+  color: var(--cobalt);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+
+body .pr-shell .pr-section-intro strong {
+  font-size: 17px;
+  letter-spacing: -.02em;
+}
+
+body .pr-shell .pr-section-intro p {
+  color: #5d5a54;
+  font-size: 12.5px;
+}
+
+body .pr-shell .pr-evidence-ledger {
+  border-top: 1px solid rgba(49, 94, 251, .50);
+}
+
+body .pr-shell .pr-evidence-row {
+  position: relative;
+  isolation: isolate;
+  grid-template-columns: 50px 144px minmax(0, 1fr) 84px;
+  gap: 20px;
+  padding: 26px 0 28px;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.16, 1, .3, 1), background .22s ease;
+}
+
+body .pr-shell .pr-evidence-row::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 -18px;
+  border-left: 3px solid var(--cobalt);
+  background: var(--cobalt-soft);
+  opacity: 0;
+  transform: scaleY(.45);
+  transform-origin: center left;
+  transition: opacity .22s ease, transform .22s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell .pr-evidence-ledger:hover .pr-evidence-row:not(:hover) {
+  opacity: .43;
+}
+
+body .pr-shell .pr-evidence-row:hover {
+  transform: translateX(6px);
+}
+
+body .pr-shell .pr-evidence-row:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+body .pr-shell .pr-evidence-row:hover .pr-row-number,
+body .pr-shell .pr-evidence-row:hover .pr-row-meta strong,
+body .pr-shell .pr-evidence-row:hover .pr-verify {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-row-copy h3 {
+  font-size: clamp(22px, 1.85vw, 31px);
+}
+
+body .pr-shell .pr-verify {
+  color: #55524c;
+  transition: color .18s ease, transform .18s ease;
+}
+
+body .pr-shell .pr-verify:hover {
+  color: var(--cobalt);
+  transform: translateX(2px);
+}
+
+body .pr-shell .pr-history,
+body .pr-shell .pr-history-single {
+  max-width: 760px;
+  border-top-color: rgba(29, 29, 27, .12);
+}
+
+body .pr-shell .pr-history-head span,
+body .pr-shell .pr-history-note,
+body .pr-shell .pr-history-single span,
+body .pr-shell .pr-history-single small {
+  color: #77746d;
+  font-size: 7.5px;
+}
+
+body .pr-shell .pr-history-head strong {
+  color: var(--cobalt);
+  font-size: 14px;
+}
+
+body .pr-shell .pr-history-line {
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history-line,
+body .pr-shell .pr-evidence-row:hover .pr-history-line {
+  animation: pr-line-draw 1.05s cubic-bezier(.4, 0, .2, 1) .08s forwards;
+}
+
+body .pr-shell .pr-history-dot {
+  fill: var(--ink);
+  stroke-width: 1.25;
+}
+
+body .pr-shell .pr-history svg > .pr-history-dot:last-of-type {
+  fill: var(--cobalt);
+  stroke: var(--paper);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+body .pr-shell .pr-evidence-row.is-revealed .pr-history svg > .pr-history-dot:last-of-type {
+  animation: pr-pop .5s cubic-bezier(.2, .75, .3, 1.28) .8s both;
+}
+
+body .pr-shell .pr-history-floor {
+  stroke: #c2beb4;
+}
+
+body .pr-shell .pr-question-ledger {
+  border-top: 1px solid rgba(29, 29, 27, .25);
+}
+
+body .pr-shell .pr-question-row {
+  position: relative;
+  grid-template-columns: 126px 188px minmax(0, 1fr) 36px;
+  min-height: 86px;
+  padding: 24px 10px 24px 0;
+  transition: opacity .2s ease, transform .2s cubic-bezier(.16, 1, .3, 1), background .2s ease;
+}
+
+body .pr-shell .pr-question-row::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  background: var(--signal);
+  opacity: 0;
+  transform: scaleY(.4);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+body .pr-shell .pr-question-ledger:hover .pr-question-row:not(:hover) {
+  opacity: .4;
+}
+
+body .pr-shell .pr-question-row:hover {
+  transform: translateX(5px);
+}
+
+body .pr-shell .pr-question-row:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+body .pr-shell .pr-kind {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: transparent;
+}
+
+body .pr-shell .pr-kind-observed {
+  border-color: rgba(49, 94, 251, .38);
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-kind-inference {
+  border-color: rgba(245, 87, 47, .4);
+  background: var(--signal-soft);
+  color: var(--signal);
+}
+
+body .pr-shell .pr-kind-open-question {
+  border-color: rgba(245, 87, 47, .55);
+  color: var(--signal);
+  background: transparent;
+}
+
+body .pr-shell .pr-question-row:has(.pr-kind-observed)::before {
+  background: var(--cobalt);
+}
+
+body .pr-shell .pr-question-row h3 {
+  font-size: 11.5px;
+}
+
+body .pr-shell .pr-question-row p {
+  color: #3f3d38;
+  font-size: 14.5px;
+}
+
+body .pr-shell .pr-resolution-body {
+  grid-template-columns: minmax(0, 1.72fr) minmax(290px, .58fr);
+  gap: clamp(58px, 7vw, 112px);
+}
+
+body .pr-shell .pr-score-visual {
+  border-top: 2px solid var(--cobalt);
+  padding-top: 16px;
+}
+
+body .pr-shell .pr-score-caption strong {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-score-caption span {
+  color: #77746d;
+}
+
+body .pr-shell .pr-score-visual svg g {
+  cursor: crosshair;
+  pointer-events: bounding-box;
+  transition: opacity .18s ease;
+}
+
+body .pr-shell .pr-score-visual svg:hover g {
+  opacity: .25;
+}
+
+body .pr-shell .pr-score-visual svg g:hover {
+  opacity: 1;
+}
+
+body .pr-shell .pr-score-visual svg g:hover .pr-score-label,
+body .pr-shell .pr-score-visual svg g:hover .pr-score-value {
+  fill: var(--cobalt);
+}
+
+body .pr-shell .pr-score-visual svg g:hover .pr-score-tick.is-filled {
+  stroke: var(--cobalt);
+  stroke-width: 1.8;
+}
+
+body .pr-shell .pr-score-label {
+  fill: #44423d;
+  font-size: 10.5px;
+}
+
+body .pr-shell .pr-score-value {
+  font-size: 12.5px;
+}
+
+body .pr-shell .pr-score-tick.is-filled {
+  stroke-width: 1.45;
+}
+
+body .pr-shell .pr-score-visual.is-revealed .pr-score-tick.is-filled {
+  animation: pr-tick-rise .42s cubic-bezier(.2, .7, .3, 1.2) both;
+}
+
+body .pr-shell .pr-score-notes {
+  margin-top: 22px;
+}
+
+body .pr-shell .pr-score-notes p {
+  position: relative;
+  padding-inline: 0 10px;
+  transition: color .18s ease, background .18s ease, transform .18s ease;
+}
+
+body .pr-shell .pr-score-notes p:hover {
+  background: var(--cobalt-soft);
+  color: var(--ink);
+  transform: translateX(4px);
+}
+
+body .pr-shell .pr-resolution-verdict {
+  border-top: 2px solid var(--signal);
+}
+
+body .pr-shell .pr-resolution-verdict::before {
+  content: "FINAL READ";
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--signal);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+
+body .pr-shell .pr-resolution-verdict > strong {
+  font-size: clamp(30px, 2.9vw, 46px);
+}
+
+body .pr-shell .pr-resolution-verdict dl dd {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-build-ledger {
+  border-top: 1px solid rgba(49, 94, 251, .48);
+}
+
+body .pr-shell .pr-build-row {
+  position: relative;
+  transition: opacity .2s ease, transform .2s ease, background .2s ease;
+}
+
+body .pr-shell .pr-build-ledger:hover .pr-build-row:not(:hover) {
+  opacity: .45;
+}
+
+body .pr-shell .pr-build-row:hover {
+  background: var(--cobalt-soft);
+  transform: translateX(5px);
+}
+
+body .pr-shell .pr-build-row a,
+body .pr-shell .pr-source-ledger a {
+  color: var(--cobalt);
+}
+
+body .pr-shell .pr-source-ledger {
+  border-top-color: rgba(29, 29, 27, .25);
+}
+
+body .pr-shell .pr-shell a:focus-visible,
+body .pr-shell a:focus-visible {
+  outline-color: var(--cobalt);
+}
+
+body .pr-shell.is-reading-enhanced .pr-capture-main,
+body .pr-shell.is-reading-enhanced .pr-verdict,
+body .pr-shell.is-reading-enhanced .pr-evidence-row,
+body .pr-shell.is-reading-enhanced .pr-question-row,
+body .pr-shell.is-reading-enhanced .pr-score-visual,
+body .pr-shell.is-reading-enhanced .pr-score-notes p,
+body .pr-shell.is-reading-enhanced .pr-resolution-verdict,
+body .pr-shell.is-reading-enhanced .pr-build-row,
+body .pr-shell.is-reading-enhanced .pr-source-ledger {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+body .pr-shell.is-reading-enhanced .is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity .55s cubic-bezier(.16, 1, .3, 1),
+    transform .55s cubic-bezier(.16, 1, .3, 1);
+}
+
+body .pr-shell.is-reading-enhanced .pr-evidence-row.is-revealed,
+body .pr-shell.is-reading-enhanced .pr-question-row.is-revealed,
+body .pr-shell.is-reading-enhanced .pr-build-row.is-revealed {
+  transition-delay: calc((var(--reveal-order, 0) % 3) * 55ms);
+}
+
+@keyframes pr-line-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pr-pop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pr-tick-rise {
+  from { opacity: .15; transform: scaleY(.2); transform-origin: center; }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .pr-shell .pr-stage-nav::after,
+  body .pr-shell .pr-stage-links a,
+  body .pr-shell .pr-stage-links a::after,
+  body .pr-shell .pr-evidence-row,
+  body .pr-shell .pr-evidence-row::before,
+  body .pr-shell .pr-question-row,
+  body .pr-shell .pr-question-row::before,
+  body .pr-shell .pr-build-row,
+  body .pr-shell.is-reading-enhanced .is-revealed {
+    transition: none;
+  }
+
+  body .pr-shell .pr-history-line,
+  body .pr-shell .pr-evidence-row.is-revealed .pr-history-line,
+  body .pr-shell .pr-history svg > .pr-history-dot:last-of-type,
+  body .pr-shell .pr-score-visual.is-revealed .pr-score-tick.is-filled {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  body .pr-shell.is-reading-enhanced .pr-capture-main,
+  body .pr-shell.is-reading-enhanced .pr-verdict,
+  body .pr-shell.is-reading-enhanced .pr-evidence-row,
+  body .pr-shell.is-reading-enhanced .pr-question-row,
+  body .pr-shell.is-reading-enhanced .pr-score-visual,
+  body .pr-shell.is-reading-enhanced .pr-score-notes p,
+  body .pr-shell.is-reading-enhanced .pr-resolution-verdict,
+  body .pr-shell.is-reading-enhanced .pr-build-row,
+  body .pr-shell.is-reading-enhanced .pr-source-ledger {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  body .pr-shell .pr-capture {
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+  }
+
+  body .pr-shell .pr-ledger-section,
+  body .pr-shell .pr-resolution {
+    grid-template-columns: 186px minmax(0, 1fr);
+  }
+
+  body .pr-shell .pr-question-row {
+    grid-template-columns: 112px 158px minmax(0, 1fr) 32px;
+  }
+}

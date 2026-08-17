@@ -1,0 +1,240 @@
+/* Micro Polish Pass — shared light surfaces.
+   Owner scope only:
+   1) Explore keeps the Project paper, but its perimeter design is visibly present.
+   2) Global light nav stays 85% paper glass.
+   3) Explore helper strips leave the rendered composition so their space returns to L12.
+   4) L12 type and usable horizontal field grow without increasing viewport height. */
+
+:root {
+  --fr-surface-paper: var(--fr-system-paper);
+  --fr-surface-paper-rgb: var(--fr-system-paper-rgb);
+}
+
+/* Global light nav: materially present, still integrated with the paper. */
+.fr-site-nav[data-fr-tone="light"] {
+  background: rgba(var(--fr-surface-paper-rgb), .85) !important;
+  backdrop-filter: blur(14px) saturate(108%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(108%) !important;
+  border-bottom-color: rgba(17, 18, 20, .105) !important;
+}
+
+/* Explore uses the same paper as Project, but the paper lives on the page.
+   Remove the legacy global body gradients so the paper is not color-shifted. */
+body:has(.lf4) {
+  background-color: var(--fr-surface-paper) !important;
+  background-image: none !important;
+}
+
+/* The Explore route is still wrapped by the legacy FieldMotionBridge shell.
+   field-first.css gives that shell its own warm kraft paper (#f2ede2), which was
+   the actual visible source of the #f1ede3 cast. Lock only that wrapper to the
+   Project paper; do not touch Explore's blue perimeter artwork. */
+body:has(.lf4) .explore-field-first.explore-field-motion-root {
+  --fr-paper: var(--fr-surface-paper) !important;
+  background: var(--fr-surface-paper) !important;
+  background-image: none !important;
+}
+
+/* Content regions stay transparent so the fixed perimeter field is not occluded. */
+body:has(.lf4) .lf4.lf4,
+body:has(.lf4) .lf4-hero,
+body:has(.lf4) .lf4-canvas,
+body:has(.lf4) .lf4-footer {
+  background-color: transparent !important;
+}
+
+body:has(.lf4) .lf4-controls {
+  background-color: rgba(var(--fr-surface-paper-rgb), .94) !important;
+}
+
+/* Owner-requested cleanup: remove the two helper strips from the rendered canvas.
+   Keep the actual section labels and the L12 data/interaction contract untouched. */
+@media (min-width: 901px) {
+  .lf4-viewport .lf4-canvas-head span,
+  .lf4-viewport .lf4-canvas figcaption {
+    display: none !important;
+  }
+
+  .lf4-viewport .lf4-canvas-head {
+    align-items: center;
+    padding-bottom: 4px;
+  }
+
+  .lf4-viewport .lf4-canvas-head strong {
+    margin-bottom: 0 !important;
+  }
+
+  /* Reinvest the released space into the data field rather than page length. */
+  .lf4-viewport .lf4-canvas {
+    padding-left: 28px !important;
+    padding-right: 28px !important;
+    padding-bottom: 3px !important;
+  }
+}
+
+/* Explore perimeter design — visible but subordinate, and confined to the edge field. */
+.fr-explore-surface {
+  opacity: 1 !important;
+}
+
+.fr-explore-surface__plates {
+  opacity: 1 !important;
+}
+
+.fr-explore-surface__plate--a {
+  opacity: 1;
+  stroke: rgba(49, 94, 251, .18);
+  stroke-width: .9;
+  filter: saturate(1.2) drop-shadow(0 11px 26px rgba(49, 94, 251, .055));
+}
+
+.fr-explore-surface__plate--b {
+  opacity: 1;
+  stroke: rgba(28, 28, 26, .14);
+  stroke-width: .82;
+  filter: contrast(1.08);
+}
+
+.fr-explore-surface__plate--c {
+  fill: rgba(49, 94, 251, .06) !important;
+  stroke: rgba(49, 94, 251, .16);
+  stroke-width: .85;
+}
+
+.fr-explore-surface__edge-frame {
+  stroke: rgba(28, 28, 26, .42) !important;
+  stroke-width: 1.05 !important;
+}
+
+.fr-explore-surface__calibration {
+  stroke: rgba(28, 28, 26, .29) !important;
+  stroke-width: .8 !important;
+}
+
+.fr-explore-surface__calibration--right line:nth-child(4n + 1),
+.fr-explore-surface__calibration--bottom line:nth-child(4n + 1) {
+  stroke: rgba(49, 94, 251, .64) !important;
+}
+
+.fr-explore-surface__dots {
+  fill: rgba(28, 28, 26, .30) !important;
+}
+
+.fr-explore-surface__dots circle:nth-child(7n + 1),
+.fr-explore-surface__dots circle:nth-child(11n + 2) {
+  fill: rgba(49, 94, 251, .82) !important;
+}
+
+.fr-explore-surface__ghost-index {
+  fill: rgba(28, 28, 26, .10) !important;
+}
+
+.fr-explore-surface__ghost-label {
+  fill: rgba(28, 28, 26, .30) !important;
+}
+
+.fr-explore-surface__scan rect {
+  opacity: .88 !important;
+}
+
+.fr-explore-surface__scan circle {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 9px rgba(49, 94, 251, .38));
+}
+
+/* Explore typography — a visible step up, paired with the wider usable canvas. */
+@media (min-width: 901px) {
+  .lf4-hero-compact .lf4-kicker {
+    font-size: 8.8px !important;
+    letter-spacing: .105em;
+  }
+
+  .lf4-compact-thesis p {
+    font-size: 9.5px !important;
+    line-height: 1.38;
+  }
+
+  .lf4-hero-compact .lf4-hero-meta span {
+    font-size: 8px !important;
+    letter-spacing: .09em;
+  }
+
+  .lf4-viewport .lf4-canvas-head strong {
+    font-size: 9.6px !important;
+    letter-spacing: .11em;
+  }
+
+  .lf4-rank {
+    font-size: 9.7px !important;
+  }
+
+  .lf4-score {
+    font-size: 9.2px !important;
+  }
+
+  .lf4-title {
+    font-size: 11.5px !important;
+  }
+
+  .lf4-inline-readout {
+    font-size: 7.8px !important;
+  }
+
+  .lf4-group-name {
+    font-size: 10.8px !important;
+  }
+
+  .lf4-group-count {
+    font-size: 8.8px !important;
+    letter-spacing: .085em;
+  }
+
+  .lf4-aperture-kicker {
+    font-size: 7.8px !important;
+    letter-spacing: .08em;
+  }
+
+  .lf4-aperture-copy > p {
+    font-size: 8.6px !important;
+    line-height: 1.32;
+  }
+
+  .lf4-aperture-scores span {
+    font-size: 7.2px !important;
+    letter-spacing: .055em;
+  }
+
+  .lf4-aperture-scores b {
+    font-size: 8.9px !important;
+  }
+
+  .lf4-aperture-reason > span {
+    font-size: 7.1px !important;
+    letter-spacing: .075em;
+  }
+
+  .lf4-aperture-reason p {
+    font-size: 7.8px !important;
+    line-height: 1.26;
+  }
+
+  .lf4-aperture-actions .lf4-open,
+  .lf4-aperture-actions .lf4-save,
+  .lf4-aperture-actions button {
+    font-size: 7.3px !important;
+    letter-spacing: .07em;
+  }
+
+  .lf4-viewport .lf4-footer {
+    font-size: 7.7px !important;
+    letter-spacing: .075em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-explore-surface__plate--a,
+  .fr-explore-surface__plate--b,
+  .fr-explore-surface__plate--c {
+    filter: none;
+  }
+}

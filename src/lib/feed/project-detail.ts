@@ -13,6 +13,22 @@ interface ItemLinkRow {
   source_url: string | null;
 }
 
+interface MetricSnapshotRow {
+  snapshot_date: string;
+  captured_at: string;
+  stars: number | null;
+  forks: number | null;
+  downloads: number | null;
+  likes: number | null;
+  score_raw: number | null;
+  raw_extra: Record<string, unknown> | null;
+}
+
+export interface ProjectMetricPoint {
+  date: string;
+  value: number;
+}
+
 export interface ProjectEvidenceDetail {
   itemId: string;
   source: FrontierFeedItem["source"];
@@ -24,6 +40,8 @@ export interface ProjectEvidenceDetail {
   publishedAt: string | null;
   updatedAt: string | null;
   momentum: MomentumHistory | null;
+  metricLabel: string | null;
+  metricHistory: ProjectMetricPoint[];
 }
 
 export interface ProjectScoreDetail {
@@ -53,6 +71,70 @@ function feed(items: FrontierFeedItem[]): FeedResult {
 
 function isUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function finite(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function metricForSource(
+  source: FrontierFeedItem["source"],
+  rows: MetricSnapshotRow[]
+): { label: string | null; points: ProjectMetricPoint[] } {
+  const selectors: Array<{ label: string; pick: (row: MetricSnapshotRow) => number | null }> =
+    source === "github"
+      ? [
+          { label: "STARS", pick: (row) => finite(row.stars) },
+          { label: "FORKS", pick: (row) => finite(row.forks) },
+        ]
+      : source === "huggingface"
+        ? [
+            { label: "DOWNLOADS", pick: (row) => finite(row.downloads) },
+            { label: "LIKES", pick: (row) => finite(row.likes) },
+          ]
+        : source === "hackernews"
+          ? [
+              { label: "HN POINTS", pick: (row) => finite(row.raw_extra?.engagements) ?? finite(row.score_raw) },
+              { label: "COMMENTS", pick: (row) => finite(row.raw_extra?.comments) },
+            ]
+          : source === "producthunt"
+            ? [
+                { label: "VOTES / LIKES", pick: (row) => finite(row.likes) ?? finite(row.score_raw) },
+              ]
+            : [];
+
+  for (const selector of selectors) {
+    const byDay = new Map<string, ProjectMetricPoint>();
+    for (const row of rows) {
+      const value = selector.pick(row);
+      if (value === null || !row.snapshot_date) continue;
+      // Rows arrive newest-first; keep the first observation for a calendar date.
+      if (!byDay.has(row.snapshot_date)) {
+        byDay.set(row.snapshot_date, { date: row.snapshot_date, value });
+      }
+    }
+    const points = [...byDay.values()]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-30);
+    if (points.length > 0) return { label: selector.label, points };
+  }
+
+  return { label: null, points: [] };
+}
+
+async function loadMetricHistory(
+  supabase: ReturnType<typeof createAdminClient>,
+  itemId: string,
+  source: FrontierFeedItem["source"]
+): Promise<{ label: string | null; points: ProjectMetricPoint[] }> {
+  const { data, error } = await supabase
+    .from("item_metrics_snapshot")
+    .select("snapshot_date,captured_at,stars,forks,downloads,likes,score_raw,raw_extra")
+    .eq("item_id", itemId)
+    .order("captured_at", { ascending: false })
+    .limit(40);
+  if (error) throw new Error(`读取 Project 指标历史失败: ${error.message}`);
+  return metricForSource(source, (data ?? []) as MetricSnapshotRow[]);
 }
 
 export async function loadProjectDetail(itemId: string): Promise<ProjectDetailData | null> {
@@ -114,10 +196,17 @@ export async function loadProjectDetail(itemId: string): Promise<ProjectDetailDa
   const evidence: ProjectEvidenceDetail[] = await Promise.all(
     entity.evidence.map(async (entry) => {
       let momentum: MomentumHistory | null = null;
+      let metricLabel: string | null = null;
+      let metricHistory: ProjectMetricPoint[] = [];
       try {
-        momentum = await loadMomentumHistory(supabase, entry.itemId);
+        [momentum, { label: metricLabel, points: metricHistory }] = await Promise.all([
+          loadMomentumHistory(supabase, entry.itemId),
+          loadMetricHistory(supabase, entry.itemId, entry.source),
+        ]);
       } catch {
         momentum = null;
+        metricLabel = null;
+        metricHistory = [];
       }
       const link = links.get(entry.itemId);
       return {
@@ -131,6 +220,8 @@ export async function loadProjectDetail(itemId: string): Promise<ProjectDetailDa
         publishedAt: entry.publishedAt,
         updatedAt: entry.updatedAt,
         momentum,
+        metricLabel,
+        metricHistory,
       };
     })
   );

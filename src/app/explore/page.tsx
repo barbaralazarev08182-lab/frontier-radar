@@ -10,10 +10,13 @@ import { personalizeFeed } from "@/lib/personalization/server";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
-import { ExploreField } from "./explore-field";
-import "./explore-field.css";
-import "./explore-v2.css";
-import "./explore-saved-integration.css";
+import { EditorialLineField } from "@/components/frontier/editorial-line-field";
+import { ExploreFieldV4 } from "./explore-field-v4";
+import { ExploreWheelNavigator } from "./explore-wheel-navigator";
+import "./lieflat-v4.css";
+import "./lieflat-v4-interaction.css";
+import "./lieflat-v4-svg-geometry.css";
+import "./lieflat-v4-readability.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Explore · Frontier Radar" };
@@ -94,11 +97,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   }
 
   return (
-    <ExploreField
-      candidates={candidates}
-      totalDiscoveries={totalDiscoveries}
-      dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
-      personalized={personalizedApplied}
-    />
+    <>
+      <EditorialLineField variant="explore" />
+      <ExploreWheelNavigator />
+      <ExploreFieldV4
+        candidates={candidates}
+        totalDiscoveries={totalDiscoveries}
+        dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
+        personalized={personalizedApplied}
+      />
+    </>
   );
 }
