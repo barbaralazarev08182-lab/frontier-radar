@@ -137,7 +137,7 @@ export function TodaySignalStage() {
       <div className="fr-stack-cover" aria-hidden={opened}>
         <div className="fr-stack-cover-copy">
           <span>FRONTIER RADAR / TODAY</span>
-          <h1>FIND WHAT&apos;S NEXT<br/>BEFORE IT HAS<br/>A NAME.</h1>
+          <h1><span>FIND WHAT&apos;S </span><strong className="fr-cover-word-next">NEXT</strong><br/><span>BEFORE IT HAS</span><br/><span>A NAME</span><strong className="fr-cover-period">.</strong></h1>
           <p>Seven signals. One daily field of things worth noticing before they become obvious.</p>
         </div>
         <div className="fr-stack-cover-index" aria-hidden="true">
@@ -169,7 +169,10 @@ export function TodaySignalStage() {
                   <span className="fr-band-entity">{signal.entity}</span>
                   <span className="fr-band-thesis">{signal.thesis}</span>
                   <span className="fr-band-topic">{signal.topic}</span>
-                  <span className="fr-band-score">{signal.score}</span>
+                  <span className="fr-band-tail">
+                    <span className="fr-band-score">{signal.score}</span>
+                    <span className="fr-band-gate" aria-hidden="true"><span>{active ? "ACTIVE" : "OPEN"}</span><b>{active ? "—" : "↗"}</b></span>
+                  </span>
                 </button>
 
                 <div className="fr-band-detail" aria-hidden={!active}>
