@@ -1,0 +1,243 @@
+/* Project Research Mode — Motion Pass
+   Reintroduces the best motion cues from the earlier Project Intelligence surface
+   without changing the accepted Gate 15B document composition. */
+
+@keyframes pr-ambient-drift {
+  0%, 100% { transform: translate3d(-1.25%, -.5%, 0) scale(1.015); opacity: .62; }
+  50% { transform: translate3d(1.25%, .75%, 0) scale(1.03); opacity: .92; }
+}
+
+@keyframes pr-capture-foil {
+  0%, 12% { transform: skewX(-14deg) translateX(-260%); opacity: 0; }
+  20% { opacity: .24; }
+  43% { opacity: .1; }
+  62%, 100% { transform: skewX(-14deg) translateX(720%); opacity: 0; }
+}
+
+@keyframes pr-verdict-resolve {
+  0% { opacity: 0; transform: translateY(18px); clip-path: inset(100% 0 0); }
+  58% { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+}
+
+@keyframes pr-verdict-scan {
+  0%, 15% { transform: translateX(-115%); opacity: 0; }
+  24% { opacity: .9; }
+  74% { opacity: .55; }
+  100% { transform: translateX(420%); opacity: 0; }
+}
+
+@keyframes pr-calibration-pulse {
+  0%, 100% { opacity: .32; transform: scaleX(.58); }
+  50% { opacity: .75; transform: scaleX(1); }
+}
+
+@keyframes pr-score-tick-in {
+  from { opacity: .15; transform: scaleY(.2); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes pr-row-glint {
+  from { background-position: 140% 0; }
+  to { background-position: -40% 0; }
+}
+
+/* The live editorial header is 56px. Keep the accepted Project subnav directly below it. */
+.pr-stage-nav {
+  top: 56px !important;
+  background: rgba(240, 239, 235, .90) !important;
+  backdrop-filter: blur(12px) saturate(1.04);
+  -webkit-backdrop-filter: blur(12px) saturate(1.04);
+}
+
+.pr-shell {
+  position: relative;
+  overflow-x: clip;
+  isolation: isolate;
+}
+
+/* Slow research-field geometry: visible enough to make the document breathe, never enough to fight copy. */
+.pr-shell::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 42px;
+  left: -7vw;
+  width: 114vw;
+  height: 980px;
+  pointer-events: none;
+  opacity: .72;
+  background:
+    radial-gradient(ellipse at 21% 18%, transparent 0 36.8%, rgba(28,28,26,.052) 37% 37.08%, transparent 37.25%),
+    radial-gradient(ellipse at 63% 8%, transparent 0 43.5%, rgba(49,80,255,.046) 43.68% 43.75%, transparent 43.92%),
+    radial-gradient(ellipse at 88% 50%, transparent 0 34%, rgba(28,28,26,.038) 34.15% 34.22%, transparent 34.38%),
+    linear-gradient(108deg, transparent 0 47%, rgba(49,80,255,.018) 47.1% 58%, transparent 58.1% 100%);
+  transform-origin: center top;
+  animation: pr-ambient-drift 18s ease-in-out infinite;
+}
+
+.pr-stage-nav,
+.pr-document {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-capture {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.pr-capture::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -34%;
+  bottom: -34%;
+  left: -12%;
+  width: 8.5%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(49,80,255,.035) 16%,
+    rgba(255,255,255,.62) 46%,
+    rgba(104,174,255,.055) 61%,
+    rgba(255,91,33,.025) 72%,
+    transparent
+  );
+  box-shadow: 0 0 30px rgba(49,80,255,.05);
+  animation: pr-capture-foil 12.5s 1.1s cubic-bezier(.16,1,.3,1) infinite;
+}
+
+.pr-capture > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-verdict {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 18px 42px rgba(28,28,26,.025);
+}
+
+.pr-verdict::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 26%;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, #3150ff 30%, #3150ff 72%, transparent);
+  animation: pr-verdict-scan 6.8s .8s ease-in-out infinite;
+}
+
+.pr-verdict::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 12px;
+  width: 76px;
+  height: 30px;
+  pointer-events: none;
+  opacity: .16;
+  background-image: radial-gradient(circle, rgba(49,80,255,.72) 0 1px, transparent 1.15px);
+  background-size: 10px 10px;
+  mask-image: linear-gradient(90deg, transparent, black 32% 100%);
+}
+
+.pr-verdict-score {
+  color: #3150ff;
+  animation: pr-verdict-resolve .92s .16s cubic-bezier(.16,1,.3,1) both;
+}
+
+.pr-section-label {
+  isolation: isolate;
+}
+
+.pr-section-label::after {
+  content: "";
+  display: block;
+  width: 58px;
+  height: 1px;
+  margin-top: 13px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #3150ff, rgba(49,80,255,0));
+  animation: pr-calibration-pulse 4.8s ease-in-out infinite;
+}
+
+.pr-evidence-row,
+.pr-question-row,
+.pr-build-row {
+  position: relative;
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), background-color 220ms ease;
+}
+
+.pr-evidence-row:hover,
+.pr-question-row:hover,
+.pr-build-row:hover {
+  transform: translateX(4px);
+  background-color: rgba(49,80,255,.018);
+}
+
+.pr-question-row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .14;
+  background: linear-gradient(104deg, transparent 0 34%, rgba(255,91,33,.18) 45%, transparent 56%) 140% 0 / 230% 100% no-repeat;
+}
+
+.pr-question-row:hover::before {
+  animation: pr-row-glint 1.35s ease-out both;
+}
+
+.pr-score-tick.is-filled {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pr-score-tick-in .52s cubic-bezier(.16,1,.3,1) both;
+}
+
+.pr-score-tick.is-filled:nth-of-type(5n) { animation-delay: 70ms; }
+.pr-score-tick.is-filled:nth-of-type(5n + 1) { animation-delay: 110ms; }
+.pr-score-tick.is-filled:nth-of-type(5n + 2) { animation-delay: 150ms; }
+.pr-score-tick.is-filled:nth-of-type(5n + 3) { animation-delay: 190ms; }
+.pr-score-tick.is-filled:nth-of-type(5n + 4) { animation-delay: 230ms; }
+
+/* Progressive scroll reading on browsers that support view timelines. */
+@supports (animation-timeline: view()) {
+  @keyframes pr-section-read {
+    from { opacity: .34; transform: translateY(18px); filter: blur(1.5px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  .pr-ledger-section .pr-section-body,
+  .pr-resolution .pr-section-body {
+    animation: pr-section-read both linear;
+    animation-timeline: view();
+    animation-range: entry 4% cover 25%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-shell::before,
+  .pr-capture::before,
+  .pr-verdict::before,
+  .pr-verdict-score,
+  .pr-section-label::after,
+  .pr-score-tick.is-filled,
+  .pr-question-row:hover::before,
+  .pr-ledger-section .pr-section-body,
+  .pr-resolution .pr-section-body {
+    animation: none !important;
+  }
+
+  .pr-evidence-row:hover,
+  .pr-question-row:hover,
+  .pr-build-row:hover {
+    transform: none;
+  }
+}
