@@ -1,0 +1,109 @@
+/* Saved density pass — make the archive feel occupied, not staged in empty space. */
+
+@media (min-width: 781px) {
+  .fr-saved-shell > div:first-child {
+    padding-top: clamp(1rem, 1.8vw, 1.6rem) !important;
+    padding-bottom: .8rem !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    top: clamp(6.65rem, 8.8vh, 7.35rem) !important;
+  }
+
+  .fr-archive-stage {
+    min-height: clamp(43rem, 76vh, 53rem) !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after {
+    top: 6.8% !important;
+  }
+
+  .fr-archive-stage > div:first-child {
+    inset: 4.8% 3.5% 6.5% !important;
+  }
+
+  /* Main dossier owns more of the viewport. */
+  .fr-featured-book {
+    left: 4.3% !important;
+    bottom: 8.5% !important;
+    width: min(51rem, 50vw) !important;
+    min-width: 39rem !important;
+    height: min(36.5rem, 59vh) !important;
+    min-height: 31rem !important;
+    padding: 2.7rem 3.1rem 2.25rem 3.45rem !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 94% !important;
+    margin-top: 1.9rem !important;
+    font-size: clamp(4rem, 6vw, 7.2rem) !important;
+  }
+
+  .fr-featured-book p {
+    max-width: 38rem !important;
+    font-size: 1.02rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: 1.45rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    padding-top: 1.45rem !important;
+  }
+
+  /* Pull the signal field much closer to the dossier and make it taller. */
+  .fr-bookshelf {
+    left: 50.5% !important;
+    right: 4.2% !important;
+    bottom: 8.5% !important;
+    height: 69% !important;
+  }
+
+  .fr-shelf-book {
+    width: clamp(3rem, 3.7vw, 4.15rem) !important;
+    min-height: 15rem !important;
+    height: 78% !important;
+  }
+
+  .fr-shelf-book:nth-child(2n) { height: 63% !important; }
+  .fr-shelf-book:nth-child(3n) { height: 91% !important; }
+  .fr-shelf-book:nth-child(4n) { height: 73% !important; }
+  .fr-shelf-book:nth-child(5n) { height: 98% !important; }
+  .fr-shelf-book:nth-child(7n) { height: 56% !important; }
+
+  .fr-shelf-book > span:nth-child(2) {
+    font-size: clamp(.72rem, .88vw, .95rem) !important;
+  }
+
+  /* Bottom controls come up into the composition instead of sitting far away. */
+  .fr-archive-rail {
+    width: min(47rem, 45vw) !important;
+    margin: -2.35rem 4.2% 1.15rem auto !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"],
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    bottom: 3.5% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 4.3% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 4.2% !important;
+  }
+}
+
+@media (min-width: 1350px) {
+  .fr-featured-book {
+    width: min(55rem, 51vw) !important;
+    height: min(39rem, 61vh) !important;
+  }
+
+  .fr-bookshelf {
+    left: 51.5% !important;
+  }
+}
