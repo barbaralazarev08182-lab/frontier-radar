@@ -252,6 +252,44 @@
   .fr-bookshelf {
     left: 45.4% !important;
   }
+
+  /* HOVER STABILITY ----------------------------------------------------
+     The old physical-bookshelf interaction layer still lifts, rotates and
+     recolors records on hover. In the flat archive field hover should only
+     confirm focus in place — never change geometry or resurrect book material. */
+  .fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim),
+  .fr-shelf-book:focus-visible:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+    z-index: 24 !important;
+    filter: brightness(1.07) saturate(1.02) !important;
+    transform: translateX(calc(-50% + var(--book-x, 0rem))) !important;
+    box-shadow: none !important;
+  }
+
+  .fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim)::after,
+  .fr-shelf-book:focus-visible:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim)::after {
+    opacity: .72 !important;
+    transform: translateX(50%) !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):hover > span:nth-child(2),
+  .fr-shelf-book:not(.fr-shelf-book-active):focus-visible > span:nth-child(2) {
+    color: #fff !important;
+    background: linear-gradient(90deg, rgba(10,17,27,.72), rgba(10,17,27,.36) 82%, transparent) !important;
+    border-left-color: color-mix(in srgb, var(--source-accent) 96%, #fff) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* The folio itself is not a hover target. Keep its material and shadow
+     completely stable while the actual controls inside remain interactive. */
+  .fr-featured-book:hover {
+    box-shadow:
+      0 1.7rem 4.1rem rgba(0,0,0,.29),
+      0 .35rem 1.1rem rgba(0,0,0,.13),
+      inset 0 0 0 1px rgba(255,255,255,.34),
+      inset 0 -1px rgba(29,29,27,.10) !important;
+  }
 }
 
 @media (min-width: 781px) and (max-width: 1180px) {
