@@ -1,0 +1,842 @@
+/* Saved visual Gate V5 — Editorial Archive.
+   Dark archive identity remains, but the opened item returns to Frontier Radar's
+   paper + ink editorial language. Color is semantic and intentionally strong:
+   source = hue, score = index height, content type = compact label.
+*/
+
+main:has(> .fr-saved-shell) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fr-saved-shell {
+  --saved-bg: #0c0f12;
+  --saved-bg-2: #101419;
+  --saved-paper: #f1efe9;
+  --saved-paper-2: #e9e5dc;
+  --saved-ink: #1d1d1b;
+  --saved-muted: #6d6a63;
+  --saved-dark-ink: #f3f0e9;
+  --saved-dark-muted: rgba(243, 240, 233, .52);
+  --saved-line: rgba(243, 240, 233, .14);
+  --saved-line-strong: rgba(243, 240, 233, .24);
+  --source-accent: #315efb;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: clip;
+  color: var(--saved-dark-ink);
+  background:
+    radial-gradient(circle at 74% 46%, color-mix(in srgb, var(--source-accent) 5%, transparent), transparent 31%),
+    linear-gradient(180deg, #10141a 0%, var(--saved-bg) 46%, #090b0e 100%) !important;
+}
+
+.fr-saved-shell::before,
+.fr-saved-shell::after {
+  opacity: .18 !important;
+  filter: none !important;
+}
+
+/* Source palette: deliberately separated, not five neighboring blue-violet tints. */
+.fr-archive-stage,
+.fr-featured-book,
+.fr-shelf-book,
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+  --source-accent: #315efb;
+  --source-soft: #dce4ff;
+  --source-deep: #2148cb;
+}
+
+.fr-archive-stage[data-active-source="github"],
+.fr-featured-book[data-source="github"],
+.fr-shelf-book[data-source="github"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="github"] {
+  --source-accent: #1769e0;
+  --source-soft: #d8e7ff;
+  --source-deep: #0e4faa;
+}
+
+.fr-archive-stage[data-active-source="huggingface"],
+.fr-featured-book[data-source="huggingface"],
+.fr-shelf-book[data-source="huggingface"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="huggingface"] {
+  --source-accent: #d79200;
+  --source-soft: #f7e4a8;
+  --source-deep: #9a6200;
+}
+
+.fr-archive-stage[data-active-source="arxiv"],
+.fr-featured-book[data-source="arxiv"],
+.fr-shelf-book[data-source="arxiv"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="arxiv"] {
+  --source-accent: #c33d32;
+  --source-soft: #f3d1cc;
+  --source-deep: #902b24;
+}
+
+.fr-archive-stage[data-active-source="hackernews"],
+.fr-featured-book[data-source="hackernews"],
+.fr-shelf-book[data-source="hackernews"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="hackernews"] {
+  --source-accent: #ef6c00;
+  --source-soft: #ffd9b7;
+  --source-deep: #ad4a00;
+}
+
+.fr-archive-stage[data-active-source="producthunt"],
+.fr-featured-book[data-source="producthunt"],
+.fr-shelf-book[data-source="producthunt"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="producthunt"] {
+  --source-accent: #b83f72;
+  --source-soft: #f1cadc;
+  --source-deep: #862a50;
+}
+
+/* Header: quiet archive identity, not a sci-fi command console. */
+.fr-saved-shell > div:first-child {
+  min-height: 7.4rem !important;
+  padding: 1.65rem 4.2% 1.15rem !important;
+  border-bottom: 1px solid var(--saved-line) !important;
+  background: rgba(12, 15, 18, .86) !important;
+}
+
+.fr-saved-shell > div:first-child > div:first-child {
+  gap: .35rem !important;
+}
+
+.fr-saved-shell > div:first-child > div:first-child span {
+  color: rgba(243,240,233,.46) !important;
+}
+
+.fr-saved-shell > div:first-child > div:first-child strong {
+  color: var(--saved-dark-ink) !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+  width: min(31rem, 42vw) !important;
+  min-height: 3.65rem !important;
+  grid-template-columns: 3.4rem minmax(0,1fr) 2.2rem !important;
+  border: 1px solid var(--saved-line-strong) !important;
+  border-left: 4px solid var(--source-accent) !important;
+  outline: none !important;
+  background: rgba(17, 21, 26, .92) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child {
+  border-right: 1px solid var(--saved-line) !important;
+  background: transparent !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child i {
+  background: var(--source-accent) !important;
+  opacity: .95 !important;
+}
+
+.fr-archive-panel-copy span {
+  color: var(--source-accent) !important;
+  background: none !important;
+  font-size: .5rem !important;
+  letter-spacing: .12em !important;
+}
+
+.fr-archive-panel-copy strong {
+  color: var(--saved-dark-ink) !important;
+  font-size: .76rem !important;
+}
+
+/* Search is a simple editorial rule. */
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: min(31rem, calc(100% - 8.4%)) !important;
+  min-height: 2.75rem !important;
+  margin: 1.15rem 4.2% 0 !important;
+  padding: 0 !important;
+  grid-template-columns: 1.1rem minmax(0,1fr) 1.5rem !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--saved-line-strong) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) > svg {
+  color: rgba(243,240,233,.48) !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+  color: var(--saved-dark-ink) !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input::placeholder {
+  color: rgba(243,240,233,.34) !important;
+}
+
+/* One quiet field. No radar grid, no glow wash, no scanning beam. */
+.fr-archive-stage {
+  position: relative;
+  min-height: clamp(40rem, 70vh, 48rem) !important;
+  margin-top: .35rem !important;
+  perspective: none !important;
+  transform-style: flat !important;
+  isolation: isolate;
+  overflow: hidden !important;
+}
+
+.fr-archive-stage::before {
+  content: "SAVED / PRIVATE ARCHIVE" !important;
+  position: absolute;
+  z-index: 4;
+  left: 4.2% !important;
+  top: 4.4% !important;
+  color: rgba(243,240,233,.34) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .46rem !important;
+  font-weight: 760;
+  letter-spacing: .13em;
+}
+
+.fr-archive-stage::after {
+  content: "SOURCE COLOR  /  SCORE HEIGHT" !important;
+  position: absolute;
+  z-index: 4;
+  right: 4.2% !important;
+  top: 4.4% !important;
+  color: rgba(243,240,233,.26) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .43rem !important;
+  font-weight: 760;
+  letter-spacing: .12em;
+}
+
+.fr-archive-stage > div:first-child,
+.fr-archive-stage > div:nth-child(2) {
+  display: none !important;
+}
+
+/* Selected trace is now a restrained editorial connector. */
+.fr-active-trace {
+  position: absolute;
+  z-index: 15;
+  left: 55.2%;
+  right: 23.8%;
+  top: 50.5%;
+  height: 1px;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--source-accent) 75%, transparent);
+  box-shadow: none !important;
+  transform-origin: right center;
+  animation: frSavedEditorialTrace .38s cubic-bezier(.2,.7,.2,1) both;
+}
+
+.fr-active-trace::before {
+  content: none !important;
+}
+
+.fr-active-trace::after {
+  content: "";
+  position: absolute;
+  right: -.22rem;
+  top: 50%;
+  width: .42rem;
+  height: .42rem;
+  border-radius: 50%;
+  border: 1px solid var(--source-accent);
+  background: var(--saved-bg);
+  box-shadow: none !important;
+  transform: translateY(-50%);
+  animation: none !important;
+}
+
+/* The opened item is a flat paper folio: high contrast, readable, editorial. */
+.fr-featured-book {
+  z-index: 20 !important;
+  left: 4.2% !important;
+  right: auto !important;
+  bottom: 9.5% !important;
+  width: min(54rem, 56vw) !important;
+  min-width: 42rem !important;
+  height: min(32.5rem, 54vh) !important;
+  min-height: 28.5rem !important;
+  padding: 2.15rem 3.1rem 1.9rem 3.25rem !important;
+  color: var(--saved-ink) !important;
+  border: 0 !important;
+  border-top: 5px solid var(--source-accent) !important;
+  border-radius: 0 !important;
+  clip-path: none !important;
+  background: var(--saved-paper) !important;
+  box-shadow: 0 1.8rem 4rem rgba(0,0,0,.28) !important;
+  filter: none !important;
+  transform: none !important;
+  transform-origin: center !important;
+  overflow: hidden !important;
+  animation: frSavedEditorialFolio .34s cubic-bezier(.2,.72,.18,1) both !important;
+}
+
+.fr-featured-book::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none;
+  opacity: .55 !important;
+  background:
+    linear-gradient(90deg, transparent 0 67%, rgba(29,29,27,.035) 67% 67.12%, transparent 67.12%) !important;
+  mask-image: none !important;
+  color: transparent !important;
+}
+
+.fr-featured-book::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: 8px !important;
+  background: var(--source-accent) !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.fr-featured-page-edge {
+  display: none !important;
+}
+
+.fr-featured-book > div:first-of-type {
+  position: relative;
+  z-index: 2;
+  width: fit-content !important;
+  max-width: 68%;
+  padding: 0 0 .6rem !important;
+  color: var(--source-deep) !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--source-accent) 38%, #bdb8ae) !important;
+  background: transparent !important;
+  font-size: .5rem !important;
+  font-weight: 850 !important;
+  letter-spacing: .13em !important;
+}
+
+/* Metadata reads like an editorial ledger, not telemetry. */
+.fr-featured-book > div:nth-of-type(2) {
+  position: relative !important;
+  z-index: 2;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1.25fr 1fr !important;
+  gap: 0 !important;
+  width: min(40rem, 78%) !important;
+  max-width: none !important;
+  margin-top: 1rem !important;
+  padding: 0 !important;
+  border-top: 1px solid rgba(29,29,27,.13) !important;
+  border-bottom: 1px solid rgba(29,29,27,.13) !important;
+}
+
+.fr-featured-book > div:nth-of-type(2) > span {
+  position: static !important;
+  min-height: 2.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: .55rem .7rem .48rem 0 !important;
+  border-right: 1px solid rgba(29,29,27,.11) !important;
+  color: #77736b !important;
+  font-size: .48rem !important;
+  font-weight: 760 !important;
+  letter-spacing: .08em !important;
+  line-height: 1.25 !important;
+}
+
+.fr-featured-book > div:nth-of-type(2) > span + span {
+  padding-left: .7rem !important;
+}
+
+.fr-featured-book > div:nth-of-type(2) > span:last-child {
+  border-right: 0 !important;
+  color: var(--source-deep) !important;
+  font-size: .75rem !important;
+  font-weight: 900 !important;
+}
+
+.fr-featured-book h1 {
+  position: relative;
+  z-index: 2;
+  max-width: 78%;
+  margin: 1.35rem 0 .72rem !important;
+  color: var(--saved-ink) !important;
+  font-size: clamp(3.5rem, 5.4vw, 6.6rem) !important;
+  line-height: .84 !important;
+  letter-spacing: -.068em !important;
+  font-weight: 620 !important;
+  text-wrap: balance;
+}
+
+.fr-featured-book p {
+  position: relative;
+  z-index: 2;
+  width: min(39rem, 75%) !important;
+  max-width: none !important;
+  margin: 0 !important;
+  color: #56534d !important;
+  font-size: clamp(.98rem, 1.1vw, 1.08rem) !important;
+  line-height: 1.62 !important;
+  font-weight: 430 !important;
+}
+
+.fr-featured-book > div:nth-of-type(3) {
+  position: relative;
+  z-index: 2;
+  width: min(39rem, 75%) !important;
+  margin-top: 1.05rem !important;
+  padding-top: .72rem !important;
+  border-top: 1px solid rgba(29,29,27,.11) !important;
+}
+
+.fr-featured-book > div:nth-of-type(3) span {
+  padding: .25rem .42rem !important;
+  color: #69665f !important;
+  border: 1px solid rgba(29,29,27,.17) !important;
+  background: transparent !important;
+  font-size: .45rem !important;
+  font-weight: 720 !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) {
+  position: relative;
+  z-index: 2;
+  width: min(39rem, 75%) !important;
+  margin-top: auto !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid rgba(29,29,27,.14) !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > button,
+.fr-featured-book > div:nth-of-type(4) > a {
+  min-height: 2.4rem !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: .49rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .09em !important;
+  transform: none !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > button {
+  color: #68655f !important;
+  border: 1px solid rgba(29,29,27,.22) !important;
+  background: transparent !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > a {
+  color: #f7f4ed !important;
+  border: 1px solid var(--saved-ink) !important;
+  background: var(--saved-ink) !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > a:hover {
+  border-color: var(--source-accent) !important;
+  background: var(--source-accent) !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > button:hover {
+  color: var(--source-deep) !important;
+  border-color: var(--source-accent) !important;
+}
+
+/* Archive index: flat colored tabs, not glowing skyscrapers. */
+.fr-bookshelf {
+  z-index: 12 !important;
+  left: 57% !important;
+  right: 4.2% !important;
+  bottom: 9.5% !important;
+  height: 62% !important;
+  display: block !important;
+  overflow: visible !important;
+  transform-style: flat !important;
+}
+
+.fr-bookshelf::before {
+  display: none !important;
+}
+
+.fr-book-row {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.fr-book-row::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: 1px !important;
+  background: var(--saved-line-strong) !important;
+}
+
+.fr-book-row::after {
+  content: "ARCHIVE ORDER" !important;
+  position: absolute !important;
+  right: 0 !important;
+  bottom: -1.45rem !important;
+  color: rgba(243,240,233,.26) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .42rem !important;
+  font-weight: 740 !important;
+  letter-spacing: .12em !important;
+}
+
+.fr-shelf-book {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 0 !important;
+  z-index: var(--book-z,1) !important;
+  width: clamp(3.25rem, 3.7vw, 4.1rem) !important;
+  min-width: 0 !important;
+  height: var(--signal-strength, 52%) !important;
+  min-height: 12rem !important;
+  overflow: hidden !important;
+  color: var(--saved-dark-ink) !important;
+  border: 1px solid color-mix(in srgb, var(--source-accent) 58%, rgba(255,255,255,.12)) !important;
+  border-top: 5px solid var(--source-accent) !important;
+  border-radius: 0 !important;
+  background: color-mix(in srgb, var(--source-accent) 26%, #11151a) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: .92 !important;
+  transform: translateX(calc(-50% + var(--book-x,0rem))) !important;
+  transform-origin: bottom center !important;
+  transition:
+    transform .36s cubic-bezier(.2,.72,.18,1),
+    width .3s ease,
+    background .24s ease,
+    opacity .2s ease !important;
+}
+
+.fr-shelf-book:nth-child(n) {
+  height: var(--signal-strength,52%) !important;
+}
+
+.fr-shelf-book::before {
+  content: "" !important;
+  position: absolute !important;
+  left: .48rem !important;
+  right: .48rem !important;
+  bottom: 2.3rem !important;
+  height: 1px !important;
+  background: color-mix(in srgb, var(--source-accent) 58%, transparent) !important;
+}
+
+.fr-shelf-book::after {
+  display: block !important;
+  position: absolute !important;
+  top: .54rem !important;
+  right: .45rem !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: auto !important;
+  height: auto !important;
+  color: color-mix(in srgb, var(--source-soft) 86%, white) !important;
+  background: none !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .36rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .07em !important;
+  opacity: .9 !important;
+  transform: none !important;
+}
+
+.fr-shelf-book[data-content-type="repo"]::after { content: "RE"; }
+.fr-shelf-book[data-content-type="model"]::after { content: "MO"; }
+.fr-shelf-book[data-content-type="dataset"]::after { content: "DA"; }
+.fr-shelf-book[data-content-type="space"]::after { content: "SP"; }
+.fr-shelf-book[data-content-type="paper"]::after { content: "PA"; }
+.fr-shelf-book[data-content-type="product"]::after { content: "PR"; }
+
+.fr-shelf-book > span:first-child {
+  top: .55rem !important;
+  left: .48rem !important;
+  color: #fff !important;
+  font-size: .47rem !important;
+  font-weight: 900 !important;
+}
+
+.fr-shelf-book > span:nth-child(2) {
+  inset: 1.9rem .42rem 2.7rem !important;
+  color: rgba(255,255,255,.88) !important;
+  font-family: ui-sans-serif, system-ui, sans-serif !important;
+  font-size: clamp(.68rem,.8vw,.84rem) !important;
+  font-weight: 640 !important;
+  line-height: .95 !important;
+  writing-mode: vertical-rl !important;
+  transform: rotate(180deg) !important;
+}
+
+.fr-shelf-book > span:last-child {
+  bottom: .62rem !important;
+  left: .43rem !important;
+  right: .43rem !important;
+  color: color-mix(in srgb, var(--source-soft) 72%, white) !important;
+  font-size: .39rem !important;
+  font-weight: 760 !important;
+}
+
+.fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+  opacity: 1 !important;
+  background: color-mix(in srgb, var(--source-accent) 40%, #11151a) !important;
+  transform: translateX(calc(-50% + var(--book-x,0rem))) translateY(-.45rem) !important;
+}
+
+/* Active index becomes a light, readable tab matching the opened folio. */
+.fr-shelf-book-active {
+  z-index: 18 !important;
+  width: clamp(6rem, 6.5vw, 7.25rem) !important;
+  opacity: 1 !important;
+  color: var(--saved-ink) !important;
+  border: 1px solid var(--source-accent) !important;
+  border-top: 7px solid var(--source-accent) !important;
+  background: var(--source-soft) !important;
+  box-shadow: 0 1.2rem 2.8rem rgba(0,0,0,.24) !important;
+  transform: translateX(-50%) translateY(-.55rem) !important;
+}
+
+.fr-shelf-book-active > span:first-child {
+  top: .72rem !important;
+  left: .7rem !important;
+  color: var(--source-deep) !important;
+  font-size: .55rem !important;
+}
+
+.fr-shelf-book-active > span:nth-child(2) {
+  top: 2.1rem !important;
+  right: .7rem !important;
+  bottom: auto !important;
+  left: .7rem !important;
+  color: var(--saved-ink) !important;
+  font-size: clamp(.82rem,.95vw,1rem) !important;
+  font-weight: 760 !important;
+  line-height: 1.08 !important;
+  writing-mode: horizontal-tb !important;
+  transform: none !important;
+  text-align: left !important;
+}
+
+.fr-shelf-book-active > span:last-child {
+  right: .7rem !important;
+  bottom: .72rem !important;
+  left: .7rem !important;
+  color: var(--source-deep) !important;
+  font-size: .44rem !important;
+}
+
+.fr-shelf-book-active::before {
+  left: .7rem !important;
+  right: .7rem !important;
+  bottom: 2.2rem !important;
+  background: color-mix(in srgb, var(--source-accent) 55%, transparent) !important;
+}
+
+.fr-shelf-book-active::after {
+  top: .72rem !important;
+  right: .7rem !important;
+  color: var(--source-deep) !important;
+}
+
+.fr-shelf-book-search-dim {
+  opacity: .12 !important;
+}
+
+.fr-shelf-book-search-hit:not(.fr-shelf-book-active) {
+  opacity: 1 !important;
+}
+
+.fr-bookshelf > div:last-child {
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -1px !important;
+  height: 1px !important;
+  border: 0 !important;
+  background: var(--saved-line-strong) !important;
+  box-shadow: none !important;
+}
+
+/* Navigation and sort are deliberately quiet. */
+.fr-archive-stage > button[aria-label="Previous saved signal"],
+.fr-archive-stage > button[aria-label="Next saved signal"] {
+  top: auto !important;
+  bottom: 3.2% !important;
+  width: 2.3rem !important;
+  height: 2.3rem !important;
+  border: 1px solid var(--saved-line-strong) !important;
+  border-radius: 0 !important;
+  background: rgba(12,15,18,.82) !important;
+  color: rgba(243,240,233,.58) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.fr-archive-stage > button[aria-label="Previous saved signal"] { left: 4.2% !important; }
+.fr-archive-stage > button[aria-label="Next saved signal"] { right: 4.2% !important; }
+
+.fr-archive-stage > button[aria-label="Previous saved signal"]:hover,
+.fr-archive-stage > button[aria-label="Next saved signal"]:hover {
+  color: #fff !important;
+  border-color: var(--source-accent) !important;
+}
+
+.fr-archive-rail {
+  width: min(45rem, 48vw) !important;
+  min-height: 3rem !important;
+  margin: -1.1rem 4.2% 1.65rem auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--saved-line) !important;
+  border-bottom: 1px solid var(--saved-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.fr-archive-rail::before {
+  content: "ARCHIVE ORDER" !important;
+  color: rgba(243,240,233,.28) !important;
+}
+
+.fr-archive-rail > button,
+.fr-archive-rail > span {
+  min-height: 3rem !important;
+  color: rgba(243,240,233,.42) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.fr-archive-rail > button[aria-pressed="true"] {
+  margin: 0 !important;
+  color: #fff !important;
+  border: 0 !important;
+  background: rgba(255,255,255,.035) !important;
+  box-shadow: inset 0 -3px var(--source-accent) !important;
+}
+
+.fr-archive-rail > button[aria-pressed="true"]::after {
+  display: none !important;
+}
+
+@keyframes frSavedEditorialTrace {
+  from { opacity: 0; transform: scaleX(.2); }
+  to { opacity: .82; transform: scaleX(1); }
+}
+
+@keyframes frSavedEditorialFolio {
+  from { opacity: .2; transform: translateY(.8rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1080px) and (min-width: 781px) {
+  .fr-featured-book {
+    width: min(49rem, 58vw) !important;
+    min-width: 36rem !important;
+    padding-right: 2.6rem !important;
+  }
+
+  .fr-bookshelf {
+    left: 59% !important;
+  }
+
+  .fr-shelf-book-active {
+    width: 5.75rem !important;
+  }
+}
+
+@media (max-width: 780px) {
+  .fr-saved-shell > div:first-child {
+    padding: 1.2rem 1rem !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    width: 100% !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    width: calc(100% - 2rem) !important;
+    margin: .8rem 1rem 0 !important;
+  }
+
+  .fr-archive-stage {
+    min-height: 53rem !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after,
+  .fr-active-trace {
+    display: none !important;
+  }
+
+  .fr-featured-book {
+    left: 1rem !important;
+    right: 1rem !important;
+    top: 1.8rem !important;
+    bottom: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 30rem !important;
+    min-height: 0 !important;
+    padding: 1.65rem 1.4rem 1.4rem 1.55rem !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 100%;
+    font-size: clamp(2.5rem, 12vw, 4rem) !important;
+  }
+
+  .fr-featured-book p,
+  .fr-featured-book > div:nth-of-type(2),
+  .fr-featured-book > div:nth-of-type(3),
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 100% !important;
+  }
+
+  .fr-bookshelf {
+    left: 1rem !important;
+    right: 1rem !important;
+    top: 34rem !important;
+    bottom: auto !important;
+    height: 14rem !important;
+    overflow: hidden !important;
+  }
+
+  .fr-shelf-book {
+    width: 2.5rem !important;
+    min-height: 6rem !important;
+  }
+
+  .fr-shelf-book-active {
+    width: 5rem !important;
+  }
+
+  .fr-archive-rail {
+    width: calc(100% - 2rem) !important;
+    margin: .3rem 1rem 1.2rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-active-trace,
+  .fr-featured-book,
+  .fr-shelf-book {
+    animation: none !important;
+    transition: none !important;
+  }
+}
