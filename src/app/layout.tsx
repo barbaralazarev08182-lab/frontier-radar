@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
+import { ProjectEntryTransitionLayer } from "@/components/frontier/project-entry-transition-layer";
 import "./globals.css";
 import "./frontier-system.css";
 import "./product-grammar.css";
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background text-foreground antialiased">
         <div className="min-h-screen">
           <SiteNav />
+          <ProjectEntryTransitionLayer />
           <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 md:py-9 lg:px-8">
             {children}
           </main>
