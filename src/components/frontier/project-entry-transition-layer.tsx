@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const PROJECT_ENTRY_EVENT = "fr:project-entry-transition";
 const MIN_VISIBLE_MS = 900;
-const SAFETY_TIMEOUT_MS = 2600;
+const HARD_SAFETY_TIMEOUT_MS = 8000;
 
 export function startProjectEntryTransition() {
   if (typeof window === "undefined") return;
@@ -143,14 +143,14 @@ export function ProjectEntryTransitionLayer() {
   const pathname = usePathname();
   const [active, setActive] = useState(false);
   const startedAtRef = useRef(0);
-  const safetyTimerRef = useRef<number | null>(null);
+  const hardSafetyTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const begin = () => {
       startedAtRef.current = performance.now();
       setActive(true);
-      if (safetyTimerRef.current !== null) window.clearTimeout(safetyTimerRef.current);
-      safetyTimerRef.current = window.setTimeout(() => setActive(false), SAFETY_TIMEOUT_MS);
+      if (hardSafetyTimerRef.current !== null) window.clearTimeout(hardSafetyTimerRef.current);
+      hardSafetyTimerRef.current = window.setTimeout(() => setActive(false), HARD_SAFETY_TIMEOUT_MS);
     };
 
     const onExploreProjectClick = (event: MouseEvent) => {
@@ -169,16 +169,49 @@ export function ProjectEntryTransitionLayer() {
     return () => {
       window.removeEventListener(PROJECT_ENTRY_EVENT, begin);
       document.removeEventListener("click", onExploreProjectClick, true);
-      if (safetyTimerRef.current !== null) window.clearTimeout(safetyTimerRef.current);
+      if (hardSafetyTimerRef.current !== null) window.clearTimeout(hardSafetyTimerRef.current);
     };
   }, []);
 
   useEffect(() => {
     if (!active || !pathname.startsWith("/project/")) return;
-    const elapsed = performance.now() - startedAtRef.current;
-    const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
-    const timer = window.setTimeout(() => setActive(false), remaining);
-    return () => window.clearTimeout(timer);
+
+    let observer: MutationObserver | null = null;
+    let minTimer: number | null = null;
+    let frameOne: number | null = null;
+    let frameTwo: number | null = null;
+    let settled = false;
+
+    const hideAfterDestinationPaint = () => {
+      if (settled) return;
+      settled = true;
+      observer?.disconnect();
+      const elapsed = performance.now() - startedAtRef.current;
+      const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+      minTimer = window.setTimeout(() => {
+        frameOne = window.requestAnimationFrame(() => {
+          frameTwo = window.requestAnimationFrame(() => {
+            setActive(false);
+          });
+        });
+      }, remaining);
+    };
+
+    if (document.querySelector(".pr-shell")) {
+      hideAfterDestinationPaint();
+    } else {
+      observer = new MutationObserver(() => {
+        if (document.querySelector(".pr-shell")) hideAfterDestinationPaint();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => {
+      observer?.disconnect();
+      if (minTimer !== null) window.clearTimeout(minTimer);
+      if (frameOne !== null) window.cancelAnimationFrame(frameOne);
+      if (frameTwo !== null) window.cancelAnimationFrame(frameTwo);
+    };
   }, [active, pathname]);
 
   return active ? <ProjectEntryTransitionScene /> : null;
