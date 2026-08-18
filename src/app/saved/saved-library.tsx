@@ -37,6 +37,9 @@ const SORT_LABELS: Record<SortMode, string> = {
   title: "A–Z",
 };
 
+const SHELF_WINDOW_RADIUS = 7;
+const SHELF_WINDOW_SIZE = SHELF_WINDOW_RADIUS * 2 + 1;
+
 function formattedDate(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "UNKNOWN DATE";
@@ -133,6 +136,18 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
     : selectedItem ?? ordered[0] ?? null;
   const activeIndex = activeItem ? Math.max(0, ordered.findIndex((item) => item.id === activeItem.id)) : 0;
 
+  const renderedBooks = useMemo(() => {
+    if (ordered.length <= SHELF_WINDOW_SIZE) {
+      return ordered.map((item, index) => ({ item, index }));
+    }
+
+    return Array.from({ length: SHELF_WINDOW_SIZE }, (_, slot) => {
+      const offset = slot - SHELF_WINDOW_RADIUS;
+      const index = (activeIndex + offset + ordered.length) % ordered.length;
+      return { item: ordered[index]!, index };
+    });
+  }, [activeIndex, ordered]);
+
   function selectOffset(delta: number) {
     const navigable = needle ? matchingItems : ordered;
     if (navigable.length === 0) return;
@@ -225,7 +240,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
 
               <div className={`${styles.bookshelf} fr-bookshelf`}>
                 <div className={`${styles.bookRow} fr-book-row`}>
-                  {ordered.map((item, index) => {
+                  {renderedBooks.map(({ item, index }) => {
                     const isActive = item.id === activeItem.id;
                     const isMatch = matchingIds.has(item.id);
                     const offset = signedShelfOffset(index, activeIndex, ordered.length);
@@ -238,6 +253,8 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                         onClick={() => selectBook(item.id, index)}
                         aria-pressed={isActive}
                         aria-label={`Inspect ${item.title}`}
+                        aria-posinset={index + 1}
+                        aria-setsize={ordered.length}
                       >
                         <span className={styles.bookNumber}>{String(index + 1).padStart(2, "0")}</span>
                         <span className={styles.bookSpineTitle}>{item.title}</span>
