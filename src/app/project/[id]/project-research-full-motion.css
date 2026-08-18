@@ -1,0 +1,564 @@
+/* Project Research Mode — Full Motion Restore
+   Ports the complete idle/live effect language from the earlier Project Intelligence
+   surface onto the accepted Gate 15B Research Mode document. Layout, copy, section
+   order, normal scrolling, and navigation geometry stay unchanged. */
+
+.pr-shell {
+  --pr-px: 0;
+  --pr-py: 0;
+  --pr-pointer-v: 0;
+}
+
+/* --------------------------------------------------------------------------
+   01 / CAPTURE — live paper field + spectral foil + pointer depth
+   -------------------------------------------------------------------------- */
+
+.pr-capture::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -18% -14%;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(
+      108deg,
+      transparent 0 32%,
+      rgba(82, 169, 255, .055) 39%,
+      rgba(255, 255, 255, .52) 46%,
+      rgba(109, 210, 255, .075) 49%,
+      rgba(255, 170, 218, .075) 53%,
+      transparent 61% 100%
+    );
+  transform: translate3d(-24%, 0, 0);
+}
+
+.pr-shell[data-active-stage="capture"] .pr-capture::after {
+  animation: pr-full-capture-field 8.8s ease-in-out infinite;
+}
+
+.pr-shell[data-active-stage="capture"] .pr-capture::before {
+  animation-duration: 6.1s !important;
+  animation-delay: .25s !important;
+}
+
+.pr-shell[data-active-stage="capture"] .pr-capture-main {
+  translate: calc(var(--pr-px) * -8px) calc(var(--pr-py) * -5px);
+  transition: translate 110ms linear;
+}
+
+.pr-shell[data-active-stage="capture"] .pr-verdict {
+  translate: calc(var(--pr-px) * 9px) calc(var(--pr-py) * 5px);
+  transition: translate 110ms linear, box-shadow 260ms ease;
+  box-shadow:
+    0 18px 42px rgba(28, 28, 26, .035),
+    calc(var(--pr-px) * 14px) calc(18px + var(--pr-py) * 8px) 54px -35px rgba(49, 80, 255, .28);
+}
+
+.pr-shell[data-active-stage="capture"] .pr-verdict::before {
+  animation-duration: 4.25s !important;
+}
+
+.pr-shell[data-active-stage="capture"] .pr-verdict-score {
+  text-shadow: 0 0 30px rgba(49, 80, 255, .08);
+}
+
+/* --------------------------------------------------------------------------
+   02 / EVIDENCE — moving inspection field + scan window + chart illumination
+   -------------------------------------------------------------------------- */
+
+#evidence .pr-section-body {
+  position: relative;
+  isolation: isolate;
+}
+
+#evidence .pr-section-body::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -18px -24px;
+  pointer-events: none;
+  opacity: 0;
+  background-image:
+    linear-gradient(rgba(49, 80, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 28, 26, .028) 1px, transparent 1px),
+    radial-gradient(circle at 72% 44%, rgba(49, 80, 255, .075), transparent 31%);
+  background-size: 42px 42px, 42px 42px, auto;
+  mask-image: linear-gradient(90deg, transparent, black 7% 93%, transparent);
+}
+
+#evidence .pr-section-body::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -8%;
+  bottom: -8%;
+  left: -24%;
+  width: 15%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(80, 105, 255, .055),
+    rgba(255, 255, 255, .58),
+    rgba(110, 220, 255, .105),
+    transparent
+  );
+  box-shadow: 0 0 30px rgba(114, 211, 255, .11);
+  transform: skewX(-12deg) translateX(-260%);
+}
+
+#evidence .pr-section-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-shell[data-active-stage="evidence"] #evidence .pr-section-body::before {
+  animation: pr-full-evidence-grid 14s linear infinite;
+}
+
+.pr-shell[data-active-stage="evidence"] #evidence .pr-section-body::after {
+  animation: pr-full-evidence-scan 5.2s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.pr-shell[data-active-stage="evidence"] .pr-evidence-ledger {
+  translate: calc(var(--pr-px) * -5px) calc(var(--pr-py) * -3px);
+  transition: translate 120ms linear;
+}
+
+.pr-shell[data-active-stage="evidence"] .pr-evidence-row {
+  box-shadow: inset 0 0 0 1px rgba(49, 80, 255, .015);
+}
+
+.pr-shell[data-active-stage="evidence"] .pr-evidence-row:hover {
+  box-shadow:
+    inset 3px 0 0 rgba(49, 80, 255, .42),
+    inset 0 0 42px rgba(49, 80, 255, .028);
+}
+
+.pr-shell[data-active-stage="evidence"] .pr-history.is-revealed,
+.pr-shell[data-active-stage="evidence"] .pr-history {
+  filter: drop-shadow(0 0 10px rgba(49, 80, 255, .035));
+}
+
+.pr-shell[data-active-stage="evidence"] .pr-history-dot:last-of-type {
+  filter: drop-shadow(0 0 7px rgba(49, 80, 255, .38));
+}
+
+/* --------------------------------------------------------------------------
+   03 / INTERROGATION — flowing orange field + live question sheets
+   -------------------------------------------------------------------------- */
+
+.pr-question-ledger {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.pr-question-ledger::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -18% -10%;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    112deg,
+    transparent 0 7.5%,
+    rgba(91, 31, 12, .055) 7.65%,
+    transparent 7.9% 15%
+  );
+  transform: translate3d(-5%, 0, 0);
+}
+
+.pr-question-ledger::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 22% 28%, rgba(255, 91, 33, .06), transparent 26%),
+    radial-gradient(circle at 82% 68%, rgba(49, 80, 255, .035), transparent 24%);
+}
+
+.pr-question-ledger > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-ledger::before {
+  animation: pr-full-interrogation-field 8.2s linear infinite;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-ledger::after {
+  animation: pr-full-interrogation-breathe 5.2s ease-in-out infinite alternate;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-ledger {
+  translate: calc(var(--pr-px) * -4px) calc(var(--pr-py) * -2px);
+  transition: translate 120ms linear;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(96deg, transparent 0 38%, rgba(255, 244, 219, .30) 50%, transparent 62%);
+  background-size: 230% 100%;
+  background-position: 150% 0;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-row:nth-child(3n + 1)::after {
+  animation: pr-full-question-light 6.4s 0s ease-in-out infinite;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-row:nth-child(3n + 2)::after {
+  animation: pr-full-question-light 6.4s -2.1s ease-in-out infinite;
+}
+
+.pr-shell[data-active-stage="interrogation"] .pr-question-row:nth-child(3n)::after {
+  animation: pr-full-question-light 6.4s -4.2s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   04 / RESOLUTION — convergence rings + pressure waves + score field signal
+   -------------------------------------------------------------------------- */
+
+.pr-resolution-body {
+  position: relative;
+  isolation: isolate;
+}
+
+.pr-resolution-body::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: -4vw;
+  top: 2%;
+  width: min(58vw, 860px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-radial-gradient(
+    circle,
+    transparent 0 10.8%,
+    rgba(72, 91, 255, .11) 11.05%,
+    transparent 11.48% 21.7%
+  );
+  transform: translate3d(calc(var(--pr-px) * -16px), calc(var(--pr-py) * -12px), 0) scale(.91);
+}
+
+.pr-resolution-body::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: 3%;
+  top: 14%;
+  width: 33%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(49, 80, 255, .075), transparent 66%);
+  filter: blur(5px);
+  transform: translate3d(calc(var(--pr-px) * 19px), calc(var(--pr-py) * 13px), 0);
+}
+
+.pr-resolution-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-resolution-body::before {
+  animation: pr-full-resolution-field 5.4s ease-in-out infinite alternate;
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-resolution-body::after {
+  animation: pr-full-resolution-glow 3.7s ease-in-out infinite alternate;
+}
+
+.pr-resolution-verdict {
+  position: relative;
+  isolation: isolate;
+}
+
+.pr-resolution-verdict::before,
+.pr-resolution-verdict::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset: -1px;
+  border: 1px solid rgba(49, 80, 255, .36);
+  opacity: 0;
+  transform-origin: center;
+}
+
+.pr-resolution-verdict::after {
+  border-color: rgba(255, 91, 33, .22);
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-resolution-verdict::before {
+  animation: pr-full-core-pressure 3.1s ease-out infinite;
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-resolution-verdict::after {
+  animation: pr-full-core-pressure-2 3.1s -1.55s ease-out infinite;
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-score-visual {
+  box-shadow:
+    inset 0 0 0 1px rgba(49, 80, 255, .025),
+    0 24px 70px -56px rgba(49, 80, 255, .42);
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-score-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 0 42%, rgba(49, 80, 255, .035) 49%, transparent 56%);
+  background-size: 260% 100%;
+  animation: pr-full-score-scan 4.8s ease-in-out infinite;
+}
+
+.pr-shell[data-active-stage="resolution"] .pr-score-value {
+  filter: drop-shadow(0 0 5px rgba(49, 80, 255, .16));
+}
+
+/* --------------------------------------------------------------------------
+   05 / BUILD — launch field + flowing energy + module sweeps
+   -------------------------------------------------------------------------- */
+
+.pr-build-ledger {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.pr-build-ledger::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 24%;
+  right: 0;
+  top: -28%;
+  bottom: -28%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0 42%,
+    rgba(49, 80, 255, .025) 46%,
+    rgba(255, 255, 255, .42) 49%,
+    rgba(255, 91, 33, .025) 52%,
+    transparent 58% 100%
+  );
+  transform: translate3d(0, -48%, 0);
+}
+
+.pr-build-ledger::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -18% -5%;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    105deg,
+    transparent 0 9%,
+    rgba(28, 28, 26, .045) 9.15%,
+    rgba(49, 80, 255, .025) 9.55%,
+    transparent 10.2% 19%
+  );
+  transform: translate3d(-9%, 0, 0);
+}
+
+.pr-build-ledger > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-shell[data-active-stage="build"] .pr-build-ledger::before {
+  animation: pr-full-build-energy 5.6s cubic-bezier(.45, 0, .2, 1) infinite;
+}
+
+.pr-shell[data-active-stage="build"] .pr-build-ledger::after {
+  animation: pr-full-build-flow 6.2s linear infinite;
+}
+
+.pr-shell[data-active-stage="build"] .pr-build-ledger {
+  translate: calc(var(--pr-px) * -4px) calc(var(--pr-py) * -2px);
+  transition: translate 120ms linear;
+}
+
+.pr-build-row::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: 0;
+  left: -30%;
+  width: 15%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .64), rgba(49, 80, 255, .055), transparent);
+  transform: skewX(-18deg) translateX(-280%);
+}
+
+.pr-build-row > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pr-shell[data-active-stage="build"] .pr-build-row:nth-child(3n + 1)::after {
+  animation: pr-full-build-sweep 5.3s 0s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.pr-shell[data-active-stage="build"] .pr-build-row:nth-child(3n + 2)::after {
+  animation: pr-full-build-sweep 5.3s -1.75s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.pr-shell[data-active-stage="build"] .pr-build-row:nth-child(3n)::after {
+  animation: pr-full-build-sweep 5.3s -3.5s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+/* Keep the shared vector field alive enough to read as an instrument. */
+body:has(.pr-shell) .fr-line-field--project {
+  opacity: .98;
+}
+
+body:has(.pr-shell[data-active-stage="capture"]) .fr-line-field__project-stage--capture,
+body:has(.pr-shell[data-active-stage="evidence"]) .fr-line-field__project-stage--evidence,
+body:has(.pr-shell[data-active-stage="interrogation"]) .fr-line-field__project-stage--interrogation,
+body:has(.pr-shell[data-active-stage="resolution"]) .fr-line-field__project-stage--resolution,
+body:has(.pr-shell[data-active-stage="build"]) .fr-line-field__project-stage--build {
+  filter: saturate(1.14) contrast(1.035);
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes — adapted one-for-one from the earlier full effect system
+   -------------------------------------------------------------------------- */
+
+@keyframes pr-full-capture-field {
+  0%, 100% { transform: translate3d(-24%, 0, 0); opacity: .24; }
+  40% { opacity: .70; }
+  67% { transform: translate3d(20%, 0, 0); opacity: .56; }
+  84% { opacity: .13; }
+}
+
+@keyframes pr-full-evidence-grid {
+  0% { background-position: 0 0, 0 0, center; opacity: .24; }
+  50% { opacity: .62; }
+  100% { background-position: 84px 42px, 42px 84px, center; opacity: .24; }
+}
+
+@keyframes pr-full-evidence-scan {
+  0%, 42%, 100% { transform: skewX(-12deg) translateX(-260%); opacity: 0; }
+  52% { opacity: .16; }
+  66% { opacity: .86; }
+  83% { transform: skewX(-12deg) translateX(920%); opacity: 0; }
+}
+
+@keyframes pr-full-interrogation-field {
+  from { background-position: 0 0; transform: translate3d(-5%, 0, 0); opacity: .30; }
+  50% { opacity: .68; }
+  to { background-position: 160px 90px; transform: translate3d(5%, 0, 0); opacity: .30; }
+}
+
+@keyframes pr-full-interrogation-breathe {
+  from { opacity: .18; transform: scale(.99); }
+  to { opacity: .62; transform: scale(1.018); }
+}
+
+@keyframes pr-full-question-light {
+  0%, 45%, 100% { background-position: 150% 0; opacity: 0; }
+  58% { opacity: .46; }
+  78% { background-position: -70% 0; opacity: .06; }
+}
+
+@keyframes pr-full-resolution-field {
+  from { opacity: .30; scale: .91; rotate: -1.7deg; }
+  to { opacity: .70; scale: 1.045; rotate: 1.7deg; }
+}
+
+@keyframes pr-full-resolution-glow {
+  from { opacity: .18; scale: .92; }
+  to { opacity: .58; scale: 1.08; }
+}
+
+@keyframes pr-full-core-pressure {
+  0% { opacity: .72; transform: scale(1); }
+  48% { opacity: .14; }
+  100% { opacity: 0; transform: scale(1.15); }
+}
+
+@keyframes pr-full-core-pressure-2 {
+  0% { opacity: .50; transform: scale(1); }
+  52% { opacity: .10; }
+  100% { opacity: 0; transform: scale(1.24); }
+}
+
+@keyframes pr-full-score-scan {
+  0%, 38%, 100% { background-position: 150% 0; opacity: .06; }
+  58% { opacity: .82; }
+  78% { background-position: -70% 0; opacity: .10; }
+}
+
+@keyframes pr-full-build-energy {
+  0%, 100% { transform: translate3d(0, -48%, 0); opacity: .08; }
+  45% { opacity: .66; }
+  72% { transform: translate3d(0, 48%, 0); opacity: .24; }
+  86% { opacity: .05; }
+}
+
+@keyframes pr-full-build-flow {
+  from { transform: translate3d(-9%, 0, 0); opacity: .30; }
+  50% { opacity: .66; }
+  to { transform: translate3d(9%, 0, 0); opacity: .30; }
+}
+
+@keyframes pr-full-build-sweep {
+  0%, 42%, 100% { transform: skewX(-18deg) translateX(-280%); opacity: 0; }
+  53% { opacity: .16; }
+  68% { opacity: .78; }
+  84% { transform: skewX(-18deg) translateX(820%); opacity: 0; }
+}
+
+@media (max-width: 800px) {
+  .pr-capture::after { opacity: .28; }
+  .pr-resolution-body::before { right: -28vw; width: 88vw; }
+  .pr-build-ledger::before { left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-capture::after,
+  #evidence .pr-section-body::before,
+  #evidence .pr-section-body::after,
+  .pr-question-ledger::before,
+  .pr-question-ledger::after,
+  .pr-question-row::after,
+  .pr-resolution-body::before,
+  .pr-resolution-body::after,
+  .pr-resolution-verdict::before,
+  .pr-resolution-verdict::after,
+  .pr-score-visual::after,
+  .pr-build-ledger::before,
+  .pr-build-ledger::after,
+  .pr-build-row::after {
+    animation: none !important;
+  }
+
+  .pr-capture-main,
+  .pr-verdict,
+  .pr-evidence-ledger,
+  .pr-question-ledger,
+  .pr-build-ledger {
+    translate: 0 0 !important;
+  }
+}
