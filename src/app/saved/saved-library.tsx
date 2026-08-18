@@ -29,6 +29,7 @@ type ShelfStyle = CSSProperties & {
   "--book-rot": string;
   "--book-z": string;
   "--book-delay": string;
+  "--signal-strength": string;
 };
 
 const SORT_LABELS: Record<SortMode, string> = {
@@ -59,13 +60,16 @@ function signedShelfOffset(index: number, activeIndex: number, length: number): 
   return offset;
 }
 
-function shelfStyle(offset: number): ShelfStyle {
+function shelfStyle(offset: number, score: number | null): ShelfStyle {
+  const normalizedScore = Math.max(42, Math.min(96, Math.round(score ?? 52)));
+
   if (offset === 0) {
     return {
       "--book-x": "0rem",
       "--book-rot": "0deg",
       "--book-z": "1",
       "--book-delay": "0ms",
+      "--signal-strength": `${normalizedScore}%`,
     };
   }
 
@@ -79,6 +83,7 @@ function shelfStyle(offset: number): ShelfStyle {
     "--book-rot": `${rotation}deg`,
     "--book-z": String(z),
     "--book-delay": `${Math.min(distance * 24, 96)}ms`,
+    "--signal-strength": `${normalizedScore}%`,
   };
 }
 
@@ -183,7 +188,11 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
           <strong>{String(items.length).padStart(2, "0")} SIGNALS</strong>
         </div>
 
-        <div className={styles.archivePanel}>
+        <div
+          className={styles.archivePanel}
+          data-source={activeItem?.source ?? "unknown"}
+          data-content-type={activeItem?.contentType ?? "unknown"}
+        >
           <div className={styles.archiveGlyph} aria-hidden>
             <i />
             <i />
@@ -224,6 +233,8 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
               className={`${styles.archiveStage} fr-archive-stage`}
               data-direction={selectionDirection}
               data-searching={needle ? "true" : "false"}
+              data-active-source={activeItem.source}
+              data-active-content-type={activeItem.contentType}
               aria-live="polite"
             >
               <div className={styles.gridWall} aria-hidden />
@@ -249,7 +260,9 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                         type="button"
                         key={item.id}
                         className={`${styles.book} fr-shelf-book ${isActive ? `${styles.bookActive} fr-shelf-book-active` : ""} ${needle && !isMatch ? "fr-shelf-book-search-dim" : ""} ${needle && isMatch ? "fr-shelf-book-search-hit" : ""}`}
-                        style={shelfStyle(offset)}
+                        style={shelfStyle(offset, item.score)}
+                        data-source={item.source}
+                        data-content-type={item.contentType}
                         onClick={() => selectBook(item.id, index)}
                         aria-pressed={isActive}
                         aria-label={`Inspect ${item.title}`}
@@ -269,6 +282,8 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
               <article
                 key={activeItem.id}
                 className={`${styles.featuredBook} fr-featured-book fr-featured-book-${selectionDirection} ${styles[`variant${activeIndex % 5}`]}`}
+                data-source={activeItem.source}
+                data-content-type={activeItem.contentType}
               >
                 <span className="fr-featured-page-edge" aria-hidden />
                 <div className={styles.featuredTape}>FR ARCHIVE · {String(activeIndex + 1).padStart(2, "0")}</div>
