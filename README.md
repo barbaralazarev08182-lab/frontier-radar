@@ -236,4 +236,25 @@ Rules:
 5. do not perform destructive cleanup without explicit approval
 6. clearly label anything unverified or tool-blocked
 
+### Visual restoration / parity recovery protocol — MANDATORY (2026-08-18)
+
+This protocol is binding for any task that restores, merges, ports, or re-integrates an already owner-approved visual/runtime state.
+
+1. **Owner-approved deployment/commit is the sole visual source of truth.** Once the owner confirms a version, do not reinterpret, redesign, imitate, selectively simplify, or substitute another historical version.
+2. **Treat restoration as a parity problem, not a design problem.** Recover the exact DOM/runtime/style behavior first. Do not add new motion or aesthetic judgment while parity is unresolved.
+3. **Code equality is not visual equality.** Matching file names, blob SHAs, build success, or CSS presence does not constitute a visual PASS.
+4. **Validate the full runtime dependency closure.** Include route DOM, nested/root layouts, shared shell/nav, shared CSS, client controllers, hydration, Suspense/loading behavior, data loaders, and stage state.
+5. **A real-browser A/B gate is mandatory before merge.** Compare the approved deployment and candidate Preview at the same viewport and the same scroll/stage state. For Project, Evidence must visibly reach its approved active reading state, including stage activation and dynamically injected reading summaries.
+6. **Never use the owner as the first visual tester.** An unverified Preview must be labeled diagnostic. Do not present it as restored/final until browser parity has been checked.
+7. **First visible mismatch stops the patch chain.** Do not stack speculative fixes. Stop, identify the first runtime/visual divergence, change only that cause, then rerun A/B.
+8. **No visual parity, no merge.** `READY`, CI PASS, runtime PASS, and mergeability are insufficient without visual PASS.
+9. **Do not regress unrelated frozen surfaces while restoring one route.** Isolate route-specific compatibility glue rather than rolling back Today, Explore, Radar, Saved, or Idea Lab.
+10. **If this failure mode repeats:** stop immediately → keep `main` untouched → invalidate the candidate PR/branch as final → return to the last owner-approved deployment → reproduce at an identical stage → locate the first divergence → make one narrow fix → re-run visual parity.
+
+#### 2026-08-18 Project restoration incident — root cause and lesson
+
+The owner-approved Project baseline is Gate 15B (`adab508844483b5bc88ef253e43d9aa3cc22b4d5`). The later Project route added `loading.tsx`. The Gate 15B `ProjectReadingController` originally queried `.pr-shell` once in `useEffect`; when Suspense/loading rendered before the real page, `.pr-shell` did not yet exist, the controller returned permanently, and the approved runtime reading state never initialized. Static Project markup and CSS therefore appeared while Evidence activation, injected `EPISTEMIC MIX` / `READ THIS STAGE AS`, reveal state, and stage-aware behavior were absent.
+
+Mandatory lesson: when introducing route loading/Suspense around an older client controller, verify that initialization waits for the real route DOM instead of assuming it exists on first effect execution.
+
 <!-- deploy-trigger: 2026-08-17T22:16+08:00 -->
