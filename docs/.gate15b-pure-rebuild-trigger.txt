@@ -1,0 +1,1 @@
+Rebuild trigger for Gate 15B visual-equivalence diagnosis. No runtime imports.
