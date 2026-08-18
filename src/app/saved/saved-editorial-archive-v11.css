@@ -1,0 +1,568 @@
+/* Saved visual Gate V11 — Archive Aperture.
+   The archive is one continuous field: quiet index needles remain in place and
+   the selected record opens out of that field as a source-tinted research folio.
+   Saved behavior, source mapping, score mapping, search/sort and windowing stay intact.
+*/
+
+@media (min-width: 781px) {
+  /* Preserve the accepted single-viewport contract. */
+  body:has(.fr-saved-shell),
+  main:has(> .fr-saved-shell),
+  .fr-saved-shell {
+    overflow: hidden !important;
+  }
+
+  .fr-saved-shell {
+    position: relative !important;
+  }
+
+  /* A quiet archive identity replaces the duplicate active-record card. */
+  .fr-saved-shell > div:first-child {
+    flex: 0 0 4.4rem !important;
+    min-height: 4.4rem !important;
+    align-items: center !important;
+    padding: .78rem 5.2% .62rem !important;
+    border-bottom-color: rgba(232,240,250,.16) !important;
+    background: linear-gradient(90deg, rgba(26,38,53,.86), rgba(17,25,37,.72) 62%, rgba(20,24,39,.68)) !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child {
+    gap: .22rem !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child span {
+    color: rgba(239,245,252,.48) !important;
+    font-size: .52rem !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child strong {
+    font-size: .62rem !important;
+    letter-spacing: .13em !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    display: none !important;
+  }
+
+  /* Search and ordering now share one utility line instead of living top/bottom. */
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    flex: 0 0 2.65rem !important;
+    width: min(24rem, 29vw) !important;
+    min-height: 2.65rem !important;
+    margin: .28rem 5.2% .08rem !important;
+    padding: 0 !important;
+    grid-template-columns: 1rem minmax(0,1fr) 1.4rem !important;
+    gap: .58rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(232,240,250,.26) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"])::before {
+    left: 0 !important;
+    width: 2.9rem !important;
+    height: 2px !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+    font-size: .58rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-archive-rail {
+    position: absolute !important;
+    z-index: 46 !important;
+    top: 4.68rem !important;
+    right: 5.2% !important;
+    left: auto !important;
+    display: flex !important;
+    width: auto !important;
+    min-height: 2.55rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: .18rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .fr-archive-rail::before {
+    content: "ORDER /" !important;
+    position: static !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 2.55rem !important;
+    margin-right: .2rem !important;
+    color: rgba(237,243,251,.30) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: .43rem !important;
+    font-weight: 780 !important;
+    letter-spacing: .12em !important;
+  }
+
+  .fr-archive-rail > button {
+    position: relative !important;
+    min-height: 2.55rem !important;
+    width: auto !important;
+    padding: 0 .68rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: rgba(242,247,253,.46) !important;
+    font-size: .46rem !important;
+    letter-spacing: .1em !important;
+    box-shadow: none !important;
+  }
+
+  .fr-archive-rail > button:hover {
+    color: rgba(255,255,255,.88) !important;
+    background: transparent !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"] {
+    color: #fff !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"]::after {
+    display: block !important;
+    content: "" !important;
+    position: absolute !important;
+    left: .66rem !important;
+    right: .66rem !important;
+    bottom: .28rem !important;
+    height: 2px !important;
+    background: color-mix(in srgb, var(--source-accent) 88%, #fff) !important;
+  }
+
+  .fr-archive-rail > span {
+    display: none !important;
+  }
+
+  /* The stage is the archive — no chart panel, only one continuous field. */
+  .fr-archive-stage {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    border-top: 1px solid rgba(228,237,248,.045) !important;
+    border-bottom: 0 !important;
+    background:
+      radial-gradient(ellipse at 47% 48%, color-mix(in srgb, var(--source-accent) 13%, transparent), transparent 22%),
+      radial-gradient(ellipse at 70% 42%, rgba(91,85,179,.18), transparent 35%),
+      radial-gradient(ellipse at 91% 72%, rgba(35,137,163,.15), transparent 29%),
+      linear-gradient(101deg, rgba(255,255,255,.012), transparent 34%, rgba(141,164,202,.026) 69%, transparent 100%) !important;
+  }
+
+  .fr-archive-stage::before {
+    content: "PRIVATE ARCHIVE / SELECT A RECORD" !important;
+    left: 5.2% !important;
+    top: 2.2% !important;
+    color: rgba(238,244,252,.43) !important;
+  }
+
+  .fr-archive-stage::after {
+    content: "INDEX KEY / SOURCE HUE · SCORE LENGTH" !important;
+    right: 5.2% !important;
+    top: 2.2% !important;
+    color: rgba(238,244,252,.30) !important;
+  }
+
+  /* The opened record is now a content-driven folio, not a half-screen detail card. */
+  .fr-featured-book {
+    z-index: 20 !important;
+    left: 5.2% !important;
+    top: 9.5% !important;
+    bottom: auto !important;
+    width: min(41.5rem, 40.5vw) !important;
+    min-width: 31rem !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: 26rem !important;
+    padding: 1.35rem 2.05rem 1.25rem !important;
+    overflow: hidden !important;
+    box-shadow:
+      0 1.2rem 3.2rem rgba(0,0,0,.22),
+      0 0 0 1px rgba(255,255,255,.20) inset !important;
+  }
+
+  .fr-featured-book::after {
+    width: 4px !important;
+  }
+
+  .fr-featured-book > div:first-of-type,
+  .fr-featured-book > div:nth-of-type(2),
+  .fr-featured-book p,
+  .fr-featured-book > div:nth-of-type(3),
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 96% !important;
+    max-width: 96% !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    padding-bottom: .42rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) {
+    margin-top: .62rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    min-height: 2.15rem !important;
+    padding-top: .36rem !important;
+    padding-bottom: .34rem !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 96% !important;
+    margin: .66rem 0 .42rem !important;
+    font-size: clamp(2.15rem, 2.9vw, 3.45rem) !important;
+    line-height: .96 !important;
+  }
+
+  .fr-featured-book p {
+    font-size: clamp(.8rem, .82vw, .92rem) !important;
+    line-height: 1.42 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: .48rem !important;
+    padding-top: .38rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    margin-top: .72rem !important;
+    padding-top: .55rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) > button,
+  .fr-featured-book > div:nth-of-type(4) > a {
+    min-height: 2.15rem !important;
+  }
+
+  /* Archive aperture: the selected needle sits beside the folio; earlier records
+     recede beneath the paper while later records remain readable in the field. */
+  .fr-bookshelf {
+    z-index: 19 !important;
+    left: 44.2% !important;
+    right: 4.5% !important;
+    top: 13.5% !important;
+    bottom: 10.5% !important;
+    height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .fr-bookshelf::before {
+    inset: 8% -3% 1% -5% !important;
+    opacity: .54 !important;
+    border: 0 !important;
+    background:
+      radial-gradient(ellipse at 21% 47%, color-mix(in srgb, var(--source-accent) 11%, transparent), transparent 30%),
+      linear-gradient(103deg, transparent 5%, rgba(160,184,224,.032) 48%, transparent 84%) !important;
+    box-shadow: none !important;
+  }
+
+  .fr-bookshelf::after,
+  .fr-bookshelf > div:last-child {
+    display: none !important;
+  }
+
+  .fr-book-row {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    transform: translateX(-44%) !important;
+    transform-origin: center bottom !important;
+  }
+
+  .fr-book-row::before {
+    left: 43.5% !important;
+    right: -45% !important;
+    bottom: 0 !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--source-accent) 42%, transparent), rgba(230,239,251,.20) 18% 78%, transparent) !important;
+  }
+
+  .fr-book-row::after {
+    content: "ARCHIVE INDEX" !important;
+    right: -44% !important;
+    bottom: -1.25rem !important;
+    color: rgba(238,244,252,.24) !important;
+  }
+
+  /* Non-selected records are needles, not bars or book spines. */
+  .fr-shelf-book,
+  .fr-shelf-book:nth-child(n) {
+    width: .72rem !important;
+    min-width: .72rem !important;
+    height: var(--signal-strength, 52%) !important;
+    min-height: 8.5rem !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-left: 1px solid color-mix(in srgb, var(--source-accent) 78%, #fff) !important;
+    border-right: 1px solid color-mix(in srgb, var(--source-accent) 24%, transparent) !important;
+    border-top: 2px solid var(--source-accent) !important;
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--source-accent) 18%, rgba(255,255,255,.025)),
+        color-mix(in srgb, var(--source-accent) 6%, rgba(10,16,24,.10)) 72%,
+        rgba(9,15,22,.05)) !important;
+    box-shadow: none !important;
+    opacity: .72 !important;
+    filter: none !important;
+  }
+
+  .fr-shelf-book::before {
+    content: "" !important;
+    top: -1px !important;
+    right: -.22rem !important;
+    bottom: auto !important;
+    left: -.22rem !important;
+    height: 1px !important;
+    background: var(--source-accent) !important;
+  }
+
+  .fr-shelf-book::after {
+    top: auto !important;
+    right: 50% !important;
+    bottom: -1.32rem !important;
+    left: auto !important;
+    color: color-mix(in srgb, var(--source-accent) 72%, #e9f0fa) !important;
+    font-size: .34rem !important;
+    opacity: .68 !important;
+    transform: translateX(50%) !important;
+  }
+
+  .fr-shelf-book > span:first-child {
+    top: .42rem !important;
+    left: 50% !important;
+    color: color-mix(in srgb, var(--source-accent) 82%, #fff) !important;
+    font-size: .38rem !important;
+    line-height: 1 !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .fr-shelf-book > span:nth-child(2) {
+    top: .1rem !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 1.25rem !important;
+    width: 9.6rem !important;
+    max-height: none !important;
+    padding: .28rem .42rem !important;
+    color: rgba(248,250,253,.88) !important;
+    background: rgba(15,23,34,.88) !important;
+    border-left: 2px solid var(--source-accent) !important;
+    font-family: ui-sans-serif, system-ui, sans-serif !important;
+    font-size: .68rem !important;
+    font-weight: 620 !important;
+    line-height: 1.12 !important;
+    letter-spacing: -.01em !important;
+    writing-mode: horizontal-tb !important;
+    white-space: normal !important;
+    transform: translateY(-8%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 150ms ease, transform 180ms ease !important;
+  }
+
+  .fr-shelf-book > span:last-child {
+    display: none !important;
+  }
+
+  .fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+    width: .9rem !important;
+    opacity: 1 !important;
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--source-accent) 25%, rgba(255,255,255,.025)),
+        color-mix(in srgb, var(--source-accent) 8%, rgba(10,16,24,.10))) !important;
+    box-shadow: none !important;
+    transform: translateX(calc(-50% + var(--book-x,0rem))) translateY(-.2rem) !important;
+  }
+
+  .fr-shelf-book:hover:not(.fr-shelf-book-active) > span:nth-child(2) {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  /* Selected record remains a thin index marker; its title opens horizontally
+     into the same field while the full content lives in the folio to the left. */
+  .fr-shelf-book-active {
+    z-index: 23 !important;
+    width: 1.08rem !important;
+    min-width: 1.08rem !important;
+    opacity: 1 !important;
+    color: var(--saved-ink) !important;
+    border: 0 !important;
+    border-left: 1px solid var(--source-accent) !important;
+    border-right: 1px solid color-mix(in srgb, var(--source-accent) 60%, #fff) !important;
+    border-top: 4px solid var(--source-accent) !important;
+    background: linear-gradient(180deg, var(--source-soft), color-mix(in srgb, var(--source-soft) 76%, #fff)) !important;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--source-accent) 11%, transparent) !important;
+    transform: translateX(-50%) translateY(-.18rem) !important;
+  }
+
+  .fr-shelf-book-active::before {
+    top: -4px !important;
+    right: -.42rem !important;
+    bottom: auto !important;
+    left: -.42rem !important;
+    height: 2px !important;
+    background: var(--source-accent) !important;
+  }
+
+  .fr-shelf-book-active::after {
+    top: .38rem !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 1.72rem !important;
+    color: color-mix(in srgb, var(--source-accent) 78%, #fff) !important;
+    font-size: .38rem !important;
+    transform: none !important;
+  }
+
+  .fr-shelf-book-active > span:first-child {
+    top: .38rem !important;
+    left: 50% !important;
+    color: var(--source-deep) !important;
+    font-size: .42rem !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    top: 1.18rem !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 1.72rem !important;
+    width: min(11.5rem, 14vw) !important;
+    padding: 0 !important;
+    color: #f7f9fc !important;
+    background: transparent !important;
+    border: 0 !important;
+    font-size: clamp(.84rem, .95vw, 1rem) !important;
+    font-weight: 730 !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.025em !important;
+    writing-mode: horizontal-tb !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .fr-shelf-book-active > span:last-child {
+    display: block !important;
+    top: 3.75rem !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 1.72rem !important;
+    width: 8.5rem !important;
+    padding-top: .42rem !important;
+    border-top: 1px solid color-mix(in srgb, var(--source-accent) 36%, transparent) !important;
+    color: color-mix(in srgb, var(--source-accent) 66%, #fff) !important;
+    font-size: .37rem !important;
+    letter-spacing: .09em !important;
+  }
+
+  .fr-shelf-book-search-dim {
+    opacity: .08 !important;
+  }
+
+  .fr-shelf-book-search-hit:not(.fr-shelf-book-active) {
+    opacity: .92 !important;
+  }
+
+  /* The old long telemetry connector is gone; proximity is the relationship. */
+  .fr-active-trace {
+    display: none !important;
+  }
+
+  /* Previous / next now bracket the aperture near the selected index. */
+  .fr-archive-stage > button[aria-label="Previous saved signal"],
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    z-index: 27 !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: 7.1% !important;
+    width: 1.85rem !important;
+    height: 1.85rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(235,242,251,.24) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: rgba(247,249,252,.62) !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 44.2% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    left: 49.2% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"]:hover,
+  .fr-archive-stage > button[aria-label="Next saved signal"]:hover {
+    color: #fff !important;
+    border-bottom-color: var(--source-accent) !important;
+    background: transparent !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-saved-shell > div:first-child {
+    padding-left: 4.2% !important;
+    padding-right: 4.2% !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    width: min(22rem, 34vw) !important;
+    margin-left: 4.2% !important;
+  }
+
+  .fr-archive-rail {
+    right: 4.2% !important;
+  }
+
+  .fr-featured-book {
+    left: 4.2% !important;
+    width: 41.8vw !important;
+    min-width: 0 !important;
+  }
+
+  .fr-bookshelf {
+    left: 43.2% !important;
+    right: 3.2% !important;
+  }
+
+  .fr-book-row {
+    transform: translateX(-40%) !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    width: 9.5rem !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 43.2% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    left: 48.6% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-shelf-book > span:nth-child(2) {
+    transition: none !important;
+  }
+}
