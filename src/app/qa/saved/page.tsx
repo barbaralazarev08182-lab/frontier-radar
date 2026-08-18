@@ -1,10 +1,5 @@
 import { SavedLibrary } from "@/app/saved/saved-library";
-import "@/app/saved/saved-research-index.css";
-import "@/app/saved/saved-archive-field-v2.css";
-import "@/app/saved/saved-archive-density-pass.css";
-import "@/app/saved/saved-source-palette.css";
-import "@/app/saved/saved-archive-field-v3.css";
-import "@/app/saved/saved-archive-field-v4.css";
+import "@/app/saved/saved-editorial-archive-v5.css";
 import { FIXTURES } from "@/lib/feed/fixtures";
 import type { SavedItemSnapshot } from "@/lib/saved/browser";
 
