@@ -1,0 +1,93 @@
+/* Saved V15 — wheel navigation + compact header + full folio height.
+   Narrow visual/interaction pass only. Background, source hue, score mapping,
+   search/sort, persistence and archive windowing remain unchanged. */
+
+@media (min-width: 781px) {
+  /* HEADER -------------------------------------------------------------
+     Collapse the archive identity from two rows into one compact rail so the
+     actual archive field receives more of the viewport. */
+  .fr-saved-shell > div:first-child {
+    flex: 0 0 2.8rem !important;
+    min-height: 2.8rem !important;
+    padding: .38rem 5.2% !important;
+    align-items: center !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: .9rem !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child span,
+  .fr-saved-shell > div:first-child > div:first-child strong {
+    margin: 0 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child strong {
+    padding-left: .9rem !important;
+    border-left: 1px solid rgba(232,240,250,.14) !important;
+  }
+
+  /* FOLIO --------------------------------------------------------------
+     All source colors use one physical sheet size. The taller sheet restores
+     the full record/actions for long paper titles while staying single-view. */
+  .fr-featured-book[data-source] {
+    top: 4.9% !important;
+    bottom: 4.2% !important;
+    width: min(42rem, 40.5vw) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+  }
+
+  /* Long paper titles keep their editorial weight without consuming the
+     action area. Short titles still remain visibly dominant. */
+  .fr-featured-book h1 {
+    font-size: clamp(2.65rem, 3.15vw, 3.78rem) !important;
+    line-height: .93 !important;
+  }
+
+  .fr-featured-details {
+    margin-top: 1.6rem !important;
+  }
+
+  .fr-featured-details > div,
+  .fr-featured-details > div:nth-child(n) {
+    min-height: 3.8rem !important;
+    padding-top: .68rem !important;
+    padding-bottom: .58rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    margin-top: auto !important;
+    padding-top: .72rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4)::before {
+    margin-bottom: .58rem !important;
+    padding-top: .55rem !important;
+  }
+
+  /* The archive is wheel-driven now; no visual affordance is reserved for
+     the retired previous/next arrow controls. */
+  .fr-archive-stage {
+    overscroll-behavior: contain !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-featured-book[data-source] {
+    top: 4.5% !important;
+    bottom: 3.8% !important;
+    width: 42vw !important;
+  }
+
+  .fr-featured-book h1 {
+    font-size: clamp(2.4rem, 3vw, 3.3rem) !important;
+  }
+}
