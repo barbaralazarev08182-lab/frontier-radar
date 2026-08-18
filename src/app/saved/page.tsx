@@ -7,6 +7,7 @@ import "./saved-editorial-archive-v9.css";
 import "./saved-editorial-archive-v10.css";
 import "./saved-editorial-archive-v11.css";
 import "./saved-editorial-archive-v11-aperture-fix.css";
+import "./saved-editorial-archive-v12.css";
 
 export const metadata = { title: "Saved · Frontier Radar" };
 
