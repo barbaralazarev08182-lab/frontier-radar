@@ -1,0 +1,133 @@
+/* Saved visual Gate V9 — Composition balance pass.
+   Preserve the one-screen contract from V8, but rebalance the archive as one
+   coordinated editorial field: folio + signal index share a visual center.
+*/
+
+@media (min-width: 781px) {
+  /* Slightly tighter chrome leaves more calm room for the archive itself. */
+  .fr-saved-shell > div:first-child {
+    flex-basis: 5.7rem !important;
+    min-height: 5.7rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: .78rem !important;
+  }
+
+  /* Search aligns with the folio rather than floating as an unrelated toolbar. */
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    flex-basis: 3rem !important;
+    width: min(31.5rem, 32vw) !important;
+    min-height: 3rem !important;
+    margin: .58rem 5.2% .28rem !important;
+  }
+
+  /* One centered field: labels, folio and index all use the same side rhythm. */
+  .fr-archive-stage::before {
+    left: 5.2% !important;
+    top: 2.2% !important;
+  }
+
+  .fr-archive-stage::after {
+    right: 5.2% !important;
+    top: 2.2% !important;
+  }
+
+  /* Folio is still the hero, but no longer dominates half the canvas. */
+  .fr-featured-book {
+    left: 5.2% !important;
+    top: 7.2% !important;
+    width: min(45.5rem, 43.8vw) !important;
+    min-width: 34rem !important;
+    height: 76.5% !important;
+    max-height: 29.5rem !important;
+    padding: 1.65rem 2.45rem 1.35rem !important;
+  }
+
+  .fr-featured-book > div:first-of-type,
+  .fr-featured-book > div:nth-of-type(2),
+  .fr-featured-book p,
+  .fr-featured-book > div:nth-of-type(3),
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 92% !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 94% !important;
+    margin-top: .82rem !important;
+    font-size: clamp(2.45rem, 3.45vw, 4.15rem) !important;
+    line-height: .94 !important;
+  }
+
+  .fr-featured-book p {
+    font-size: clamp(.88rem, .9vw, .98rem) !important;
+    line-height: 1.48 !important;
+  }
+
+  /* The signal field now shares the folio's vertical center and visual weight. */
+  .fr-bookshelf {
+    left: 49.1% !important;
+    right: 5.2% !important;
+    top: 12.5% !important;
+    bottom: 8.5% !important;
+    height: auto !important;
+    padding: .75rem .75rem 0 1.15rem !important;
+    background:
+      radial-gradient(ellipse at 47% 46%, color-mix(in srgb, var(--source-accent) 13%, transparent), transparent 38%),
+      linear-gradient(180deg, rgba(47,61,82,.40), rgba(26,36,51,.22) 52%, rgba(16,24,35,.28)) !important;
+  }
+
+  /* A quiet gutter makes the selected signal read as being pulled out of the field. */
+  .fr-active-trace {
+    left: 46.2% !important;
+    right: 23.1% !important;
+    top: 51.5% !important;
+    opacity: .88 !important;
+  }
+
+  /* Keep side controls attached to the composition rather than the viewport edges. */
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 5.2% !important;
+    bottom: 2.5% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 5.2% !important;
+    bottom: 2.5% !important;
+  }
+
+  /* Order rail uses exactly the same horizontal frame as the archive above. */
+  .fr-archive-rail {
+    width: calc(100% - 10.4%) !important;
+    margin: .38rem 5.2% .52rem !important;
+    min-height: 3.25rem !important;
+    flex-basis: 3.25rem !important;
+  }
+
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    min-height: 3.25rem !important;
+  }
+}
+
+/* Mid-width desktop: reduce the hero slightly before the mobile layout takes over. */
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-featured-book {
+    left: 4.2% !important;
+    width: 46vw !important;
+    min-width: 0 !important;
+  }
+
+  .fr-bookshelf {
+    left: 50.4% !important;
+    right: 4.2% !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    margin-left: 4.2% !important;
+  }
+
+  .fr-archive-rail {
+    width: calc(100% - 8.4%) !important;
+    margin-left: 4.2% !important;
+    margin-right: 4.2% !important;
+  }
+}
