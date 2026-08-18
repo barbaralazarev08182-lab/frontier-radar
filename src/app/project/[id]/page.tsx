@@ -9,7 +9,6 @@ import {
 import type { MomentumHistory } from "@/lib/scoring/momentum-history";
 import { TrackedSourceLink } from "@/components/frontier/tracked-source-link";
 import "./project-research-mode.css";
-import "./project-research-motion.css";
 
 export const dynamic = "force-dynamic";
 
