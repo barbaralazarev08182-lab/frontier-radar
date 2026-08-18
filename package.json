@@ -5,7 +5,7 @@
   "description": "个人前沿信息雷达（阶段 1.2：GitHub 采集器）",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "rm -rf .next && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
