@@ -74,33 +74,10 @@ function evidenceDimensions(profile: PersonalRadarProfile): PersonalRadarDimensi
     );
 }
 
-function PriorField({ profile }: { profile: PersonalRadarProfile }) {
-  const prior = [...profile.dimensions]
+function coldStartDimensions(profile: PersonalRadarProfile): PersonalRadarDimension[] {
+  return [...profile.dimensions]
     .sort((a, b) => b.priorWeight - a.priorWeight)
     .slice(0, 8);
-
-  return (
-    <div className={styles.priorField}>
-      <div className={styles.sectionHead}>
-        <div>
-          <span>STARTING PRIOR</span>
-          <h2>WHAT THE SYSTEM STARTS WITH</h2>
-        </div>
-        <p>These are product defaults, not learned preferences. They lose authority as real evidence arrives.</p>
-      </div>
-      <div className={styles.priorRows}>
-        {prior.map((dimension, index) => (
-          <div className={styles.priorRow} key={dimension.key}>
-            <span className={styles.rowIndex}>{String(index + 1).padStart(2, "0")}</span>
-            <strong>{dimension.label}</strong>
-            <span className={styles.priorRule} aria-hidden />
-            <b>{dimension.priorWeight.toFixed(2)}</b>
-          </div>
-        ))}
-      </div>
-      <div className={styles.chartSource}>COLD-START PRIOR · NOT LEARNED BEHAVIOR</div>
-    </div>
-  );
 }
 
 export function PersonalRadarClient({
@@ -171,6 +148,9 @@ export function PersonalRadarClient({
   }
 
   const state = STATUS_COPY[profile.status];
+  const radarDimensions = profile.status === "cold_start"
+    ? coldStartDimensions(profile)
+    : learned;
 
   return (
     <article className={`${styles.radar} ${polish.radar}`} data-radar-state={profile.status}>
@@ -198,13 +178,9 @@ export function PersonalRadarClient({
         <div><span>PROFILE MODE</span><strong>{previewDemo ? "SYNTHETIC QA" : state.label}</strong></div>
       </section>
 
-      {profile.status === "cold_start" ? (
-        <PriorField profile={profile} />
-      ) : (
-        <section className={`${styles.morphSection} ${polish.morphSection}`}>
-          <PersonalRadarMorph dimensions={learned} />
-        </section>
-      )}
+      <section className={`${styles.morphSection} ${polish.morphSection}`}>
+        <PersonalRadarMorph dimensions={radarDimensions} />
+      </section>
 
       <footer className={`${styles.footer} ${polish.footer}`}>
         <span>{previewDemo ? "SYNTHETIC PREVIEW PROFILE · VISUAL QA ONLY" : "INTERPRETABLE PROFILE · NOT A SEMANTIC EMBEDDING MAP"}</span>
