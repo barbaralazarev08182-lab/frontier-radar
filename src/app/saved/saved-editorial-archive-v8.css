@@ -1,0 +1,285 @@
+/* Saved visual Gate V8 — One-screen living archive.
+   Desktop is a strict single-viewport composition: header / search / field / order rail.
+   The archive stays editorial, but the surrounding dark field has stronger atmospheric depth.
+*/
+
+@media (min-width: 781px) {
+  body:has(.fr-saved-shell) {
+    overflow: hidden !important;
+  }
+
+  main:has(> .fr-saved-shell) {
+    height: calc(100dvh - 3.5rem) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .fr-saved-shell {
+    height: 100% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background:
+      radial-gradient(ellipse at 9% 9%, rgba(63, 116, 189, .31), transparent 31%),
+      radial-gradient(ellipse at 69% 26%, rgba(88, 73, 179, .30), transparent 33%),
+      radial-gradient(ellipse at 88% 73%, rgba(35, 137, 163, .21), transparent 28%),
+      radial-gradient(ellipse at 36% 82%, color-mix(in srgb, var(--source-accent) 12%, transparent), transparent 31%),
+      linear-gradient(145deg, #172231 0%, #131b29 38%, #101722 68%, #0c141c 100%) !important;
+  }
+
+  .fr-saved-shell::before {
+    inset: -8% -10% -12% 20% !important;
+    opacity: .92 !important;
+    filter: blur(44px) !important;
+    background:
+      radial-gradient(circle at 20% 28%, rgba(52, 110, 210, .28), transparent 24%),
+      radial-gradient(circle at 63% 33%, rgba(115, 72, 194, .28), transparent 26%),
+      radial-gradient(circle at 78% 70%, rgba(32, 151, 174, .20), transparent 25%),
+      radial-gradient(circle at 39% 76%, color-mix(in srgb, var(--source-accent) 20%, transparent), transparent 23%) !important;
+    animation: frSavedV8Haze 12s ease-in-out infinite alternate !important;
+  }
+
+  .fr-saved-shell::after {
+    opacity: .34 !important;
+    background:
+      repeating-linear-gradient(116deg, rgba(255,255,255,.025) 0 1px, transparent 1px 38px),
+      repeating-linear-gradient(0deg, rgba(174,196,225,.018) 0 1px, transparent 1px 5px),
+      linear-gradient(105deg, transparent 0 34%, rgba(119,147,196,.055) 47%, transparent 61%) !important;
+    mask-image: linear-gradient(90deg, transparent 0 7%, #000 24% 100%) !important;
+    background-size: auto, auto, 170% 100% !important;
+    animation: frSavedV8Texture 15s linear infinite !important;
+  }
+
+  /* Compact archive header so the main composition sits visibly higher. */
+  .fr-saved-shell > div:first-child {
+    flex: 0 0 6rem !important;
+    min-height: 6rem !important;
+    padding: 1.1rem 4.2% .9rem !important;
+    background:
+      linear-gradient(90deg, rgba(27, 39, 54, .96), rgba(20, 28, 41, .90) 58%, rgba(27, 31, 48, .88)) !important;
+    border-bottom: 1px solid rgba(230,238,249,.25) !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    min-height: 3.25rem !important;
+    background: rgba(27, 36, 49, .88) !important;
+    border-color: rgba(232,240,250,.30) !important;
+    border-left-color: var(--source-accent) !important;
+  }
+
+  /* Search is a real readable control, not a faint line in empty space. */
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    flex: 0 0 3.2rem !important;
+    width: min(33rem, calc(100% - 8.4%)) !important;
+    min-height: 3.2rem !important;
+    margin: .65rem 4.2% .35rem !important;
+    padding: 0 .9rem !important;
+    border: 1px solid rgba(229,238,250,.27) !important;
+    border-left: 3px solid color-mix(in srgb, var(--source-accent) 72%, #eef4ff) !important;
+    border-radius: 0 !important;
+    background:
+      linear-gradient(90deg, rgba(37, 49, 65, .92), rgba(25, 35, 49, .80)) !important;
+    box-shadow:
+      0 .8rem 2.2rem rgba(0,0,0,.10),
+      inset 0 1px 0 rgba(255,255,255,.035) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) > svg {
+    color: color-mix(in srgb, var(--source-accent) 72%, #fff) !important;
+    opacity: 1 !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+    color: #f8fafc !important;
+    font-size: .68rem !important;
+    font-weight: 720 !important;
+    letter-spacing: .08em !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input::placeholder {
+    color: rgba(242,247,253,.72) !important;
+    opacity: 1 !important;
+  }
+
+  /* Stage takes all remaining room. No min-height can force the page to scroll. */
+  .fr-archive-stage {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    border-top: 1px solid rgba(228,237,248,.08) !important;
+    border-bottom: 1px solid rgba(228,237,248,.16) !important;
+    background:
+      radial-gradient(ellipse at 16% 51%, color-mix(in srgb, var(--source-accent) 11%, rgba(67,92,128,.13)), transparent 33%),
+      radial-gradient(ellipse at 69% 44%, rgba(83, 93, 177, .20), transparent 35%),
+      radial-gradient(ellipse at 90% 68%, rgba(39, 139, 161, .16), transparent 30%),
+      linear-gradient(100deg, rgba(255,255,255,.018), transparent 35%, rgba(141,164,202,.035) 69%, transparent 100%) !important;
+    background-size: 115% 115%, 118% 118%, 122% 122%, 100% 100% !important;
+    animation: frSavedV8Stage 14s ease-in-out infinite alternate !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after {
+    top: 2.4% !important;
+    color: rgba(238,244,252,.62) !important;
+  }
+
+  /* Move the opened folio upward and closer to the visual center. */
+  .fr-featured-book {
+    left: 4.2% !important;
+    top: 8.5% !important;
+    bottom: auto !important;
+    width: min(49rem, 48.5vw) !important;
+    min-width: 36rem !important;
+    height: 79% !important;
+    min-height: 0 !important;
+    max-height: 31.5rem !important;
+    padding: 1.75rem 2.7rem 1.45rem !important;
+    box-shadow:
+      0 1.3rem 3.8rem rgba(0,0,0,.24),
+      0 0 0 1px rgba(255,255,255,.25) inset !important;
+  }
+
+  .fr-featured-book h1 {
+    margin-top: .9rem !important;
+    font-size: clamp(2.55rem, 3.75vw, 4.55rem) !important;
+    line-height: .93 !important;
+  }
+
+  .fr-featured-book p {
+    font-size: clamp(.88rem, .92vw, 1rem) !important;
+    line-height: 1.5 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: .68rem !important;
+    padding-top: .52rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    padding-top: .68rem !important;
+  }
+
+  /* Bring the archive index up with the folio so the composition centers as one object. */
+  .fr-bookshelf {
+    left: 50% !important;
+    right: 4.2% !important;
+    top: 28% !important;
+    bottom: 5.5% !important;
+    height: auto !important;
+    padding: .65rem .7rem 0 1rem !important;
+    background:
+      radial-gradient(ellipse at 52% 48%, color-mix(in srgb, var(--source-accent) 11%, transparent), transparent 38%),
+      linear-gradient(180deg, rgba(46,58,78,.42), rgba(26,35,49,.20) 52%, rgba(16,24,34,.30)) !important;
+    border-color: rgba(232,240,250,.18) !important;
+  }
+
+  .fr-bookshelf::before {
+    opacity: .78 !important;
+    background:
+      radial-gradient(ellipse at 52% 44%, color-mix(in srgb, var(--source-accent) 15%, transparent), transparent 33%),
+      linear-gradient(102deg, transparent 9%, rgba(160,184,224,.065) 47%, transparent 76%) !important;
+    animation: frSavedV8Field 8s ease-in-out infinite alternate !important;
+  }
+
+  .fr-active-trace {
+    top: 52% !important;
+    opacity: .90 !important;
+  }
+
+  /* Navigation arrows remain inside the stage and never create extra page height. */
+  .fr-archive-stage > button[aria-label="Previous saved signal"],
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    top: auto !important;
+    bottom: 3.5% !important;
+    background: rgba(31,43,59,.94) !important;
+    border-color: rgba(235,242,251,.34) !important;
+    color: #f7f9fc !important;
+  }
+
+  /* Bottom order rail is fixed in the four-part viewport layout and visibly interactive. */
+  .fr-archive-rail {
+    flex: 0 0 3.45rem !important;
+    width: calc(100% - 8.4%) !important;
+    min-height: 3.45rem !important;
+    margin: .45rem 4.2% .65rem !important;
+    border: 1px solid rgba(232,240,250,.28) !important;
+    background:
+      linear-gradient(180deg, rgba(42,54,72,.97), rgba(28,39,53,.97)) !important;
+    box-shadow:
+      0 .8rem 2.2rem rgba(0,0,0,.17),
+      inset 0 1px 0 rgba(255,255,255,.055) !important;
+  }
+
+  .fr-archive-rail::before {
+    content: none !important;
+  }
+
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    min-height: 3.45rem !important;
+    border-right-color: rgba(233,241,251,.21) !important;
+    color: rgba(246,249,253,.82) !important;
+    font-size: .54rem !important;
+    font-weight: 830 !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-archive-rail > button:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,.065) !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"] {
+    color: #fff !important;
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--source-accent) 27%, rgba(54,67,86,.98)),
+        color-mix(in srgb, var(--source-accent) 13%, rgba(31,43,59,.98))) !important;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--source-accent) 28%, transparent) !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"]::after {
+    left: 10% !important;
+    right: 10% !important;
+    height: 3px !important;
+    background: color-mix(in srgb, var(--source-accent) 86%, #fff) !important;
+  }
+
+  .fr-archive-rail > span {
+    color: rgba(233,240,249,.48) !important;
+  }
+}
+
+@keyframes frSavedV8Haze {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1.02); }
+  50% { transform: translate3d(3%, 2%, 0) scale(1.09); }
+  100% { transform: translate3d(-1%, 4%, 0) scale(1.05); }
+}
+
+@keyframes frSavedV8Texture {
+  from { background-position: 0 0, 0 0, 0% 50%; }
+  to { background-position: 0 12px, 18px 0, 100% 50%; }
+}
+
+@keyframes frSavedV8Stage {
+  0% { background-position: 0% 48%, 60% 42%, 90% 68%, 0 0; }
+  100% { background-position: 8% 43%, 68% 49%, 84% 61%, 0 0; }
+}
+
+@keyframes frSavedV8Field {
+  from { opacity: .58; transform: translateX(-2%) scaleX(.99); }
+  to { opacity: .94; transform: translateX(2%) scaleX(1.015); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-saved-shell::before,
+  .fr-saved-shell::after,
+  .fr-archive-stage,
+  .fr-bookshelf::before {
+    animation: none !important;
+  }
+}
