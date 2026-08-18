@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { EditorialLineField } from "@/components/frontier/editorial-line-field";
-import { ProjectReadingController } from "./project-reading-controller";
+import { ProjectGate15BRuntime } from "./project-gate15b-runtime";
 import "./project-research-history.css";
 import "./project-lieflat-reading.css";
 import "./project-focus-density.css";
@@ -12,7 +12,7 @@ export default function ProjectIntelligenceLayout({ children }: { children: Reac
   return (
     <>
       <EditorialLineField variant="project" />
-      <ProjectReadingController />
+      <ProjectGate15BRuntime />
       {children}
     </>
   );
