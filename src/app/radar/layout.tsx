@@ -9,7 +9,6 @@ export default function RadarLayout({ children }: Readonly<{ children: React.Rea
         }
 
         .radar-route-root {
-          --radar-shell-header-h: 3.5rem;
           width: 100%;
           min-width: 0;
         }
@@ -26,7 +25,7 @@ export default function RadarLayout({ children }: Readonly<{ children: React.Rea
           }
 
           main:has(> .radar-route-root) {
-            height: calc(100dvh - var(--radar-shell-header-h));
+            height: calc(100dvh - 3.5rem);
             min-height: 0;
             overflow: hidden;
           }
