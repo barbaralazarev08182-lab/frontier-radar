@@ -1,4 +1,5 @@
 import { SavedLibrary } from "@/app/saved/saved-library";
+import "@/app/saved/saved-research-index.css";
 import { FIXTURES } from "@/lib/feed/fixtures";
 import type { SavedItemSnapshot } from "@/lib/saved/browser";
 
