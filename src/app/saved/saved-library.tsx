@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties, WheelEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
   Search,
   Trash2,
   X,
@@ -40,6 +38,7 @@ const SORT_LABELS: Record<SortMode, string> = {
 
 const SHELF_WINDOW_RADIUS = 7;
 const SHELF_WINDOW_SIZE = SHELF_WINDOW_RADIUS * 2 + 1;
+const WHEEL_NAV_COOLDOWN_MS = 480;
 
 function formattedDate(value: string): string {
   const date = new Date(value);
@@ -102,6 +101,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
   const [sort, setSort] = useState<SortMode>("recent");
   const [selectedId, setSelectedId] = useState<string | null>(previewItems?.[0]?.id ?? null);
   const [selectionDirection, setSelectionDirection] = useState<SelectionDirection>("direct");
+  const wheelLockRef = useRef(0);
 
   useEffect(() => {
     if (previewMode) return;
@@ -161,6 +161,17 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
     const nextIndex = (safeIndex + delta + navigable.length) % navigable.length;
     setSelectionDirection(delta >= 0 ? "next" : "prev");
     setSelectedId(navigable[nextIndex]?.id ?? null);
+  }
+
+  function handleArchiveWheel(event: WheelEvent<HTMLDivElement>) {
+    const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+    if (Math.abs(delta) < 14) return;
+
+    event.preventDefault();
+    const now = window.performance.now();
+    if (now - wheelLockRef.current < WHEEL_NAV_COOLDOWN_MS) return;
+    wheelLockRef.current = now;
+    selectOffset(delta > 0 ? 1 : -1);
   }
 
   function selectBook(itemId: string, index: number) {
@@ -235,20 +246,13 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
               data-searching={needle ? "true" : "false"}
               data-active-source={activeItem.source}
               data-active-content-type={activeItem.contentType}
+              onWheel={handleArchiveWheel}
               aria-live="polite"
+              aria-label="Saved archive. Scroll to browse records."
             >
               <div className={styles.gridWall} aria-hidden />
               <div className={styles.shelfGlow} aria-hidden />
               <div className="fr-active-trace" aria-hidden />
-
-              <button
-                type="button"
-                className={`${styles.navArrow} ${styles.navPrev}`}
-                onClick={() => selectOffset(-1)}
-                aria-label="Previous saved signal"
-              >
-                <ChevronLeft aria-hidden />
-              </button>
 
               <div className={`${styles.bookshelf} fr-bookshelf`}>
                 <div className={`${styles.bookRow} fr-book-row`}>
@@ -320,15 +324,6 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                   </Link>
                 </div>
               </article>
-
-              <button
-                type="button"
-                className={`${styles.navArrow} ${styles.navNext}`}
-                onClick={() => selectOffset(1)}
-                aria-label="Next saved signal"
-              >
-                <ChevronRight aria-hidden />
-              </button>
             </div>
           ) : (
             <div className={styles.noMatch}>
