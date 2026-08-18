@@ -62,6 +62,9 @@ export function ProjectReadingController() {
     if (!root) return;
 
     root.classList.add("is-reading-enhanced");
+    root.style.setProperty("--pr-px", "0");
+    root.style.setProperty("--pr-py", "0");
+    root.style.setProperty("--pr-pointer-v", "0");
 
     const injected: HTMLElement[] = [];
     const stageLinks = Array.from(root.querySelectorAll<HTMLAnchorElement>(".pr-stage-links a"));
@@ -162,6 +165,42 @@ export function ProjectReadingController() {
       });
     };
 
+    let pointerFrame = 0;
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
+    let previousPointerX = pointerX;
+    let previousPointerY = pointerY;
+    let previousPointerTime = performance.now();
+
+    const flushPointer = () => {
+      pointerFrame = 0;
+      const width = Math.max(1, window.innerWidth);
+      const height = Math.max(1, window.innerHeight);
+      root.style.setProperty("--pr-px", (pointerX / width - 0.5).toFixed(3));
+      root.style.setProperty("--pr-py", (pointerY / height - 0.5).toFixed(3));
+      root.style.setProperty("--pr-mx", `${pointerX.toFixed(1)}px`);
+      root.style.setProperty("--pr-my", `${pointerY.toFixed(1)}px`);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      const now = performance.now();
+      const dt = Math.max(16, now - previousPointerTime);
+      const velocity = Math.min(1, Math.hypot(event.clientX - previousPointerX, event.clientY - previousPointerY) / dt / 1.3);
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      previousPointerX = event.clientX;
+      previousPointerY = event.clientY;
+      previousPointerTime = now;
+      root.style.setProperty("--pr-pointer-v", velocity.toFixed(3));
+      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(flushPointer);
+    };
+
+    const onPointerLeave = () => {
+      root.style.setProperty("--pr-px", "0");
+      root.style.setProperty("--pr-py", "0");
+      root.style.setProperty("--pr-pointer-v", "0");
+    };
+
     const revealTargets = Array.from(root.querySelectorAll<HTMLElement>([
       ".pr-capture-main",
       ".pr-verdict",
@@ -194,15 +233,25 @@ export function ProjectReadingController() {
     updateReadingState();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerleave", onPointerLeave);
       revealObserver.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
+      if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
       injected.forEach((node) => node.remove());
       interrogation?.classList.remove("is-sparse-stage");
       root.classList.remove("is-reading-enhanced");
+      root.style.removeProperty("--pr-px");
+      root.style.removeProperty("--pr-py");
+      root.style.removeProperty("--pr-mx");
+      root.style.removeProperty("--pr-my");
+      root.style.removeProperty("--pr-pointer-v");
     };
   }, []);
 
