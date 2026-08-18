@@ -2,6 +2,7 @@ import { SavedLibrary } from "@/app/saved/saved-library";
 import "@/app/saved/saved-editorial-archive-v5.css";
 import "@/app/saved/saved-editorial-archive-v6.css";
 import "@/app/saved/saved-editorial-archive-v7.css";
+import "@/app/saved/saved-editorial-archive-v8.css";
 import { FIXTURES } from "@/lib/feed/fixtures";
 import type { SavedItemSnapshot } from "@/lib/saved/browser";
 
