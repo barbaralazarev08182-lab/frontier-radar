@@ -1,0 +1,340 @@
+/* Saved visual Gate V6 — Editorial balance pass.
+   Keep the dark archive identity, but make the opened folio source-tinted,
+   readable, and compositionally integrated with the archive index.
+   No sci-fi scanning/glow language is introduced here. */
+
+/* Stronger, clearly separated source hues. */
+.fr-archive-stage,
+.fr-featured-book,
+.fr-shelf-book,
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+  --source-accent: #315efb;
+  --source-soft: #dfe6ff;
+  --source-deep: #2148cb;
+}
+
+.fr-archive-stage[data-active-source="github"],
+.fr-featured-book[data-source="github"],
+.fr-shelf-book[data-source="github"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="github"] {
+  --source-accent: #2463eb;
+  --source-soft: #dce8ff;
+  --source-deep: #1748b3;
+}
+
+.fr-archive-stage[data-active-source="huggingface"],
+.fr-featured-book[data-source="huggingface"],
+.fr-shelf-book[data-source="huggingface"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="huggingface"] {
+  --source-accent: #d39a00;
+  --source-soft: #fff0b8;
+  --source-deep: #8c6200;
+}
+
+.fr-archive-stage[data-active-source="arxiv"],
+.fr-featured-book[data-source="arxiv"],
+.fr-shelf-book[data-source="arxiv"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="arxiv"] {
+  --source-accent: #c93645;
+  --source-soft: #f7d7dc;
+  --source-deep: #8e2633;
+}
+
+.fr-archive-stage[data-active-source="hackernews"],
+.fr-featured-book[data-source="hackernews"],
+.fr-shelf-book[data-source="hackernews"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="hackernews"] {
+  --source-accent: #f06c00;
+  --source-soft: #ffe1bf;
+  --source-deep: #a84800;
+}
+
+.fr-archive-stage[data-active-source="producthunt"],
+.fr-featured-book[data-source="producthunt"],
+.fr-shelf-book[data-source="producthunt"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="producthunt"] {
+  --source-accent: #b62f88;
+  --source-soft: #f3d3e8;
+  --source-deep: #7d215e;
+}
+
+@media (min-width: 781px) {
+  /* Pull the whole composition together and remove the oversized empty moat. */
+  .fr-archive-stage {
+    min-height: clamp(38rem, 66vh, 44rem) !important;
+    margin-top: .15rem !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after {
+    top: 3.3% !important;
+  }
+
+  /* Opened item: source-tinted folio instead of fixed beige paper. */
+  .fr-featured-book {
+    left: 4.2% !important;
+    bottom: 11.5% !important;
+    width: min(49.5rem, 49vw) !important;
+    min-width: 37rem !important;
+    height: min(31rem, 51vh) !important;
+    min-height: 27.5rem !important;
+    padding: 1.9rem 2.7rem 1.65rem 2.75rem !important;
+    border-top: 4px solid var(--source-accent) !important;
+    border-right: 1px solid color-mix(in srgb, var(--source-accent) 30%, rgba(29,29,27,.12)) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--source-accent) 20%, rgba(29,29,27,.12)) !important;
+    border-left: 1px solid color-mix(in srgb, var(--source-accent) 30%, rgba(29,29,27,.12)) !important;
+    background: color-mix(in srgb, var(--source-accent) 13%, #f8fafc) !important;
+    box-shadow: 0 1.35rem 3.4rem rgba(0,0,0,.24) !important;
+  }
+
+  .fr-featured-book::before {
+    opacity: .32 !important;
+    background:
+      linear-gradient(90deg, transparent 0 71%, color-mix(in srgb, var(--source-accent) 10%, transparent) 71% 71.12%, transparent 71.12%) !important;
+  }
+
+  .fr-featured-book::after {
+    width: 5px !important;
+    background: var(--source-accent) !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    max-width: 88% !important;
+    padding-bottom: .5rem !important;
+    color: var(--source-deep) !important;
+  }
+
+  /* Metadata is compact and broad enough that the title can breathe. */
+  .fr-featured-book > div:nth-of-type(2) {
+    width: 88% !important;
+    grid-template-columns: .9fr .9fr 1.2fr .9fr !important;
+    margin-top: .82rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    min-height: 2.55rem !important;
+    padding-top: .45rem !important;
+    padding-bottom: .42rem !important;
+    color: rgba(29,29,27,.58) !important;
+    font-size: .46rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span:last-child {
+    color: var(--source-deep) !important;
+    font-size: .7rem !important;
+  }
+
+  /* The title remains the hero, but no longer consumes the entire folio. */
+  .fr-featured-book h1 {
+    max-width: 91% !important;
+    margin: 1.05rem 0 .72rem !important;
+    color: #171816 !important;
+    font-size: clamp(2.75rem, 4.15vw, 5.15rem) !important;
+    line-height: .91 !important;
+    letter-spacing: -.055em !important;
+    text-wrap: balance !important;
+    overflow-wrap: anywhere;
+  }
+
+  .fr-featured-book p {
+    width: 88% !important;
+    max-width: 42rem !important;
+    color: rgba(29,29,27,.72) !important;
+    font-size: clamp(.9rem, .96vw, 1.03rem) !important;
+    line-height: 1.55 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    width: 88% !important;
+    margin-top: .9rem !important;
+    padding-top: .62rem !important;
+    border-top: 1px solid color-mix(in srgb, var(--source-accent) 18%, rgba(29,29,27,.12)) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) span {
+    color: rgba(29,29,27,.62) !important;
+    border-color: color-mix(in srgb, var(--source-accent) 30%, rgba(29,29,27,.15)) !important;
+    background: color-mix(in srgb, var(--source-accent) 6%, transparent) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 88% !important;
+    margin-top: auto !important;
+    padding-top: .85rem !important;
+    border-top: 1px solid rgba(29,29,27,.14) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) > a {
+    border-color: var(--source-deep) !important;
+    background: var(--source-deep) !important;
+    color: #fff !important;
+  }
+
+  /* Archive index moves closer to the folio so both read as one composition. */
+  .fr-bookshelf {
+    left: 50.8% !important;
+    right: 4.2% !important;
+    bottom: 11.5% !important;
+    height: 55% !important;
+  }
+
+  .fr-active-trace {
+    left: 49.2% !important;
+    right: 24.5% !important;
+    top: 51.4% !important;
+    opacity: .68 !important;
+  }
+
+  /* Stronger source differentiation without neon/glow. */
+  .fr-shelf-book {
+    border-top: 3px solid var(--source-accent) !important;
+    border-left: 1px solid color-mix(in srgb, var(--source-accent) 48%, rgba(255,255,255,.12)) !important;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--source-accent) 42%, #171a1e),
+        color-mix(in srgb, var(--source-accent) 22%, #111419) 62%,
+        #0d1014 100%
+      ) !important;
+    box-shadow: none !important;
+    filter: saturate(1.12) !important;
+  }
+
+  .fr-shelf-book > span:first-child,
+  .fr-shelf-book::after {
+    color: color-mix(in srgb, var(--source-accent) 86%, #fff) !important;
+  }
+
+  .fr-shelf-book > span:nth-child(2) {
+    color: rgba(255,255,255,.76) !important;
+  }
+
+  .fr-shelf-book > span:nth-child(3) {
+    color: rgba(255,255,255,.42) !important;
+  }
+
+  /* Active archive item becomes a readable source-tinted index tab. */
+  .fr-shelf-book-active {
+    width: clamp(5.15rem, 5.4vw, 6.15rem) !important;
+    border: 1px solid color-mix(in srgb, var(--source-accent) 52%, rgba(29,29,27,.18)) !important;
+    border-top: 4px solid var(--source-accent) !important;
+    background: color-mix(in srgb, var(--source-accent) 16%, #f8fafc) !important;
+    box-shadow: 0 .7rem 1.6rem rgba(0,0,0,.14) !important;
+    filter: none !important;
+  }
+
+  .fr-shelf-book-active > span:first-child,
+  .fr-shelf-book-active::after {
+    color: var(--source-deep) !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    color: #1b1b19 !important;
+    font-weight: 760 !important;
+    line-height: 1.08 !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(3) {
+    color: color-mix(in srgb, var(--source-deep) 78%, #45413b) !important;
+  }
+
+  /* Bottom navigation becomes an archive-order rail instead of a floating tab bar. */
+  .fr-archive-rail {
+    position: relative !important;
+    z-index: 30 !important;
+    width: calc(100% - 8.4%) !important;
+    max-width: none !important;
+    min-height: 3.15rem !important;
+    margin: -1px 4.2% 1.35rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    border: 0 !important;
+    border-top: 1px solid rgba(243,240,233,.2) !important;
+    border-bottom: 1px solid rgba(243,240,233,.12) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .fr-archive-rail::before {
+    content: "ARCHIVE ORDER";
+    position: absolute;
+    left: 0;
+    top: -.95rem;
+    color: rgba(243,240,233,.28);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: .39rem;
+    font-weight: 760;
+    letter-spacing: .13em;
+  }
+
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    position: relative !important;
+    min-height: 3.15rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 .8rem !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(243,240,233,.11) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: rgba(243,240,233,.42) !important;
+    box-shadow: none !important;
+    font-size: .47rem !important;
+    font-weight: 780 !important;
+    letter-spacing: .1em !important;
+  }
+
+  .fr-archive-rail > *:last-child {
+    border-right: 0 !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"] {
+    color: #f4f1ea !important;
+    background: color-mix(in srgb, var(--source-accent) 7%, transparent) !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"]::after {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: -1px;
+    height: 2px;
+    background: var(--source-accent);
+  }
+
+  .fr-archive-rail > span {
+    color: rgba(243,240,233,.24) !important;
+  }
+}
+
+@media (max-width: 780px) {
+  .fr-featured-book {
+    background: color-mix(in srgb, var(--source-accent) 12%, #f8fafc) !important;
+    border-top-color: var(--source-accent) !important;
+  }
+
+  .fr-featured-book h1 {
+    font-size: clamp(2.3rem, 11vw, 4.2rem) !important;
+    line-height: .92 !important;
+  }
+
+  .fr-archive-rail {
+    width: calc(100% - 2rem) !important;
+    margin-inline: 1rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-featured-book,
+  .fr-shelf-book,
+  .fr-active-trace {
+    animation: none !important;
+    transition: none !important;
+  }
+}
