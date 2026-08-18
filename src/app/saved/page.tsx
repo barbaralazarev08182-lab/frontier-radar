@@ -10,7 +10,7 @@ import "./saved-editorial-archive-v11-aperture-fix.css";
 import "./saved-editorial-archive-v12.css";
 import "./saved-editorial-archive-v13.css";
 
-// Saved V13 owner visual review entrypoint.
+// Saved V13 temporary visual preview entrypoint.
 export const metadata = { title: "Saved · Frontier Radar" };
 
 export default function SavedPage() {
