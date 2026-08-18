@@ -4,17 +4,36 @@ import type { SavedItemSnapshot } from "@/lib/saved/browser";
 
 export const metadata = { title: "Saved QA · Frontier Radar" };
 
-const previewItems: SavedItemSnapshot[] = FIXTURES.slice(0, 6).map((item, index) => ({
-  id: item.id,
-  title: item.title,
-  source: item.source,
-  contentType: item.contentType,
-  summary: item.summaryZh ?? item.description,
-  score: item.score,
-  tags: item.tags,
-  savedAt: new Date(Date.UTC(2026, 7, 11 - index, 2, 0, 0)).toISOString(),
-}));
+function requestedCount(value: string | string[] | undefined): number {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const parsed = Number.parseInt(raw ?? "6", 10);
+  if (!Number.isFinite(parsed)) return 6;
+  return Math.max(1, Math.min(200, parsed));
+}
 
-export default function SavedQaPage() {
-  return <SavedLibrary previewItems={previewItems} />;
+function buildPreviewItems(count: number): SavedItemSnapshot[] {
+  return Array.from({ length: count }, (_, index) => {
+    const item = FIXTURES[index % FIXTURES.length]!;
+    const cycle = Math.floor(index / FIXTURES.length);
+    return {
+      id: `${item.id}-qa-${index + 1}`,
+      title: cycle === 0 ? item.title : `${item.title} · ARCHIVE ${String(index + 1).padStart(3, "0")}`,
+      source: item.source,
+      contentType: item.contentType,
+      summary: item.summaryZh ?? item.description,
+      score: item.score,
+      tags: item.tags,
+      savedAt: new Date(Date.UTC(2026, 7, 11, 2, 0, 0) - index * 3_600_000).toISOString(),
+    };
+  });
+}
+
+export default async function SavedQaPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const search = await searchParams;
+  const count = requestedCount(search.count);
+  return <SavedLibrary previewItems={buildPreviewItems(count)} />;
 }
