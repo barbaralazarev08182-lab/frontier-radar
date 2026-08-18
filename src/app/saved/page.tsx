@@ -9,8 +9,8 @@ import "./saved-editorial-archive-v11.css";
 import "./saved-editorial-archive-v11-aperture-fix.css";
 import "./saved-editorial-archive-v12.css";
 import "./saved-editorial-archive-v13.css";
+import "./saved-editorial-archive-v14.css";
 
-// Saved V13 visual review entrypoint.
 export const metadata = { title: "Saved · Frontier Radar" };
 
 export default function SavedPage() {
