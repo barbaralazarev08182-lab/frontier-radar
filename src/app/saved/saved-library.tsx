@@ -299,6 +299,14 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                 <div className={styles.featuredTags}>
                   {activeItem.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
                 </div>
+                <section className="fr-featured-details" aria-label="Archive record details">
+                  <div><span>POSITION</span><strong>{String(activeIndex + 1).padStart(2, "0")} / {String(ordered.length).padStart(2, "0")}</strong></div>
+                  <div><span>SOURCE</span><strong>{activeItem.source}</strong></div>
+                  <div><span>FORMAT</span><strong>{activeItem.contentType}</strong></div>
+                  <div><span>SAVED</span><strong>{formattedDate(activeItem.savedAt)}</strong></div>
+                  <div><span>SIGNAL SCORE</span><strong>{activeItem.score == null ? "UNRATED" : Math.round(activeItem.score)}</strong></div>
+                  <div><span>KEYWORDS</span><strong>{activeItem.tags.length}</strong></div>
+                </section>
                 <div className={styles.featuredActions}>
                   <button
                     type="button"
