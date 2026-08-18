@@ -10,6 +10,7 @@ import "@/app/saved/saved-editorial-archive-v11-aperture-fix.css";
 import "@/app/saved/saved-editorial-archive-v12.css";
 import "@/app/saved/saved-editorial-archive-v13.css";
 import "@/app/saved/saved-editorial-archive-v14.css";
+import "@/app/saved/saved-editorial-archive-v15.css";
 import { FIXTURES } from "@/lib/feed/fixtures";
 import type { SavedItemSnapshot } from "@/lib/saved/browser";
 
