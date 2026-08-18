@@ -1,0 +1,68 @@
+/* Mounting glue only. The visual language, keyframes, colors and timings come
+   directly from project-intelligence.css + project-intelligence-effects.css. */
+
+.pi-port-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  color: inherit !important;
+  background: transparent !important;
+}
+
+.pi-port-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pi-port-stage > :not(.pi-port-decor) {
+  position: relative;
+  z-index: 3;
+}
+
+/* Keep the accepted Research Mode document readable while allowing the
+   original PI effect pseudo-elements and original decorative objects to run. */
+.pi-port-stage.pi-stage-evidence,
+.pi-port-stage.pi-stage-interrogation,
+.pi-port-stage.pi-stage-resolution,
+.pi-port-stage.pi-stage-build,
+.pi-port-stage.pi-stage-capture {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.pi-port-decor .pi-capture-object,
+.pi-port-decor .pi-evidence-tunnel,
+.pi-port-decor .pi-interrogation-stack,
+.pi-port-decor .pi-score-orbit,
+.pi-port-decor .pi-resolution-core,
+.pi-port-decor .pi-build-deck {
+  pointer-events: none;
+}
+
+/* The legacy shared-object transition stays disabled in the port because the
+   current page uses normal document scrolling rather than stage replacement. */
+.pi-port-stage .pi-capture-object,
+.pi-port-stage .pi-evidence-card[data-state="active"],
+.pi-port-stage .pi-interrogation-card[data-state="active"],
+.pi-port-stage .pi-resolution-core,
+.pi-port-stage .pi-build-card[data-state="active"] {
+  view-transition-name: none !important;
+}
+
+/* Disable the later rewritten approximation so the preview shows the original
+   PI effect system rather than both systems at once. */
+.pi-port-stage.pr-capture::before,
+.pi-port-stage .pr-verdict::before,
+.pi-port-stage .pr-section-label::after,
+.pi-port-stage .pr-score-tick.is-filled,
+.pi-port-stage .pr-question-row:hover::before {
+  animation: none !important;
+}
+
+.pr-shell:has(.pi-port-stage)::before {
+  animation: none !important;
+  opacity: 0 !important;
+}
