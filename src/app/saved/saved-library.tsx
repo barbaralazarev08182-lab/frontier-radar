@@ -239,6 +239,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
             >
               <div className={styles.gridWall} aria-hidden />
               <div className={styles.shelfGlow} aria-hidden />
+              <div className="fr-active-trace" aria-hidden />
 
               <button
                 type="button"
