@@ -1,0 +1,161 @@
+/* Saved V12 — readable archive index + full-height folio.
+   Visual-only. Background, Saved behavior, source hue, score height and
+   windowing remain unchanged. */
+
+@media (min-width: 781px) {
+  /* Every visible record must identify itself without hover. The stem still
+     carries score as height; the title is a quiet index caption beside it. */
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    top: .08rem !important;
+    left: 1.02rem !important;
+    width: 4.8rem !important;
+    height: 2.4rem !important;
+    padding: .08rem 0 0 !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    color: rgba(247,250,253,.68) !important;
+    background: transparent !important;
+    border: 0 !important;
+    font-family: ui-sans-serif, system-ui, sans-serif !important;
+    font-size: .56rem !important;
+    font-weight: 620 !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.015em !important;
+    writing-mode: horizontal-tb !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: none !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):hover > span:nth-child(2) {
+    color: rgba(255,255,255,.96) !important;
+    background: transparent !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Active caption stays stronger, but follows the same index grammar. */
+  .fr-shelf-book-active > span:nth-child(2) {
+    top: 1rem !important;
+    left: 1.45rem !important;
+    width: min(10.5rem, 13vw) !important;
+    color: #f8fafc !important;
+    font-size: clamp(.78rem, .88vw, .94rem) !important;
+    line-height: 1.06 !important;
+  }
+
+  .fr-shelf-book-active::after {
+    left: 1.45rem !important;
+  }
+
+  .fr-shelf-book-active > span:last-child {
+    left: 1.45rem !important;
+    width: 7.8rem !important;
+  }
+
+  /* The folio now reaches the archive baseline instead of ending halfway down
+     the field. It remains one opened record; no synthetic content is added. */
+  .fr-featured-book {
+    top: 8.6% !important;
+    bottom: 10.5% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 1.55rem 2.15rem 1.45rem !important;
+    border: 1px solid color-mix(in srgb, var(--source-accent) 20%, rgba(29,29,27,.16)) !important;
+    border-top: 4px solid var(--source-accent) !important;
+    background:
+      linear-gradient(102deg, rgba(255,255,255,.32), transparent 19%, transparent 80%, rgba(29,29,27,.025)),
+      color-mix(in srgb, var(--source-soft) 90%, #f7f7f4) !important;
+    box-shadow:
+      0 1.5rem 3.8rem rgba(0,0,0,.26),
+      0 0 0 1px rgba(255,255,255,.22) inset,
+      inset 0 -1px rgba(29,29,27,.08) !important;
+  }
+
+  /* Subtle archive-paper construction gives the long sheet material presence
+     while preserving the source tint and all actual content. */
+  .fr-featured-book::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    opacity: .58 !important;
+    mix-blend-mode: multiply !important;
+    background:
+      linear-gradient(90deg,
+        transparent 0 72.5%,
+        rgba(29,29,27,.045) 72.5% 72.62%,
+        transparent 72.62%),
+      linear-gradient(0deg,
+        transparent 0 78%,
+        rgba(29,29,27,.045) 78% 78.14%,
+        transparent 78.14%),
+      repeating-linear-gradient(0deg,
+        transparent 0 2.05rem,
+        rgba(29,29,27,.018) 2.05rem calc(2.05rem + 1px)),
+      repeating-linear-gradient(90deg,
+        rgba(29,29,27,.012) 0 1px,
+        transparent 1px 5.4rem) !important;
+  }
+
+  .fr-featured-book::after {
+    width: 5px !important;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--source-accent) 96%, #fff),
+      var(--source-accent) 44%,
+      color-mix(in srgb, var(--source-accent) 72%, transparent)) !important;
+  }
+
+  .fr-featured-book > div:first-of-type,
+  .fr-featured-book > div:nth-of-type(2),
+  .fr-featured-book h1,
+  .fr-featured-book p,
+  .fr-featured-book > div:nth-of-type(3),
+  .fr-featured-book > div:nth-of-type(4) {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  .fr-featured-book h1 {
+    margin-top: .82rem !important;
+    font-size: clamp(2.35rem, 3.15vw, 3.8rem) !important;
+    line-height: .94 !important;
+  }
+
+  .fr-featured-book p {
+    max-width: 92% !important;
+    font-size: clamp(.84rem, .86vw, .96rem) !important;
+    line-height: 1.5 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: .72rem !important;
+    padding-top: .5rem !important;
+  }
+
+  /* The action rail occupies the physical bottom of the folio, making the
+     extra height intentional instead of empty. */
+  .fr-featured-book > div:nth-of-type(4) {
+    margin-top: auto !important;
+    padding-top: .82rem !important;
+    padding-bottom: .05rem !important;
+    border-top: 1px solid rgba(29,29,27,.18) !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    width: 4.2rem !important;
+    font-size: .52rem !important;
+  }
+
+  .fr-featured-book {
+    top: 8% !important;
+    bottom: 10.5% !important;
+  }
+}
