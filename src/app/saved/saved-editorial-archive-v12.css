@@ -159,3 +159,5 @@
     bottom: 10.5% !important;
   }
 }
+
+/* Final V12 layer intentionally loads after the V11 aperture fix. */
