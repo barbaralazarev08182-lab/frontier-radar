@@ -19,21 +19,21 @@
     z-index:2;
     top:-18%;
     bottom:-18%;
-    left:-58%;
-    width:72%;
+    left:-60%;
+    width:76%;
     pointer-events:none;
-    opacity:.62;
+    opacity:.58;
     will-change:transform,opacity;
     background:
       linear-gradient(
         112deg,
         transparent 0%,
         rgba(255,255,255,.018) 19%,
-        rgba(255,255,255,.075) 33%,
-        rgba(255,255,255,.19) 47%,
-        rgba(255,255,255,.31) 52%,
-        rgba(255,255,255,.14) 58%,
-        rgba(255,255,255,.050) 69%,
+        rgba(255,255,255,.072) 33%,
+        rgba(255,255,255,.18) 47%,
+        rgba(255,255,255,.29) 52%,
+        rgba(255,255,255,.13) 58%,
+        rgba(255,255,255,.047) 69%,
         transparent 84%
       ),
       linear-gradient(
@@ -43,9 +43,9 @@
         color-mix(in srgb,var(--row-accent) 9%,transparent) 54%,
         transparent 76%
       );
-    filter:blur(12px) saturate(.92);
+    filter:blur(13px) saturate(.92);
     transform:translate3d(-38%,0,0) skewX(-8deg);
-    animation:frTodayCoreSheen 8.4s cubic-bezier(.42,0,.22,1) infinite;
+    animation:frTodayCoreSheen 9.2s cubic-bezier(.42,0,.22,1) infinite;
   }
 
   /* Keep the sweep behind all five-zone copy and controls. */
@@ -63,19 +63,19 @@
     opacity:0;
   }
   8%{
-    opacity:.28;
-  }
-  18%{
-    opacity:.62;
-  }
-  54%{
-    opacity:.58;
-  }
-  74%{
     opacity:.24;
   }
+  18%{
+    opacity:.58;
+  }
+  54%{
+    opacity:.54;
+  }
+  74%{
+    opacity:.22;
+  }
   82%,100%{
-    transform:translate3d(255%,0,0) skewX(-8deg);
+    transform:translate3d(248%,0,0) skewX(-8deg);
     opacity:0;
   }
 }
@@ -84,6 +84,6 @@
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     animation:none!important;
     transform:translate3d(72%,0,0) skewX(-8deg)!important;
-    opacity:.16!important;
+    opacity:.14!important;
   }
 }
