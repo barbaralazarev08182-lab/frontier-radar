@@ -9,6 +9,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AnalysisItemRow, AnalysisDocument, AnalysisSnapshot, ItemAnalysisResult } from "@/lib/ai/types";
 
+const ANALYSIS_DISCOVERY_POOL_MIN = 80;
+const ANALYSIS_DISCOVERY_POOL_MULTIPLIER = 4;
+
 export interface NewAiAnalysis {
   item_id: string;
   analysis_type: "summary" | "deep" | "idea";
@@ -79,11 +82,50 @@ export async function insertAiAnalysis(
 export interface SelectCandidatesOptions {
   sources?: string[];
   itemId?: string;
-  /** 拉取候选池上限 */
+  /** 最终返回给分析器的候选池上限 */
   poolLimit: number;
   /** 当前模型 / Prompt 版本（用于优先未分析项） */
   model: string;
   promptVersion: string;
+}
+
+/**
+ * 为证据感知排序多看一层最近候选，避免“最新 20 条”先把有 README / Card / Abstract
+ * 的项目挡在排序逻辑之外。指定 itemId 时保持精确查询，不做扩池。
+ */
+export function computeAnalysisDiscoveryPoolLimit(poolLimit: number, itemSpecific = false): number {
+  const finalLimit = Math.max(1, Math.floor(poolLimit));
+  if (itemSpecific) return finalLimit;
+  return Math.max(
+    ANALYSIS_DISCOVERY_POOL_MIN,
+    finalLimit * ANALYSIS_DISCOVERY_POOL_MULTIPLIER
+  );
+}
+
+/**
+ * 候选优先级：
+ * 1. 尚无当前版本成功分析；
+ * 2. 已有可直接供模型使用的 item_documents 证据；
+ * 3. 最近发现。
+ */
+export function rankAnalysisCandidates(
+  items: AnalysisItemRow[],
+  analyzedSet: ReadonlySet<string>,
+  evidenceSet: ReadonlySet<string>
+): AnalysisItemRow[] {
+  return [...items].sort((a, b) => {
+    const aAnalyzed = analyzedSet.has(a.id) ? 1 : 0;
+    const bAnalyzed = analyzedSet.has(b.id) ? 1 : 0;
+    if (aAnalyzed !== bAnalyzed) return aAnalyzed - bAnalyzed;
+
+    const aEvidence = evidenceSet.has(a.id) ? 0 : 1;
+    const bEvidence = evidenceSet.has(b.id) ? 0 : 1;
+    if (aEvidence !== bEvidence) return aEvidence - bEvidence;
+
+    const aSeen = Date.parse(a.first_seen_at) || 0;
+    const bSeen = Date.parse(b.first_seen_at) || 0;
+    return bSeen - aSeen;
+  });
 }
 
 /**
@@ -107,9 +149,12 @@ export async function selectItemsForAnalysis(
     query = query.in("sources.slug", opts.sources);
   }
 
+  const finalPoolLimit = Math.max(1, Math.floor(opts.poolLimit));
+  const discoveryPoolLimit = computeAnalysisDiscoveryPoolLimit(finalPoolLimit, Boolean(opts.itemId));
+
   const { data, error } = await query
     .order("first_seen_at", { ascending: false })
-    .limit(Math.max(1, opts.poolLimit));
+    .limit(discoveryPoolLimit);
   if (error) {
     throw new Error(`查询 items 失败: ${error.message}`);
   }
@@ -136,19 +181,17 @@ export async function selectItemsForAnalysis(
     last_updated_at: r.last_updated_at as string,
   }));
 
-  // 优先未分析项：一次性查询当前版本成功集合
-  const analyzedSet = await getAnalyzedItemIds(supabase, {
-    itemIds: items.map((i) => i.id),
-    model: opts.model,
-    promptVersion: opts.promptVersion,
-  });
+  const itemIds = items.map((i) => i.id);
+  const [analyzedSet, evidenceSet] = await Promise.all([
+    getAnalyzedItemIds(supabase, {
+      itemIds,
+      model: opts.model,
+      promptVersion: opts.promptVersion,
+    }),
+    getEvidenceItemIds(supabase, itemIds),
+  ]);
 
-  return items.sort((a, b) => {
-    const aAnalyzed = analyzedSet.has(a.id) ? 1 : 0;
-    const bAnalyzed = analyzedSet.has(b.id) ? 1 : 0;
-    if (aAnalyzed !== bAnalyzed) return aAnalyzed - bAnalyzed;
-    return 0;
-  });
+  return rankAnalysisCandidates(items, analyzedSet, evidenceSet).slice(0, finalPoolLimit);
 }
 
 function normalizeSourceSlug(sources: unknown): string {
@@ -178,6 +221,27 @@ async function getAnalyzedItemIds(
     .eq("status", "success");
   if (error) {
     throw new Error(`查询 ai_analyses 失败: ${error.message}`);
+  }
+  const set = new Set<string>();
+  for (const row of data ?? []) {
+    const id = (row as { item_id?: unknown }).item_id;
+    if (typeof id === "string") set.add(id);
+  }
+  return set;
+}
+
+/** 批量查询已有附属文档的 item；这里只取 item_id，不把大段正文加载进候选排序。 */
+async function getEvidenceItemIds(
+  supabase: SupabaseClient,
+  itemIds: string[]
+): Promise<Set<string>> {
+  if (itemIds.length === 0) return new Set();
+  const { data, error } = await supabase
+    .from("item_documents")
+    .select("item_id")
+    .in("item_id", itemIds);
+  if (error) {
+    throw new Error(`查询 item_documents 证据集合失败: ${error.message}`);
   }
   const set = new Set<string>();
   for (const row of data ?? []) {
