@@ -15,6 +15,7 @@ import type {
 import { prepareAnalysisInput } from "./prepare-input";
 import type { AiProvider } from "./provider";
 import { hasSuccessfulAnalysis, insertAiAnalysis } from "@/lib/db/repositories/ai-analyses";
+import { insertAiUsageEvent } from "@/lib/db/repositories/ai-usage";
 
 export interface AnalyzeItemParams {
   item: AnalysisItemRow;
@@ -84,6 +85,21 @@ export async function analyzeItem(
       estimated_cost: output.estimatedCost,
       latency_ms: output.latencyMs,
     });
+
+    // Usage telemetry is deliberately separate from the intelligence result.
+    // Failure to write observability data must never turn a valid analysis into a product failure.
+    await insertAiUsageEvent(supabase, {
+      analysis_id: analysisId,
+      item_id: item.id,
+      source: item.source_slug,
+      provider: output.provider,
+      model: output.model,
+      prompt_tokens: output.tokenUsage?.promptTokens ?? null,
+      completion_tokens: output.tokenUsage?.completionTokens ?? null,
+      total_tokens: output.tokenUsage?.totalTokens ?? null,
+      model_call_count: output.modelCallCount,
+      repair_count: output.repairCount,
+    }).catch(() => {});
 
     return { status: "success", inputHash: prepared.inputHash, charCount: prepared.charCount, analysisId, latencyMs: output.latencyMs, result: output.result };
   } catch (err) {
