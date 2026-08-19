@@ -1,0 +1,17 @@
+/* TODAY OPEN ACTIVE LABEL R6
+   Active-card action label only: make OPEN unmistakably readable while keeping
+   the unboxed top-right emission introduced in R5. */
+
+@media (min-width:1181px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span::after{
+    font:800 clamp(32px,2.35vw,38px)/.9 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace!important;
+    letter-spacing:.075em!important;
+    text-transform:uppercase!important;
+    color:inherit!important;
+    text-shadow:0 8px 24px color-mix(in srgb,var(--row-accent) 18%,transparent)!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate{
+    padding:18px 26px 0 0!important;
+  }
+}
