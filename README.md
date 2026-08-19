@@ -236,4 +236,37 @@ Rules:
 5. do not perform destructive cleanup without explicit approval
 6. clearly label anything unverified or tool-blocked
 
+### Restoration / recovery protocol
+
+When a previously owner-approved surface regresses, treat restoration as recovery of an accepted state, not as a new design task.
+
+```text
+STOP
+→ leave main untouched
+→ identify the owner-approved deployment / commit
+→ reproduce the same route, viewport, data and interaction stage
+→ find the first divergence
+→ apply one narrow fix
+→ re-check parity in a real browser
+→ merge only after parity
+```
+
+Restoration invariants:
+
+- The latest owner-approved deployment or commit is the source of truth. A later branch, screenshot memory, or visually similar reconstruction is not equivalent evidence.
+- Restoration ≠ redesign. Do not replace an accepted composition with a new approximation just because it is easier to reproduce.
+- Code equality ≠ visual equality. CSS cascade, route boundaries, Suspense/loading state, data timing, animation lifecycle and runtime dependencies can change the rendered result without an obvious component diff.
+- Validate the full runtime dependency closure around the accepted surface, including route-level files, layout/loading boundaries, controllers, CSS import order and transition infrastructure.
+- Final parity requires real-browser A/B at the same viewport and the same interaction stage. Machine tests and Vercel `READY` may support the check but cannot replace visual acceptance.
+- The owner should not become the first visual test runner when a browser environment is available. If automated browser access is blocked, an owner-provided screenshot / explicit visual confirmation is the accepted exception.
+- The first mismatch stops the patch chain. Diagnose that divergence before stacking more visual patches.
+- No parity, no merge. Frozen surfaces must not regress while restoring another surface.
+
+Project-specific failure record:
+
+- During Project Gate15B restoration, restoring `src/app/project/[id]/loading.tsx` also restored a route-level Suspense/loading lifecycle that appeared before the real `.pr-shell`.
+- That lifecycle interfered with `ProjectReadingController` and changed the accepted Project motion even though the restored route looked structurally correct in code.
+- The fix was not to keep patching Project visuals. The accepted Project route stayed free of that route-level `loading.tsx`, and the historical `RESOLVING PROJECT SIGNAL` scene was moved to a root-persistent entry overlay.
+- The overlay now waits for the real `.pr-shell`, satisfies its minimum display time, then waits two consecutive `requestAnimationFrame` ticks before clearing. A long safety timer is exception-only, not part of normal transition timing.
+
 <!-- deploy-trigger: 2026-08-17T22:16+08:00 -->
