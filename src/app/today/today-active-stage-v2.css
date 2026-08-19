@@ -1,0 +1,273 @@
+/* TODAY-STAGE-01 / Active Signal Hero Reinforcement
+   Standalone preview layer. Keep R27 structure and interactions unchanged. */
+
+/* Establish a stronger stage around the selected signal without changing geometry. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]{
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 53% 48%,color-mix(in srgb,var(--row-accent) 12%,rgba(255,255,255,.28)) 0%,transparent 45%),
+    radial-gradient(ellipse at 76% 18%,rgba(255,255,255,.34) 0%,transparent 34%),
+    linear-gradient(112deg,rgba(255,255,255,.16),transparent 30%,color-mix(in srgb,var(--row-accent) 5%,transparent) 66%,rgba(255,255,255,.12));
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,.78),
+    0 1px 0 color-mix(in srgb,var(--row-accent) 17%,rgba(28,25,19,.12)),
+    0 38px 92px color-mix(in srgb,var(--row-accent) 15%,transparent),
+    0 16px 34px rgba(31,27,20,.12),
+    inset 0 1px rgba(255,255,255,.45),
+    inset 0 -1px rgba(40,34,25,.06)!important;
+}
+
+/* The expanded detail becomes a true hero surface: atmosphere behind, content above. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+  position:relative;
+  isolation:isolate;
+  overflow:visible;
+  background:
+    radial-gradient(ellipse at 51% 52%,color-mix(in srgb,var(--row-accent) 10%,rgba(255,255,255,.08)),transparent 44%),
+    linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.08) 62%,transparent);
+}
+
+/* Main suspended slab. This is deliberately larger than WHY NOW so the centre reads as one object. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:25.8%;
+  right:25.2%;
+  top:15%;
+  bottom:14.5%;
+  pointer-events:none;
+  clip-path:polygon(4% 0,100% 4.5%,96.4% 100%,0 94.5%);
+  border:1px solid color-mix(in srgb,var(--row-accent) 19%,rgba(255,255,255,.66));
+  background:
+    linear-gradient(108deg,rgba(255,255,255,.42),rgba(255,255,255,.11) 34%,color-mix(in srgb,var(--row-accent) 7%,rgba(255,255,255,.06)) 73%,rgba(255,255,255,.22)),
+    repeating-linear-gradient(0deg,rgba(48,42,31,.018) 0 1px,transparent 1px 7px);
+  -webkit-backdrop-filter:blur(9px) saturate(108%);
+  backdrop-filter:blur(9px) saturate(108%);
+  box-shadow:
+    0 58px 112px color-mix(in srgb,var(--row-accent) 15%,rgba(35,31,25,.12)),
+    0 26px 48px rgba(35,30,23,.14),
+    -18px 17px 0 color-mix(in srgb,var(--row-accent) 5%,rgba(255,255,255,.06)),
+    17px -13px 0 rgba(255,255,255,.09),
+    inset 0 1px rgba(255,255,255,.78),
+    inset 0 -1px rgba(57,48,35,.10)!important;
+  opacity:.96;
+  transform:translate3d(0,0,0) rotate(-.28deg);
+  animation:frStageSlabFloat 8.5s ease-in-out infinite;
+}
+
+/* Perspective floor: gives the large empty field a controlled sense of scale instead of flat fog. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  left:27.8%;
+  right:25.8%;
+  bottom:3.6%;
+  height:30%;
+  pointer-events:none;
+  transform-origin:50% 100%;
+  transform:perspective(440px) rotateX(58deg) translateY(16%);
+  clip-path:polygon(16% 0,84% 0,100% 100%,0 100%);
+  background:
+    linear-gradient(to top,color-mix(in srgb,var(--row-accent) 14%,rgba(38,45,43,.11)),transparent 72%),
+    repeating-linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 18%,rgba(50,55,54,.13)) 0 1px,transparent 1px 28px),
+    repeating-linear-gradient(0deg,rgba(58,57,51,.10) 0 1px,transparent 1px 20px);
+  border-top:1px solid color-mix(in srgb,var(--row-accent) 22%,rgba(255,255,255,.52));
+  box-shadow:0 -14px 46px color-mix(in srgb,var(--row-accent) 8%,transparent);
+  opacity:.34;
+  filter:blur(.1px);
+}
+
+/* Content stays on top of the new stage layers. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary{
+  position:relative;
+  z-index:3;
+}
+
+/* THE SIGNAL: a quieter glass-paper specimen card, with real edge depth. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-18px -20px;
+  pointer-events:none;
+  clip-path:polygon(0 0,97% 1.5%,100% 96%,2% 100%);
+  border:1px solid color-mix(in srgb,var(--row-accent) 14%,rgba(61,55,45,.13));
+  background:
+    linear-gradient(138deg,rgba(255,255,255,.32),rgba(255,255,255,.08) 58%,color-mix(in srgb,var(--row-accent) 5%,rgba(255,255,255,.04))),
+    repeating-linear-gradient(0deg,rgba(45,39,31,.016) 0 1px,transparent 1px 8px);
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+  box-shadow:
+    0 25px 48px rgba(42,36,28,.10),
+    0 8px 18px color-mix(in srgb,var(--row-accent) 8%,transparent),
+    inset 0 1px rgba(255,255,255,.62)!important;
+  opacity:.92;
+}
+
+/* WHY NOW becomes the monumental editorial core. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
+  transform:translateY(-2px);
+  filter:drop-shadow(0 18px 28px rgba(41,35,27,.05));
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-31px -36px -35px;
+  pointer-events:none;
+  clip-path:polygon(2.5% 0,100% 2.8%,97.7% 100%,0 96%);
+  border:1px solid color-mix(in srgb,var(--row-accent) 24%,rgba(71,62,48,.15));
+  background:
+    radial-gradient(ellipse at 62% 10%,rgba(255,255,255,.47),transparent 33%),
+    linear-gradient(126deg,rgba(255,255,255,.48),rgba(255,255,255,.12) 43%,color-mix(in srgb,var(--row-accent) 8%,rgba(245,242,233,.14)) 82%),
+    #efede5;
+  -webkit-backdrop-filter:blur(12px) saturate(108%);
+  backdrop-filter:blur(12px) saturate(108%);
+  box-shadow:
+    0 54px 96px color-mix(in srgb,var(--row-accent) 15%,rgba(45,38,29,.13)),
+    0 24px 40px rgba(46,39,29,.15),
+    -11px 10px 0 color-mix(in srgb,var(--row-accent) 7%,rgba(255,255,255,.08)),
+    10px -8px 0 rgba(255,255,255,.15),
+    inset 0 1px rgba(255,255,255,.82),
+    inset 0 -1px rgba(67,56,40,.11)!important;
+  opacity:.98;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:-18px -24px -22px;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30)),color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30))) left top/46px 1px no-repeat,
+    linear-gradient(180deg,color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30)),color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30))) left top/1px 38px no-repeat,
+    linear-gradient(270deg,color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30)),color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30))) right bottom/46px 1px no-repeat,
+    linear-gradient(0deg,color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30)),color-mix(in srgb,var(--row-accent) 42%,rgba(55,51,45,.30))) right bottom/1px 38px no-repeat;
+  opacity:.78;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why>span{
+  letter-spacing:.14em;
+  color:color-mix(in srgb,var(--row-accent) 48%,#545049)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why>p{
+  position:relative;
+  z-index:2;
+  text-shadow:0 2px 0 rgba(255,255,255,.46),0 14px 30px rgba(34,30,25,.06)!important;
+}
+
+/* Side intelligence rail: present, refined, deliberately subordinate to the centre. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-14px -16px -15px -14px;
+  pointer-events:none;
+  border:1px solid color-mix(in srgb,var(--row-accent) 10%,rgba(74,66,53,.13));
+  background:linear-gradient(148deg,rgba(255,255,255,.26),rgba(255,255,255,.055) 58%,color-mix(in srgb,var(--row-accent) 4%,transparent));
+  -webkit-backdrop-filter:blur(4px);
+  backdrop-filter:blur(4px);
+  box-shadow:0 22px 44px rgba(43,37,29,.08),inset 0 1px rgba(255,255,255,.48);
+  opacity:.82;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  opacity:.34!important;
+  box-shadow:none!important;
+}
+
+/* Title slip gains physical lift and a slow specular pass while staying in exactly the same place. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  box-shadow:
+    0 30px 54px color-mix(in srgb,var(--row-accent) 20%,rgba(37,31,25,.08)),
+    0 10px 18px rgba(38,32,24,.16),
+    -9px 8px 0 color-mix(in srgb,var(--row-accent) 9%,rgba(255,255,255,.05)),
+    7px -5px 0 rgba(255,255,255,.13),
+    inset 0 1px rgba(255,255,255,.78),
+    inset 0 -1px rgba(60,50,36,.10)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  top:-18%;
+  bottom:-18%;
+  left:-24%;
+  width:18%;
+  pointer-events:none;
+  transform:skewX(-12deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.18) 22%,rgba(255,255,255,.64) 48%,color-mix(in srgb,var(--row-accent) 20%,rgba(255,255,255,.32)) 63%,transparent);
+  filter:blur(.4px);
+  opacity:0;
+  animation:frStageSpecular 7.5s ease-in-out 1.2s infinite;
+}
+
+/* A restrained lane halo at the central horizon makes adjacent/wildcard feel physically different. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-detail{
+  background:
+    radial-gradient(ellipse at 52% 54%,rgba(49,80,255,.14),transparent 46%),
+    radial-gradient(ellipse at 72% 18%,rgba(255,255,255,.14),transparent 30%);
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-detail{
+  background:
+    radial-gradient(ellipse at 52% 54%,rgba(241,84,36,.13),transparent 46%),
+    radial-gradient(ellipse at 72% 18%,rgba(255,255,255,.14),transparent 30%);
+}
+
+/* Instrumentation should feel intentional, not washed out. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-evidence{
+  opacity:.72!important;
+  text-shadow:0 1px rgba(255,255,255,.65);
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-evidence::before{
+  content:"SIGNAL / LIVE";
+  margin-right:6px;
+  color:color-mix(in srgb,var(--row-accent) 58%,#625d55);
+}
+
+/* Slightly amplify the atmospheric trace only while a signal is open. */
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__trace{
+  stroke:color-mix(in srgb,var(--row-accent,#777db4) 54%,rgba(84,91,96,.36))!important;
+  filter:drop-shadow(0 0 7px color-mix(in srgb,var(--row-accent,#777db4) 24%,transparent))!important;
+  opacity:.54!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__beacon{
+  filter:drop-shadow(0 0 12px color-mix(in srgb,var(--row-accent,#777db4) 28%,transparent))!important;
+  opacity:.78!important;
+}
+
+/* Arrival and ambient motion: enough to make the stage feel alive, never like a demo reel. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+  animation:frStageArrival .72s cubic-bezier(.18,.74,.16,1) both;
+}
+
+@keyframes frStageArrival{
+  from{opacity:.72;transform:translateY(7px) scale(.995);filter:saturate(.88)}
+  to{opacity:1;transform:none;filter:saturate(1)}
+}
+@keyframes frStageSlabFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(-.28deg)}
+  50%{transform:translate3d(0,-3px,0) rotate(-.14deg)}
+}
+@keyframes frStageSpecular{
+  0%,62%{left:-24%;opacity:0}
+  66%{opacity:.12}
+  78%{opacity:.52}
+  90%{left:114%;opacity:.08}
+  100%{left:114%;opacity:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::before,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity::after{
+    animation:none!important;
+  }
+}
