@@ -18,7 +18,7 @@ export function SiteNav() {
   const pathname = usePathname();
   const today = pathname === "/today";
   const project = pathname.startsWith("/project/");
-  const saved = pathname === "/saved";
+  const saved = pathname === "/saved" || pathname.startsWith("/qa/saved");
   const fixedToViewport = today || project;
 
   return (
@@ -59,7 +59,10 @@ export function SiteNav() {
           aria-label="Primary navigation"
         >
           {NAV_ITEMS.map((item) => {
-            const active = pathname === item.href || (item.href !== "/today" && pathname.startsWith(`${item.href}/`));
+            const active =
+              pathname === item.href ||
+              (item.href !== "/today" && pathname.startsWith(`${item.href}/`)) ||
+              (item.href === "/saved" && pathname.startsWith("/qa/saved"));
             const exploreEntry = item.href === "/explore";
 
             return (
