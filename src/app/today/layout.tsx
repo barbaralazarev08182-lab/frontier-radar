@@ -20,7 +20,7 @@ import "./today-open-gradient-r5.css";
 import "./today-open-active-label-r6.css";
 import { TodayWheelNavigation } from "./today-wheel-navigation";
 
-// Keep page-scoped Today visual layers and interactions isolated from every other route.
+// Today R6: page-scoped visual layers plus desktop wheel navigation; isolated from every other route.
 export default function TodayLayout({ children }: { children: ReactNode }) {
   return (
     <>
