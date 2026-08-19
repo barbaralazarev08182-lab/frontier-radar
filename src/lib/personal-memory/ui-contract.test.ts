@@ -9,12 +9,10 @@ function source(relativePath: string): string {
 const siteNav = source("../../components/site-nav.tsx");
 const memoryTools = source("../../components/personal-memory-nav-tools.tsx");
 
-test("Gate 12B UI: memory tools are visible only on Saved and Idea Lab surfaces", () => {
-  assert.match(
-    siteNav,
-    /const memorySurface = pathname === "\/saved" \|\| pathname\.startsWith\("\/idea-lab"\);/
-  );
+test("Phase closure UI: memory tools are visible only on Saved", () => {
+  assert.match(siteNav, /const memorySurface = pathname === "\/saved";/);
   assert.match(siteNav, /\{memorySurface \? <PersonalMemoryNavTools \/> : null\}/);
+  assert.doesNotMatch(siteNav, /\/idea-lab/);
 });
 
 test("Gate 12B UI: export and import actions use the Gate 12A backup contract", () => {
