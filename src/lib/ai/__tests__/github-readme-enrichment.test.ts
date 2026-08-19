@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { enrichGithubReadmeForAnalysis, type GithubReadmeClient } from "@/lib/ai/github-readme-enrichment";
@@ -76,7 +77,7 @@ test("existing stored README is reused without another GitHub request", async ()
 test("selected GitHub item fetches, caps, persists and returns README before paid analysis", async () => {
   const original = "A".repeat(3_000);
   let calls = 0;
-  let persisted: Record<string, unknown> | null = null;
+  let persisted: Record<string, unknown> = {};
   const client: GithubReadmeClient = {
     getReadme: async (owner, repo) => {
       calls++;
@@ -118,8 +119,8 @@ test("selected GitHub item fetches, caps, persists and returns README before pai
   assert.equal(result[0]?.document_type, "readme");
   assert.equal(result[0]?.content_text?.length, 2_000);
   assert.equal(result[0]?.source_revision, "readme-sha");
-  assert.equal(persisted?.document_type, "readme");
-  assert.equal(persisted?.is_truncated, true);
-  assert.equal(persisted?.original_size, 3_000);
-  assert.equal(persisted?.stored_size, 2_000);
+  assert.equal(persisted.document_type, "readme");
+  assert.equal(persisted.is_truncated, true);
+  assert.equal(persisted.original_size, 3_000);
+  assert.equal(persisted.stored_size, 2_000);
 });
