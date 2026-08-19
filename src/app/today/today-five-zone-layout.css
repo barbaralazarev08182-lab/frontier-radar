@@ -1,18 +1,21 @@
-/* TODAY FIVE-ZONE ACTIVE COMPOSITION
-   Desktop-only visual rearrangement based on the annotated owner screenshot.
-   Scope is intentionally narrow: only the active /today signal changes.
-   Collapsed rows, cover, data, interactions, other routes, and mobile/tablet keep the production layout. */
+/* TODAY FIVE-ZONE ACTIVE COMPOSITION — alignment refinement
+   Desktop-only visual rearrangement based on the owner's annotated screenshots.
+   Scope stays narrow: only the active /today signal changes. Collapsed rows,
+   cover, data, interactions, other routes, and mobile/tablet remain production. */
 
 @media (min-width:1181px){
-  /* The active signal becomes one fixed composition plane. The band height itself
-     still comes from production CSS, so no surrounding rows are displaced. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]{
+    --fz-left:19.25%;
+    --fz-left-width:41.4%;
+    --fz-right:67.05%;
+    --fz-right-width:28.55%;
+    --fz-top:6.2%;
+    --fz-lower-top:42.2%;
     position:relative;
     overflow:hidden;
   }
 
-  /* HEAD is allowed to span the whole active field so rank/title can occupy the
-     annotated left rail + upper-left title zone. */
+  /* HEAD spans the active field so the giant rank + title can live independently. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-head{
     position:absolute!important;
     inset:0!important;
@@ -26,50 +29,50 @@
     pointer-events:auto;
   }
 
-  /* 1 / LEFT RAIL — the selected rank becomes a giant graphic anchor. */
+  /* 1 / LEFT RAIL — taller, narrower, vertically stretched selected rank. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-rank{
     position:absolute!important;
-    left:1.15%!important;
-    top:8%!important;
-    width:14.2%!important;
-    height:84%!important;
+    left:.45%!important;
+    top:2.4%!important;
+    width:15.55%!important;
+    height:94.2%!important;
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
     margin:0!important;
-    font-size:clamp(172px,13.4vw,236px)!important;
-    line-height:.72!important;
-    letter-spacing:-.12em!important;
+    font-size:clamp(178px,13.7vw,244px)!important;
+    line-height:.68!important;
+    letter-spacing:-.135em!important;
     font-weight:860!important;
     color:var(--row-accent)!important;
-    opacity:.58!important;
+    opacity:.56!important;
     text-align:center!important;
     white-space:nowrap!important;
-    transform-origin:26% 18%;
-    transition:opacity .34s ease,filter .34s ease!important;
-    filter:drop-shadow(0 18px 34px color-mix(in srgb,var(--row-accent) 12%,transparent));
+    transform:scaleX(.84) scaleY(1.28);
+    transform-origin:50% 50%;
+    transition:opacity .34s ease,filter .34s ease,transform .56s cubic-bezier(.16,1,.3,1)!important;
+    filter:drop-shadow(0 20px 38px color-mix(in srgb,var(--row-accent) 13%,transparent));
     pointer-events:none;
   }
 
-  /* 2 / UPPER LEFT — title moves right into the large top title field. */
+  /* 2 / UPPER LEFT — title and lower summary now share an exact left axis. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{
     position:absolute!important;
-    left:18.8%!important;
-    top:5.2%!important;
-    width:42.3%!important;
-    height:26%!important;
+    left:var(--fz-left)!important;
+    top:var(--fz-top)!important;
+    width:var(--fz-left-width)!important;
+    height:27.8%!important;
     display:-webkit-box!important;
     -webkit-box-orient:vertical;
     -webkit-line-clamp:3;
-    align-content:center;
     margin:0!important;
-    padding:0!important;
+    padding:0 3.2% 0 0!important;
     white-space:normal!important;
     overflow:hidden!important;
     text-overflow:clip!important;
-    font-size:clamp(36px,3.12vw,54px)!important;
-    line-height:.91!important;
-    letter-spacing:-.055em!important;
+    font-size:clamp(35px,2.92vw,51px)!important;
+    line-height:.94!important;
+    letter-spacing:-.052em!important;
     font-weight:820!important;
     color:inherit!important;
     box-shadow:none!important;
@@ -78,13 +81,11 @@
     pointer-events:none;
   }
 
-  /* The old one-line thesis would duplicate the lower content zone once open. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-thesis{
     display:none!important;
   }
 
-  /* Preserve topic / score / enter as tiny instrument controls rather than letting
-     them compete with the five requested content zones. */
+  /* Tiny instrument controls remain in the top strip. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-topic{
     position:absolute!important;
     right:17.3%!important;
@@ -114,8 +115,7 @@
     font-size:15px!important;
   }
 
-  /* DETAIL also spans the full plane. Its three existing semantic blocks are moved
-     into the remaining annotated zones without changing their content. */
+  /* DETAIL spans the full active plane; semantic blocks are placed on common axes. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
     position:absolute!important;
     inset:0!important;
@@ -131,135 +131,144 @@
     transition:none!important;
   }
 
-  /* 3 / LOWER LEFT — content introduction / THE SIGNAL. */
+  /* 3 / LOWER LEFT — THE SIGNAL starts on the same left edge as the title. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary{
     position:absolute!important;
-    left:19.6%!important;
-    top:39.2%!important;
-    width:41.5%!important;
-    height:53%!important;
+    left:var(--fz-left)!important;
+    top:var(--fz-lower-top)!important;
+    width:var(--fz-left-width)!important;
+    height:49.8%!important;
     display:flex!important;
     flex-direction:column!important;
-    justify-content:center!important;
+    justify-content:flex-start!important;
     align-self:auto!important;
-    padding:0 clamp(30px,3vw,54px) 0 0!important;
+    padding:5.2% clamp(34px,3.1vw,58px) 0 0!important;
     margin:0!important;
     overflow:hidden!important;
     pointer-events:none;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary > span{
-    margin-bottom:14px!important;
+    margin-bottom:15px!important;
     font-size:8px!important;
     opacity:.55!important;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary p{
-    max-width:32ch!important;
+    max-width:34ch!important;
     margin:0!important;
-    font-size:clamp(18px,1.45vw,24px)!important;
-    line-height:1.46!important;
-    letter-spacing:-.026em!important;
+    font-size:clamp(17px,1.36vw,23px)!important;
+    line-height:1.48!important;
+    letter-spacing:-.024em!important;
     color:rgba(11,11,11,.63)!important;
   }
 
-  /* 4 / UPPER RIGHT — WHY NOW is relocated out of the center and given the full
-     upper-right field requested in the markup. */
+  /* 4 / UPPER RIGHT — shares the same top system as the title, with more breathing room. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
     position:absolute!important;
-    left:67.2%!important;
-    top:7.8%!important;
-    width:30.2%!important;
-    height:25.4%!important;
+    left:var(--fz-right)!important;
+    top:var(--fz-top)!important;
+    width:var(--fz-right-width)!important;
+    height:28.8%!important;
     display:flex!important;
     flex-direction:column!important;
-    justify-content:center!important;
+    justify-content:flex-start!important;
     align-self:auto!important;
     margin:0!important;
-    padding:0 clamp(26px,2.5vw,48px) 0 0!important;
+    padding:7.2% clamp(30px,2.65vw,50px) 0 0!important;
     border-left:0!important;
     border-right:0!important;
     overflow:hidden!important;
     pointer-events:none;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why > span{
-    margin-bottom:12px!important;
+    margin-bottom:13px!important;
     font-size:8px!important;
     opacity:.55!important;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
-    max-width:25ch!important;
+    max-width:24ch!important;
     margin:0!important;
-    font-size:clamp(20px,1.72vw,29px)!important;
-    line-height:1.08!important;
-    letter-spacing:-.035em!important;
+    font-size:clamp(19px,1.58vw,27px)!important;
+    line-height:1.11!important;
+    letter-spacing:-.032em!important;
     font-weight:760!important;
   }
 
-  /* 5 / LOWER RIGHT — WHY YOU + BUILD DIRECTION + evidence remain together. */
+  /* 5 / LOWER RIGHT — starts on the exact same lower baseline as THE SIGNAL.
+     Flex flow also removes the awkward empty gap when WHY YOU is absent. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary{
     position:absolute!important;
-    left:67.2%!important;
-    top:39.6%!important;
-    width:30.2%!important;
-    height:52.4%!important;
-    display:grid!important;
-    grid-template-rows:minmax(0,1fr) auto auto!important;
-    align-content:center!important;
+    left:var(--fz-right)!important;
+    top:var(--fz-lower-top)!important;
+    width:var(--fz-right-width)!important;
+    height:49.8%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    align-items:stretch!important;
+    align-content:normal!important;
     align-self:auto!important;
-    gap:16px!important;
+    gap:0!important;
     margin:0!important;
-    padding:0 clamp(26px,2.5vw,48px) 0 0!important;
+    padding:3.6% clamp(30px,2.65vw,50px) 3.5% 0!important;
     overflow:hidden!important;
     pointer-events:none;
   }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary > div:empty{
+    display:none!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you{
+    margin:0 0 24px!important;
+  }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you p{
     max-width:31ch!important;
-    font-size:clamp(14px,1.18vw,19px)!important;
-    line-height:1.42!important;
+    font-size:clamp(13px,1.08vw,18px)!important;
+    line-height:1.46!important;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build{
-    padding-top:15px!important;
+    margin:0!important;
+    padding-top:17px!important;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build p{
     max-width:31ch!important;
-    font-size:clamp(15px,1.28vw,21px)!important;
-    line-height:1.34!important;
+    font-size:clamp(14px,1.16vw,19px)!important;
+    line-height:1.37!important;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-evidence{
+    margin-top:17px!important;
     padding-top:13px!important;
     font-size:7px!important;
-    opacity:.72!important;
+    opacity:.70!important;
   }
 
-  /* Existing R27 pseudo-material follows each relocated semantic block. Keep it,
-     but tighten the large polygon insets so the new zones remain visually clean. */
+  /* Keep the inherited material quiet so the new common axes read cleanly. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before,
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
-    inset:-12px -16px!important;
+    inset:-10px -14px!important;
+    opacity:.46!important;
   }
 
-  /* OPEN transition: make the change in hierarchy legible instead of snapping.
-     These movements correspond to the elements' old approximate positions. */
+  /* OPEN transition — spatial handoff from row to five-zone layout. */
   .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-rank{
-    animation:frFiveZoneRankOpen .92s cubic-bezier(.16,1,.3,1) both!important;
+    animation:frFiveZoneRankOpen 1.02s cubic-bezier(.16,1,.3,1) both!important;
   }
   .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-entity{
-    animation:frFiveZoneTitleOpen .86s cubic-bezier(.16,1,.3,1) .03s both!important;
+    animation:frFiveZoneTitleOpen .88s cubic-bezier(.16,1,.3,1) .03s both!important;
   }
   .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-summary{
-    animation:frFiveZoneSummaryOpen .86s cubic-bezier(.16,1,.3,1) .11s both!important;
+    animation:frFiveZoneSummaryOpen .88s cubic-bezier(.16,1,.3,1) .10s both!important;
   }
   .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why{
-    animation:frFiveZoneWhyOpen .9s cubic-bezier(.16,1,.3,1) .08s both!important;
+    animation:frFiveZoneWhyOpen .92s cubic-bezier(.16,1,.3,1) .08s both!important;
   }
   .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-secondary{
-    animation:frFiveZoneSecondaryOpen .9s cubic-bezier(.16,1,.3,1) .14s both!important;
+    animation:frFiveZoneSecondaryOpen .92s cubic-bezier(.16,1,.3,1) .13s both!important;
   }
 
-  /* Switching between 01–07 gets a shorter version of the same spatial handoff. */
+  /* Switching between 01–07 gets a shorter handoff. */
   .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-rank{
-    animation:frFiveZoneRankSwitch .54s cubic-bezier(.16,1,.3,1) both!important;
+    animation:frFiveZoneRankSwitch .58s cubic-bezier(.16,1,.3,1) both!important;
   }
   .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-entity{
     animation:frFiveZoneTitleSwitch .54s cubic-bezier(.16,1,.3,1) both!important;
@@ -272,38 +281,38 @@
 }
 
 @keyframes frFiveZoneRankOpen{
-  0%{opacity:.34;transform:translate3d(-18px,-42%,0) scale(.13);filter:blur(1.5px)}
-  58%{opacity:.66;transform:translate3d(4px,0,0) scale(1.035);filter:blur(0)}
-  100%{opacity:.58;transform:none;filter:drop-shadow(0 18px 34px color-mix(in srgb,var(--row-accent) 12%,transparent))}
+  0%{opacity:.26;transform:translate3d(-22px,-39%,0) scaleX(.13) scaleY(.10);filter:blur(1.8px)}
+  58%{opacity:.64;transform:translate3d(4px,0,0) scaleX(.87) scaleY(1.34);filter:blur(0)}
+  100%{opacity:.56;transform:scaleX(.84) scaleY(1.28);filter:drop-shadow(0 20px 38px color-mix(in srgb,var(--row-accent) 13%,transparent))}
 }
 @keyframes frFiveZoneTitleOpen{
   0%{opacity:.18;transform:translate3d(-150px,-10px,0) scale(.82);filter:blur(2px)}
-  64%{opacity:1;transform:translate3d(8px,0,0) scale(1.01);filter:none}
+  64%{opacity:1;transform:translate3d(7px,0,0) scale(1.008);filter:none}
   100%{opacity:1;transform:none;filter:none}
 }
 @keyframes frFiveZoneSummaryOpen{
-  0%{opacity:0;transform:translate3d(-190px,50px,0)}
+  0%{opacity:0;transform:translate3d(-165px,46px,0)}
   100%{opacity:1;transform:none}
 }
 @keyframes frFiveZoneWhyOpen{
-  0%{opacity:0;transform:translate3d(-220px,105px,0) scale(.94)}
+  0%{opacity:0;transform:translate3d(-130px,72px,0) scale(.95)}
   100%{opacity:1;transform:none}
 }
 @keyframes frFiveZoneSecondaryOpen{
-  0%{opacity:0;transform:translate3d(44px,74px,0)}
+  0%{opacity:0;transform:translate3d(38px,58px,0)}
   100%{opacity:1;transform:none}
 }
 @keyframes frFiveZoneRankSwitch{
-  0%{opacity:.28;transform:scale(.72)}
-  58%{opacity:.66;transform:scale(1.055)}
-  100%{opacity:.58;transform:none}
+  0%{opacity:.24;transform:scaleX(.72) scaleY(.82)}
+  58%{opacity:.64;transform:scaleX(.87) scaleY(1.34)}
+  100%{opacity:.56;transform:scaleX(.84) scaleY(1.28)}
 }
 @keyframes frFiveZoneTitleSwitch{
-  0%{opacity:.28;transform:translate3d(-54px,0,0)}
+  0%{opacity:.28;transform:translate3d(-46px,0,0)}
   100%{opacity:1;transform:none}
 }
 @keyframes frFiveZoneContentSwitch{
-  0%{opacity:0;transform:translate3d(0,28px,0)}
+  0%{opacity:0;transform:translate3d(0,22px,0)}
   100%{opacity:1;transform:none}
 }
 
