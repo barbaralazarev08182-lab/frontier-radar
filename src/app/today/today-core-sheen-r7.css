@@ -1,0 +1,89 @@
+/* TODAY CORE SHEEN R7
+   Final desktop-only polish:
+   - restore contrast for the giant rank on the wildcard/orange card;
+   - add a restrained, broad moving light sweep to active cards 01–05 only.
+   Blue adjacent (06) and orange wildcard (07) are intentionally excluded. */
+
+@media (min-width:1181px){
+  /* 07 / wildcard: keep the giant rank visible against the orange field. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
+    color:rgba(255,240,216,.82)!important;
+    opacity:.72!important;
+    filter:drop-shadow(0 18px 34px rgba(83,29,17,.24))!important;
+  }
+
+  /* 01–05 only: broad restrained moving sheen across the active card surface. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
+    content:"";
+    position:absolute;
+    z-index:2;
+    top:-18%;
+    bottom:-18%;
+    left:-58%;
+    width:72%;
+    pointer-events:none;
+    opacity:.62;
+    will-change:transform,opacity;
+    background:
+      linear-gradient(
+        112deg,
+        transparent 0%,
+        rgba(255,255,255,.018) 19%,
+        rgba(255,255,255,.075) 33%,
+        rgba(255,255,255,.19) 47%,
+        rgba(255,255,255,.31) 52%,
+        rgba(255,255,255,.14) 58%,
+        rgba(255,255,255,.050) 69%,
+        transparent 84%
+      ),
+      linear-gradient(
+        112deg,
+        transparent 15%,
+        color-mix(in srgb,var(--row-accent) 4%,transparent) 43%,
+        color-mix(in srgb,var(--row-accent) 9%,transparent) 54%,
+        transparent 76%
+      );
+    filter:blur(12px) saturate(.92);
+    transform:translate3d(-38%,0,0) skewX(-8deg);
+    animation:frTodayCoreSheen 8.4s cubic-bezier(.42,0,.22,1) infinite;
+  }
+
+  /* Keep the sweep behind all five-zone copy and controls. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail{
+    z-index:3!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-head{
+    z-index:5!important;
+  }
+}
+
+@keyframes frTodayCoreSheen{
+  0%{
+    transform:translate3d(-44%,0,0) skewX(-8deg);
+    opacity:0;
+  }
+  8%{
+    opacity:.28;
+  }
+  18%{
+    opacity:.62;
+  }
+  54%{
+    opacity:.58;
+  }
+  74%{
+    opacity:.24;
+  }
+  82%,100%{
+    transform:translate3d(255%,0,0) skewX(-8deg);
+    opacity:0;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
+    animation:none!important;
+    transform:translate3d(72%,0,0) skewX(-8deg)!important;
+    opacity:.16!important;
+  }
+}
