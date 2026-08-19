@@ -1,0 +1,140 @@
+/* Branch-only polish layer for Today R27. Structure and interactions stay untouched. */
+
+/* 1) Keep the active field dimensional, but remove the heaviest fog and stacked glow. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] {
+  box-shadow:
+    0 -8px 22px rgba(15,18,20,.035),
+    0 24px 60px color-mix(in srgb,var(--row-accent) 9%,transparent),
+    0 10px 24px rgba(15,18,20,.055),
+    inset 0 1px rgba(255,255,255,.22),
+    inset 0 -1px rgba(11,11,11,.035) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] {
+  box-shadow:
+    0 -8px 22px rgba(20,28,92,.055),
+    0 26px 64px rgba(49,80,255,.11),
+    0 10px 26px rgba(22,30,86,.08),
+    inset 0 1px rgba(255,255,255,.22),
+    inset 0 -1px rgba(18,26,84,.08) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] {
+  box-shadow:
+    0 -8px 22px rgba(112,48,24,.05),
+    0 26px 64px rgba(241,84,36,.10),
+    0 10px 26px rgba(108,47,25,.07),
+    inset 0 1px rgba(255,255,255,.22),
+    inset 0 -1px rgba(112,48,24,.07) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::before {
+  box-shadow:
+    0 20px 46px color-mix(in srgb,var(--row-accent) 6%,transparent),
+    0 7px 18px rgba(15,18,20,.035),
+    inset 0 1px rgba(255,255,255,.20) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::after {
+  box-shadow:
+    0 14px 34px color-mix(in srgb,var(--row-accent) 4%,transparent),
+    0 5px 14px rgba(15,18,20,.028),
+    inset 0 1px rgba(255,255,255,.16) !important;
+}
+
+/* 2) Text membranes stay present, but become atmosphere instead of foreground objects. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before {
+  opacity: .30 !important;
+  box-shadow:
+    0 12px 28px color-mix(in srgb,var(--row-accent) 4%,transparent),
+    0 4px 11px rgba(15,18,20,.02),
+    inset 0 1px rgba(255,255,255,.12) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before {
+  opacity: .46 !important;
+  box-shadow:
+    0 16px 36px color-mix(in srgb,var(--row-accent) 6%,transparent),
+    0 5px 14px rgba(15,18,20,.028),
+    inset 0 1px rgba(255,255,255,.16) !important;
+}
+
+/* 3) Improve reading contrast without changing typography scale or block geometry. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band-detail > div > span,
+.today-r27-production .fr-stack[data-open="true"] .fr-band-secondary > div > span {
+  color: rgba(28,29,31,.62) !important;
+  letter-spacing: .11em !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-summary p {
+  color: rgba(37,38,40,.78) !important;
+  line-height: 1.62 !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-why p {
+  color: rgba(18,19,21,.94) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -.028em !important;
+  text-shadow: none !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-you p {
+  color: rgba(48,49,52,.78) !important;
+  line-height: 1.46 !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-build p {
+  color: rgba(22,23,25,.91) !important;
+  line-height: 1.32 !important;
+  letter-spacing: -.018em !important;
+}
+
+/* 4) Make the evidence line legible while keeping it visibly secondary. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band-evidence {
+  opacity: .66 !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-evidence span {
+  color: rgba(40,41,44,.62) !important;
+}
+
+/* 5) Calm the active title slip so it reads as print, not as a floating card. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity {
+  box-shadow:
+    0 12px 26px color-mix(in srgb,var(--row-accent) 10%,transparent),
+    0 4px 10px rgba(15,18,20,.045),
+    -4px 4px 0 color-mix(in srgb,var(--row-accent) 6%,transparent),
+    inset 0 1px rgba(255,255,255,.30),
+    inset 0 0 0 1px color-mix(in srgb,var(--row-accent) 11%,transparent) !important;
+}
+
+/* 6) Collapsed rows scan faster: stronger title/score, quieter thesis, subtler motion. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-entity {
+  color: rgba(20,21,23,.94) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-thesis {
+  color: rgba(44,45,47,.58) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-score {
+  color: rgba(18,19,21,.88) !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-gate {
+  opacity: .78 !important;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band-head:hover {
+  transform: translateX(-2px) !important;
+  filter: drop-shadow(0 6px 10px color-mix(in srgb,var(--row-accent) 8%,rgba(15,18,20,.045))) !important;
+  background: linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 7%,rgba(255,255,255,.11)),rgba(255,255,255,.025) 52%,transparent) !important;
+}
+
+/* Keep lane color meaning, but make separators and metadata feel more editorial than luminous. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band-head,
+.today-r27-production .fr-stack[data-open="true"] .fr-band-secondary {
+  border-color: rgba(24,25,27,.09) !important;
+}
