@@ -1,7 +1,6 @@
 /* TODAY-STAGE-RETRY-01
    Controlled visual retry from clean main.
-   Scope: one stronger active-stage field + one stronger WHY NOW hierarchy.
-   No structural, data, interaction, or global visual-system changes. */
+   Base structure remains unchanged; this branch now explores a deliberately stronger motion/effects layer. */
 
 /* Keep every active lane in the same warm Frontier Radar material world.
    Lane color stays a signal accent instead of becoming the whole surface. */
@@ -17,8 +16,6 @@
     inset 0 -1px rgba(11,11,11,.045)!important;
 }
 
-/* Restore dark editorial copy for Adjacent / Wildcard active states.
-   Their semantic color remains on the existing lane marks and accents. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-rank,
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
   color:var(--row-accent)!important;
@@ -43,13 +40,9 @@
   color:rgba(11,11,11,.53)!important;
 }
 
-/* Give WHY NOW a little more of the existing grid without changing the three-part architecture. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
   grid-template-columns:minmax(220px,23%) minmax(460px,49%) minmax(290px,28%)!important;
 }
-
-/* WHY NOW is the only intentionally dominant object.
-   Stronger type, slightly wider field, still lightweight and paper-like. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
   padding:0 clamp(38px,4vw,72px)!important;
   border-left-color:rgba(11,11,11,.115)!important;
@@ -59,11 +52,8 @@
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before{
   inset:-22px -26px!important;
   clip-path:polygon(1% 1%,100% 0,99% 99%,0 100%)!important;
-  background:
-    linear-gradient(116deg,rgba(255,255,255,.31),rgba(255,255,255,.13) 56%,color-mix(in srgb,var(--row-accent) 4%,rgba(255,255,255,.08)))!important;
-  box-shadow:
-    0 24px 54px rgba(30,26,19,.065),
-    inset 0 1px rgba(255,255,255,.34)!important;
+  background:linear-gradient(116deg,rgba(255,255,255,.31),rgba(255,255,255,.13) 56%,color-mix(in srgb,var(--row-accent) 4%,rgba(255,255,255,.08)))!important;
+  box-shadow:0 24px 54px rgba(30,26,19,.065),inset 0 1px rgba(255,255,255,.34)!important;
   opacity:.78!important;
 }
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why>span{
@@ -79,8 +69,6 @@
   color:#11110f!important;
   text-shadow:none!important;
 }
-
-/* Keep the supporting columns deliberately quieter than the centre. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
@@ -88,12 +76,7 @@
   box-shadow:0 14px 32px rgba(30,26,19,.035),inset 0 1px rgba(255,255,255,.14)!important;
 }
 
-/* ------------------------------------------------------------------
-   MOTION PASS — intentionally bolder, while leaving the base layout,
-   data model, and component structure untouched.
-   ------------------------------------------------------------------ */
-
-/* The open field now feels electrically alive instead of merely expanded. */
+/* Stronger atmospheric motion without changing the underlying layout. */
 .today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere{
   opacity:.78!important;
   animation:frRetryAtmosBreath 7.5s ease-in-out infinite;
@@ -124,7 +107,7 @@
   animation:frRetryBeacon 1.55s cubic-bezier(.4,0,.2,1) infinite;
 }
 
-/* One large moving light curtain travels through the active stage. */
+/* Large moving light curtain through the active stage. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
   position:relative;
   isolation:isolate;
@@ -143,12 +126,7 @@
   opacity:0;
   clip-path:none!important;
   border:0!important;
-  background:linear-gradient(108deg,
-    transparent 0 26%,
-    color-mix(in srgb,var(--row-accent) 5%,rgba(255,255,255,.08)) 37%,
-    rgba(255,255,255,.66) 48%,
-    color-mix(in srgb,var(--row-accent) 17%,rgba(255,255,255,.18)) 55%,
-    transparent 72%)!important;
+  background:linear-gradient(108deg,transparent 0 26%,color-mix(in srgb,var(--row-accent) 5%,rgba(255,255,255,.08)) 37%,rgba(255,255,255,.66) 48%,color-mix(in srgb,var(--row-accent) 17%,rgba(255,255,255,.18)) 55%,transparent 72%)!important;
   filter:blur(10px);
   mix-blend-mode:screen;
   box-shadow:none!important;
@@ -156,7 +134,7 @@
   animation:frRetryStageSweep 6.3s cubic-bezier(.22,.61,.36,1) 1.35s infinite;
 }
 
-/* The central statement hovers slowly; it is the only continuously lifted object. */
+/* The central statement is the only continuously lifted object. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
   animation:frRetryHeroFloat 6.4s ease-in-out infinite;
   will-change:transform;
@@ -165,7 +143,7 @@
   animation:frRetryHeroShadow 6.4s ease-in-out infinite;
 }
 
-/* Opening is an event: field ignition, header snap, hero arrival, then settle. */
+/* Opening is now a clear stage event. */
 .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"]{
   animation:frRetryStageIgnite .98s cubic-bezier(.16,1,.3,1) both;
 }
@@ -173,9 +151,7 @@
   animation:frRetryHeaderDrop .68s cubic-bezier(.16,1,.3,1) .05s both;
 }
 .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why{
-  animation:
-    frRetryWhyEnter .92s cubic-bezier(.16,1,.3,1) .13s both,
-    frRetryHeroFloat 6.4s ease-in-out 1.12s infinite;
+  animation:frRetryWhyEnter .92s cubic-bezier(.16,1,.3,1) .13s both,frRetryHeroFloat 6.4s ease-in-out 1.12s infinite;
 }
 .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why p{
   animation:frRetryWhyType .88s cubic-bezier(.16,1,.3,1) .22s both;
@@ -191,7 +167,7 @@
   box-shadow:0 0 20px color-mix(in srgb,var(--row-accent) 26%,transparent);
 }
 
-/* Changing signals now creates a deliberate pulse through the whole instrument. */
+/* Signal switching sends a pulse across the full instrument. */
 .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"]{
   animation:frRetrySwitchField .68s cubic-bezier(.16,1,.3,1) both;
 }
@@ -218,7 +194,6 @@
 .today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(6) .fr-band-head{animation-delay:130ms}
 .today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(7) .fr-band-head{animation-delay:156ms}
 
-/* More kinetic gate interaction, without changing its geometry. */
 .today-r27-production .fr-stack[data-open="true"] .fr-band-head:hover .fr-band-gate{
   transform:translate3d(6px,-1px,0) skewX(-5deg);
   box-shadow:0 10px 24px color-mix(in srgb,var(--row-accent) 20%,rgba(20,20,18,.08));
@@ -229,113 +204,31 @@
   transition:transform .22s cubic-bezier(.16,1,.3,1);
 }
 
-@keyframes frRetryAtmosBreath{
-  0%,100%{opacity:.62;transform:scale(1)}
-  48%{opacity:.88;transform:scale(1.012)}
-}
-@keyframes frRetryOrbitDrift{
-  from{transform:rotate(0deg) scale(1)}
-  50%{transform:rotate(1.5deg) scale(1.018)}
-  to{transform:rotate(0deg) scale(1)}
-}
-@keyframes frRetryWireDrift{
-  0%,100%{transform:translate3d(0,0,0)}
-  50%{transform:translate3d(12px,-8px,0)}
-}
-@keyframes frRetryTraceRun{
-  from{stroke-dashoffset:1}
-  to{stroke-dashoffset:0}
-}
-@keyframes frRetryBeacon{
-  0%,100%{transform:scale(.8);opacity:.45;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--row-accent) 24%,transparent))}
-  45%{transform:scale(1.8);opacity:1;filter:drop-shadow(0 0 16px color-mix(in srgb,var(--row-accent) 54%,transparent))}
-}
-@keyframes frRetryStageSweep{
-  0%,9%{opacity:0;transform:skewX(-14deg) translate3d(0,0,0)}
-  18%{opacity:.52}
-  47%{opacity:.22}
-  58%,100%{opacity:0;transform:skewX(-14deg) translate3d(520%,0,0)}
-}
-@keyframes frRetryHeroFloat{
-  0%,100%{transform:translate3d(0,-2px,0)}
-  50%{transform:translate3d(0,-8px,0)}
-}
-@keyframes frRetryHeroShadow{
-  0%,100%{box-shadow:0 24px 54px rgba(30,26,19,.065),inset 0 1px rgba(255,255,255,.34)}
-  50%{box-shadow:0 40px 78px rgba(30,26,19,.105),0 0 44px color-mix(in srgb,var(--row-accent) 8%,transparent),inset 0 1px rgba(255,255,255,.42)}
-}
-@keyframes frRetryStageIgnite{
-  0%{transform:scaleY(.96);filter:saturate(.9) brightness(.98);box-shadow:0 8px 20px rgba(31,27,20,.02)}
-  38%{transform:scaleY(1.008);filter:saturate(1.06) brightness(1.015);box-shadow:0 62px 110px color-mix(in srgb,var(--row-accent) 10%,rgba(31,27,20,.08)),0 18px 40px rgba(31,27,20,.075)}
-  100%{transform:none;filter:none}
-}
-@keyframes frRetryHeaderDrop{
-  0%{opacity:0;transform:translate3d(0,-18px,0);filter:blur(6px)}
-  62%{opacity:1;transform:translate3d(0,3px,0);filter:blur(0)}
-  100%{opacity:1;transform:none;filter:none}
-}
-@keyframes frRetryWhyEnter{
-  0%{opacity:0;transform:translate3d(0,48px,0) scale(.92) rotate(-.65deg);filter:blur(11px)}
-  56%{opacity:1;transform:translate3d(0,-12px,0) scale(1.018) rotate(.18deg);filter:blur(0)}
-  100%{opacity:1;transform:translate3d(0,-2px,0) scale(1);filter:none}
-}
-@keyframes frRetryWhyType{
-  0%{opacity:0;transform:translate3d(-18px,0,0);letter-spacing:-.09em;color:var(--row-accent)}
-  58%{opacity:1;transform:translate3d(4px,0,0);letter-spacing:-.035em;color:#11110f}
-  100%{opacity:1;transform:none;letter-spacing:-.045em;color:#11110f}
-}
-@keyframes frRetrySideInLeft{
-  0%{opacity:0;transform:translate3d(-36px,12px,0);filter:blur(7px)}
-  100%{opacity:1;transform:none;filter:none}
-}
-@keyframes frRetrySideInRight{
-  0%{opacity:0;transform:translate3d(42px,10px,0);filter:blur(7px)}
-  100%{opacity:1;transform:none;filter:none}
-}
-@keyframes frRetryTopRail{
-  0%{width:0;opacity:1}
-  70%{width:100%;opacity:1}
-  100%{width:100%;opacity:.18}
-}
-@keyframes frRetrySwitchField{
-  0%{filter:brightness(1) saturate(1)}
-  23%{filter:brightness(1.045) saturate(1.28);box-shadow:0 54px 110px color-mix(in srgb,var(--row-accent) 16%,rgba(31,27,20,.08)),0 15px 34px rgba(31,27,20,.06)}
-  100%{filter:none}
-}
-@keyframes frRetryHeaderShock{
-  0%{transform:translate3d(0,0,0)}
-  22%{transform:translate3d(-10px,0,0)}
-  42%{transform:translate3d(6px,0,0)}
-  100%{transform:none}
-}
-@keyframes frRetryTitleGlitch{
-  0%,100%{text-shadow:none;transform:none}
-  18%{text-shadow:5px 0 0 color-mix(in srgb,var(--row-accent) 24%,transparent),-3px 0 0 rgba(11,11,11,.08);transform:translateX(-2px)}
-  34%{text-shadow:-4px 0 0 color-mix(in srgb,var(--row-accent) 18%,transparent),2px 0 0 rgba(255,255,255,.55);transform:translateX(3px)}
-  52%{text-shadow:2px 0 0 color-mix(in srgb,var(--row-accent) 12%,transparent);transform:translateX(-1px)}
-}
-@keyframes frRetryDetailSnap{
-  0%{opacity:.28;transform:translate3d(0,18px,0) scale(.985);filter:blur(8px)}
-  55%{opacity:1;transform:translate3d(0,-4px,0) scale(1.004);filter:blur(0)}
-  100%{opacity:1;transform:none;filter:none}
-}
-@keyframes frRetrySwitchType{
-  0%{opacity:.22;transform:translate3d(18px,0,0) scale(.98);filter:blur(5px)}
-  46%{opacity:1;transform:translate3d(-4px,0,0) scale(1.008);filter:blur(0)}
-  100%{opacity:1;transform:none;filter:none}
-}
-@keyframes frRetryPeripheralWave{
-  0%,100%{transform:translate3d(0,0,0);filter:none}
-  42%{transform:translate3d(9px,0,0);filter:drop-shadow(-10px 0 13px color-mix(in srgb,var(--row-accent) 10%,transparent))}
-}
+@keyframes frRetryAtmosBreath{0%,100%{opacity:.62;transform:scale(1)}48%{opacity:.88;transform:scale(1.012)}}
+@keyframes frRetryOrbitDrift{from{transform:rotate(0deg) scale(1)}50%{transform:rotate(1.5deg) scale(1.018)}to{transform:rotate(0deg) scale(1)}}
+@keyframes frRetryWireDrift{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(12px,-8px,0)}}
+@keyframes frRetryTraceRun{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes frRetryBeacon{0%,100%{transform:scale(.8);opacity:.45;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--row-accent) 24%,transparent))}45%{transform:scale(1.8);opacity:1;filter:drop-shadow(0 0 16px color-mix(in srgb,var(--row-accent) 54%,transparent))}}
+@keyframes frRetryStageSweep{0%,9%{opacity:0;transform:skewX(-14deg) translate3d(0,0,0)}18%{opacity:.52}47%{opacity:.22}58%,100%{opacity:0;transform:skewX(-14deg) translate3d(520%,0,0)}}
+@keyframes frRetryHeroFloat{0%,100%{transform:translate3d(0,-2px,0)}50%{transform:translate3d(0,-8px,0)}}
+@keyframes frRetryHeroShadow{0%,100%{box-shadow:0 24px 54px rgba(30,26,19,.065),inset 0 1px rgba(255,255,255,.34)}50%{box-shadow:0 40px 78px rgba(30,26,19,.105),0 0 44px color-mix(in srgb,var(--row-accent) 8%,transparent),inset 0 1px rgba(255,255,255,.42)}}
+@keyframes frRetryStageIgnite{0%{transform:scaleY(.96);filter:saturate(.9) brightness(.98);box-shadow:0 8px 20px rgba(31,27,20,.02)}38%{transform:scaleY(1.008);filter:saturate(1.06) brightness(1.015);box-shadow:0 62px 110px color-mix(in srgb,var(--row-accent) 10%,rgba(31,27,20,.08)),0 18px 40px rgba(31,27,20,.075)}100%{transform:none;filter:none}}
+@keyframes frRetryHeaderDrop{0%{opacity:0;transform:translate3d(0,-18px,0);filter:blur(6px)}62%{opacity:1;transform:translate3d(0,3px,0);filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes frRetryWhyEnter{0%{opacity:0;transform:translate3d(0,48px,0) scale(.92) rotate(-.65deg);filter:blur(11px)}56%{opacity:1;transform:translate3d(0,-12px,0) scale(1.018) rotate(.18deg);filter:blur(0)}100%{opacity:1;transform:translate3d(0,-2px,0) scale(1);filter:none}}
+@keyframes frRetryWhyType{0%{opacity:0;transform:translate3d(-18px,0,0);letter-spacing:-.09em;color:var(--row-accent)}58%{opacity:1;transform:translate3d(4px,0,0);letter-spacing:-.035em;color:#11110f}100%{opacity:1;transform:none;letter-spacing:-.045em;color:#11110f}}
+@keyframes frRetrySideInLeft{0%{opacity:0;transform:translate3d(-36px,12px,0);filter:blur(7px)}100%{opacity:1;transform:none;filter:none}}
+@keyframes frRetrySideInRight{0%{opacity:0;transform:translate3d(42px,10px,0);filter:blur(7px)}100%{opacity:1;transform:none;filter:none}}
+@keyframes frRetryTopRail{0%{width:0;opacity:1}70%{width:100%;opacity:1}100%{width:100%;opacity:.18}}
+@keyframes frRetrySwitchField{0%{filter:brightness(1) saturate(1)}23%{filter:brightness(1.045) saturate(1.28);box-shadow:0 54px 110px color-mix(in srgb,var(--row-accent) 16%,rgba(31,27,20,.08)),0 15px 34px rgba(31,27,20,.06)}100%{filter:none}}
+@keyframes frRetryHeaderShock{0%{transform:translate3d(0,0,0)}22%{transform:translate3d(-10px,0,0)}42%{transform:translate3d(6px,0,0)}100%{transform:none}}
+@keyframes frRetryTitleGlitch{0%,100%{text-shadow:none;transform:none}18%{text-shadow:5px 0 0 color-mix(in srgb,var(--row-accent) 24%,transparent),-3px 0 0 rgba(11,11,11,.08);transform:translateX(-2px)}34%{text-shadow:-4px 0 0 color-mix(in srgb,var(--row-accent) 18%,transparent),2px 0 0 rgba(255,255,255,.55);transform:translateX(3px)}52%{text-shadow:2px 0 0 color-mix(in srgb,var(--row-accent) 12%,transparent);transform:translateX(-1px)}}
+@keyframes frRetryDetailSnap{0%{opacity:.28;transform:translate3d(0,18px,0) scale(.985);filter:blur(8px)}55%{opacity:1;transform:translate3d(0,-4px,0) scale(1.004);filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes frRetrySwitchType{0%{opacity:.22;transform:translate3d(18px,0,0) scale(.98);filter:blur(5px)}46%{opacity:1;transform:translate3d(-4px,0,0) scale(1.008);filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes frRetryPeripheralWave{0%,100%{transform:translate3d(0,0,0);filter:none}42%{transform:translate3d(9px,0,0);filter:drop-shadow(-10px 0 13px color-mix(in srgb,var(--row-accent) 10%,transparent))}}
 
 @media(max-width:1180px){
-  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
-    grid-template-columns:minmax(210px,24%) minmax(400px,46%) minmax(270px,30%)!important;
-  }
-  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
-    font-size:clamp(26px,2.55vw,34px)!important;
-  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{grid-template-columns:minmax(210px,24%) minmax(400px,46%) minmax(270px,30%)!important}
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{font-size:clamp(26px,2.55vw,34px)!important}
 }
 
 @media(prefers-reduced-motion:reduce){
