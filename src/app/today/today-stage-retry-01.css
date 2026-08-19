@@ -1,0 +1,98 @@
+/* TODAY-STAGE-RETRY-01
+   Controlled visual retry from clean main.
+   Scope: one stronger active-stage field + one stronger WHY NOW hierarchy.
+   No structural, data, interaction, or global visual-system changes. */
+
+/* Keep every active lane in the same warm Frontier Radar material world.
+   Lane color stays a signal accent instead of becoming the whole surface. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]{
+  color:#0b0b0b!important;
+  background:
+    radial-gradient(ellipse at 50% 46%,color-mix(in srgb,var(--row-accent) 4%,transparent),transparent 45%),
+    rgba(248,246,240,.965)!important;
+  box-shadow:
+    0 46px 92px rgba(31,27,20,.105),
+    0 15px 34px rgba(31,27,20,.06),
+    inset 0 1px rgba(255,255,255,.52),
+    inset 0 -1px rgba(11,11,11,.045)!important;
+}
+
+/* Restore dark editorial copy for Adjacent / Wildcard active states.
+   Their semantic color remains on the existing lane marks and accents. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-rank,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
+  color:var(--row-accent)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-thesis,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-thesis,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-topic,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-topic,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-summary p,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-summary p,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-you p,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-you p{
+  color:rgba(11,11,11,.62)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-why,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-why,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-build,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-build,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="adjacent"] .fr-band-evidence,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-evidence{
+  border-color:rgba(11,11,11,.14)!important;
+  color:rgba(11,11,11,.53)!important;
+}
+
+/* Give WHY NOW a little more of the existing grid without changing the three-part architecture. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+  grid-template-columns:minmax(220px,23%) minmax(460px,49%) minmax(290px,28%)!important;
+}
+
+/* WHY NOW is the only intentionally dominant object.
+   Stronger type, slightly wider field, still lightweight and paper-like. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
+  padding:0 clamp(38px,4vw,72px)!important;
+  border-left-color:rgba(11,11,11,.115)!important;
+  border-right-color:rgba(11,11,11,.085)!important;
+  transform:translateY(-2px);
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before{
+  inset:-22px -26px!important;
+  clip-path:polygon(1% 1%,100% 0,99% 99%,0 100%)!important;
+  background:
+    linear-gradient(116deg,rgba(255,255,255,.31),rgba(255,255,255,.13) 56%,color-mix(in srgb,var(--row-accent) 4%,rgba(255,255,255,.08)))!important;
+  box-shadow:
+    0 24px 54px rgba(30,26,19,.065),
+    inset 0 1px rgba(255,255,255,.34)!important;
+  opacity:.78!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why>span{
+  margin-bottom:11px!important;
+  opacity:.56!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
+  max-width:21ch!important;
+  font-size:clamp(28px,2.15vw,38px)!important;
+  line-height:.98!important;
+  letter-spacing:-.045em!important;
+  font-weight:780!important;
+  color:#11110f!important;
+  text-shadow:none!important;
+}
+
+/* Keep the supporting columns deliberately quieter than the centre. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  opacity:.42!important;
+  box-shadow:0 14px 32px rgba(30,26,19,.035),inset 0 1px rgba(255,255,255,.14)!important;
+}
+
+@media(max-width:1180px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+    grid-template-columns:minmax(210px,24%) minmax(400px,46%) minmax(270px,30%)!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
+    font-size:clamp(26px,2.55vw,34px)!important;
+  }
+}
