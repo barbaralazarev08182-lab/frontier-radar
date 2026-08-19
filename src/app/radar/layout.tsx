@@ -14,9 +14,8 @@ export default function RadarLayout({ children }: Readonly<{ children: React.Rea
         }
 
         /* Personal Radar is a single-screen research instrument on desktop.
-           The current editorial SiteNav is 56px tall, while the older shared
-           system token still says 48px. Bind this route to the real shell so
-           the instrument ends exactly at the viewport edge. */
+           The current editorial SiteNav is 48px tall. Bind this route to the
+           real shell so the instrument ends exactly at the viewport edge. */
         @media (min-width: 1121px) and (min-height: 700px) {
           html:has(.radar-route-root),
           body:has(.radar-route-root) {
@@ -25,7 +24,7 @@ export default function RadarLayout({ children }: Readonly<{ children: React.Rea
           }
 
           main:has(> .radar-route-root) {
-            height: calc(100dvh - 3.5rem);
+            height: calc(100dvh - 3rem);
             min-height: 0;
             overflow: hidden;
           }
