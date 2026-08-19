@@ -79,6 +79,45 @@
   .fr-archive-stage {
     overscroll-behavior: contain !important;
   }
+
+  /* INDEX HEIGHT RHYTHM -------------------------------------------------
+     Score remains the base height. A small deterministic display lift on the
+     existing caption lanes gives selected needles more vertical separation,
+     so the field reads less uniformly without inventing a second data signal. */
+  .fr-shelf-book:not(.fr-shelf-book-active):nth-child(3n + 2) {
+    height: min(96%, calc(var(--signal-strength, 52%) + 6%)) !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):nth-child(3n) {
+    height: min(96%, calc(var(--signal-strength, 52%) + 10%)) !important;
+  }
+
+  /* ORDER RAIL ----------------------------------------------------------
+     The compact header changed the vertical rhythm; align sorting with the
+     search utility line instead of leaving it suspended between header/stage. */
+  .fr-archive-rail {
+    top: 3.02rem !important;
+    right: 5.2% !important;
+    min-height: 2.28rem !important;
+    align-items: center !important;
+  }
+
+  .fr-archive-rail::before,
+  .fr-archive-rail > button {
+    min-height: 2.28rem !important;
+  }
+
+  .fr-archive-rail::before {
+    margin-right: .08rem !important;
+  }
+
+  .fr-archive-rail > button {
+    padding-inline: .62rem !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"]::after {
+    bottom: .08rem !important;
+  }
 }
 
 @media (min-width: 781px) and (max-width: 1180px) {
@@ -90,5 +129,10 @@
 
   .fr-featured-book h1 {
     font-size: clamp(2.4rem, 3vw, 3.3rem) !important;
+  }
+
+  .fr-archive-rail {
+    top: 2.98rem !important;
+    right: 4.2% !important;
   }
 }
