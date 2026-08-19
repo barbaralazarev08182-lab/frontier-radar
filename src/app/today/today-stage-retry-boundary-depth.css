@@ -1,0 +1,245 @@
+/* TODAY-STAGE-RETRY-BOUNDARY-DEPTH
+   Boundary & Depth pass layered on top of the approved strong-motion preview.
+   Goal: preserve the existing geometry/motion while making the open signal read as
+   a physical instrument made from distinct planes rather than one continuous sheet. */
+
+/* 1) The active signal is one clearly lifted chassis. Outline is structural;
+   the animated shadow below is the depth cue. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]{
+  outline:1px solid rgba(22,20,16,.28);
+  outline-offset:-1px;
+  border-top:1px solid rgba(255,255,255,.74)!important;
+  border-bottom:1px solid rgba(22,20,16,.24)!important;
+  filter:drop-shadow(0 24px 28px rgba(28,24,18,.105));
+}
+
+/* Stronger header/detail seam: the active title strip should read as the top plate
+   of the instrument rather than floating typography. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-head{
+  border-bottom:1px solid rgba(22,20,16,.22)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.44),rgba(255,255,255,.08) 72%,rgba(19,17,14,.035))!important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.78),
+    inset 0 -1px rgba(255,255,255,.42),
+    0 12px 28px rgba(29,25,19,.06);
+}
+
+/* 2) Make the three-column architecture visible. Two double-edge seams combine
+   a dark structural edge with a light bevel so the boundary feels physical. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+  background-image:
+    linear-gradient(90deg,
+      transparent 0,
+      transparent calc(23% - 2px),
+      rgba(24,21,17,.10) calc(23% - 2px),
+      rgba(24,21,17,.26) calc(23% - 1px),
+      rgba(255,255,255,.72) 23%,
+      transparent calc(23% + 2px),
+      transparent calc(72% - 2px),
+      rgba(24,21,17,.10) calc(72% - 2px),
+      rgba(24,21,17,.26) calc(72% - 1px),
+      rgba(255,255,255,.72) 72%,
+      transparent calc(72% + 2px),
+      transparent 100%)!important;
+  box-shadow:
+    inset 0 18px 30px rgba(255,255,255,.18),
+    inset 0 -16px 30px rgba(25,22,17,.035);
+}
+
+/* 3) Supporting areas become actual shallow panels. Existing pseudo-surfaces are
+   strengthened rather than changing the content or layout geometry. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build{
+  position:relative;
+  z-index:2;
+}
+
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  border:1px solid rgba(23,20,16,.18)!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.43),rgba(255,255,255,.12) 62%,rgba(21,19,15,.028))!important;
+  box-shadow:
+    0 18px 38px rgba(29,25,19,.072),
+    0 5px 13px rgba(29,25,19,.038),
+    inset 1px 1px rgba(255,255,255,.68),
+    inset -1px -1px rgba(22,20,16,.055)!important;
+  opacity:.94!important;
+  filter:drop-shadow(0 8px 11px rgba(29,25,19,.035));
+}
+
+/* Left panel gets a subtle lane-energy spine to make the region easier to locate
+   without recoloring the paper world. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before{
+  box-shadow:
+    -3px 0 0 rgba(var(--fx-rgb),.30),
+    0 20px 42px rgba(29,25,19,.078),
+    0 6px 15px rgba(29,25,19,.042),
+    inset 1px 1px rgba(255,255,255,.70),
+    inset -1px -1px rgba(22,20,16,.06)!important;
+}
+
+/* The two right-side modules should read as a stacked side rail, not loose copy. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  box-shadow:
+    3px 0 0 rgba(var(--fx-rgb),.14),
+    0 16px 34px rgba(29,25,19,.064),
+    0 5px 12px rgba(29,25,19,.035),
+    inset 1px 1px rgba(255,255,255,.66),
+    inset -1px -1px rgba(22,20,16,.055)!important;
+}
+
+/* 4) WHY NOW is the deepest inner plane. Keep the current halo/motion, but sharpen
+   the physical edge and add a stronger under-surface shadow. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before{
+  border:1px solid rgba(19,17,14,.28)!important;
+  outline:1px solid rgba(255,255,255,.50);
+  outline-offset:-2px;
+  filter:
+    drop-shadow(0 28px 24px rgba(28,24,18,.14))
+    drop-shadow(0 7px 9px rgba(28,24,18,.08));
+  background:
+    linear-gradient(116deg,
+      rgba(255,255,255,.58),
+      rgba(255,255,255,.25) 48%,
+      color-mix(in srgb,var(--fx-accent) 7%,rgba(255,255,255,.17)) 100%)!important;
+}
+
+/* A more legible vertical edge on the WHY NOW column. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
+  border-left:1px solid rgba(20,18,15,.24)!important;
+  border-right:1px solid rgba(20,18,15,.20)!important;
+  box-shadow:
+    inset 1px 0 rgba(255,255,255,.72),
+    inset -1px 0 rgba(255,255,255,.56);
+}
+
+/* 5) Collapsed rows become shallow rails. This strengthens separation between the
+   active chassis and the six surrounding signals without changing their size. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band:not([data-active="true"]){
+  border-bottom:1px solid rgba(22,20,16,.18)!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18),rgba(241,238,229,.78) 52%,rgba(24,21,17,.025))!important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.56),
+    inset 0 -1px rgba(22,20,16,.045),
+    0 4px 9px rgba(30,26,20,.022);
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-head:hover{
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.76),
+    inset 0 -1px rgba(22,20,16,.08),
+    0 12px 24px rgba(var(--fx-rgb),.11)!important;
+}
+
+/* 6) Border-energy moments. The effects remain coordinated: boundaries energize
+   when the stage opens or when a new signal is selected, then settle back. */
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-summary::before,
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-build::before{
+  animation:frBoundaryPanelIgnite .92s cubic-bezier(.16,1,.3,1) .16s both;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why::before{
+  animation:frBoundaryHeroIgnite 1.05s cubic-bezier(.16,1,.3,1) .08s both,
+            frStrongHeroMaterial 4.8s ease-in-out 1.13s infinite!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-you::before,
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-build::before{
+  animation:frBoundaryPanelSwitch .56s cubic-bezier(.16,1,.3,1) both;
+}
+
+/* Upgrade the existing breathing shadows so depth remains visible even at the
+   quiet point of the animation. */
+@keyframes frStrongFieldBreath{
+  0%,100%{
+    box-shadow:
+      0 64px 146px rgba(27,24,18,.17),
+      0 26px 62px rgba(27,24,18,.10),
+      0 8px 20px rgba(27,24,18,.055),
+      0 0 78px rgba(var(--fx-rgb),.09),
+      inset 0 1px rgba(255,255,255,.68),
+      inset 0 -2px rgba(11,11,11,.075)
+  }
+  50%{
+    box-shadow:
+      0 78px 166px rgba(27,24,18,.22),
+      0 32px 72px rgba(27,24,18,.13),
+      0 10px 24px rgba(27,24,18,.065),
+      0 0 126px rgba(var(--fx-rgb),.20),
+      inset 0 1px rgba(255,255,255,.76),
+      inset 0 -2px rgba(11,11,11,.08)
+  }
+}
+
+@keyframes frStrongHeroMaterial{
+  0%,100%{
+    transform:translate3d(0,0,0) scale(1);
+    box-shadow:
+      0 44px 88px rgba(29,25,18,.15),
+      0 13px 25px rgba(29,25,18,.075),
+      0 0 54px rgba(var(--fx-rgb),.09),
+      inset 1px 1px rgba(255,255,255,.68),
+      inset -1px -1px rgba(19,17,14,.075)
+  }
+  50%{
+    transform:translate3d(0,-4px,0) scale(1.008);
+    box-shadow:
+      0 58px 108px rgba(29,25,18,.19),
+      0 18px 34px rgba(29,25,18,.09),
+      0 0 88px rgba(var(--fx-rgb),.18),
+      inset 1px 1px rgba(255,255,255,.76),
+      inset -1px -1px rgba(19,17,14,.08)
+  }
+}
+
+@keyframes frBoundaryPanelIgnite{
+  0%{opacity:.32;filter:brightness(1.6) blur(2px);transform:translate3d(0,8px,0) scale(.985)}
+  48%{opacity:1;filter:brightness(1.16) blur(0);transform:translate3d(0,-2px,0) scale(1.006)}
+  100%{opacity:.94;filter:none;transform:none}
+}
+@keyframes frBoundaryHeroIgnite{
+  0%{opacity:.28;filter:brightness(1.7) blur(4px) drop-shadow(0 6px 6px rgba(28,24,18,.04));transform:translate3d(0,18px,0) scale(.965)}
+  46%{opacity:1;filter:brightness(1.18) blur(0) drop-shadow(0 42px 30px rgba(28,24,18,.18));transform:translate3d(0,-5px,0) scale(1.012)}
+  100%{opacity:.78;filter:drop-shadow(0 28px 24px rgba(28,24,18,.14)) drop-shadow(0 7px 9px rgba(28,24,18,.08));transform:none}
+}
+@keyframes frBoundaryPanelSwitch{
+  0%{filter:brightness(1.65);transform:translate3d(0,5px,0) scale(.99)}
+  45%{filter:brightness(1.12);transform:translate3d(0,-2px,0) scale(1.008)}
+  100%{filter:none;transform:none}
+}
+
+@media(max-width:1180px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+    background-image:
+      linear-gradient(90deg,
+        transparent 0,
+        transparent calc(24% - 2px),
+        rgba(24,21,17,.10) calc(24% - 2px),
+        rgba(24,21,17,.24) calc(24% - 1px),
+        rgba(255,255,255,.68) 24%,
+        transparent calc(24% + 2px),
+        transparent calc(70% - 2px),
+        rgba(24,21,17,.10) calc(70% - 2px),
+        rgba(24,21,17,.24) calc(70% - 1px),
+        rgba(255,255,255,.68) 70%,
+        transparent calc(70% + 2px),
+        transparent 100%)!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-summary::before,
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-you::before,
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-build::before,
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why::before,
+  .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+  .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-you::before,
+  .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-build::before{
+    animation:none!important;
+  }
+}
