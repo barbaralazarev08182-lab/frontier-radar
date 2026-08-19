@@ -103,28 +103,29 @@ export function TodayEditorialIntelligencePreview({
   }, [selectedIndex, selectedSignal]);
 
   if (!selectedSignal) return null;
+  const activeSignal = selectedSignal;
 
   const rank = String(selectedIndex + 1).padStart(2, "0");
-  const lane = LANE_LABEL[selectedSignal.lane];
-  const tags = selectedSignal.tags.slice(0, 4);
+  const lane = LANE_LABEL[activeSignal.lane];
+  const tags = activeSignal.tags.slice(0, 4);
 
   function openProject() {
-    trackFeedback(selectedSignal.id, "open_detail", undefined, {
-      ...selectedSignal.metadata,
+    trackFeedback(activeSignal.id, "open_detail", undefined, {
+      ...activeSignal.metadata,
       rank: selectedIndex + 1,
     });
-    router.push(projectPath(selectedSignal));
+    router.push(projectPath(activeSignal));
   }
 
   function trackSource() {
-    trackFeedback(selectedSignal.id, "open_source", undefined, {
-      ...selectedSignal.metadata,
+    trackFeedback(activeSignal.id, "open_source", undefined, {
+      ...activeSignal.metadata,
       rank: selectedIndex + 1,
     });
   }
 
   return (
-    <div className={styles.viewport} data-lane={selectedSignal.lane}>
+    <div className={styles.viewport} data-lane={activeSignal.lane}>
       <div className={styles.paperGrid} aria-hidden="true" />
       <header className={styles.commandBar}>
         <div className={styles.commandLead}>
@@ -166,29 +167,29 @@ export function TodayEditorialIntelligencePreview({
               <div>
                 <span className={styles.rank}>{rank}</span>
                 <span className={styles.lane}>{lane}</span>
-                <span>{sourceLabel(selectedSignal.source)}</span>
-                <span>{selectedSignal.contentType.toUpperCase()}</span>
+                <span>{sourceLabel(activeSignal.source)}</span>
+                <span>{activeSignal.contentType.toUpperCase()}</span>
               </div>
               <div className={styles.scoreBlock}>
                 <span>DISCOVERY SCORE</span>
-                <strong>{scoreLabel(selectedSignal.score)}</strong>
+                <strong>{scoreLabel(activeSignal.score)}</strong>
               </div>
             </div>
 
             <div className={styles.titleBlock}>
               <span className={styles.sectionLabel}>ACTIVE SIGNAL</span>
-              <h2>{selectedSignal.title}</h2>
-              <p>{selectedSignal.summary}</p>
+              <h2>{activeSignal.title}</h2>
+              <p>{activeSignal.summary}</p>
             </div>
 
             <div className={styles.intelligenceGrid}>
               <article>
                 <span className={styles.sectionLabel}>THE SIGNAL</span>
-                <p>{selectedSignal.summary}</p>
+                <p>{activeSignal.summary}</p>
               </article>
               <article className={styles.whyNow}>
                 <span className={styles.sectionLabel}>WHY NOW / {rank}</span>
-                <p>{selectedSignal.whyNow ?? "This signal is fresh, relevant to the current field, and still early enough to be useful before it becomes obvious."}</p>
+                <p>{activeSignal.whyNow ?? "This signal is fresh, relevant to the current field, and still early enough to be useful before it becomes obvious."}</p>
               </article>
             </div>
 
@@ -198,7 +199,7 @@ export function TodayEditorialIntelligencePreview({
               </button>
               <a
                 className={styles.secondaryAction}
-                href={selectedSignal.canonicalUrl}
+                href={activeSignal.canonicalUrl}
                 target="_blank"
                 rel="noreferrer"
                 onClick={trackSource}
@@ -206,9 +207,9 @@ export function TodayEditorialIntelligencePreview({
                 SOURCE ↗
               </a>
               <div className={styles.actionEvidence}>
-                <span>{selectedSignal.hasCode ? "CODE" : "NO CODE"}</span>
-                <span>{selectedSignal.hasDemo ? "DEMO" : "NO DEMO"}</span>
-                <span>{selectedSignal.sourceCount} SOURCE{selectedSignal.sourceCount === 1 ? "" : "S"}</span>
+                <span>{activeSignal.hasCode ? "CODE" : "NO CODE"}</span>
+                <span>{activeSignal.hasDemo ? "DEMO" : "NO DEMO"}</span>
+                <span>{activeSignal.sourceCount} SOURCE{activeSignal.sourceCount === 1 ? "" : "S"}</span>
               </div>
             </div>
           </section>
@@ -222,21 +223,21 @@ export function TodayEditorialIntelligencePreview({
 
           <section className={styles.railSection}>
             <span className={styles.sectionLabel}>WHY YOU</span>
-            <p>{selectedSignal.whyYou ?? "This signal sits close to the themes you have been exploring, with enough practical surface area to be worth opening."}</p>
+            <p>{activeSignal.whyYou ?? "This signal sits close to the themes you have been exploring, with enough practical surface area to be worth opening."}</p>
           </section>
 
           <section className={styles.railSection}>
             <span className={styles.sectionLabel}>BUILD DIRECTION</span>
-            <p className={styles.buildDirection}>{selectedSignal.buildIdea ?? "Study the interaction pattern, identify the smallest reusable primitive, and test whether it can become a sharper tool or workflow."}</p>
+            <p className={styles.buildDirection}>{activeSignal.buildIdea ?? "Study the interaction pattern, identify the smallest reusable primitive, and test whether it can become a sharper tool or workflow."}</p>
           </section>
 
           <section className={styles.railSection}>
             <span className={styles.sectionLabel}>SIGNAL PROFILE</span>
             <div className={styles.profileRows}>
               <div><span>LANE</span><strong>{lane}</strong></div>
-              <div><span>SOURCE</span><strong>{sourceLabel(selectedSignal.source)}</strong></div>
-              <div><span>AUTHOR</span><strong>{selectedSignal.author ?? "—"}</strong></div>
-              <div><span>METRIC</span><strong>{selectedSignal.metricsLabel?.toUpperCase() ?? "—"}</strong></div>
+              <div><span>SOURCE</span><strong>{sourceLabel(activeSignal.source)}</strong></div>
+              <div><span>AUTHOR</span><strong>{activeSignal.author ?? "—"}</strong></div>
+              <div><span>METRIC</span><strong>{activeSignal.metricsLabel?.toUpperCase() ?? "—"}</strong></div>
             </div>
             {tags.length > 0 ? (
               <div className={styles.tags}>
