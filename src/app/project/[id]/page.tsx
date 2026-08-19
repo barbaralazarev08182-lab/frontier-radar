@@ -337,7 +337,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               >
                 OPEN PROJECT <ArrowUpRight aria-hidden />
               </TrackedSourceLink>
-              <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`} className="pr-secondary-action">SEND TO IDEA LAB</Link>
             </div>
           </div>
 
@@ -452,7 +451,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   <span className="pr-row-number">{String(index + 1).padStart(2, "0")}</span>
                   <strong>{index === 0 ? "USE IT" : index === 1 ? "EXTEND IT" : index === 2 ? "COMBINE IT" : "BUILD DIRECTION"}</strong>
                   <p>{idea}</p>
-                  <Link href={`/idea-lab?from=${encodeURIComponent(item.id)}`}>IDEA LAB ↗</Link>
                 </article>
               ))}
             </div>

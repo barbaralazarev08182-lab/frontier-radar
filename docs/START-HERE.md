@@ -1,7 +1,7 @@
 # Frontier Radar — START HERE
 
-> 更新时间：**2026-08-12**  
-> 当前状态：**核心产品链已形成；Explore / Saved / Idea Lab 等接受面保持冻结；Gate 11 — Production Integrity Hardening 已完成全部实现、Production 验证与 main CI 固化，本次只同步最终 closure 文档。**
+> 更新时间：**2026-08-19**  
+> 当前状态：**本阶段进入 closure。Today / Explore / Project / Radar / Saved 为接受并保护的核心面；Idea Lab 已作为产品面退役；Gate 11 Production Integrity Hardening 与 restoration protocol 已完成。**
 
 ---
 
@@ -19,11 +19,11 @@
 7. older checkpoints and historical PR notes
 ```
 
-当前 `main`（最终文档 PR 建立前）：
+Phase-closure base（Idea Lab retirement PR 建立前）：
 
 ```text
-3fe4977b72084b0dca9232e69b84151ae7a1e205
-Gate 11D: lock Today Project Idea Lab handoffs in CI
+b76472560008ce85ab70f2d0776dd900287b7697
+Document restoration recovery protocol (#64)
 ```
 
 Production：
@@ -42,7 +42,7 @@ status: ACTIVE_HEALTHY
 Postgres: 17.6.1
 ```
 
-旧 `proto/*` 只用于设计考古，不是新任务默认基线。
+旧 `proto/*` 只用于设计考古，不是新任务默认基线。2026-08-12 checkpoint 中的 Idea Lab 内容是当时状态的历史记录，不应被当作当前产品入口。
 
 ---
 
@@ -61,14 +61,16 @@ candidate pool
 → Today’s 7
 → Signal Weave
 → Project Intelligence
-→ Saved / Idea Lab / Build
+→ Saved / Build
 ```
 
 Global nav：
 
 ```text
-TODAY / EXPLORE / SAVED / IDEA LAB
+TODAY / EXPLORE / RADAR / SAVED
 ```
+
+Idea Lab 已在 phase closure 中退役：没有 `/idea-lab` 产品路由、没有全局导航入口，也没有 Project → Idea Lab handoff。
 
 设计语言：
 
@@ -122,6 +124,8 @@ Signal Weave：
 
 不要随手重做已接受的 visual / transition，尤其 03 Interrogation。
 
+Project 继续保留 traceable source links 与 Build directions；旧的 `SEND TO IDEA LAB` / `IDEA LAB ↗` 已退役，不应在未重新开 scope 的情况下恢复。
+
 ### Explore — FROZEN
 
 ```text
@@ -137,6 +141,10 @@ OPEN INTELLIGENCE
 
 `MORE LIKE THIS` 是 personalization signal，不等于 SAVE。
 
+### Radar — FROZEN
+
+Radar 是已接受面。固定视口与 sticky navigation 几何均属于当前保护状态。
+
 ### Saved — VISUAL PASS + INTERACTION PASS + FROZEN
 
 ```text
@@ -146,48 +154,33 @@ frontier_radar_saved_items_v1
 src/lib/saved/browser.ts
 ```
 
-### Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
+Saved 保留本地 export / import backup controls。
+
+### Idea Lab — RETIRED
 
 ```text
-Signal-to-Direction Workbench
-Saved Signal → Pinned Signal → Working Note → Personal Direction
-SEED / SHAPING / BUILDING
-browser localStorage
-frontier_radar_ideas_v1
-src/lib/ideas/browser.ts
+/idea-lab                         REMOVED
+Project → Idea Lab handoff        REMOVED
+Idea Lab global-nav entry         REMOVED
+Idea Lab route UI/styles          REMOVED
+Gate 10 active handoff coverage   RETIRED
 ```
 
-Binding：
-
-```text
-activeIdea.sourceItemId === selectedSource.id
-```
-
-Exact-source behavior：
-
-- source in Saved → select exact source
-- removed from Saved but Idea exists → preserve orphan Idea
-- missing and no Idea → `SOURCE NOT IN SAVED`
-- no auto-save
-- no fallback
+旧 `frontier_radar_ideas_v1` 本地记录不再作为产品面暴露。为避免退役动作静默销毁用户本地数据，personal-memory v1 的兼容层可以继续携带已有 legacy records。
 
 ---
 
-## 4. Gate 9 / Gate 10 handoff contract
+## 4. Handoff contract after phase closure
 
-Gate 9 Today → Project：
+Gate 9 Today → Project 仍是当前合同：
 
 ```text
 signal.id → /project/<same-id>
 ```
 
-Gate 10 Project → Idea Lab：
+该 exact-ID contract 继续由 `src/lib/feed/handoff-regression.test.ts` 保护并运行在现有 `npm test` 中。
 
-```text
-item.id → /idea-lab?from=<same-id>
-```
-
-These exact-ID contracts are now protected by `src/lib/feed/handoff-regression.test.ts` and run inside the existing `npm test` main-CI step.
+Gate 10 Project → Idea Lab 是**历史合同**，随 Idea Lab 产品面退役而停止作为 active CI contract。历史 checkpoint / PR 记录保留用于考古，不代表当前 route。
 
 Do not convert structural/machine evidence into visual PASS without browser evidence.
 
@@ -195,7 +188,7 @@ Do not convert structural/machine evidence into visual PASS without browser evid
 
 ## 5. Gate 11 — Production Integrity Hardening — CLOSED
 
-Gate 11 did not redesign product surfaces. It hardened runtime/data boundaries and made critical handoffs regression-safe.
+Gate 11 did not redesign product surfaces. It hardened runtime/data boundaries and made critical handoffs regression-safe at the time it closed.
 
 ### 11A — Preview / Production Data Isolation — CLOSED
 
@@ -285,7 +278,7 @@ merge: 636a174b46fd3b04bd1c1f0c4ba77ed491a63459
 - probe rows removed
 - current fix requires no new `pg_cron` infrastructure
 
-### 11D — Permanent Gate 9 / Gate 10 Regression Coverage — CLOSED
+### 11D — Historical Gate 9 / Gate 10 Regression Coverage — CLOSED
 
 ```text
 src/lib/feed/handoff-regression.test.ts
@@ -294,14 +287,7 @@ merge: 3fe4977b72084b0dca9232e69b84151ae7a1e205
 CI #354 PASS
 ```
 
-Protected contracts：
-
-1. Today exact `signal.id` → Project
-2. Project exact `item.id` → Idea Lab `from`
-3. requested source cannot silently fallback
-4. orphan Idea remains bound to original `sourceItemId`
-
-The tests run inside existing `npm test`; no Playwright dependency, external API, Supabase secret, or Production write is required.
+At Gate 11 closure this protected four contracts, including Project → Idea Lab behavior. After Idea Lab retirement, only the still-live Today → Project exact-ID contract remains active; the retired Gate 10 assertions were removed rather than preserving tests for a route that no longer exists.
 
 ### Gate 11 security end state
 
@@ -317,13 +303,13 @@ The INFO findings are not a Gate 11 failure; they describe tables with RLS enabl
 
 ---
 
-## 6. Remaining product / data decisions
+## 6. Remaining future-phase decisions
 
-These are deferred follow-on work, not incomplete Gate 11 acceptance items.
+These are deferred future work, not incomplete acceptance items for this phase.
 
-### Gate 12 candidate — Personal Memory Durability
+### Personal Memory Durability
 
-Saved / Ideas are browser-local v1, not cross-device durable memory.
+Saved is browser-local v1, not cross-device durable memory.
 
 Before changing the frozen contract, explicitly choose：
 
@@ -332,7 +318,7 @@ A. browser-local + export / backup / import
 B. Supabase-synced personal state
 ```
 
-### Gate 13 candidate — Personalization Integrity
+### Personalization Integrity
 
 Current identity is browser visitor UUID, so profiles can fragment across browsers/devices. Future scope may cover durable identity, QA/test event quarantine, feedback abuse/rate integrity, and proof that More/Less meaningfully changes ranking.
 
@@ -372,3 +358,4 @@ Red lines：
 - destructive cleanup requires explicit approval
 - machine / runtime / production / visual PASS must remain separate claims
 - clearly label anything unverified or tool-blocked
+- restoration follows README restoration/recovery protocol; code equality is not visual equality

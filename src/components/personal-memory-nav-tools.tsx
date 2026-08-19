@@ -63,7 +63,7 @@ export function PersonalMemoryNavTools() {
       URL.revokeObjectURL(href);
       setFeedback({
         kind: "success",
-        text: `EXPORTED ${backup.savedItems.length} SAVED · ${backup.ideas.length} IDEAS`,
+        text: `EXPORTED ${backup.savedItems.length} SAVED`,
       });
     } catch (error) {
       setFeedback({
@@ -103,7 +103,7 @@ export function PersonalMemoryNavTools() {
       const next = importPersonalMemoryBackupJson(pending.raw, mode);
       setFeedback({
         kind: "success",
-        text: `${mode.toUpperCase()} COMPLETE · ${next.savedItems.length} SAVED · ${next.ideas.length} IDEAS`,
+        text: `${mode.toUpperCase()} COMPLETE · ${next.savedItems.length} SAVED`,
       });
       setPending(null);
       setReplaceArmed(false);
@@ -175,14 +175,10 @@ export function PersonalMemoryNavTools() {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 border-b border-white/10 font-mono uppercase tracking-[0.1em]">
+          <div className="grid grid-cols-2 border-b border-white/10 font-mono uppercase tracking-[0.1em]">
             <div className="py-2.5 pr-2">
               <span className="block text-[7px] text-white/35">Saved</span>
               <strong className="mt-1 block text-sm text-white">{pending.backup.savedItems.length}</strong>
-            </div>
-            <div className="border-l border-white/10 px-2 py-2.5">
-              <span className="block text-[7px] text-white/35">Ideas</span>
-              <strong className="mt-1 block text-sm text-white">{pending.backup.ideas.length}</strong>
             </div>
             <div className="border-l border-white/10 pl-2 py-2.5">
               <span className="block text-[7px] text-white/35">Version</span>
