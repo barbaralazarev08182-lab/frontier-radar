@@ -1,0 +1,335 @@
+/* Saved visual Gate v3 — one Archive Field.
+   The selected signal and its dossier are one connected instrument, not two cards. */
+
+@media (min-width: 781px) {
+  .fr-archive-stage {
+    min-height: clamp(42rem, 73vh, 51rem) !important;
+    isolation: isolate;
+  }
+
+  .fr-archive-stage::before {
+    content: "ARCHIVE FIELD / SIGNAL MEMORY" !important;
+    left: 4.2% !important;
+    top: 7.8% !important;
+  }
+
+  .fr-archive-stage::after {
+    content: "SELECTED SIGNAL / EXPANDED INTELLIGENCE" !important;
+    right: 4.2% !important;
+    top: 7.8% !important;
+    color: color-mix(in srgb, var(--signal-accent) 72%, rgba(240,237,230,.4)) !important;
+  }
+
+  .fr-archive-stage > div:first-child {
+    inset: 5.5% 3.5% 8.5% !important;
+    opacity: .28 !important;
+    border-top: 1px solid color-mix(in srgb, var(--signal-accent) 22%, transparent) !important;
+    border-bottom: 1px solid rgba(240,237,230,.1) !important;
+    background-size: 22px 22px !important;
+  }
+
+  .fr-archive-stage > div:nth-child(2) {
+    left: 48% !important;
+    right: 2% !important;
+    bottom: 10% !important;
+    height: 70% !important;
+    opacity: .42 !important;
+    filter: blur(72px) !important;
+  }
+
+  /* Selected trace: active bar → expanded dossier. */
+  .fr-active-trace {
+    position: absolute;
+    z-index: 18;
+    left: 46.5%;
+    right: 21.8%;
+    top: 53.5%;
+    height: 1px;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--signal-accent) 10%, transparent),
+        color-mix(in srgb, var(--signal-accent) 86%, transparent) 32%,
+        var(--signal-accent) 82%,
+        color-mix(in srgb, var(--signal-accent) 18%, transparent)
+      );
+    box-shadow: 0 0 1.1rem color-mix(in srgb, var(--signal-accent) 18%, transparent);
+    transform-origin: right center;
+    animation: frSavedTraceIn 520ms cubic-bezier(.16,.84,.2,1) both;
+  }
+
+  .fr-active-trace::before {
+    content: "SELECTED";
+    position: absolute;
+    left: .15rem;
+    top: -.95rem;
+    color: color-mix(in srgb, var(--signal-accent) 72%, rgba(240,237,230,.45));
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: .4rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+  }
+
+  .fr-active-trace::after {
+    content: "";
+    position: absolute;
+    right: -.24rem;
+    top: 50%;
+    width: .46rem;
+    height: .46rem;
+    border: 1px solid var(--signal-accent);
+    border-radius: 50%;
+    background: #080d14;
+    box-shadow:
+      0 0 0 .22rem color-mix(in srgb, var(--signal-accent) 8%, transparent),
+      0 0 1rem color-mix(in srgb, var(--signal-accent) 38%, transparent);
+    transform: translateY(-50%);
+  }
+
+  /* Dossier is now an open research plane, not a boxed card. */
+  .fr-featured-book {
+    z-index: 20 !important;
+    left: 4.2% !important;
+    right: auto !important;
+    bottom: 10.5% !important;
+    width: min(57rem, 58vw) !important;
+    min-width: 43rem !important;
+    height: min(35rem, 58vh) !important;
+    min-height: 30rem !important;
+    padding: 2.25rem 4.4rem 1.85rem 2.9rem !important;
+    border: 0 !important;
+    border-left: 3px solid var(--signal-accent) !important;
+    border-top: 1px solid color-mix(in srgb, var(--signal-accent) 36%, transparent) !important;
+    border-bottom: 1px solid rgba(240,237,230,.12) !important;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(14, 20, 30, .94) 0%,
+        rgba(11, 16, 24, .88) 62%,
+        rgba(8, 12, 19, .54) 84%,
+        rgba(8, 12, 19, 0) 100%
+      ) !important;
+    box-shadow:
+      -1.8rem 2rem 6rem rgba(0,0,0,.18),
+      0 0 5rem color-mix(in srgb, var(--signal-accent) 4%, transparent) !important;
+    overflow: visible !important;
+    transform: none !important;
+    clip-path: polygon(0 0, 93% 0, 100% 13%, 100% 100%, 0 100%);
+  }
+
+  .fr-featured-book::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none;
+    opacity: .5 !important;
+    color: transparent !important;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--signal-accent) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(rgba(240,237,230,.025) 1px, transparent 1px) !important;
+    background-size: 58px 58px, 58px 58px !important;
+    mask-image: linear-gradient(90deg, #000 0 58%, transparent 91%) !important;
+    writing-mode: initial !important;
+  }
+
+  .fr-featured-book::after {
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 3px !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    position: relative;
+    width: auto !important;
+    max-width: 67%;
+    padding: 0 0 .72rem !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--signal-accent) 42%, transparent) !important;
+    font-size: .5rem !important;
+  }
+
+  /* Existing real metadata becomes four structural coordinates. */
+  .fr-featured-book > div:nth-of-type(2) {
+    position: relative;
+    z-index: 2;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 !important;
+    width: min(39rem, 78%);
+    max-width: none !important;
+    margin-top: 1.05rem !important;
+    padding: 0 !important;
+    border-top: 1px solid rgba(240,237,230,.1);
+    border-bottom: 1px solid rgba(240,237,230,.08);
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    position: static !important;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    padding: .55rem .72rem .45rem 0;
+    border-right: 1px solid rgba(240,237,230,.08);
+    color: rgba(240,237,230,.42) !important;
+    font-size: .45rem !important;
+    font-weight: 760;
+    letter-spacing: .1em !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span + span {
+    padding-left: .72rem;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span:last-child {
+    border-right: 0;
+    color: var(--signal-accent) !important;
+    font-size: .62rem !important;
+    font-weight: 900;
+  }
+
+  .fr-featured-book h1 {
+    position: relative;
+    z-index: 2;
+    max-width: 78%;
+    margin: 1.65rem 0 .85rem !important;
+    font-size: clamp(3.8rem, 6.2vw, 7.4rem) !important;
+    line-height: .78 !important;
+    letter-spacing: -.075em !important;
+    font-weight: 610 !important;
+  }
+
+  .fr-featured-book p {
+    position: relative;
+    z-index: 2;
+    width: min(40rem, 72%);
+    max-width: none !important;
+    color: rgba(240,237,230,.6) !important;
+    font-size: .98rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    position: relative;
+    z-index: 2;
+    width: min(40rem, 72%);
+    margin-top: 1.15rem !important;
+    padding-top: .72rem;
+    border-top: 1px solid rgba(240,237,230,.07);
+  }
+
+  .fr-featured-book > div:nth-of-type(3) span {
+    border-color: color-mix(in srgb, var(--signal-accent) 22%, rgba(240,237,230,.08)) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    position: relative;
+    z-index: 2;
+    width: min(40rem, 72%);
+    margin-top: auto;
+    padding-top: 1rem !important;
+    border-top: 1px solid rgba(240,237,230,.1) !important;
+  }
+
+  .fr-featured-book-next,
+  .fr-featured-book-prev,
+  .fr-featured-book-direct {
+    animation: frSavedOpenPlaneIn 460ms cubic-bezier(.16,.84,.2,1) both !important;
+  }
+
+  /* Signal skyline overlaps the dossier edge to form one field. */
+  .fr-bookshelf {
+    z-index: 12 !important;
+    left: 55.5% !important;
+    right: 3.6% !important;
+    bottom: 10.5% !important;
+    height: 66% !important;
+    overflow: visible !important;
+  }
+
+  .fr-bookshelf::before {
+    top: 46% !important;
+    animation-duration: 7.6s !important;
+    opacity: .62 !important;
+  }
+
+  .fr-book-row::after {
+    right: 0 !important;
+    bottom: -1.4rem !important;
+    content: "SCORE HEIGHT / SOURCE HUE / ARCHIVE ORDER" !important;
+  }
+
+  .fr-shelf-book {
+    width: clamp(3.15rem, 3.75vw, 4.25rem) !important;
+    min-height: 13rem !important;
+    border-left-width: 1px !important;
+    border-top-width: 3px !important;
+    backdrop-filter: blur(2px);
+  }
+
+  .fr-shelf-book-active {
+    z-index: 17 !important;
+    width: clamp(4.2rem, 4.8vw, 5.25rem) !important;
+    opacity: 1 !important;
+    border-left-width: 2px !important;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--signal-accent) 14%, transparent),
+      0 0 3.2rem color-mix(in srgb, var(--signal-accent) 16%, transparent) !important;
+  }
+
+  .fr-shelf-book-active::before {
+    background: color-mix(in srgb, var(--signal-accent) 48%, transparent) !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    color: rgba(255,255,255,.92) !important;
+    font-weight: 720 !important;
+  }
+
+  .fr-shelf-book-search-dim {
+    opacity: .06 !important;
+  }
+
+  /* Controls tuck into the shared field. */
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    left: 4.2% !important;
+    width: min(32rem, 40vw) !important;
+  }
+
+  .fr-archive-rail {
+    z-index: 30 !important;
+    width: min(46rem, 48vw) !important;
+    margin: -1.6rem 3.6% 1.45rem auto !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 4.2% !important;
+    bottom: 5% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 3.6% !important;
+    bottom: 5% !important;
+  }
+}
+
+@keyframes frSavedTraceIn {
+  0% { opacity: 0; transform: scaleX(.08); }
+  55% { opacity: .9; }
+  100% { opacity: 1; transform: scaleX(1); }
+}
+
+@keyframes frSavedOpenPlaneIn {
+  0% { opacity: .2; transform: translateX(-1.5rem); filter: blur(3px); }
+  72% { opacity: 1; transform: translateX(.18rem); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-active-trace,
+  .fr-featured-book-next,
+  .fr-featured-book-prev,
+  .fr-featured-book-direct {
+    animation: none !important;
+  }
+}

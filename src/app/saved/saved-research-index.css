@@ -1,0 +1,688 @@
+/* Saved visual language unification — dark Frontier Archive / Research Index.
+   This route-scoped layer removes the physical-book metaphor without changing
+   Saved persistence, search, sorting, navigation, or archive scale behavior. */
+
+.fr-saved-shell {
+  --saved-index-ink: #f0ede6;
+  --saved-index-muted: rgba(240, 237, 230, .52);
+  --saved-index-line: rgba(220, 226, 239, .14);
+  --saved-index-line-strong: rgba(220, 226, 239, .24);
+  --saved-index-cobalt: #7182ff;
+  --saved-index-warm: #d6b778;
+  background:
+    linear-gradient(90deg, rgba(113, 130, 255, .032) 1px, transparent 1px),
+    linear-gradient(rgba(113, 130, 255, .026) 1px, transparent 1px),
+    radial-gradient(circle at 74% 22%, rgba(83, 102, 255, .08), transparent 28%),
+    linear-gradient(180deg, #0a0f17 0%, #070b11 54%, #05080d 100%) !important;
+  background-size: 72px 72px, 72px 72px, auto, auto !important;
+}
+
+.fr-saved-shell::after {
+  opacity: .4 !important;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.32), transparent 11% 89%, rgba(0,0,0,.36)),
+    linear-gradient(180deg, transparent 74%, rgba(0,0,0,.2)) !important;
+}
+
+/* Header becomes a flat status band instead of a physical archive plaque. */
+.fr-saved-shell > div:first-child {
+  border-bottom: 1px solid var(--saved-index-line);
+  padding-bottom: 1.15rem !important;
+}
+
+.fr-saved-shell > div:first-child > div:first-child {
+  gap: .42rem !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+  width: min(34rem, 48vw) !important;
+  min-height: 4.2rem !important;
+  grid-template-columns: 3.65rem minmax(0, 1fr) auto !important;
+  border: 1px solid var(--saved-index-line-strong) !important;
+  outline: 0 !important;
+  color: var(--saved-index-ink) !important;
+  background: rgba(10, 15, 23, .78) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(12px);
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child {
+  padding: .72rem .65rem !important;
+  border-right: 1px solid var(--saved-index-line-strong) !important;
+  background: rgba(113, 130, 255, .075) !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child i {
+  width: 2px !important;
+  background: var(--saved-index-cobalt) !important;
+  transform: none !important;
+}
+
+.fr-archive-panel-copy span {
+  color: var(--saved-index-cobalt) !important;
+  font-size: .52rem !important;
+  letter-spacing: .13em !important;
+}
+
+.fr-archive-panel-copy strong {
+  color: var(--saved-index-ink) !important;
+  font-size: .78rem !important;
+  font-weight: 680 !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > span:last-child {
+  color: rgba(113, 130, 255, .55) !important;
+  font-size: .58rem !important;
+}
+
+/* Search becomes an editorial instrument line instead of floating glass. */
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+  top: clamp(7.5rem, 11vh, 8.6rem) !important;
+  left: 4.5% !important;
+  width: min(25rem, 38vw);
+  grid-template-columns: 1rem minmax(0, 1fr) 1.6rem !important;
+  min-height: 2.55rem !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--saved-index-line-strong) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) > svg {
+  color: var(--saved-index-cobalt) !important;
+}
+
+.fr-search-dock-active {
+  border-color: var(--saved-index-cobalt) !important;
+  box-shadow: none !important;
+}
+
+/* Main archive field: flat coordinate field, no perspective. */
+.fr-archive-stage {
+  min-height: clamp(39rem, 70vh, 47rem) !important;
+  margin-top: 0 !important;
+  perspective: none !important;
+  transform-style: flat !important;
+  overflow: hidden !important;
+}
+
+.fr-archive-stage::before {
+  content: "SIGNAL INDEX / ARCHIVE POSITION";
+  position: absolute;
+  z-index: 8;
+  left: 4.5%;
+  top: 18.5%;
+  color: rgba(240, 237, 230, .3);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .48rem;
+  font-weight: 740;
+  letter-spacing: .14em;
+}
+
+.fr-archive-stage::after {
+  content: "01 / PRIVATE FRONTIER ARCHIVE";
+  position: absolute;
+  z-index: 8;
+  right: 4.5%;
+  top: 18.5%;
+  color: rgba(113, 130, 255, .5);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .48rem;
+  font-weight: 740;
+  letter-spacing: .14em;
+}
+
+.fr-archive-stage > div:first-child {
+  inset: 13% 4.5% 12% !important;
+  opacity: .22 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--saved-index-line) !important;
+  border-bottom: 1px solid var(--saved-index-line) !important;
+  background-size: 36px 36px !important;
+  box-shadow: none !important;
+}
+
+.fr-archive-stage > div:nth-child(2) {
+  left: 26% !important;
+  right: 26% !important;
+  bottom: 16% !important;
+  height: 48% !important;
+  opacity: .15 !important;
+  filter: blur(70px) !important;
+  background: radial-gradient(circle at 50% 50%, rgba(92, 109, 255, .24), transparent 68%) !important;
+}
+
+/* Existing book nodes become flat signal-index strips. */
+.fr-bookshelf {
+  left: 4.5% !important;
+  right: 4.5% !important;
+  bottom: 12% !important;
+  height: 54% !important;
+  display: block !important;
+  transform-style: flat !important;
+  overflow: visible !important;
+}
+
+.fr-book-row {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.fr-book-row::before {
+  content: "";
+  position: absolute;
+  left: 1%;
+  right: 1%;
+  bottom: 0;
+  height: 1px;
+  background: var(--saved-index-line-strong);
+}
+
+.fr-shelf-book {
+  width: clamp(2.15rem, 2.55vw, 2.85rem) !important;
+  min-width: 0 !important;
+  height: 70% !important;
+  min-height: 10rem;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-left: 1px solid rgba(240, 237, 230, .12) !important;
+  border-right: 1px solid rgba(240, 237, 230, .06) !important;
+  border-top: 2px solid rgba(113, 130, 255, .42) !important;
+  border-radius: 0 !important;
+  color: rgba(240, 237, 230, .64) !important;
+  background:
+    linear-gradient(180deg, rgba(113, 130, 255, .08), rgba(255,255,255,.016) 32%, rgba(255,255,255,.006)) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: translateX(calc(-50% + var(--book-x, 0rem))) !important;
+  transform-origin: bottom center !important;
+  transition:
+    transform 420ms cubic-bezier(.16,.84,.2,1),
+    opacity 220ms ease,
+    background 220ms ease,
+    border-color 220ms ease !important;
+  transition-delay: var(--book-delay, 0ms) !important;
+}
+
+.fr-shelf-book:nth-child(3n + 1) { height: 61% !important; }
+.fr-shelf-book:nth-child(3n + 2) { height: 76% !important; }
+.fr-shelf-book:nth-child(5n) { height: 66% !important; }
+
+.fr-shelf-book::before {
+  content: "";
+  position: absolute;
+  left: .4rem;
+  right: .4rem;
+  bottom: 2.1rem;
+  height: 1px;
+  background: rgba(240, 237, 230, .12);
+}
+
+.fr-shelf-book::after {
+  display: none !important;
+}
+
+.fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+  z-index: 14 !important;
+  filter: none !important;
+  border-top-color: var(--saved-index-cobalt) !important;
+  background:
+    linear-gradient(180deg, rgba(113, 130, 255, .18), rgba(113, 130, 255, .045) 42%, rgba(255,255,255,.012)) !important;
+  box-shadow: none !important;
+  transform:
+    translateX(calc(-50% + var(--book-x, 0rem)))
+    translateY(-.55rem) !important;
+}
+
+.fr-shelf-book-active {
+  z-index: 2 !important;
+  opacity: .12 !important;
+  filter: none !important;
+  border-top-color: var(--saved-index-warm) !important;
+  background: rgba(214, 183, 120, .03) !important;
+  transform: translateX(-50%) !important;
+}
+
+.fr-shelf-book-search-dim {
+  opacity: .07 !important;
+  filter: none !important;
+}
+
+.fr-shelf-book-search-hit:not(.fr-shelf-book-active) {
+  border-top-color: var(--saved-index-cobalt) !important;
+  box-shadow: none !important;
+}
+
+.fr-shelf-book > span:first-child {
+  top: .48rem !important;
+  left: .42rem !important;
+  color: var(--saved-index-cobalt) !important;
+  font-size: .45rem !important;
+}
+
+.fr-shelf-book > span:nth-child(2) {
+  inset: 1.7rem .34rem 2.55rem !important;
+  color: rgba(240, 237, 230, .7) !important;
+  font-family: ui-sans-serif, system-ui, sans-serif !important;
+  font-size: clamp(.64rem, .74vw, .78rem) !important;
+  font-weight: 620 !important;
+  line-height: .92 !important;
+  writing-mode: vertical-rl !important;
+  transform: rotate(180deg) !important;
+}
+
+.fr-shelf-book > span:last-child {
+  bottom: .56rem !important;
+  left: .36rem !important;
+  right: .36rem !important;
+  color: rgba(240, 237, 230, .28) !important;
+  font-size: .39rem !important;
+  letter-spacing: .08em !important;
+}
+
+.fr-bookshelf > div:last-child {
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -1px !important;
+  height: 1px !important;
+  border: 0 !important;
+  background: linear-gradient(90deg, transparent, rgba(113, 130, 255, .38) 18% 82%, transparent) !important;
+  box-shadow: none !important;
+}
+
+/* Selected signal becomes a flat research dossier. */
+.fr-featured-book {
+  --cover-bg: linear-gradient(180deg, rgba(17, 23, 33, .985), rgba(8, 12, 19, .985)) !important;
+  --cover-ink: var(--saved-index-ink) !important;
+  --cover-muted: var(--saved-index-muted) !important;
+  --cover-accent: var(--saved-index-cobalt) !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 10.5% !important;
+  width: min(36rem, 42vw) !important;
+  min-width: 28rem !important;
+  height: min(30rem, 49vh) !important;
+  min-height: 26rem !important;
+  padding: 2.05rem 2.2rem 1.75rem 2.45rem !important;
+  color: var(--saved-index-ink) !important;
+  border: 1px solid var(--saved-index-line-strong) !important;
+  border-left: 2px solid var(--saved-index-cobalt) !important;
+  border-radius: 0 !important;
+  background: var(--cover-bg) !important;
+  box-shadow: 0 1.5rem 4rem rgba(0,0,0,.22) !important;
+  transform: translateX(-50%) !important;
+  transform-origin: center !important;
+  animation: frSavedDossierIn 420ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+.fr-featured-book::before {
+  opacity: .34 !important;
+  background:
+    linear-gradient(90deg, rgba(113, 130, 255, .05) 1px, transparent 1px),
+    linear-gradient(rgba(113, 130, 255, .035) 1px, transparent 1px) !important;
+  background-size: 42px 42px !important;
+  mix-blend-mode: normal !important;
+  mask-image: linear-gradient(135deg, #000 0 45%, transparent 78%);
+}
+
+.fr-featured-book::after {
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 2px !important;
+  background: var(--saved-index-cobalt) !important;
+  box-shadow: none !important;
+}
+
+.fr-featured-page-edge {
+  display: none !important;
+}
+
+.fr-featured-book-next,
+.fr-featured-book-prev,
+.fr-featured-book-direct {
+  animation: frSavedDossierIn 420ms cubic-bezier(.16,.84,.2,1) both !important;
+}
+
+.fr-featured-book:hover {
+  box-shadow: 0 1.5rem 4rem rgba(0,0,0,.22) !important;
+}
+
+.fr-featured-book > div:first-of-type {
+  width: fit-content !important;
+  padding: 0 0 .5rem !important;
+  color: var(--saved-index-cobalt) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--saved-index-line) !important;
+  background: transparent !important;
+  font-size: .48rem !important;
+  letter-spacing: .14em !important;
+}
+
+.fr-featured-book > div:nth-of-type(2) {
+  gap: .5rem 1rem !important;
+  margin-top: 1rem !important;
+  color: rgba(240, 237, 230, .38) !important;
+  font-size: .46rem !important;
+}
+
+.fr-featured-book h1 {
+  margin: 1.15rem 0 .82rem !important;
+  color: var(--saved-index-ink) !important;
+  font-size: clamp(2.4rem, 3.6vw, 4rem) !important;
+  line-height: .9 !important;
+  letter-spacing: -.055em !important;
+  font-weight: 590 !important;
+}
+
+.fr-featured-book p {
+  max-width: 32rem;
+  color: var(--saved-index-muted) !important;
+  font-size: .88rem !important;
+  line-height: 1.55 !important;
+}
+
+.fr-featured-book > div:nth-of-type(3) {
+  gap: .35rem !important;
+  margin-top: 1rem !important;
+}
+
+.fr-featured-book > div:nth-of-type(3) span {
+  padding: .22rem .36rem !important;
+  color: rgba(240, 237, 230, .44) !important;
+  border: 1px solid var(--saved-index-line) !important;
+  background: transparent !important;
+  font-size: .43rem !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) {
+  gap: .55rem !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid var(--saved-index-line);
+}
+
+.fr-featured-book > div:nth-of-type(4) > button,
+.fr-featured-book > div:nth-of-type(4) > a {
+  min-height: 2.25rem !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: .48rem !important;
+  letter-spacing: .1em !important;
+  transform: none !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > button {
+  border: 1px solid var(--saved-index-line-strong) !important;
+  color: rgba(240, 237, 230, .46) !important;
+  background: transparent !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > a {
+  border: 1px solid rgba(113, 130, 255, .68) !important;
+  color: #f5f4f0 !important;
+  background: rgba(83, 102, 255, .74) !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > button:hover,
+.fr-featured-book > div:nth-of-type(4) > a:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: none !important;
+}
+
+/* Navigation becomes a small instrument control pair. */
+.fr-archive-stage > button[aria-label="Previous saved signal"],
+.fr-archive-stage > button[aria-label="Next saved signal"] {
+  top: auto !important;
+  bottom: 5.5% !important;
+  width: 2.35rem !important;
+  height: 2.35rem !important;
+  border: 1px solid var(--saved-index-line-strong) !important;
+  background: rgba(8, 12, 18, .72) !important;
+  color: rgba(240, 237, 230, .52) !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+.fr-archive-stage > button[aria-label="Previous saved signal"] svg,
+.fr-archive-stage > button[aria-label="Next saved signal"] svg {
+  width: 1rem !important;
+  height: 1rem !important;
+  stroke-width: 1.8 !important;
+}
+
+.fr-archive-stage > button[aria-label="Previous saved signal"]:hover,
+.fr-archive-stage > button[aria-label="Next saved signal"]:hover {
+  color: var(--saved-index-ink) !important;
+  border-color: rgba(113, 130, 255, .5) !important;
+  transform: translateY(-1px) !important;
+}
+
+.fr-archive-stage > button[aria-label="Previous saved signal"] {
+  left: 4.5% !important;
+}
+
+.fr-archive-stage > button[aria-label="Next saved signal"] {
+  right: 4.5% !important;
+}
+
+/* Sorting rail adopts the same flat editorial grammar. */
+.fr-archive-rail {
+  width: min(54rem, calc(100% - 9rem)) !important;
+  min-height: 3.25rem !important;
+  margin: -.2rem auto 1.8rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--saved-index-line) !important;
+  border-bottom: 1px solid var(--saved-index-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.fr-archive-rail::before {
+  content: "ARCHIVE ORDER / 04" !important;
+  top: .25rem !important;
+  left: .1rem !important;
+  color: rgba(113, 130, 255, .44) !important;
+}
+
+.fr-archive-rail > button,
+.fr-archive-rail > span {
+  min-height: 3.25rem !important;
+  color: rgba(240, 237, 230, .4) !important;
+  font-size: .56rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.fr-archive-rail > button + button::before,
+.fr-archive-rail > span::before {
+  background: var(--saved-index-line) !important;
+}
+
+.fr-archive-rail > button:hover:not([aria-pressed="true"]) {
+  color: rgba(240, 237, 230, .82) !important;
+  background: rgba(255,255,255,.016) !important;
+}
+
+.fr-archive-rail > button[aria-pressed="true"] {
+  margin: 0 !important;
+  color: var(--saved-index-ink) !important;
+  border: 0 !important;
+  background: rgba(113, 130, 255, .065) !important;
+  box-shadow: inset 0 -2px var(--saved-index-cobalt) !important;
+}
+
+.fr-archive-rail > button[aria-pressed="true"]::after {
+  display: none !important;
+}
+
+/* Empty state uses archive slots, not ghost books. */
+.fr-saved-shell > div:has(> div > i) {
+  min-height: clamp(38rem, 68vh, 46rem) !important;
+}
+
+.fr-saved-shell > div:has(> div > i) > div:first-child {
+  inset: 10% 4.5% 16% !important;
+  opacity: .2 !important;
+  box-shadow: none !important;
+}
+
+.fr-saved-shell > div:has(> div > i) > div:nth-child(2) {
+  left: 12% !important;
+  right: 12% !important;
+  bottom: 17% !important;
+  height: 44% !important;
+  gap: 1px !important;
+  opacity: .2 !important;
+}
+
+.fr-saved-shell > div:has(> div > i) > div:nth-child(2) i {
+  width: clamp(2.2rem, 3vw, 3.6rem) !important;
+  border: 0 !important;
+  border-left: 1px dashed rgba(113, 130, 255, .32) !important;
+  border-top: 2px solid rgba(113, 130, 255, .22) !important;
+  background: rgba(113, 130, 255, .02) !important;
+  transform: none !important;
+}
+
+.fr-saved-shell > div:has(> div > i) > div:nth-child(3) {
+  left: 7% !important;
+  right: 7% !important;
+  bottom: 16% !important;
+  height: 1px !important;
+  border: 0 !important;
+  background: linear-gradient(90deg, transparent, rgba(113, 130, 255, .38) 18% 82%, transparent) !important;
+  box-shadow: none !important;
+}
+
+@keyframes frSavedDossierIn {
+  0% {
+    opacity: .18;
+    transform: translateX(calc(-50% + 1.1rem));
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%);
+    filter: blur(0);
+  }
+}
+
+@media (max-width: 1050px) {
+  .fr-featured-book {
+    width: min(34rem, 48vw) !important;
+    min-width: 26rem !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    width: 34vw;
+  }
+}
+
+@media (max-width: 780px) {
+  .fr-saved-shell > div:first-child {
+    padding-inline: 1rem !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    width: 100% !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: calc(100% - 2rem) !important;
+    margin: 1rem !important;
+  }
+
+  .fr-archive-stage {
+    min-height: 51rem !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after {
+    display: none;
+  }
+
+  .fr-archive-stage > div:first-child {
+    inset: 3% 1rem 5% !important;
+  }
+
+  .fr-bookshelf {
+    left: 1rem !important;
+    right: 1rem !important;
+    top: 4.5rem !important;
+    bottom: auto !important;
+    height: 16rem !important;
+    overflow: hidden !important;
+  }
+
+  .fr-shelf-book {
+    width: 2.35rem !important;
+    min-height: 6rem;
+  }
+
+  .fr-featured-book {
+    left: 1rem !important;
+    right: 1rem !important;
+    bottom: 4.8rem !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 27rem !important;
+    min-height: 0 !important;
+    padding: 1.75rem 1.4rem 1.4rem 1.65rem !important;
+    transform: none !important;
+  }
+
+  .fr-featured-book-next,
+  .fr-featured-book-prev,
+  .fr-featured-book-direct {
+    animation: frSavedDossierInMobile 380ms cubic-bezier(.16,.84,.2,1) both !important;
+  }
+
+  .fr-featured-book h1 {
+    font-size: clamp(2.15rem, 12vw, 3.2rem) !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"],
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    bottom: 1.4rem !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 1rem !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 1rem !important;
+  }
+
+  .fr-archive-rail {
+    width: calc(100% - 2rem) !important;
+    margin: .3rem 1rem 1.2rem !important;
+  }
+}
+
+@keyframes frSavedDossierInMobile {
+  0% { opacity: .18; transform: translateX(1rem); filter: blur(2px); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-shelf-book,
+  .fr-featured-book,
+  .fr-archive-stage > button,
+  .fr-archive-rail > button {
+    animation: none !important;
+    transition: none !important;
+  }
+}

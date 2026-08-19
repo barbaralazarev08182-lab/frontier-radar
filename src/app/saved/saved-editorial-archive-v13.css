@@ -1,0 +1,305 @@
+/* Saved V13 — readability + information-density pass.
+   Visual/data-presentation only. Background, source hue, score height,
+   Saved behavior and windowing remain unchanged. */
+
+@media (min-width: 781px) {
+  /* Utility typography: small is still legible. */
+  .fr-saved-shell > div:first-child > div:first-child span {
+    font-size: .58rem !important;
+    letter-spacing: .12em !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child strong {
+    font-size: .7rem !important;
+    letter-spacing: .12em !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    width: min(26rem, 31vw) !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+    font-size: .66rem !important;
+    letter-spacing: .09em !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) svg {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  .fr-archive-rail::before {
+    font-size: .49rem !important;
+    letter-spacing: .11em !important;
+  }
+
+  .fr-archive-rail > button {
+    padding-inline: .76rem !important;
+    font-size: .54rem !important;
+    letter-spacing: .09em !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after {
+    font-size: .5rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  /* Folio proportions remain long, but the interior is now deliberately occupied. */
+  .fr-featured-book {
+    top: 6.8% !important;
+    bottom: 6.8% !important;
+    width: min(42rem, 40.8vw) !important;
+    padding: 1.7rem 2.2rem 1.45rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background:
+      linear-gradient(102deg, rgba(255,255,255,.38), transparent 18%, transparent 79%, rgba(29,29,27,.032)),
+      linear-gradient(180deg, rgba(255,255,255,.08), transparent 16%, transparent 86%, rgba(29,29,27,.025)),
+      color-mix(in srgb, var(--source-soft) 90%, #f7f7f4) !important;
+    box-shadow:
+      0 1.8rem 4.4rem rgba(0,0,0,.29),
+      0 0 0 1px rgba(255,255,255,.28) inset,
+      inset 0 -1px rgba(29,29,27,.09) !important;
+  }
+
+  .fr-featured-book::before {
+    opacity: .5 !important;
+    background:
+      linear-gradient(90deg,
+        transparent 0 72.5%,
+        rgba(29,29,27,.045) 72.5% 72.62%,
+        transparent 72.62%),
+      linear-gradient(0deg,
+        transparent 0 77%,
+        rgba(29,29,27,.045) 77% 77.14%,
+        transparent 77.14%),
+      repeating-linear-gradient(0deg,
+        transparent 0 2.18rem,
+        rgba(29,29,27,.019) 2.18rem calc(2.18rem + 1px)),
+      repeating-linear-gradient(90deg,
+        rgba(29,29,27,.011) 0 1px,
+        transparent 1px 5.65rem) !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    font-size: .59rem !important;
+    letter-spacing: .12em !important;
+    padding-bottom: .55rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) {
+    display: grid !important;
+    grid-template-columns: .9fr .9fr 1.25fr 1fr !important;
+    margin-top: .68rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    min-height: 2.35rem !important;
+    padding: .48rem .62rem .42rem !important;
+    font-size: .57rem !important;
+    line-height: 1.15 !important;
+    letter-spacing: .075em !important;
+  }
+
+  .fr-featured-book h1 {
+    margin: 1rem 0 .42rem !important;
+    max-width: 96% !important;
+    font-size: clamp(2.65rem, 3.35vw, 4rem) !important;
+    line-height: .93 !important;
+    letter-spacing: -.055em !important;
+  }
+
+  .fr-featured-book p {
+    max-width: 94% !important;
+    margin-top: 0 !important;
+    font-size: clamp(.91rem, .96vw, 1.04rem) !important;
+    line-height: 1.52 !important;
+    letter-spacing: -.012em !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: .82rem !important;
+    padding-top: .62rem !important;
+    gap: .4rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) > span {
+    padding: .34rem .58rem !important;
+    font-size: .55rem !important;
+    line-height: 1 !important;
+    letter-spacing: .085em !important;
+  }
+
+  /* Real data, reorganized as the lower archive record instead of empty paper. */
+  .fr-featured-details {
+    position: relative !important;
+    z-index: 2 !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    margin-top: clamp(2.2rem, 5.4vh, 4.4rem) !important;
+    border-top: 1px solid rgba(29,29,27,.2) !important;
+    border-bottom: 1px solid rgba(29,29,27,.16) !important;
+  }
+
+  .fr-featured-details::before {
+    content: "RECORD DETAILS" !important;
+    position: absolute !important;
+    top: -1.28rem !important;
+    left: 0 !important;
+    color: rgba(29,29,27,.46) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: .49rem !important;
+    font-weight: 800 !important;
+    letter-spacing: .13em !important;
+  }
+
+  .fr-featured-details > div {
+    min-height: 4rem !important;
+    padding: .72rem .72rem .62rem !important;
+    border-right: 1px solid rgba(29,29,27,.12) !important;
+    border-bottom: 1px solid rgba(29,29,27,.11) !important;
+  }
+
+  .fr-featured-details > div:nth-child(3n) {
+    border-right: 0 !important;
+  }
+
+  .fr-featured-details > div:nth-child(n+4) {
+    border-bottom: 0 !important;
+  }
+
+  .fr-featured-details span,
+  .fr-featured-details strong {
+    display: block !important;
+  }
+
+  .fr-featured-details span {
+    color: rgba(29,29,27,.48) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: .47rem !important;
+    font-weight: 760 !important;
+    letter-spacing: .1em !important;
+  }
+
+  .fr-featured-details strong {
+    margin-top: .43rem !important;
+    overflow: hidden !important;
+    color: rgba(18,20,23,.84) !important;
+    font-size: .7rem !important;
+    font-weight: 760 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -.012em !important;
+    text-overflow: ellipsis !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    margin-top: auto !important;
+    padding-top: .95rem !important;
+    border-top: 0 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4)::before {
+    content: "ARCHIVE ACTIONS" !important;
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: .72rem !important;
+    padding-top: .7rem !important;
+    border-top: 1px solid rgba(29,29,27,.17) !important;
+    color: rgba(29,29,27,.48) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: .49rem !important;
+    font-weight: 800 !important;
+    letter-spacing: .13em !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) > button,
+  .fr-featured-book > div:nth-of-type(4) > a {
+    min-height: 2.5rem !important;
+    padding-inline: .82rem !important;
+    font-size: .58rem !important;
+    letter-spacing: .065em !important;
+  }
+
+  /* Archive captions are always readable, evenly sized, and attached to stems. */
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    top: -.12rem !important;
+    left: .96rem !important;
+    width: 5.45rem !important;
+    height: 2.62rem !important;
+    padding: .34rem .4rem .28rem !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    overflow: hidden !important;
+    color: rgba(249,251,254,.84) !important;
+    background: rgba(12,19,30,.62) !important;
+    border: 0 !important;
+    border-left: 2px solid color-mix(in srgb, var(--source-accent) 80%, #fff) !important;
+    box-shadow: 0 .4rem 1.1rem rgba(0,0,0,.12) !important;
+    font-size: .61rem !important;
+    font-weight: 650 !important;
+    line-height: 1.16 !important;
+    letter-spacing: -.012em !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):hover > span:nth-child(2) {
+    color: #fff !important;
+    background: rgba(13,21,33,.82) !important;
+  }
+
+  .fr-shelf-book > span:first-child {
+    top: .46rem !important;
+    font-size: .43rem !important;
+  }
+
+  .fr-shelf-book > span:last-child {
+    font-size: .4rem !important;
+    letter-spacing: .08em !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    top: .82rem !important;
+    left: 1.35rem !important;
+    width: min(9.2rem, 11.5vw) !important;
+    padding: 0 !important;
+    color: #fbfdff !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    font-size: clamp(.85rem, .9vw, 1rem) !important;
+    font-weight: 700 !important;
+    line-height: 1.08 !important;
+  }
+
+  .fr-shelf-book-active::after,
+  .fr-shelf-book-active > span:last-child {
+    left: 1.35rem !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-featured-book {
+    width: 42vw !important;
+    min-width: 29rem !important;
+    padding-inline: 1.65rem !important;
+  }
+
+  .fr-featured-details {
+    margin-top: 2rem !important;
+  }
+
+  .fr-featured-details strong {
+    font-size: .64rem !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    width: 4.75rem !important;
+    font-size: .56rem !important;
+  }
+}

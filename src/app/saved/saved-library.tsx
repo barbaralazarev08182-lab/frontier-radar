@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties, WheelEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
-  ChevronLeft,
-  ChevronRight,
   Search,
   Trash2,
   X,
@@ -29,6 +27,7 @@ type ShelfStyle = CSSProperties & {
   "--book-rot": string;
   "--book-z": string;
   "--book-delay": string;
+  "--signal-strength": string;
 };
 
 const SORT_LABELS: Record<SortMode, string> = {
@@ -39,6 +38,7 @@ const SORT_LABELS: Record<SortMode, string> = {
 
 const SHELF_WINDOW_RADIUS = 7;
 const SHELF_WINDOW_SIZE = SHELF_WINDOW_RADIUS * 2 + 1;
+const WHEEL_NAV_COOLDOWN_MS = 480;
 
 function formattedDate(value: string): string {
   const date = new Date(value);
@@ -59,13 +59,16 @@ function signedShelfOffset(index: number, activeIndex: number, length: number): 
   return offset;
 }
 
-function shelfStyle(offset: number): ShelfStyle {
+function shelfStyle(offset: number, score: number | null): ShelfStyle {
+  const normalizedScore = Math.max(42, Math.min(96, Math.round(score ?? 52)));
+
   if (offset === 0) {
     return {
       "--book-x": "0rem",
       "--book-rot": "0deg",
       "--book-z": "1",
       "--book-delay": "0ms",
+      "--signal-strength": `${normalizedScore}%`,
     };
   }
 
@@ -79,6 +82,7 @@ function shelfStyle(offset: number): ShelfStyle {
     "--book-rot": `${rotation}deg`,
     "--book-z": String(z),
     "--book-delay": `${Math.min(distance * 24, 96)}ms`,
+    "--signal-strength": `${normalizedScore}%`,
   };
 }
 
@@ -97,6 +101,7 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
   const [sort, setSort] = useState<SortMode>("recent");
   const [selectedId, setSelectedId] = useState<string | null>(previewItems?.[0]?.id ?? null);
   const [selectionDirection, setSelectionDirection] = useState<SelectionDirection>("direct");
+  const wheelLockRef = useRef(0);
 
   useEffect(() => {
     if (previewMode) return;
@@ -158,6 +163,17 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
     setSelectedId(navigable[nextIndex]?.id ?? null);
   }
 
+  function handleArchiveWheel(event: WheelEvent<HTMLDivElement>) {
+    const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+    if (Math.abs(delta) < 14) return;
+
+    event.preventDefault();
+    const now = window.performance.now();
+    if (now - wheelLockRef.current < WHEEL_NAV_COOLDOWN_MS) return;
+    wheelLockRef.current = now;
+    selectOffset(delta > 0 ? 1 : -1);
+  }
+
   function selectBook(itemId: string, index: number) {
     if (itemId === activeItem?.id) return;
     const offset = signedShelfOffset(index, activeIndex, ordered.length);
@@ -183,7 +199,11 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
           <strong>{String(items.length).padStart(2, "0")} SIGNALS</strong>
         </div>
 
-        <div className={styles.archivePanel}>
+        <div
+          className={styles.archivePanel}
+          data-source={activeItem?.source ?? "unknown"}
+          data-content-type={activeItem?.contentType ?? "unknown"}
+        >
           <div className={styles.archiveGlyph} aria-hidden>
             <i />
             <i />
@@ -224,19 +244,15 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
               className={`${styles.archiveStage} fr-archive-stage`}
               data-direction={selectionDirection}
               data-searching={needle ? "true" : "false"}
+              data-active-source={activeItem.source}
+              data-active-content-type={activeItem.contentType}
+              onWheel={handleArchiveWheel}
               aria-live="polite"
+              aria-label="Saved archive. Scroll to browse records."
             >
               <div className={styles.gridWall} aria-hidden />
               <div className={styles.shelfGlow} aria-hidden />
-
-              <button
-                type="button"
-                className={`${styles.navArrow} ${styles.navPrev}`}
-                onClick={() => selectOffset(-1)}
-                aria-label="Previous saved signal"
-              >
-                <ChevronLeft aria-hidden />
-              </button>
+              <div className="fr-active-trace" aria-hidden />
 
               <div className={`${styles.bookshelf} fr-bookshelf`}>
                 <div className={`${styles.bookRow} fr-book-row`}>
@@ -249,7 +265,9 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                         type="button"
                         key={item.id}
                         className={`${styles.book} fr-shelf-book ${isActive ? `${styles.bookActive} fr-shelf-book-active` : ""} ${needle && !isMatch ? "fr-shelf-book-search-dim" : ""} ${needle && isMatch ? "fr-shelf-book-search-hit" : ""}`}
-                        style={shelfStyle(offset)}
+                        style={shelfStyle(offset, item.score)}
+                        data-source={item.source}
+                        data-content-type={item.contentType}
                         onClick={() => selectBook(item.id, index)}
                         aria-pressed={isActive}
                         aria-label={`Inspect ${item.title}`}
@@ -269,6 +287,8 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
               <article
                 key={activeItem.id}
                 className={`${styles.featuredBook} fr-featured-book fr-featured-book-${selectionDirection} ${styles[`variant${activeIndex % 5}`]}`}
+                data-source={activeItem.source}
+                data-content-type={activeItem.contentType}
               >
                 <span className="fr-featured-page-edge" aria-hidden />
                 <div className={styles.featuredTape}>FR ARCHIVE · {String(activeIndex + 1).padStart(2, "0")}</div>
@@ -283,6 +303,14 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                 <div className={styles.featuredTags}>
                   {activeItem.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
                 </div>
+                <section className="fr-featured-details" aria-label="Archive record details">
+                  <div><span>POSITION</span><strong>{String(activeIndex + 1).padStart(2, "0")} / {String(ordered.length).padStart(2, "0")}</strong></div>
+                  <div><span>SOURCE</span><strong>{activeItem.source}</strong></div>
+                  <div><span>FORMAT</span><strong>{activeItem.contentType}</strong></div>
+                  <div><span>SAVED</span><strong>{formattedDate(activeItem.savedAt)}</strong></div>
+                  <div><span>SIGNAL SCORE</span><strong>{activeItem.score == null ? "UNRATED" : Math.round(activeItem.score)}</strong></div>
+                  <div><span>KEYWORDS</span><strong>{activeItem.tags.length}</strong></div>
+                </section>
                 <div className={styles.featuredActions}>
                   <button
                     type="button"
@@ -296,15 +324,6 @@ export function SavedLibrary({ previewItems }: { previewItems?: SavedItemSnapsho
                   </Link>
                 </div>
               </article>
-
-              <button
-                type="button"
-                className={`${styles.navArrow} ${styles.navNext}`}
-                onClick={() => selectOffset(1)}
-                aria-label="Next saved signal"
-              >
-                <ChevronRight aria-hidden />
-              </button>
             </div>
           ) : (
             <div className={styles.noMatch}>

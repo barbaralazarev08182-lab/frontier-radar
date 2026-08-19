@@ -1,0 +1,199 @@
+/* Saved visual Gate — source-aware palette.
+   Color is semantic: source owns hue; score owns signal height; content type is a small marker. */
+
+.fr-archive-stage,
+.fr-featured-book,
+.fr-shelf-book,
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+  --signal-accent: #8e92ff;
+}
+
+.fr-archive-stage[data-active-source="github"],
+.fr-featured-book[data-source="github"],
+.fr-shelf-book[data-source="github"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="github"] {
+  --signal-accent: #58cbe8;
+}
+
+.fr-archive-stage[data-active-source="huggingface"],
+.fr-featured-book[data-source="huggingface"],
+.fr-shelf-book[data-source="huggingface"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="huggingface"] {
+  --signal-accent: #e4b85d;
+}
+
+.fr-archive-stage[data-active-source="arxiv"],
+.fr-featured-book[data-source="arxiv"],
+.fr-shelf-book[data-source="arxiv"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="arxiv"] {
+  --signal-accent: #e87972;
+}
+
+.fr-archive-stage[data-active-source="hackernews"],
+.fr-featured-book[data-source="hackernews"],
+.fr-shelf-book[data-source="hackernews"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="hackernews"] {
+  --signal-accent: #ee8b55;
+}
+
+.fr-archive-stage[data-active-source="producthunt"],
+.fr-featured-book[data-source="producthunt"],
+.fr-shelf-book[data-source="producthunt"],
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="producthunt"] {
+  --signal-accent: #d17fa2;
+}
+
+/* Signal skyline: source hue + real score height. */
+.fr-shelf-book {
+  height: var(--signal-strength, 52%) !important;
+  border-top-color: color-mix(in srgb, var(--signal-accent) 76%, transparent) !important;
+  border-left-color: color-mix(in srgb, var(--signal-accent) 30%, transparent) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--signal-accent) 22%, transparent),
+      color-mix(in srgb, var(--signal-accent) 6%, transparent) 42%,
+      rgba(255,255,255,.008)
+    ) !important;
+}
+
+.fr-shelf-book:nth-child(n) {
+  height: var(--signal-strength, 52%) !important;
+}
+
+.fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+  border-top-color: var(--signal-accent) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--signal-accent) 34%, transparent),
+      color-mix(in srgb, var(--signal-accent) 10%, transparent) 44%,
+      rgba(255,255,255,.012)
+    ) !important;
+  box-shadow: 0 0 2.2rem color-mix(in srgb, var(--signal-accent) 8%, transparent) !important;
+}
+
+.fr-shelf-book-active {
+  opacity: .9 !important;
+  border-top-color: var(--signal-accent) !important;
+  border-left-color: color-mix(in srgb, var(--signal-accent) 58%, transparent) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--signal-accent) 28%, transparent),
+      color-mix(in srgb, var(--signal-accent) 7%, transparent) 50%,
+      rgba(255,255,255,.008)
+    ) !important;
+  box-shadow: 0 0 2.6rem color-mix(in srgb, var(--signal-accent) 10%, transparent) !important;
+}
+
+.fr-shelf-book > span:first-child,
+.fr-shelf-book-active > span:first-child {
+  color: var(--signal-accent) !important;
+}
+
+.fr-shelf-book::after {
+  display: block !important;
+  position: absolute;
+  inset: .5rem .35rem auto auto !important;
+  z-index: 5;
+  width: auto;
+  height: auto;
+  opacity: .58 !important;
+  color: var(--signal-accent);
+  background: none !important;
+  transform: none !important;
+  transition: none !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .32rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+.fr-shelf-book[data-content-type="repo"]::after { content: "RE"; }
+.fr-shelf-book[data-content-type="model"]::after { content: "MO"; }
+.fr-shelf-book[data-content-type="dataset"]::after { content: "DA"; }
+.fr-shelf-book[data-content-type="space"]::after { content: "SP"; }
+.fr-shelf-book[data-content-type="paper"]::after { content: "PA"; }
+.fr-shelf-book[data-content-type="product"]::after { content: "PR"; }
+
+/* Selected dossier inherits the selected source hue. */
+.fr-featured-book {
+  border-left-color: var(--signal-accent) !important;
+  box-shadow:
+    0 2.4rem 6rem rgba(0,0,0,.28),
+    1.1rem 0 5rem color-mix(in srgb, var(--signal-accent) 7%, transparent) !important;
+}
+
+.fr-featured-book::after {
+  background:
+    linear-gradient(
+      180deg,
+      var(--signal-accent),
+      color-mix(in srgb, var(--signal-accent) 28%, transparent) 72%,
+      transparent
+    ) !important;
+  box-shadow: 0 0 2.2rem color-mix(in srgb, var(--signal-accent) 25%, transparent) !important;
+}
+
+.fr-featured-book::before {
+  color: color-mix(in srgb, var(--signal-accent) 14%, transparent) !important;
+}
+
+.fr-featured-book > div:first-of-type,
+.fr-featured-book > div:nth-of-type(2) span:nth-child(4) {
+  color: var(--signal-accent) !important;
+}
+
+.fr-featured-book > div:first-of-type {
+  border-bottom-color: color-mix(in srgb, var(--signal-accent) 42%, transparent) !important;
+}
+
+.fr-featured-book > div:nth-of-type(4) > a {
+  border-color: color-mix(in srgb, var(--signal-accent) 72%, transparent) !important;
+  background: color-mix(in srgb, var(--signal-accent) 68%, #10141d) !important;
+}
+
+/* Header status panel follows the selected source without becoming a second hero. */
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child {
+  background: color-mix(in srgb, var(--signal-accent) 9%, rgba(10,15,23,.9)) !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child i,
+.fr-archive-panel-copy span {
+  color: var(--signal-accent) !important;
+  background: var(--signal-accent) !important;
+}
+
+.fr-archive-panel-copy span {
+  background: none !important;
+}
+
+/* Active source subtly colors the field glow and trace. */
+.fr-archive-stage > div:nth-child(2) {
+  background:
+    radial-gradient(
+      ellipse at 58% 58%,
+      color-mix(in srgb, var(--signal-accent) 28%, transparent),
+      transparent 63%
+    ) !important;
+}
+
+.fr-bookshelf::before {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--signal-accent) 42%, transparent) 14%,
+      color-mix(in srgb, var(--signal-accent) 10%, transparent) 78%,
+      transparent
+    ) !important;
+  box-shadow: 0 0 1.4rem color-mix(in srgb, var(--signal-accent) 14%, transparent) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-shelf-book::after {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,374 @@
+/* Saved visual Gate V7 — Living dark archive.
+   Keep the editorial folio, but give the surrounding archive field depth,
+   readable controls, and restrained ambient motion. No sci-fi scanner language. */
+
+/* Let the active source color reach the whole Saved composition, including the rail. */
+.fr-saved-shell:has(.fr-archive-stage[data-active-source="github"]) {
+  --source-accent: #2463eb;
+  --source-deep: #1748b3;
+}
+
+.fr-saved-shell:has(.fr-archive-stage[data-active-source="huggingface"]) {
+  --source-accent: #d39a00;
+  --source-deep: #8c6200;
+}
+
+.fr-saved-shell:has(.fr-archive-stage[data-active-source="arxiv"]) {
+  --source-accent: #c93645;
+  --source-deep: #8e2633;
+}
+
+.fr-saved-shell:has(.fr-archive-stage[data-active-source="hackernews"]) {
+  --source-accent: #f06c00;
+  --source-deep: #a84800;
+}
+
+.fr-saved-shell:has(.fr-archive-stage[data-active-source="producthunt"]) {
+  --source-accent: #b62f88;
+  --source-deep: #7d215e;
+}
+
+/* The dark archive is layered rather than flat black. */
+.fr-saved-shell {
+  position: relative;
+  isolation: isolate;
+  --saved-bg: #111720;
+  --saved-bg-2: #151d28;
+  --saved-dark-ink: #f7f8fa;
+  --saved-dark-muted: rgba(234,239,247,.64);
+  --saved-line: rgba(221,231,244,.17);
+  --saved-line-strong: rgba(224,234,247,.30);
+  background:
+    radial-gradient(ellipse at 14% 16%, rgba(53, 100, 168, .17), transparent 34%),
+    radial-gradient(ellipse at 76% 31%, rgba(70, 76, 155, .16), transparent 32%),
+    radial-gradient(ellipse at 84% 82%, rgba(42, 119, 139, .10), transparent 29%),
+    linear-gradient(180deg, #141b25 0%, #101720 45%, #0e141c 100%) !important;
+}
+
+.fr-saved-shell > * {
+  position: relative;
+  z-index: 2;
+}
+
+.fr-saved-shell::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  inset: 5rem -12% 2rem 36% !important;
+  pointer-events: none;
+  opacity: .58 !important;
+  filter: blur(56px) !important;
+  background:
+    radial-gradient(circle at 30% 34%, rgba(55, 100, 196, .18), transparent 28%),
+    radial-gradient(circle at 68% 52%, rgba(93, 67, 165, .16), transparent 31%),
+    radial-gradient(circle at 52% 82%, rgba(37, 123, 144, .10), transparent 27%) !important;
+  transform: translate3d(0,0,0) scale(1.04);
+  animation: frSavedAmbientHaze 16s ease-in-out infinite alternate;
+}
+
+.fr-saved-shell::after {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 1 !important;
+  inset: 0 !important;
+  pointer-events: none;
+  opacity: .20 !important;
+  filter: none !important;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(90deg, rgba(161,181,207,.012) 0 1px, transparent 1px 54px) !important;
+  mask-image: linear-gradient(90deg, transparent 0 26%, #000 46% 100%);
+  animation: frSavedTextureDrift 22s linear infinite;
+}
+
+/* Header and search get enough contrast to belong to the field. */
+.fr-saved-shell > div:first-child {
+  background:
+    linear-gradient(90deg, rgba(23, 32, 44, .96), rgba(16, 22, 31, .90)) !important;
+  border-bottom-color: rgba(224,234,247,.19) !important;
+  box-shadow: inset 0 -1px 0 rgba(255,255,255,.015);
+}
+
+.fr-saved-shell > div:first-child > div:first-child span {
+  color: rgba(232,238,247,.62) !important;
+}
+
+.fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+  border-color: rgba(224,234,247,.24) !important;
+  border-left-color: var(--source-accent) !important;
+  background: rgba(22, 29, 39, .82) !important;
+  box-shadow: 0 .7rem 2.2rem rgba(0,0,0,.12) !important;
+}
+
+.fr-archive-panel-copy strong {
+  color: rgba(248,249,251,.94) !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+  border-bottom-color: rgba(227,235,246,.32) !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) > svg {
+  color: rgba(230,238,248,.68) !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+  color: rgba(247,249,252,.94) !important;
+}
+
+.fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input::placeholder {
+  color: rgba(226,234,245,.48) !important;
+}
+
+@media (min-width: 781px) {
+  /* Stage gets a quiet environmental field so the right side is not an empty black void. */
+  .fr-archive-stage {
+    min-height: clamp(39rem, 68vh, 45rem) !important;
+    margin-top: .3rem !important;
+    background:
+      radial-gradient(ellipse at 72% 49%, color-mix(in srgb, var(--source-accent) 8%, transparent), transparent 31%),
+      linear-gradient(90deg, rgba(255,255,255,.012), transparent 42%, rgba(255,255,255,.018) 72%, transparent 100%) !important;
+    border-top: 1px solid rgba(222,231,243,.045);
+    border-bottom: 1px solid rgba(222,231,243,.08);
+  }
+
+  .fr-archive-stage::before {
+    color: rgba(231,237,245,.53) !important;
+  }
+
+  .fr-archive-stage::after {
+    color: rgba(231,237,245,.42) !important;
+  }
+
+  /* Folio: cool source tint instead of beige/yellow paper. */
+  .fr-featured-book {
+    width: min(49rem, 48.2vw) !important;
+    min-width: 36.5rem !important;
+    bottom: 12.2% !important;
+    background:
+      linear-gradient(145deg,
+        color-mix(in srgb, var(--source-accent) 8%, #f0f4f7) 0%,
+        color-mix(in srgb, var(--source-accent) 5%, #e9eef2) 68%,
+        #e7ecef 100%) !important;
+    border-right-color: color-mix(in srgb, var(--source-accent) 35%, rgba(27,31,34,.14)) !important;
+    border-bottom-color: color-mix(in srgb, var(--source-accent) 27%, rgba(27,31,34,.14)) !important;
+    border-left-color: color-mix(in srgb, var(--source-accent) 35%, rgba(27,31,34,.14)) !important;
+    box-shadow:
+      0 1.6rem 4rem rgba(0,0,0,.24),
+      0 0 0 1px rgba(255,255,255,.22) inset !important;
+  }
+
+  .fr-featured-book::before {
+    opacity: .42 !important;
+    background:
+      linear-gradient(90deg, transparent 0 74%, color-mix(in srgb, var(--source-accent) 9%, transparent) 74% 74.14%, transparent 74.14%),
+      linear-gradient(180deg, rgba(255,255,255,.18), transparent 22%) !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 92% !important;
+    font-size: clamp(2.7rem, 3.95vw, 4.9rem) !important;
+    line-height: .92 !important;
+  }
+
+  .fr-featured-book p {
+    width: 90% !important;
+    color: rgba(27,31,34,.76) !important;
+  }
+
+  /* Right archive field becomes a visible panel of depth, not a black void. */
+  .fr-bookshelf {
+    left: 50.1% !important;
+    right: 4.2% !important;
+    bottom: 12.2% !important;
+    height: 56% !important;
+    padding: .75rem .7rem 0 1.1rem !important;
+    border-top: 1px solid rgba(226,234,245,.12) !important;
+    border-bottom: 1px solid rgba(226,234,245,.14) !important;
+    background:
+      linear-gradient(180deg, rgba(34,43,57,.28), rgba(19,25,34,.10) 46%, rgba(12,17,24,.18) 100%) !important;
+    box-shadow:
+      inset 1px 0 0 rgba(224,233,245,.06),
+      inset 0 1px 0 rgba(255,255,255,.018) !important;
+  }
+
+  .fr-bookshelf::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none;
+    opacity: .55 !important;
+    background:
+      radial-gradient(ellipse at 52% 48%, color-mix(in srgb, var(--source-accent) 9%, transparent), transparent 36%),
+      linear-gradient(100deg, transparent 12%, rgba(255,255,255,.025) 48%, transparent 72%) !important;
+    transform: translateX(-3%);
+    animation: frSavedFieldBreath 11s ease-in-out infinite alternate !important;
+  }
+
+  .fr-book-row {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  .fr-shelf-book {
+    opacity: .94 !important;
+    filter: saturate(1.2) brightness(1.06) !important;
+    border-left-color: color-mix(in srgb, var(--source-accent) 58%, rgba(255,255,255,.18)) !important;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--source-accent) 50%, #28303b) 0%,
+        color-mix(in srgb, var(--source-accent) 31%, #1b222c) 55%,
+        color-mix(in srgb, var(--source-accent) 17%, #111821) 100%
+      ) !important;
+    box-shadow: 0 .8rem 1.8rem rgba(0,0,0,.10) !important;
+  }
+
+  .fr-shelf-book > span:nth-child(2) {
+    color: rgba(250,251,253,.88) !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,.22);
+  }
+
+  .fr-shelf-book > span:nth-child(3) {
+    color: rgba(239,244,250,.58) !important;
+  }
+
+  .fr-shelf-book-active {
+    filter: none !important;
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--source-accent) 10%, #f5f7f8),
+        color-mix(in srgb, var(--source-accent) 14%, #e9eef1)) !important;
+    border-color: color-mix(in srgb, var(--source-accent) 54%, #c7d0d9) !important;
+    border-top-color: var(--source-accent) !important;
+    box-shadow:
+      0 1rem 2.5rem rgba(0,0,0,.18),
+      0 0 0 1px rgba(255,255,255,.35) inset !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    color: #171a1d !important;
+    text-shadow: none !important;
+  }
+
+  .fr-active-trace {
+    opacity: .82 !important;
+    box-shadow: 0 0 1.2rem color-mix(in srgb, var(--source-accent) 16%, transparent) !important;
+  }
+
+  /* Previous/next controls become visible editorial controls. */
+  .fr-archive-stage > button[aria-label="Previous saved signal"],
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    border: 1px solid rgba(229,236,246,.24) !important;
+    background: rgba(21,28,38,.86) !important;
+    color: rgba(246,248,251,.82) !important;
+    box-shadow: 0 .6rem 1.7rem rgba(0,0,0,.16) !important;
+    backdrop-filter: blur(8px);
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"]:hover,
+  .fr-archive-stage > button[aria-label="Next saved signal"]:hover {
+    border-color: color-mix(in srgb, var(--source-accent) 64%, rgba(255,255,255,.3)) !important;
+    color: #fff !important;
+    background: color-mix(in srgb, var(--source-accent) 14%, rgba(21,28,38,.92)) !important;
+  }
+
+  /* Archive-order rail: legible, integrated, and clearly interactive. */
+  .fr-archive-rail {
+    width: calc(100% - 8.4%) !important;
+    min-height: 3.65rem !important;
+    margin: .8rem 4.2% 1.45rem !important;
+    border: 1px solid rgba(226,234,245,.18) !important;
+    background:
+      linear-gradient(180deg, rgba(27,35,47,.94), rgba(18,25,34,.94)) !important;
+    box-shadow:
+      0 .8rem 2.2rem rgba(0,0,0,.14),
+      inset 0 1px 0 rgba(255,255,255,.025) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .fr-archive-rail::before {
+    top: -1.15rem !important;
+    color: rgba(230,237,247,.54) !important;
+  }
+
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    min-height: 3.65rem !important;
+    border-right-color: rgba(226,234,245,.15) !important;
+    color: rgba(233,239,247,.68) !important;
+    background: transparent !important;
+    font-size: .5rem !important;
+    transition: color .18s ease, background .18s ease, box-shadow .18s ease !important;
+  }
+
+  .fr-archive-rail > button:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,.035) !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"] {
+    color: #fff !important;
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--source-accent) 16%, rgba(37,46,60,.98)),
+        color-mix(in srgb, var(--source-accent) 7%, rgba(22,29,40,.98))) !important;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--source-accent) 42%, transparent) !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"]::after {
+    left: 12% !important;
+    right: 12% !important;
+    bottom: 0 !important;
+    height: 3px !important;
+    background: var(--source-accent) !important;
+  }
+
+  .fr-archive-rail > span {
+    color: rgba(226,234,245,.42) !important;
+  }
+}
+
+@media (max-width: 780px) {
+  .fr-saved-shell {
+    background:
+      radial-gradient(ellipse at 72% 22%, rgba(67,78,156,.13), transparent 34%),
+      linear-gradient(180deg, #151c26 0%, #0f151d 100%) !important;
+  }
+
+  .fr-featured-book {
+    background:
+      linear-gradient(145deg,
+        color-mix(in srgb, var(--source-accent) 8%, #f0f4f7),
+        color-mix(in srgb, var(--source-accent) 5%, #e9eef2)) !important;
+  }
+
+  .fr-archive-rail {
+    border: 1px solid rgba(226,234,245,.18) !important;
+    background: rgba(24,31,42,.95) !important;
+  }
+}
+
+@keyframes frSavedAmbientHaze {
+  0% { transform: translate3d(-1.5%, -1%, 0) scale(1.02); opacity: .46; }
+  55% { transform: translate3d(2%, 1.5%, 0) scale(1.08); opacity: .62; }
+  100% { transform: translate3d(-.5%, 2.5%, 0) scale(1.05); opacity: .52; }
+}
+
+@keyframes frSavedTextureDrift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 18px, 54px 0; }
+}
+
+@keyframes frSavedFieldBreath {
+  0% { transform: translateX(-4%) scale(1); opacity: .34; }
+  100% { transform: translateX(4%) scale(1.02); opacity: .58; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-saved-shell::before,
+  .fr-saved-shell::after,
+  .fr-bookshelf::before {
+    animation: none !important;
+  }
+}

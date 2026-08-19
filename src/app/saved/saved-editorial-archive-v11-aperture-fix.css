@@ -1,0 +1,40 @@
+/* V11 aperture fix — first visual mismatch only.
+   The legacy circular shelf coordinates place negative-offset records to the
+   left of the selected record. In the flat archive aperture those markers
+   must not continue beneath the opened folio. Keep behavior/windowing intact;
+   only suppress the visually-behind half and seat the active marker at the
+   folio edge. */
+
+@media (min-width: 781px) {
+  /* Previous records remain reachable through Prev/search/sort, but do not
+     leak below the opened research sheet. */
+  .fr-shelf-book[style*="--book-x: -"]:not(.fr-shelf-book-active) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Seat the selected index directly against the opened folio edge. */
+  .fr-book-row {
+    transform: translateX(-48%) !important;
+  }
+
+  /* The archive baseline begins at the aperture instead of underneath paper. */
+  .fr-book-row::before {
+    left: 48.5% !important;
+    right: -49% !important;
+  }
+
+  .fr-book-row::after {
+    right: -48% !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-book-row {
+    transform: translateX(-46.5%) !important;
+  }
+
+  .fr-book-row::before {
+    left: 47% !important;
+  }
+}

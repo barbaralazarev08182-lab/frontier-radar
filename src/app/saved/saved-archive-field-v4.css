@@ -1,0 +1,307 @@
+/* Saved visual Gate v4 — category contrast + readable selected signal.
+   Source color is categorical; selected state becomes a readable focus strip.
+   Structure and Saved behavior remain unchanged. */
+
+@media (min-width: 781px) {
+  /* Stronger categorical palette. */
+  .fr-archive-stage,
+  .fr-featured-book,
+  .fr-shelf-book,
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    --signal-accent: #8f93ff;
+    --signal-accent-rgb: 143, 147, 255;
+  }
+
+  .fr-archive-stage[data-active-source="github"],
+  .fr-featured-book[data-source="github"],
+  .fr-shelf-book[data-source="github"],
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="github"] {
+    --signal-accent: #4ed8ff;
+    --signal-accent-rgb: 78, 216, 255;
+  }
+
+  .fr-archive-stage[data-active-source="huggingface"],
+  .fr-featured-book[data-source="huggingface"],
+  .fr-shelf-book[data-source="huggingface"],
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="huggingface"] {
+    --signal-accent: #ffc857;
+    --signal-accent-rgb: 255, 200, 87;
+  }
+
+  .fr-archive-stage[data-active-source="arxiv"],
+  .fr-featured-book[data-source="arxiv"],
+  .fr-shelf-book[data-source="arxiv"],
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="arxiv"] {
+    --signal-accent: #ff6f7d;
+    --signal-accent-rgb: 255, 111, 125;
+  }
+
+  .fr-archive-stage[data-active-source="hackernews"],
+  .fr-featured-book[data-source="hackernews"],
+  .fr-shelf-book[data-source="hackernews"],
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="hackernews"] {
+    --signal-accent: #ff933f;
+    --signal-accent-rgb: 255, 147, 63;
+  }
+
+  .fr-archive-stage[data-active-source="producthunt"],
+  .fr-featured-book[data-source="producthunt"],
+  .fr-shelf-book[data-source="producthunt"],
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy)[data-source="producthunt"] {
+    --signal-accent: #d879ff;
+    --signal-accent-rgb: 216, 121, 255;
+  }
+
+  /* Every saved signal is visibly source-coded, not merely outlined. */
+  .fr-shelf-book {
+    border-top-color: var(--signal-accent) !important;
+    border-left-color: rgba(var(--signal-accent-rgb), .38) !important;
+    border-right-color: rgba(255,255,255,.035) !important;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--signal-accent-rgb), .28) 0%,
+        rgba(var(--signal-accent-rgb), .12) 36%,
+        rgba(var(--signal-accent-rgb), .045) 72%,
+        rgba(255,255,255,.008) 100%
+      ) !important;
+    box-shadow:
+      inset 0 1px rgba(255,255,255,.05),
+      0 0 1.5rem rgba(var(--signal-accent-rgb), .035) !important;
+    transition:
+      width 460ms cubic-bezier(.16,.84,.2,1),
+      height 460ms cubic-bezier(.16,.84,.2,1),
+      transform 460ms cubic-bezier(.16,.84,.2,1),
+      opacity 220ms ease,
+      background 280ms ease,
+      border-color 220ms ease,
+      box-shadow 280ms ease !important;
+  }
+
+  .fr-shelf-book > span:first-child {
+    color: var(--signal-accent) !important;
+    text-shadow: 0 0 .7rem rgba(var(--signal-accent-rgb), .22);
+  }
+
+  .fr-shelf-book > span:last-child {
+    color: rgba(var(--signal-accent-rgb), .82) !important;
+    opacity: 1 !important;
+    font-weight: 760 !important;
+    letter-spacing: .07em !important;
+  }
+
+  .fr-shelf-book::after {
+    color: var(--signal-accent) !important;
+    opacity: .9 !important;
+  }
+
+  /* Selected signal: readable focus strip rather than a brighter vertical bar. */
+  .fr-shelf-book-active {
+    z-index: 19 !important;
+    width: clamp(5.55rem, 5.9vw, 6.25rem) !important;
+    opacity: 1 !important;
+    border-top-width: 4px !important;
+    border-left-width: 2px !important;
+    border-top-color: var(--signal-accent) !important;
+    border-left-color: var(--signal-accent) !important;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--signal-accent-rgb), .5) 0%,
+        rgba(var(--signal-accent-rgb), .25) 27%,
+        rgba(var(--signal-accent-rgb), .115) 62%,
+        rgba(9,14,22,.82) 100%
+      ) !important;
+    box-shadow:
+      inset 3px 0 0 rgba(255,255,255,.07),
+      inset 0 1px rgba(255,255,255,.12),
+      0 0 0 1px rgba(var(--signal-accent-rgb), .28),
+      0 0 2.8rem rgba(var(--signal-accent-rgb), .2),
+      0 1.3rem 3.2rem rgba(0,0,0,.24) !important;
+    transform:
+      translateX(calc(-50% + var(--book-x, 0rem)))
+      translateY(-.45rem) !important;
+  }
+
+  .fr-shelf-book-active > span:first-child {
+    top: .72rem !important;
+    left: .72rem !important;
+    font-size: .56rem !important;
+    color: #fff !important;
+    text-shadow: 0 0 .8rem rgba(var(--signal-accent-rgb), .58);
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    inset: 3.15rem .68rem auto .68rem !important;
+    width: auto !important;
+    max-height: 8.6rem;
+    color: #fff !important;
+    font-family: ui-sans-serif, system-ui, sans-serif !important;
+    font-size: clamp(.74rem, .86vw, .94rem) !important;
+    font-weight: 710 !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.02em !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    text-align: left !important;
+    transform: none !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fr-shelf-book-active > span:last-child {
+    left: .68rem !important;
+    right: .68rem !important;
+    bottom: .72rem !important;
+    padding-top: .6rem;
+    border-top: 1px solid rgba(var(--signal-accent-rgb), .52);
+    color: #fff !important;
+    font-size: .42rem !important;
+    opacity: .82 !important;
+  }
+
+  .fr-shelf-book-active::after {
+    top: .76rem !important;
+    right: .68rem !important;
+    padding: .22rem .3rem;
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(4,8,14,.38) !important;
+    color: #fff !important;
+    font-size: .36rem !important;
+    opacity: 1 !important;
+    backdrop-filter: blur(8px);
+  }
+
+  /* Non-selected titles stay subordinate but more legible. */
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    color: rgba(248,248,246,.78) !important;
+    text-shadow: 0 1px 0 rgba(0,0,0,.45);
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):hover {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--signal-accent-rgb), .39) 0%,
+        rgba(var(--signal-accent-rgb), .15) 42%,
+        rgba(var(--signal-accent-rgb), .055) 76%,
+        rgba(255,255,255,.01) 100%
+      ) !important;
+    box-shadow:
+      0 0 0 1px rgba(var(--signal-accent-rgb), .16),
+      0 0 2.1rem rgba(var(--signal-accent-rgb), .1) !important;
+  }
+
+  /* Dossier metadata makes the selected source obvious at reading distance. */
+  .fr-featured-book {
+    border-left-width: 4px !important;
+    border-left-color: var(--signal-accent) !important;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(14,20,30,.98) 0%,
+        rgba(var(--signal-accent-rgb), .075) 34%,
+        rgba(10,15,23,.9) 69%,
+        rgba(8,12,19,0) 100%
+      ) !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    color: var(--signal-accent) !important;
+    font-weight: 860 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span:first-child,
+  .fr-featured-book > div:nth-of-type(2) > span:nth-child(2),
+  .fr-featured-book > div:nth-of-type(2) > span:last-child {
+    color: var(--signal-accent) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span:first-child {
+    background: rgba(var(--signal-accent-rgb), .075);
+    padding-left: .72rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) span {
+    color: rgba(248,248,246,.65) !important;
+    border-color: rgba(var(--signal-accent-rgb), .3) !important;
+    background: rgba(var(--signal-accent-rgb), .035) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) > a {
+    color: #061018 !important;
+    border-color: var(--signal-accent) !important;
+    background: var(--signal-accent) !important;
+    font-weight: 860 !important;
+  }
+
+  /* Trace becomes a deliberate hand-off from active signal to dossier. */
+  .fr-active-trace {
+    height: 2px !important;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--signal-accent-rgb), 0),
+        rgba(var(--signal-accent-rgb), .34) 18%,
+        rgba(var(--signal-accent-rgb), 1) 52%,
+        rgba(var(--signal-accent-rgb), .45) 78%,
+        rgba(var(--signal-accent-rgb), .06)
+      ) !important;
+    background-size: 180% 100% !important;
+    box-shadow:
+      0 0 .8rem rgba(var(--signal-accent-rgb), .24),
+      0 0 1.8rem rgba(var(--signal-accent-rgb), .09) !important;
+    animation:
+      frSavedTraceIn 480ms cubic-bezier(.16,.84,.2,1) both,
+      frSavedTraceFlow 3.4s 520ms ease-in-out infinite !important;
+  }
+
+  .fr-active-trace::before {
+    color: rgba(var(--signal-accent-rgb), .95) !important;
+    text-shadow: 0 0 .8rem rgba(var(--signal-accent-rgb), .28);
+  }
+
+  .fr-active-trace::after {
+    width: .58rem !important;
+    height: .58rem !important;
+    border: 2px solid var(--signal-accent) !important;
+    background: #071019 !important;
+    box-shadow:
+      0 0 0 .26rem rgba(var(--signal-accent-rgb), .1),
+      0 0 1.35rem rgba(var(--signal-accent-rgb), .54) !important;
+    animation: frSavedEndpointPulse 2.6s ease-in-out infinite;
+  }
+
+  /* Header selection summary inherits the same categorical hue. */
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    border-color: rgba(var(--signal-accent-rgb), .28) !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child {
+    background: rgba(var(--signal-accent-rgb), .12) !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child i {
+    background: var(--signal-accent) !important;
+    box-shadow: 0 0 .65rem rgba(var(--signal-accent-rgb), .2);
+  }
+}
+
+@keyframes frSavedTraceFlow {
+  0%, 100% { background-position: 100% 50%; }
+  50% { background-position: 0% 50%; }
+}
+
+@keyframes frSavedEndpointPulse {
+  0%, 100% { transform: translateY(-50%) scale(.92); opacity: .72; }
+  50% { transform: translateY(-50%) scale(1.08); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-active-trace,
+  .fr-active-trace::after,
+  .fr-shelf-book {
+    animation: none !important;
+    transition: none !important;
+  }
+}

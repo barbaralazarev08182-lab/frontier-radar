@@ -1,0 +1,345 @@
+/* Saved visual Gate V10 — Composition consolidation.
+   No Saved behavior changes. The opened folio and the signal index now read as
+   one archive field rather than adjacent cards: field over panel, rail over box.
+*/
+
+@media (min-width: 781px) {
+  /* Keep the accepted single-viewport contract intact. */
+  body:has(.fr-saved-shell),
+  main:has(> .fr-saved-shell),
+  .fr-saved-shell {
+    overflow: hidden !important;
+  }
+
+  /* Header summary is context, not another card. */
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) {
+    width: min(29rem, 39vw) !important;
+    min-height: 3rem !important;
+    border: 0 !important;
+    border-left: 2px solid var(--source-accent) !important;
+    border-bottom: 1px solid rgba(235,242,251,.18) !important;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--source-accent) 8%, transparent), transparent 76%) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:has(> .fr-archive-panel-copy) > div:first-child {
+    background: transparent !important;
+    border-right-color: rgba(235,242,251,.10) !important;
+  }
+
+  /* Search becomes an editorial instrument rail, not a third rectangular module. */
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    flex-basis: 2.75rem !important;
+    width: min(25rem, 30vw) !important;
+    min-height: 2.75rem !important;
+    margin: .5rem 5.2% .12rem !important;
+    padding: 0 .15rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(232,240,250,.28) !important;
+    border-left: 0 !important;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--source-accent) 8%, transparent), transparent 72%) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"])::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 3.4rem;
+    height: 2px;
+    background: color-mix(in srgb, var(--source-accent) 82%, #fff);
+    pointer-events: none;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) > svg {
+    width: .86rem !important;
+    color: color-mix(in srgb, var(--source-accent) 72%, #fff) !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+    font-size: .62rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  /* The stage itself is the archive field. No nested panel is needed. */
+  .fr-archive-stage {
+    border-top-color: rgba(228,237,248,.05) !important;
+    border-bottom-color: rgba(228,237,248,.10) !important;
+    background:
+      radial-gradient(ellipse at 49% 48%, color-mix(in srgb, var(--source-accent) 10%, transparent), transparent 24%),
+      radial-gradient(ellipse at 72% 42%, rgba(91, 85, 179, .16), transparent 34%),
+      radial-gradient(ellipse at 91% 69%, rgba(35, 137, 163, .14), transparent 28%),
+      linear-gradient(100deg, rgba(255,255,255,.014), transparent 36%, rgba(141,164,202,.025) 71%, transparent 100%) !important;
+  }
+
+  .fr-archive-stage::before {
+    left: 5.2% !important;
+    top: 2.4% !important;
+  }
+
+  .fr-archive-stage::after {
+    right: 5.2% !important;
+    top: 2.4% !important;
+  }
+
+  /* Opened folio: large enough to read, short enough to feel extracted from the field. */
+  .fr-featured-book {
+    left: 5.2% !important;
+    top: 9.2% !important;
+    bottom: auto !important;
+    width: min(43rem, 42vw) !important;
+    min-width: 32rem !important;
+    height: 68% !important;
+    min-height: 22.5rem !important;
+    max-height: 27rem !important;
+    padding: 1.45rem 2.2rem 1.25rem !important;
+    box-shadow:
+      0 1.35rem 3.5rem rgba(0,0,0,.23),
+      0 0 0 1px rgba(255,255,255,.22) inset !important;
+  }
+
+  .fr-featured-book > div:first-of-type,
+  .fr-featured-book > div:nth-of-type(2),
+  .fr-featured-book p,
+  .fr-featured-book > div:nth-of-type(3),
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 94% !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    padding-bottom: .48rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) {
+    margin-top: .72rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    min-height: 2.35rem !important;
+    padding-top: .42rem !important;
+    padding-bottom: .4rem !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 95% !important;
+    margin: .72rem 0 .5rem !important;
+    font-size: clamp(2.2rem, 3.15vw, 3.72rem) !important;
+    line-height: .95 !important;
+  }
+
+  .fr-featured-book p {
+    font-size: clamp(.82rem, .84vw, .94rem) !important;
+    line-height: 1.43 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: .52rem !important;
+    padding-top: .42rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    margin-top: auto !important;
+    padding-top: .55rem !important;
+  }
+
+  /* Remove the chart-card rectangle. Signals live directly in the dark archive field. */
+  .fr-bookshelf {
+    z-index: 10 !important;
+    left: 45.6% !important;
+    right: 4.2% !important;
+    top: 14% !important;
+    bottom: 7.5% !important;
+    height: auto !important;
+    padding: .6rem 0 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .fr-bookshelf::before {
+    inset: 4% -2% 3% -4% !important;
+    opacity: .72 !important;
+    border: 0 !important;
+    background:
+      radial-gradient(ellipse at 37% 48%, color-mix(in srgb, var(--source-accent) 13%, transparent), transparent 31%),
+      linear-gradient(103deg, transparent 4%, rgba(160,184,224,.045) 48%, transparent 82%) !important;
+    box-shadow: none !important;
+    animation: frSavedV10Field 10s ease-in-out infinite alternate !important;
+  }
+
+  .fr-bookshelf::after {
+    content: none !important;
+  }
+
+  /* Pull the selected signal toward the folio. Left signals can sit behind the paper edge. */
+  .fr-book-row {
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 1.5% !important;
+    transform: translateX(-12%) !important;
+    transform-origin: center bottom !important;
+  }
+
+  .fr-bookshelf > div:last-child {
+    left: -1.5% !important;
+    right: -1.5% !important;
+    bottom: 0 !important;
+    height: 1px !important;
+    border: 0 !important;
+    background: linear-gradient(90deg, transparent, rgba(230,239,251,.22) 12% 82%, transparent) !important;
+    box-shadow: none !important;
+    opacity: .8 !important;
+  }
+
+  /* A short hand-off makes the extraction relationship obvious without becoming telemetry. */
+  .fr-active-trace {
+    z-index: 18 !important;
+    left: 46.2% !important;
+    right: 35.7% !important;
+    top: 52.2% !important;
+    height: 1px !important;
+    opacity: .9 !important;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--source-accent) 12%, transparent), color-mix(in srgb, var(--source-accent) 78%, transparent)) !important;
+    box-shadow: none !important;
+  }
+
+  .fr-active-trace::after {
+    width: .38rem !important;
+    height: .38rem !important;
+    border-width: 1px !important;
+    background: #111b27 !important;
+    box-shadow: 0 0 0 .18rem color-mix(in srgb, var(--source-accent) 8%, transparent) !important;
+  }
+
+  /* Prev / Next belong to the archive baseline, not the viewport edges. */
+  .fr-archive-stage > button[aria-label="Previous saved signal"],
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    top: auto !important;
+    bottom: 5.2% !important;
+    width: 2rem !important;
+    height: 2rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(235,242,251,.28) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: rgba(247,249,252,.78) !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 47.4% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 5.2% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"]:hover,
+  .fr-archive-stage > button[aria-label="Next saved signal"]:hover {
+    color: #fff !important;
+    border-bottom-color: var(--source-accent) !important;
+    background: color-mix(in srgb, var(--source-accent) 7%, transparent) !important;
+  }
+
+  /* Sorting is a quiet footer rail: typography + separators + active source rule. */
+  .fr-archive-rail {
+    flex-basis: 2.75rem !important;
+    width: calc(100% - 10.4%) !important;
+    min-height: 2.75rem !important;
+    margin: .18rem 5.2% .42rem !important;
+    border: 0 !important;
+    border-top: 1px solid rgba(232,240,250,.16) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .fr-archive-rail > button,
+  .fr-archive-rail > span {
+    min-height: 2.75rem !important;
+    border-right: 1px solid rgba(233,241,251,.10) !important;
+    background: transparent !important;
+    color: rgba(246,249,253,.58) !important;
+    font-size: .5rem !important;
+    letter-spacing: .11em !important;
+  }
+
+  .fr-archive-rail > button:hover {
+    color: rgba(255,255,255,.92) !important;
+    background: transparent !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"] {
+    color: #fff !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .fr-archive-rail > button[aria-pressed="true"]::after {
+    left: 18% !important;
+    right: 18% !important;
+    height: 2px !important;
+    background: color-mix(in srgb, var(--source-accent) 88%, #fff) !important;
+  }
+
+  .fr-archive-rail > span {
+    color: rgba(233,240,249,.32) !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    width: min(24rem, 34vw) !important;
+    margin-left: 4.2% !important;
+  }
+
+  .fr-featured-book {
+    left: 4.2% !important;
+    width: 43.5vw !important;
+    min-width: 0 !important;
+  }
+
+  .fr-bookshelf {
+    left: 45.8% !important;
+    right: 3.2% !important;
+  }
+
+  .fr-book-row {
+    transform: translateX(-9%) !important;
+  }
+
+  .fr-active-trace {
+    left: 45.2% !important;
+    right: 34% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 47.2% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 4.2% !important;
+  }
+
+  .fr-archive-rail {
+    width: calc(100% - 8.4%) !important;
+    margin-left: 4.2% !important;
+    margin-right: 4.2% !important;
+  }
+}
+
+@keyframes frSavedV10Field {
+  from { opacity: .52; transform: translate3d(-1.5%, 0, 0) scaleX(.99); }
+  to { opacity: .82; transform: translate3d(1.5%, 0, 0) scaleX(1.01); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-bookshelf::before {
+    animation: none !important;
+  }
+}

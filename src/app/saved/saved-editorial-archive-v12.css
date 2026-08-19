@@ -1,0 +1,242 @@
+/* Saved V13 — readable index + full archive folio.
+   Visual-only. Do not alter the accepted dark background, Saved behavior,
+   source hue, score height, search/sort, persistence, or windowing. */
+
+@media (min-width: 781px) {
+  /* RIGHT FIELD ----------------------------------------------------------
+     Every visible record identifies itself without hover. The needle still
+     encodes score by height; its attached caption is always readable. */
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    top: .34rem !important;
+    left: 1.02rem !important;
+    width: clamp(5.7rem, 6.3vw, 7.2rem) !important;
+    height: auto !important;
+    min-height: 2.55rem !important;
+    max-height: 3.55rem !important;
+    padding: .28rem .42rem .32rem .48rem !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 3 !important;
+    color: rgba(248,251,255,.82) !important;
+    background: linear-gradient(90deg, rgba(8,15,24,.76), rgba(8,15,24,.34) 76%, transparent) !important;
+    border: 0 !important;
+    border-left: 1px solid color-mix(in srgb, var(--source-accent) 76%, #fff) !important;
+    font-family: ui-sans-serif, system-ui, sans-serif !important;
+    font-size: clamp(.54rem, .48vw, .62rem) !important;
+    font-weight: 650 !important;
+    line-height: 1.16 !important;
+    letter-spacing: -.012em !important;
+    writing-mode: horizontal-tb !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Slight vertical staggering keeps adjacent labels legible without turning
+     the field into cards or changing any data-derived positions/heights. */
+  .fr-shelf-book:not(.fr-shelf-book-active):nth-child(3n + 2) > span:nth-child(2) {
+    top: 1.05rem !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):nth-child(3n) > span:nth-child(2) {
+    top: 1.72rem !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):hover > span:nth-child(2),
+  .fr-shelf-book:not(.fr-shelf-book-active):focus-visible > span:nth-child(2) {
+    color: #fff !important;
+    background: linear-gradient(90deg, rgba(8,15,24,.92), rgba(8,15,24,.52) 76%, transparent) !important;
+    opacity: 1 !important;
+    transform: translateX(.12rem) !important;
+  }
+
+  /* The source line below each caption is visible at rest, not hover-only. */
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:last-child {
+    left: 1.48rem !important;
+    width: 5.5rem !important;
+    opacity: .72 !important;
+  }
+
+  /* Active record remains the strongest aperture label beside the folio. */
+  .fr-shelf-book-active > span:nth-child(2) {
+    top: .82rem !important;
+    left: 1.35rem !important;
+    width: min(11.2rem, 13.8vw) !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    color: #fbfdff !important;
+    background: transparent !important;
+    border: 0 !important;
+    font-size: clamp(.82rem, .94vw, 1rem) !important;
+    font-weight: 690 !important;
+    line-height: 1.08 !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .fr-shelf-book-active::after {
+    left: 1.35rem !important;
+  }
+
+  .fr-shelf-book-active > span:last-child {
+    left: 1.35rem !important;
+    width: 8rem !important;
+  }
+
+  /* LEFT FOLIO -----------------------------------------------------------
+     The opened record is a long archival sheet reaching close to the archive
+     baseline. No synthetic content is introduced; structure and material
+     treatment make the unused area intentional. */
+  .fr-featured-book {
+    top: 6.8% !important;
+    bottom: 7.2% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: min(42.5rem, 41.5vw) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1.7rem 2.25rem 1.55rem !important;
+    border: 1px solid color-mix(in srgb, var(--source-accent) 24%, rgba(29,29,27,.18)) !important;
+    border-top: 4px solid var(--source-accent) !important;
+    background:
+      linear-gradient(112deg, rgba(255,255,255,.42) 0%, transparent 17%, transparent 78%, rgba(29,29,27,.03) 100%),
+      color-mix(in srgb, var(--source-soft) 90%, #f8f8f5) !important;
+    box-shadow:
+      0 2.05rem 5rem rgba(0,0,0,.30),
+      0 .35rem 1rem rgba(0,0,0,.12),
+      inset 0 0 0 1px rgba(255,255,255,.30),
+      inset 0 -1px rgba(29,29,27,.09) !important;
+    overflow: hidden !important;
+  }
+
+  /* Paper construction: registration grid + quiet fold/rule structure.
+     It adds tactility without pretending to be data. */
+  .fr-featured-book::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none !important;
+    opacity: .64 !important;
+    mix-blend-mode: multiply !important;
+    background:
+      linear-gradient(90deg,
+        transparent 0 72.2%,
+        rgba(29,29,27,.055) 72.2% 72.34%,
+        transparent 72.34%),
+      linear-gradient(0deg,
+        transparent 0 21%,
+        rgba(29,29,27,.035) 21% 21.12%,
+        transparent 21.12% 77%,
+        rgba(29,29,27,.045) 77% 77.14%,
+        transparent 77.14%),
+      repeating-linear-gradient(0deg,
+        transparent 0 2.12rem,
+        rgba(29,29,27,.018) 2.12rem calc(2.12rem + 1px)),
+      repeating-linear-gradient(90deg,
+        rgba(29,29,27,.012) 0 1px,
+        transparent 1px 5.65rem) !important;
+  }
+
+  .fr-featured-book::after {
+    width: 5px !important;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--source-accent) 100%, #fff),
+      var(--source-accent) 46%,
+      color-mix(in srgb, var(--source-accent) 70%, transparent)) !important;
+    box-shadow: -1px 0 rgba(255,255,255,.30) !important;
+  }
+
+  .fr-featured-book > div:first-of-type,
+  .fr-featured-book > div:nth-of-type(2),
+  .fr-featured-book h1,
+  .fr-featured-book p,
+  .fr-featured-book > div:nth-of-type(3),
+  .fr-featured-book > div:nth-of-type(4) {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-bottom: .55rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: .72rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    min-height: 2.35rem !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 94% !important;
+    margin: 1rem 0 .52rem !important;
+    font-size: clamp(2.65rem, 3.45vw, 4.15rem) !important;
+    line-height: .92 !important;
+    letter-spacing: -.055em !important;
+  }
+
+  .fr-featured-book p {
+    width: 92% !important;
+    max-width: 92% !important;
+    font-size: clamp(.9rem, .9vw, 1rem) !important;
+    line-height: 1.55 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    width: 92% !important;
+    max-width: 92% !important;
+    margin-top: .88rem !important;
+    padding-top: .68rem !important;
+  }
+
+  /* Bottom action rail anchors the long sheet so there is no dead lower half. */
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 92% !important;
+    max-width: 92% !important;
+    margin-top: auto !important;
+    padding-top: 1rem !important;
+    padding-bottom: .06rem !important;
+    border-top: 1px solid rgba(29,29,27,.20) !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4)::before {
+    content: "ARCHIVE ACTIONS" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: -1.15rem !important;
+    color: color-mix(in srgb, var(--source-deep) 64%, #6d6a63) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    font-size: .4rem !important;
+    font-weight: 760 !important;
+    letter-spacing: .12em !important;
+    opacity: .62 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) > button,
+  .fr-featured-book > div:nth-of-type(4) > a {
+    min-height: 2.3rem !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    width: 5.25rem !important;
+    font-size: .52rem !important;
+  }
+
+  .fr-featured-book {
+    top: 6.5% !important;
+    bottom: 7.5% !important;
+    width: min(39rem, 43vw) !important;
+  }
+}

@@ -1,0 +1,339 @@
+/* Saved V14 — proportion reset + stable archive captions.
+   Visual-only: preserve background, source hue, score-height mapping,
+   Saved behavior, search/sort, persistence and 50–200 item windowing. */
+
+@media (min-width: 781px) {
+  /* Utility copy should read as interface text, not microscopic decoration. */
+  .fr-saved-shell > div:first-child > div:first-child span {
+    font-size: .64rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-saved-shell > div:first-child > div:first-child strong {
+    font-size: .78rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) input {
+    font-size: .74rem !important;
+    letter-spacing: .075em !important;
+  }
+
+  .fr-archive-rail::before {
+    font-size: .58rem !important;
+    letter-spacing: .09em !important;
+  }
+
+  .fr-archive-rail > button {
+    padding-inline: .8rem !important;
+    font-size: .64rem !important;
+    letter-spacing: .075em !important;
+  }
+
+  .fr-archive-stage::before,
+  .fr-archive-stage::after {
+    font-size: .58rem !important;
+    letter-spacing: .085em !important;
+  }
+
+  /* LEFT FOLIO ---------------------------------------------------------
+     Every source uses the same physical sheet dimensions. Long titles wrap
+     inside the sheet instead of changing the archive object's size. */
+  .fr-featured-book {
+    top: 6.8% !important;
+    bottom: auto !important;
+    width: min(42rem, 40.5vw) !important;
+    height: 77.5% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 1.8rem 2.25rem 1.55rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-shadow:
+      0 1.7rem 4.1rem rgba(0,0,0,.29),
+      0 .35rem 1.1rem rgba(0,0,0,.13),
+      inset 0 0 0 1px rgba(255,255,255,.34),
+      inset 0 -1px rgba(29,29,27,.10) !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    padding-bottom: .62rem !important;
+    font-size: .68rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) {
+    margin-top: .72rem !important;
+    grid-template-columns: .9fr .9fr 1.25fr 1fr !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) > span {
+    min-height: 2.7rem !important;
+    padding: .58rem .68rem .5rem !important;
+    font-size: .66rem !important;
+    line-height: 1.16 !important;
+    letter-spacing: .055em !important;
+  }
+
+  .fr-featured-book h1 {
+    margin: 1rem 0 .46rem !important;
+    max-width: 96% !important;
+    font-size: clamp(2.55rem, 3.05vw, 3.75rem) !important;
+    line-height: .95 !important;
+    letter-spacing: -.05em !important;
+  }
+
+  .fr-featured-book p {
+    max-width: 96% !important;
+    margin: 0 !important;
+    font-size: clamp(.96rem, .98vw, 1.06rem) !important;
+    line-height: 1.48 !important;
+    letter-spacing: -.01em !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    width: 96% !important;
+    max-width: 96% !important;
+    margin-top: .78rem !important;
+    padding-top: .58rem !important;
+    gap: .45rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) > span {
+    padding: .4rem .62rem !important;
+    font-size: .63rem !important;
+    line-height: 1 !important;
+    letter-spacing: .07em !important;
+  }
+
+  /* Turn the lower record into a readable editorial block rather than a
+     miniature spreadsheet. Two columns give each real field room to breathe. */
+  .fr-featured-details {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    margin-top: 1.75rem !important;
+    border-top: 1px solid rgba(29,29,27,.22) !important;
+    border-bottom: 1px solid rgba(29,29,27,.18) !important;
+  }
+
+  .fr-featured-details::before {
+    top: -1.38rem !important;
+    font-size: .59rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-featured-details > div,
+  .fr-featured-details > div:nth-child(n) {
+    min-height: 4rem !important;
+    padding: .72rem .84rem .64rem !important;
+    border-right: 1px solid rgba(29,29,27,.13) !important;
+    border-bottom: 1px solid rgba(29,29,27,.12) !important;
+  }
+
+  .fr-featured-details > div:nth-child(2n) {
+    border-right: 0 !important;
+  }
+
+  .fr-featured-details > div:nth-child(n+5) {
+    border-bottom: 0 !important;
+  }
+
+  .fr-featured-details span {
+    font-size: .56rem !important;
+    letter-spacing: .085em !important;
+  }
+
+  .fr-featured-details strong {
+    margin-top: .43rem !important;
+    font-size: .84rem !important;
+    line-height: 1.2 !important;
+    letter-spacing: -.01em !important;
+  }
+
+  /* Actions anchor the equal-height sheet rather than floating immediately
+     after short records. This keeps yellow/red/blue source cards consistent. */
+  .fr-featured-book > div:nth-of-type(4) {
+    width: 96% !important;
+    max-width: 96% !important;
+    margin-top: auto !important;
+    padding-top: .8rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4)::before {
+    margin-bottom: .66rem !important;
+    padding-top: .64rem !important;
+    font-size: .58rem !important;
+    letter-spacing: .105em !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) > button,
+  .fr-featured-book > div:nth-of-type(4) > a {
+    min-height: 2.55rem !important;
+    padding-inline: .92rem !important;
+    font-size: .66rem !important;
+    letter-spacing: .055em !important;
+  }
+
+  /* RIGHT INDEX --------------------------------------------------------
+     Captions are deliberately wider and use three collision lanes. Score still
+     owns stem height; label lanes only prevent readable titles from colliding. */
+  .fr-shelf-book:not(.fr-shelf-book-active) {
+    --caption-lane-y: 0rem;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):nth-child(3n + 2) {
+    --caption-lane-y: 3.75rem;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):nth-child(3n) {
+    --caption-lane-y: 7.5rem;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    top: calc(.12rem + var(--caption-lane-y)) !important;
+    left: .92rem !important;
+    width: 8.85rem !important;
+    min-height: 3.55rem !important;
+    height: 3.55rem !important;
+    max-height: 3.55rem !important;
+    padding: .46rem .56rem .4rem !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 3 !important;
+    overflow: hidden !important;
+    color: rgba(249,251,254,.94) !important;
+    background: linear-gradient(90deg, rgba(10,17,27,.66), rgba(10,17,27,.32) 84%, transparent) !important;
+    border: 0 !important;
+    border-left: 2px solid color-mix(in srgb, var(--source-accent) 88%, #fff) !important;
+    box-shadow: none !important;
+    font-size: .78rem !important;
+    font-weight: 690 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -.014em !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:last-child {
+    top: calc(4.02rem + var(--caption-lane-y)) !important;
+    bottom: auto !important;
+    left: 1.04rem !important;
+    width: 8.45rem !important;
+    color: color-mix(in srgb, var(--source-accent) 68%, #dfe8f3) !important;
+    font-size: .56rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    letter-spacing: .07em !important;
+    opacity: .84 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  .fr-shelf-book > span:first-child {
+    top: .5rem !important;
+    font-size: .5rem !important;
+  }
+
+  .fr-shelf-book-active > span:nth-child(2) {
+    top: .82rem !important;
+    left: 1.25rem !important;
+    width: min(11.4rem, 13.2vw) !important;
+    color: #fbfdff !important;
+    font-size: clamp(1rem, 1.06vw, 1.14rem) !important;
+    font-weight: 720 !important;
+    line-height: 1.07 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  .fr-shelf-book-active > span:last-child {
+    top: 2.72rem !important;
+    bottom: auto !important;
+    left: 1.25rem !important;
+    width: 9rem !important;
+    font-size: .58rem !important;
+    letter-spacing: .07em !important;
+    opacity: .8 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  .fr-shelf-book-active::after {
+    left: 1.25rem !important;
+  }
+
+  /* Keep the selected needle immediately beside the folio edge. */
+  .fr-bookshelf {
+    left: 45.4% !important;
+  }
+
+  /* HOVER STABILITY ----------------------------------------------------
+     The old physical-bookshelf interaction layer still lifts, rotates and
+     recolors records on hover. In the flat archive field hover should only
+     confirm focus in place — never change geometry or resurrect book material. */
+  .fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim),
+  .fr-shelf-book:focus-visible:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+    z-index: 24 !important;
+    filter: brightness(1.07) saturate(1.02) !important;
+    transform: translateX(calc(-50% + var(--book-x, 0rem))) !important;
+    box-shadow: none !important;
+  }
+
+  .fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim)::after,
+  .fr-shelf-book:focus-visible:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim)::after {
+    opacity: .72 !important;
+    transform: translateX(50%) !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active):hover > span:nth-child(2),
+  .fr-shelf-book:not(.fr-shelf-book-active):focus-visible > span:nth-child(2) {
+    color: #fff !important;
+    background: linear-gradient(90deg, rgba(10,17,27,.76), rgba(10,17,27,.40) 84%, transparent) !important;
+    border-left-color: color-mix(in srgb, var(--source-accent) 96%, #fff) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* The folio itself is not a hover target. Keep its material and shadow
+     completely stable while the actual controls inside remain interactive. */
+  .fr-featured-book:hover {
+    box-shadow:
+      0 1.7rem 4.1rem rgba(0,0,0,.29),
+      0 .35rem 1.1rem rgba(0,0,0,.13),
+      inset 0 0 0 1px rgba(255,255,255,.34),
+      inset 0 -1px rgba(29,29,27,.10) !important;
+  }
+}
+
+@media (min-width: 781px) and (max-width: 1180px) {
+  .fr-featured-book {
+    width: 42vw !important;
+    min-width: 29rem !important;
+    height: 78% !important;
+    padding-inline: 1.7rem !important;
+  }
+
+  .fr-featured-book h1 {
+    font-size: clamp(2.35rem, 2.9vw, 3.3rem) !important;
+  }
+
+  .fr-featured-details strong {
+    font-size: .76rem !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:nth-child(2) {
+    width: 7.6rem !important;
+    font-size: .7rem !important;
+  }
+
+  .fr-shelf-book:not(.fr-shelf-book-active) > span:last-child {
+    width: 7.25rem !important;
+    font-size: .52rem !important;
+  }
+}

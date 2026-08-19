@@ -1,0 +1,325 @@
+/* Saved visual Gate v2 — Archive Field.
+   This layer keeps the flat research-instrument language but restores hierarchy,
+   density, and motion on desktop. SavedLibrary behavior remains unchanged. */
+
+@media (min-width: 781px) {
+  .fr-saved-shell {
+    background:
+      radial-gradient(circle at 74% 46%, rgba(90, 105, 255, .13), transparent 25%),
+      radial-gradient(circle at 12% 68%, rgba(214, 183, 120, .045), transparent 22%),
+      linear-gradient(90deg, rgba(113, 130, 255, .032) 1px, transparent 1px),
+      linear-gradient(rgba(113, 130, 255, .026) 1px, transparent 1px),
+      linear-gradient(180deg, #0a0f17 0%, #070b11 54%, #05080d 100%) !important;
+    background-size: auto, auto, 72px 72px, 72px 72px, auto !important;
+  }
+
+  .fr-archive-stage {
+    min-height: clamp(41rem, 72vh, 50rem) !important;
+  }
+
+  .fr-archive-stage::before {
+    content: "ARCHIVE FIELD / SIGNAL MEMORY" !important;
+    left: 5.5% !important;
+    top: 10.5% !important;
+    color: rgba(240, 237, 230, .34) !important;
+  }
+
+  .fr-archive-stage::after {
+    content: "LIVE INDEX / SELECTED FRONTIER" !important;
+    right: 5.5% !important;
+    top: 10.5% !important;
+    color: rgba(113, 130, 255, .7) !important;
+  }
+
+  .fr-archive-stage > div:first-child {
+    inset: 7% 4.5% 9% !important;
+    opacity: .32 !important;
+    border-top-color: rgba(113, 130, 255, .2) !important;
+    border-bottom-color: rgba(113, 130, 255, .2) !important;
+    background-size: 24px 24px !important;
+    background-image:
+      linear-gradient(rgba(172,181,202,.075) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(172,181,202,.075) 1px, transparent 1px) !important;
+  }
+
+  .fr-archive-stage > div:nth-child(2) {
+    left: 50% !important;
+    right: 3% !important;
+    bottom: 12% !important;
+    height: 66% !important;
+    opacity: .34 !important;
+    filter: blur(62px) !important;
+    background:
+      radial-gradient(ellipse at 58% 58%, rgba(83, 102, 255, .34), transparent 63%) !important;
+  }
+
+  /* Selected signal is a research board, not a centered modal. */
+  .fr-featured-book {
+    left: 5.5% !important;
+    right: auto !important;
+    bottom: 13% !important;
+    width: min(43rem, 43vw) !important;
+    min-width: 34rem !important;
+    height: min(32.5rem, 52vh) !important;
+    min-height: 28rem !important;
+    padding: 2.35rem 2.6rem 2rem 3rem !important;
+    border-top: 1px solid rgba(240, 237, 230, .2) !important;
+    border-right: 1px solid rgba(240, 237, 230, .09) !important;
+    border-bottom: 1px solid rgba(240, 237, 230, .14) !important;
+    border-left: 3px solid var(--saved-index-cobalt) !important;
+    background:
+      linear-gradient(115deg, rgba(21, 28, 41, .97), rgba(8, 12, 19, .91) 72%) !important;
+    box-shadow:
+      0 2.4rem 6rem rgba(0,0,0,.28),
+      1.1rem 0 4.8rem rgba(83, 102, 255, .045) !important;
+    transform: none !important;
+    overflow: hidden !important;
+  }
+
+  .fr-featured-book::before {
+    content: "RESEARCH DOSSIER" !important;
+    inset: auto 1.2rem 1.5rem auto !important;
+    width: auto !important;
+    height: auto !important;
+    opacity: 1 !important;
+    color: rgba(113, 130, 255, .12) !important;
+    background: none !important;
+    mask-image: none !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: clamp(2.6rem, 4.8vw, 5.8rem);
+    font-weight: 850;
+    letter-spacing: -.05em;
+    line-height: .82;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    pointer-events: none;
+  }
+
+  .fr-featured-book::after {
+    width: 3px !important;
+    background:
+      linear-gradient(180deg, var(--saved-index-cobalt), rgba(113, 130, 255, .18) 72%, transparent) !important;
+    box-shadow: 0 0 2.2rem rgba(113, 130, 255, .22) !important;
+  }
+
+  .fr-featured-book > div:first-of-type {
+    padding-bottom: .65rem !important;
+    border-bottom-color: rgba(113, 130, 255, .34) !important;
+    font-size: .52rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) {
+    position: relative;
+    max-width: calc(100% - 1.5rem);
+    gap: .55rem 1.15rem !important;
+    margin-top: 1.15rem !important;
+    padding-right: 5.6rem;
+  }
+
+  .fr-featured-book > div:nth-of-type(2) span:nth-child(4) {
+    position: absolute;
+    top: -.35rem;
+    right: 0;
+    color: rgba(113, 130, 255, .9) !important;
+    font-size: .78rem !important;
+    font-weight: 850;
+    letter-spacing: .11em !important;
+  }
+
+  .fr-featured-book h1 {
+    max-width: 90%;
+    margin: 1.7rem 0 1rem !important;
+    font-size: clamp(3.3rem, 5.2vw, 6.1rem) !important;
+    line-height: .82 !important;
+    letter-spacing: -.07em !important;
+    font-weight: 610 !important;
+    text-wrap: balance;
+  }
+
+  .fr-featured-book p {
+    max-width: 33rem !important;
+    font-size: .96rem !important;
+    line-height: 1.58 !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(3) {
+    margin-top: 1.25rem !important;
+  }
+
+  .fr-featured-book > div:nth-of-type(4) {
+    padding-top: 1.25rem !important;
+    border-top-color: rgba(240, 237, 230, .16) !important;
+  }
+
+  .fr-featured-book-next {
+    animation: frSavedFieldNext 480ms cubic-bezier(.16,.84,.2,1) both !important;
+  }
+
+  .fr-featured-book-prev {
+    animation: frSavedFieldPrev 480ms cubic-bezier(.16,.84,.2,1) both !important;
+  }
+
+  .fr-featured-book-direct {
+    animation: frSavedFieldDirect 420ms cubic-bezier(.16,.84,.2,1) both !important;
+  }
+
+  /* The archive itself becomes a dense signal skyline. */
+  .fr-bookshelf {
+    left: 52% !important;
+    right: 5.5% !important;
+    bottom: 13% !important;
+    height: 59% !important;
+    overflow: visible !important;
+  }
+
+  .fr-bookshelf::before {
+    content: "";
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    right: 0;
+    top: 39%;
+    height: 1px;
+    pointer-events: none;
+    opacity: .75;
+    background:
+      linear-gradient(90deg, transparent, rgba(113,130,255,.32) 14%, rgba(113,130,255,.08) 78%, transparent);
+    box-shadow: 0 0 1.2rem rgba(113,130,255,.12);
+    animation: frSavedScanLine 6.8s ease-in-out infinite;
+  }
+
+  .fr-book-row::before {
+    left: 0 !important;
+    right: 0 !important;
+    background:
+      linear-gradient(90deg, rgba(113,130,255,.5), rgba(240,237,230,.16) 22% 82%, rgba(113,130,255,.5)) !important;
+  }
+
+  .fr-book-row::after {
+    content: "SIGNAL STRENGTH / SAVED ORDER";
+    position: absolute;
+    right: 0;
+    bottom: -1.55rem;
+    color: rgba(240, 237, 230, .24);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: .42rem;
+    font-weight: 760;
+    letter-spacing: .13em;
+  }
+
+  .fr-shelf-book {
+    width: clamp(2.8rem, 3.35vw, 3.65rem) !important;
+    min-height: 12rem !important;
+    height: 72% !important;
+    border-left-color: rgba(240, 237, 230, .17) !important;
+    border-right-color: rgba(240, 237, 230, .035) !important;
+    border-top-width: 3px !important;
+    background:
+      linear-gradient(180deg, rgba(113, 130, 255, .14), rgba(113, 130, 255, .035) 40%, rgba(255,255,255,.008)) !important;
+  }
+
+  .fr-shelf-book:nth-child(2n) { height: 56% !important; }
+  .fr-shelf-book:nth-child(3n) { height: 84% !important; }
+  .fr-shelf-book:nth-child(4n) { height: 67% !important; }
+  .fr-shelf-book:nth-child(5n) { height: 92% !important; }
+  .fr-shelf-book:nth-child(7n) { height: 48% !important; }
+
+  .fr-shelf-book::before {
+    left: .45rem !important;
+    right: .45rem !important;
+    bottom: 2.4rem !important;
+    background: rgba(113, 130, 255, .2) !important;
+  }
+
+  .fr-shelf-book > span:first-child {
+    top: .55rem !important;
+    left: .5rem !important;
+    color: rgba(137, 151, 255, .9) !important;
+    font-size: .48rem !important;
+  }
+
+  .fr-shelf-book > span:nth-child(2) {
+    inset: 1.9rem .42rem 2.85rem !important;
+    color: rgba(240, 237, 230, .78) !important;
+    font-size: clamp(.69rem, .82vw, .88rem) !important;
+  }
+
+  .fr-shelf-book > span:last-child {
+    bottom: .72rem !important;
+    color: rgba(240, 237, 230, .36) !important;
+  }
+
+  .fr-shelf-book:hover:not(.fr-shelf-book-active):not(.fr-shelf-book-search-dim) {
+    border-top-color: #9aa5ff !important;
+    background:
+      linear-gradient(180deg, rgba(113, 130, 255, .28), rgba(113, 130, 255, .07) 42%, rgba(255,255,255,.014)) !important;
+    transform:
+      translateX(calc(-50% + var(--book-x, 0rem)))
+      translateY(-.8rem) !important;
+  }
+
+  .fr-shelf-book-active {
+    z-index: 9 !important;
+    opacity: .78 !important;
+    border-top-color: var(--saved-index-warm) !important;
+    border-left-color: rgba(214, 183, 120, .48) !important;
+    background:
+      linear-gradient(180deg, rgba(214, 183, 120, .15), rgba(214, 183, 120, .025) 52%, rgba(255,255,255,.008)) !important;
+    box-shadow: 0 0 2rem rgba(214, 183, 120, .04) !important;
+  }
+
+  .fr-shelf-book-active > span:first-child {
+    color: var(--saved-index-warm) !important;
+  }
+
+  /* Search and sort now frame the field instead of floating above it. */
+  .fr-saved-shell > div:has(> input[aria-label="Search saved research"]) {
+    left: 5.5% !important;
+    width: min(28rem, 36vw) !important;
+    padding-left: 0 !important;
+  }
+
+  .fr-archive-rail {
+    width: min(43rem, 42vw) !important;
+    margin: -1rem 5.5% 1.8rem auto !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Previous saved signal"] {
+    left: 5.5% !important;
+  }
+
+  .fr-archive-stage > button[aria-label="Next saved signal"] {
+    right: 5.5% !important;
+  }
+}
+
+@keyframes frSavedFieldNext {
+  0% { opacity: .18; transform: translateX(2rem); filter: blur(3px); }
+  72% { opacity: 1; transform: translateX(-.25rem); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes frSavedFieldPrev {
+  0% { opacity: .18; transform: translateX(-2rem); filter: blur(3px); }
+  72% { opacity: 1; transform: translateX(.25rem); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes frSavedFieldDirect {
+  0% { opacity: .18; transform: translateY(1rem); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes frSavedScanLine {
+  0%, 100% { transform: translateY(-4.5rem); opacity: .22; }
+  50% { transform: translateY(5.5rem); opacity: .82; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-bookshelf::before,
+  .fr-featured-book-next,
+  .fr-featured-book-prev,
+  .fr-featured-book-direct {
+    animation: none !important;
+  }
+}
