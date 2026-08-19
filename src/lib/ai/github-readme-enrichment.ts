@@ -2,8 +2,10 @@
  * Targeted GitHub README enrichment for paid AI analysis.
  *
  * The production GitHub collector intentionally skips README enrichment to save
- * GitHub API quota. When a GitHub item has already passed the candidate gate and
- * is about to receive paid AI analysis, fetch at most one README for that item.
+ * GitHub API quota. When an item has already passed the candidate gate and points
+ * to a GitHub repository, fetch at most one README immediately before paid AI
+ * analysis. This also covers Hacker News / other source items whose canonical
+ * source URL is a GitHub repository.
  *
  * This helper never calls an LLM. Fetch/persist failures are non-fatal and fall
  * back to the documents already available to the analyzer.
@@ -69,12 +71,12 @@ function defaultClient(token: string): GithubReadmeClient {
 
 /**
  * Return the original documents unless all of these are true:
- * - item is GitHub;
+ * - the item resolves to a GitHub owner/repository (native GitHub or GitHub URL);
  * - no usable README is already stored;
  * - a GitHub token/client is available;
  * - README fetch succeeds.
  *
- * A fetched README is prepended so prepareAnalysisInput() uses it for GitHub.
+ * A fetched README is prepended so prepareAnalysisInput() sees it first.
  */
 export async function enrichGithubReadmeForAnalysis(
   supabase: SupabaseClient,
@@ -82,7 +84,6 @@ export async function enrichGithubReadmeForAnalysis(
   documents: AnalysisDocument[],
   opts: GithubReadmeEnrichmentOptions
 ): Promise<AnalysisDocument[]> {
-  if (item.source_slug !== "github") return documents;
   if (documents.some((doc) => doc.document_type === "readme" && doc.content_text?.trim())) {
     return documents;
   }
