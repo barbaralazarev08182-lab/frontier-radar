@@ -2,7 +2,8 @@
    Final desktop-only polish:
    - restore contrast for the giant rank on the wildcard/orange card;
    - add a restrained, broad moving light sweep to active cards 01–05 only.
-   Blue adjacent (06) and orange wildcard (07) are intentionally excluded. */
+   Blue adjacent (06) and orange wildcard (07) are intentionally excluded.
+   Preview sync marker: R7. */
 
 @media (min-width:1181px){
   /* 07 / wildcard: keep the giant rank visible against the orange field. */
