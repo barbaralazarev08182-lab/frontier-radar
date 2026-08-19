@@ -1,0 +1,253 @@
+/* TODAY-STAGE-RETRY-STRONG-MOTION
+   High-intensity motion/effects pass on top of the controlled retry.
+   Foundation, layout, data, and interaction architecture remain unchanged.
+   The motion system is coordinated around three moments:
+   1) OPEN = ignition, 2) SWITCH = impact pulse, 3) IDLE = low-frequency instrument motion. */
+
+/* A single explicit accent source for global effects. */
+.today-r27-production .fr-stack[data-selected-lane="core"]{--fx-accent:#777db4;--fx-rgb:119,125,180}
+.today-r27-production .fr-stack[data-selected-lane="adjacent"]{--fx-accent:#3150ff;--fx-rgb:49,80,255}
+.today-r27-production .fr-stack[data-selected-lane="wildcard"]{--fx-accent:#f15424;--fx-rgb:241,84,36}
+
+/* Stronger depth baseline: the open field should feel electrically alive, not flat. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]{
+  transform-origin:50% 18%;
+  box-shadow:
+    0 58px 132px rgba(27,24,18,.16),
+    0 24px 58px rgba(27,24,18,.09),
+    0 0 86px rgba(var(--fx-rgb),.12),
+    inset 0 1px rgba(255,255,255,.58),
+    inset 0 -1px rgba(11,11,11,.055)!important;
+  animation:frStrongFieldBreath 5.6s ease-in-out infinite;
+}
+
+/* Make the active left rail and top rail behave like an energized instrument edge. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]::before{
+  width:7px!important;
+  box-shadow:0 0 18px rgba(var(--fx-rgb),.62),0 0 42px rgba(var(--fx-rgb),.26);
+  animation:frStrongRailPulse 2.35s cubic-bezier(.4,0,.2,1) infinite;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]::after{
+  height:2px!important;
+  opacity:.58!important;
+  background:linear-gradient(90deg,var(--fx-accent),rgba(var(--fx-rgb),.28) 48%,transparent 88%)!important;
+  box-shadow:0 0 16px rgba(var(--fx-rgb),.36),0 0 36px rgba(var(--fx-rgb),.14)!important;
+  animation:frStrongTopRailLive 2.7s ease-in-out infinite;
+}
+
+/* WHY NOW gets a much more physical presence while staying inside the existing grid. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
+  transform-style:preserve-3d;
+  perspective:1100px;
+  filter:drop-shadow(0 34px 46px rgba(29,25,18,.13));
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before{
+  box-shadow:
+    0 38px 78px rgba(29,25,18,.12),
+    0 0 58px rgba(var(--fx-rgb),.10),
+    inset 0 1px rgba(255,255,255,.48)!important;
+  animation:frStrongHeroMaterial 4.8s ease-in-out infinite!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::after{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  pointer-events:none;
+  inset:-78px -122px;
+  background:
+    radial-gradient(ellipse at 50% 50%,rgba(var(--fx-rgb),.22),rgba(var(--fx-rgb),.07) 32%,transparent 68%);
+  filter:blur(18px);
+  opacity:.34;
+  transform:scale(.92);
+  animation:frStrongHeroHalo 3.9s ease-in-out infinite;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
+  transform-origin:0 50%;
+  text-shadow:0 16px 34px rgba(18,16,12,.10)!important;
+}
+
+/* The global instrument graphics are now clearly active. */
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere{
+  opacity:.96!important;
+  filter:drop-shadow(0 0 12px rgba(var(--fx-rgb),.12));
+  animation:frStrongAtmosDrive 5.2s ease-in-out infinite!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__orbit-line{
+  stroke:rgba(var(--fx-rgb),.22)!important;
+  transform-box:fill-box;
+  transform-origin:center;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__orbit-line:nth-child(1){animation:frStrongOrbitRingA 8.8s linear infinite}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__orbit-line:nth-child(2){animation:frStrongOrbitRingB 6.8s linear infinite reverse}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__orbit-line:nth-child(3){animation:frStrongOrbitRingA 5.5s linear infinite reverse}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__orbit-line:nth-child(4){animation:frStrongOrbitRingB 4.4s linear infinite}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__trace{
+  stroke:var(--fx-accent)!important;
+  stroke-width:2.25!important;
+  stroke-dasharray:.055 .035 .18 .73!important;
+  opacity:.94!important;
+  filter:drop-shadow(0 0 7px rgba(var(--fx-rgb),.56)) drop-shadow(0 0 18px rgba(var(--fx-rgb),.28))!important;
+  animation:frStrongTraceCharge 1.6s linear infinite!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__beacon{
+  fill:#fff!important;
+  stroke:var(--fx-accent);
+  stroke-width:2.2;
+  animation:frStrongBeaconBurst 1.08s cubic-bezier(.16,1,.3,1) infinite!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__node{
+  animation:frStrongNodeBlink 2.15s steps(1,end) infinite;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__calibration,
+.today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere__ticks{
+  animation:frStrongCalibrationFlicker 3.2s steps(1,end) infinite;
+}
+
+/* Existing light curtain becomes a high-energy scan: shorter interval, brighter core, longer travel. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail::after{
+  top:-36%!important;
+  bottom:-32%!important;
+  left:-48%!important;
+  width:42%!important;
+  background:linear-gradient(106deg,
+    transparent 0 22%,
+    rgba(var(--fx-rgb),.05) 31%,
+    rgba(255,255,255,.82) 44%,
+    rgba(var(--fx-rgb),.42) 50%,
+    rgba(255,255,255,.62) 56%,
+    transparent 73%)!important;
+  filter:blur(7px) saturate(1.15)!important;
+  opacity:0;
+  animation:frStrongStageSweep 3.75s cubic-bezier(.22,.61,.36,1) .9s infinite!important;
+}
+
+/* OPEN: make opening feel like a launch / ignition event, with one coordinated camera punch. */
+.today-r27-production .fr-stack[data-transition="opening"] .fr-stack-shared{
+  transform-origin:50% 30%;
+  animation:frStrongOpenCamera 1.06s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-stack-atmosphere{
+  animation:frStrongOpenAtmos 1.08s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"]{
+  animation:frStrongOpenField 1.04s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-head{
+  animation:frStrongOpenHead .82s cubic-bezier(.16,1,.3,1) .03s both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why{
+  animation:frStrongOpenHero 1.08s cubic-bezier(.16,1,.3,1) .08s both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why p{
+  animation:frStrongOpenType .92s cubic-bezier(.16,1,.3,1) .14s both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-summary{
+  animation:frStrongSideLeft .9s cubic-bezier(.16,1,.3,1) .18s both!important;
+}
+.today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-secondary{
+  animation:frStrongSideRight .9s cubic-bezier(.16,1,.3,1) .23s both!important;
+}
+
+/* SWITCH: deliberately strong but brief. Whole instrument reacts in sync. */
+.today-r27-production .fr-stack[data-switching="true"] .fr-stack-shared{
+  transform-origin:50% 50%;
+  animation:frStrongSwitchCamera .56s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-stack-atmosphere{
+  animation:frStrongSwitchAtmos .62s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"]{
+  animation:frStrongSwitchField .62s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-head{
+  animation:frStrongSwitchHead .56s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-entity{
+  animation:frStrongSwitchTitle .56s steps(1,end) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-detail{
+  animation:frStrongSwitchDetail .6s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-why{
+  animation:frStrongSwitchHero .64s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-why p{
+  animation:frStrongSwitchType .62s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:not([data-active="true"]) .fr-band-head{
+  animation:frStrongPeripheralWave .5s cubic-bezier(.16,1,.3,1) both!important;
+}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(1) .fr-band-head{animation-delay:0ms!important}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(2) .fr-band-head{animation-delay:20ms!important}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(3) .fr-band-head{animation-delay:40ms!important}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(4) .fr-band-head{animation-delay:60ms!important}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(5) .fr-band-head{animation-delay:80ms!important}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(6) .fr-band-head{animation-delay:100ms!important}
+.today-r27-production .fr-stack[data-switching="true"] .fr-band:nth-child(7) .fr-band-head{animation-delay:120ms!important}
+
+/* Stronger tactile hover without changing structure. */
+.today-r27-production .fr-stack[data-open="true"] .fr-band:not([data-active="true"]) .fr-band-head:hover{
+  transform:translate3d(-10px,0,0) scaleX(1.006)!important;
+  background:linear-gradient(90deg,rgba(var(--fx-rgb),.12),rgba(255,255,255,.09) 48%,transparent 76%)!important;
+  filter:drop-shadow(0 10px 16px rgba(var(--fx-rgb),.16));
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band-head:hover .fr-band-gate{
+  transform:translate3d(9px,-3px,0) skewX(-8deg) scale(1.04)!important;
+  box-shadow:0 14px 30px rgba(var(--fx-rgb),.25),0 0 18px rgba(var(--fx-rgb),.16)!important;
+}
+.today-r27-production .fr-stack[data-open="true"] .fr-band-head:hover .fr-band-gate b{
+  transform:translate3d(5px,-5px,0) rotate(10deg) scale(1.12)!important;
+}
+
+@keyframes frStrongFieldBreath{
+  0%,100%{box-shadow:0 58px 132px rgba(27,24,18,.14),0 24px 58px rgba(27,24,18,.08),0 0 72px rgba(var(--fx-rgb),.08),inset 0 1px rgba(255,255,255,.58),inset 0 -1px rgba(11,11,11,.055)}
+  50%{box-shadow:0 68px 146px rgba(27,24,18,.18),0 28px 66px rgba(27,24,18,.10),0 0 118px rgba(var(--fx-rgb),.19),inset 0 1px rgba(255,255,255,.66),inset 0 -1px rgba(11,11,11,.055)}
+}
+@keyframes frStrongRailPulse{0%,100%{opacity:.72;transform:scaleY(.72)}46%{opacity:1;transform:scaleY(1);box-shadow:0 0 28px rgba(var(--fx-rgb),.82),0 0 58px rgba(var(--fx-rgb),.34)}}
+@keyframes frStrongTopRailLive{0%,100%{opacity:.32;filter:brightness(1)}50%{opacity:.9;filter:brightness(1.55)}}
+@keyframes frStrongHeroMaterial{0%,100%{transform:translate3d(0,0,0) scale(1);box-shadow:0 38px 78px rgba(29,25,18,.11),0 0 48px rgba(var(--fx-rgb),.08),inset 0 1px rgba(255,255,255,.48)}50%{transform:translate3d(0,-3px,0) scale(1.006);box-shadow:0 48px 92px rgba(29,25,18,.145),0 0 82px rgba(var(--fx-rgb),.17),inset 0 1px rgba(255,255,255,.58)}}
+@keyframes frStrongHeroHalo{0%,100%{opacity:.24;transform:scale(.9)}50%{opacity:.58;transform:scale(1.06)}}
+@keyframes frStrongAtmosDrive{0%,100%{opacity:.72;transform:scale(1) translate3d(0,0,0);filter:drop-shadow(0 0 10px rgba(var(--fx-rgb),.10))}50%{opacity:1;transform:scale(1.025) translate3d(-5px,-3px,0);filter:drop-shadow(0 0 22px rgba(var(--fx-rgb),.24))}}
+@keyframes frStrongOrbitRingA{0%{transform:rotate(0deg) scale(1);opacity:.42}50%{transform:rotate(2.6deg) scale(1.035);opacity:.78}100%{transform:rotate(0deg) scale(1);opacity:.42}}
+@keyframes frStrongOrbitRingB{0%{transform:rotate(0deg) scale(1.02);opacity:.28}50%{transform:rotate(-3.2deg) scale(.965);opacity:.68}100%{transform:rotate(0deg) scale(1.02);opacity:.28}}
+@keyframes frStrongTraceCharge{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes frStrongBeaconBurst{0%,100%{transform:scale(.55);opacity:.25;filter:drop-shadow(0 0 3px rgba(var(--fx-rgb),.28))}34%{transform:scale(2.45);opacity:1;filter:drop-shadow(0 0 11px rgba(var(--fx-rgb),.96)) drop-shadow(0 0 28px rgba(var(--fx-rgb),.68))}56%{transform:scale(1.15);opacity:.72}}
+@keyframes frStrongNodeBlink{0%,78%,100%{opacity:.18}79%,82%{opacity:1}83%,90%{opacity:.38}}
+@keyframes frStrongCalibrationFlicker{0%,61%,100%{opacity:.18}62%{opacity:.76}64%{opacity:.22}66%{opacity:.92}68%{opacity:.2}}
+@keyframes frStrongStageSweep{0%,8%{opacity:0;transform:skewX(-14deg) translate3d(0,0,0)}15%{opacity:.9}42%{opacity:.34}53%,100%{opacity:0;transform:skewX(-14deg) translate3d(480%,0,0)}}
+
+@keyframes frStrongOpenCamera{0%{transform:scale(.985) translate3d(0,18px,0);filter:brightness(.96)}36%{transform:scale(1.018) translate3d(0,-5px,0);filter:brightness(1.08)}68%{transform:scale(.998) translate3d(0,2px,0)}100%{transform:none;filter:none}}
+@keyframes frStrongOpenAtmos{0%{opacity:0;transform:scale(.84) rotate(-1.6deg);filter:blur(16px)}42%{opacity:1;transform:scale(1.075) rotate(.5deg);filter:blur(0) brightness(1.35)}100%{opacity:.96;transform:scale(1);filter:none}}
+@keyframes frStrongOpenField{0%{transform:scaleY(.86) scaleX(.985);filter:brightness(.94) saturate(.9);box-shadow:0 8px 16px rgba(27,24,18,.02)}36%{transform:scaleY(1.035) scaleX(1.006);filter:brightness(1.09) saturate(1.18);box-shadow:0 78px 168px rgba(27,24,18,.20),0 0 132px rgba(var(--fx-rgb),.28)}68%{transform:scaleY(.994) scaleX(1);filter:brightness(1.01)}100%{transform:none;filter:none}}
+@keyframes frStrongOpenHead{0%{opacity:0;transform:translate3d(0,-28px,0) scaleX(.97);filter:blur(9px)}55%{opacity:1;transform:translate3d(0,6px,0) scaleX(1.008);filter:blur(0)}100%{transform:none;filter:none}}
+@keyframes frStrongOpenHero{0%{opacity:0;transform:translate3d(0,86px,0) rotateX(22deg) scale(.82);filter:blur(18px)}48%{opacity:1;transform:translate3d(0,-18px,0) rotateX(-3deg) scale(1.04);filter:blur(0) brightness(1.08)}72%{transform:translate3d(0,5px,0) rotateX(1deg) scale(.994)}100%{opacity:1;transform:translate3d(0,-2px,0) rotateX(0) scale(1);filter:none}}
+@keyframes frStrongOpenType{0%{opacity:0;transform:translate3d(-36px,0,0) scaleX(.9);filter:blur(8px);letter-spacing:-.09em}46%{opacity:1;transform:translate3d(8px,0,0) scaleX(1.025);filter:blur(0);letter-spacing:-.038em}100%{transform:none;filter:none;letter-spacing:-.045em}}
+@keyframes frStrongSideLeft{0%{opacity:0;transform:translate3d(-72px,16px,0) rotate(-1.4deg);filter:blur(8px)}62%{opacity:1;transform:translate3d(8px,-2px,0);filter:blur(0)}100%{transform:none;filter:none}}
+@keyframes frStrongSideRight{0%{opacity:0;transform:translate3d(72px,16px,0) rotate(1.4deg);filter:blur(8px)}62%{opacity:1;transform:translate3d(-8px,-2px,0);filter:blur(0)}100%{transform:none;filter:none}}
+
+@keyframes frStrongSwitchCamera{0%{transform:none}16%{transform:translate3d(-4px,1px,0) rotate(-.12deg) scale(1.004)}33%{transform:translate3d(5px,-2px,0) rotate(.16deg) scale(1.008)}50%{transform:translate3d(-2px,1px,0) rotate(-.08deg) scale(.998)}72%{transform:translate3d(1px,0,0)}100%{transform:none}}
+@keyframes frStrongSwitchAtmos{0%{transform:scale(1);filter:none;opacity:.8}32%{transform:scale(1.085) rotate(.7deg);filter:brightness(1.42) saturate(1.35) drop-shadow(0 0 24px rgba(var(--fx-rgb),.48));opacity:1}100%{transform:scale(1);filter:none;opacity:.96}}
+@keyframes frStrongSwitchField{0%{transform:none;filter:none}28%{transform:scaleY(.965) scaleX(.994);filter:brightness(.94)}48%{transform:scaleY(1.032) scaleX(1.006);filter:brightness(1.12);box-shadow:0 84px 174px rgba(27,24,18,.22),0 0 148px rgba(var(--fx-rgb),.30)}100%{transform:none;filter:none}}
+@keyframes frStrongSwitchHead{0%{transform:none;opacity:1}30%{transform:translate3d(14px,0,0) skewX(-4deg);opacity:.38}56%{transform:translate3d(-6px,0,0) skewX(2deg);opacity:1}100%{transform:none}}
+@keyframes frStrongSwitchTitle{0%,100%{transform:none;text-shadow:none}18%{transform:translateX(-5px);text-shadow:5px 0 0 rgba(var(--fx-rgb),.34),-5px 0 0 rgba(49,80,255,.18)}27%{transform:translateX(5px);text-shadow:-4px 0 0 rgba(var(--fx-rgb),.42),4px 0 0 rgba(241,84,36,.18)}38%{transform:translateX(-2px);text-shadow:2px 0 0 rgba(var(--fx-rgb),.22)}46%{transform:none;text-shadow:none}}
+@keyframes frStrongSwitchDetail{0%{opacity:.18;transform:translate3d(0,22px,0) scale(.975);filter:blur(9px)}44%{opacity:1;transform:translate3d(0,-7px,0) scale(1.012);filter:blur(0)}100%{transform:none;filter:none}}
+@keyframes frStrongSwitchHero{0%{opacity:.15;transform:translate3d(0,38px,0) rotateX(14deg) scale(.9);filter:blur(12px)}48%{opacity:1;transform:translate3d(0,-13px,0) rotateX(-2deg) scale(1.035);filter:blur(0) brightness(1.08)}100%{transform:translate3d(0,-2px,0) rotateX(0) scale(1);filter:none}}
+@keyframes frStrongSwitchType{0%{opacity:.05;transform:translate3d(-24px,0,0) scaleX(.94);filter:blur(7px)}42%{opacity:1;transform:translate3d(7px,0,0) scaleX(1.018);filter:blur(0)}100%{transform:none;filter:none}}
+@keyframes frStrongPeripheralWave{0%{transform:none;filter:none}44%{transform:translate3d(-13px,0,0);filter:brightness(1.08) drop-shadow(0 5px 8px rgba(var(--fx-rgb),.13))}100%{transform:none;filter:none}}
+
+@media(max-width:1180px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::after{inset:-54px -72px}
+  .today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere{opacity:.82!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack *,
+  .today-r27-production .fr-stack *::before,
+  .today-r27-production .fr-stack *::after{
+    animation:none!important;
+    transition-duration:.001ms!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"],
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why,
+  .today-r27-production .fr-stack[data-open="true"] .fr-stack-atmosphere{transform:none!important;filter:none!important}
+}
