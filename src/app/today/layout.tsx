@@ -13,6 +13,7 @@ import "../qa/today-tear-aperture/today-signal-stage-r25.css";
 import "./today-r27-final.css";
 import "./today-production-guardrails.css";
 import "./today-five-zone-layout.css";
+import "./today-five-zone-layout-r2.css";
 
 export default function TodayLayout({ children }: { children: ReactNode }) {
   return children;
