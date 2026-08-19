@@ -26,6 +26,7 @@
     "analyze:items": "tsx scripts/analyze-items.ts",
     "analyze:items:dry": "tsx scripts/analyze-items.ts --dry-run --limit=5",
     "analyze:items:smoke": "tsx scripts/analyze-items.ts --dry-run --limit=1",
+    "report:ai-cost": "tsx scripts/report-ai-cost.ts",
     "doctor:supabase": "tsx scripts/doctor-supabase.ts",
     "seed:sources": "tsx scripts/seed-sources.ts",
     "doctor:production": "tsx scripts/doctor-production.ts"
