@@ -21,7 +21,7 @@ import "./today-open-active-label-r6.css";
 import "./today-core-sheen-r7.css";
 import { TodayWheelNavigation } from "./today-wheel-navigation";
 
-// Today R7: page-scoped visual layers plus desktop wheel navigation; isolated from every other route.
+// Today R7 final polish: core-card sheen, wildcard rank contrast, and desktop wheel navigation; isolated from every other route.
 export default function TodayLayout({ children }: { children: ReactNode }) {
   return (
     <>
