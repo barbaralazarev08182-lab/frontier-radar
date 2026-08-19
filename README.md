@@ -14,13 +14,13 @@ Discover → Understand → Get Inspired → Build
 
 ---
 
-## Current baseline — 2026-08-12
+## Current baseline — 2026-08-19 phase closure
 
-Current GitHub `main` before this documentation closure record is merged:
+Phase-closure base before the Idea Lab retirement PR:
 
 ```text
-3fe4977b72084b0dca9232e69b84151ae7a1e205
-Gate 11D: lock Today Project Idea Lab handoffs in CI
+b76472560008ce85ab70f2d0776dd900287b7697
+Document restoration recovery protocol (#64)
 ```
 
 Production:
@@ -41,14 +41,16 @@ Signal Weave
   ↓
 Project Intelligence
   ↓
-Saved / Idea Lab / Build
+Saved / Build
 ```
 
 Global nav:
 
 ```text
-TODAY / EXPLORE / SAVED / IDEA LAB
+TODAY / EXPLORE / RADAR / SAVED
 ```
+
+Idea Lab was intentionally retired at phase closure. `/idea-lab` is no longer a product route and Project no longer hands records into it.
 
 Design language:
 
@@ -70,7 +72,7 @@ Gate 11B-A  Function privilege hardening                       CLOSED
 Gate 11B-B  Public feed boundary hardening                     CLOSED
 Gate 11B-C1 Application-role ACL hardening                     CLOSED
 Gate 11C    Stale collection-run terminalization               CLOSED
-Gate 11D    Gate 9 / Gate 10 deterministic CI regressions      CLOSED
+Gate 11D    Gate 9 / historical Gate 10 CI regressions         CLOSED
 ```
 
 Current integrity invariants:
@@ -80,7 +82,7 @@ Current integrity invariants:
 - `anon` / `authenticated` have no direct privileges on current public relations or sequences and no direct public-function EXECUTE path.
 - Security Advisor has no Gate-11 ERROR/WARN findings; remaining `RLS Enabled No Policy` findings are INFO on intentionally locked tables.
 - Any new `collection_runs` insert sweeps prior `running` rows older than one hour to terminal `failed`; the eight historical Aug-07 orphan runs were repaired.
-- Gate 9 Today → Project exact-ID and Gate 10 Project → Idea Lab exact-`from` contracts now run permanently inside the existing `npm test` CI step.
+- Gate 9 Today → Project exact-ID coverage remains in `npm test`. Gate 10 Project → Idea Lab coverage was retired together with the removed Idea Lab product surface.
 - No Gate 11 integrity subgate changed frozen visuals.
 
 Key merged PRs:
@@ -95,7 +97,7 @@ Key merged PRs:
 #25  Gate 11D
 ```
 
-See the checkpoint for exact migrations, CI runs, runtime probes, Production validations, and non-scope decisions.
+See the checkpoint for exact migrations, CI runs, runtime probes, Production validations, and non-scope decisions. Historical checkpoint references to Idea Lab describe the product state at that time and are intentionally preserved as history.
 
 ---
 
@@ -131,13 +133,7 @@ Hero continuous
 
 Accepted visual and transition contracts are protected. In particular, do not casually redesign 03 Interrogation.
 
-Project → Idea Lab handoff:
-
-```text
-/idea-lab?from=<source-item-id>
-```
-
-The exact requested source must be honored; no silent fallback to another Saved signal.
+Project keeps its traceable source links and generated Build directions. The former `SEND TO IDEA LAB` / `IDEA LAB ↗` exits are retired and must not be reintroduced without explicitly reopening scope.
 
 ### Explore — FROZEN
 
@@ -158,6 +154,10 @@ OPEN INTELLIGENCE
 
 `MORE LIKE THIS` is a personalization signal, not SAVE.
 
+### Radar — FROZEN
+
+Radar remains a protected accepted surface. Its fixed-viewport behavior and sticky-navigation geometry must not be casually reopened.
+
 ### Saved — VISUAL PASS + INTERACTION PASS + FROZEN
 
 ```text
@@ -166,35 +166,38 @@ frontier_radar_saved_items_v1
 src/lib/saved/browser.ts
 ```
 
-Current v1 persistence is browser-local.
+Current v1 persistence is browser-local. Saved supports its accepted archive interactions plus local export / import backup controls.
 
-### Idea Lab — VISUAL PASS + INTERACTION PASS + FROZEN
+### Idea Lab — RETIRED
+
+Idea Lab was removed as a product surface during the 2026-08-19 phase closure:
 
 ```text
-Signal-to-Direction Workbench
-Saved Signal → Pinned Signal → Working Note → Personal Direction
-SEED / SHAPING / BUILDING
-frontier_radar_ideas_v1
+/idea-lab                         REMOVED
+Project → Idea Lab handoff        REMOVED
+Idea Lab nav entry                REMOVED
+Idea Lab route UI/styles          REMOVED
+Gate 10 active handoff coverage   RETIRED
 ```
 
-If a Saved source is later removed, an existing Idea remains and shows `SOURCE NO LONGER SAVED`.
+Existing legacy `frontier_radar_ideas_v1` records are not exposed as an active product surface. The existing personal-memory v1 backup compatibility may continue carrying legacy records so retirement does not silently destroy local user data.
 
 ---
 
 ## Remaining product-integrity decisions
 
-These were explicitly deferred from Gate 11 rather than left accidentally unfinished.
+These are deferred future-phase decisions rather than incomplete acceptance items for this phase.
 
-### Gate 12 candidate — Personal Memory Durability
+### Personal Memory Durability
 
-Saved and Idea Lab remain intentionally browser-local in v1. Before changing this frozen contract, explicitly choose:
+Saved remains intentionally browser-local in v1. Before changing this frozen contract, explicitly choose:
 
 ```text
 A. browser-local + export / backup / import
 B. Supabase-synced personal state
 ```
 
-### Gate 13 candidate — Personalization Integrity
+### Personalization Integrity
 
 Current identity is browser visitor UUID, so profiles can fragment across browsers/devices. Future work may address durable identity, QA/test-event quarantine, and ranking-effect proof.
 
@@ -269,4 +272,4 @@ Project-specific failure record:
 - The fix was not to keep patching Project visuals. The accepted Project route stayed free of that route-level `loading.tsx`, and the historical `RESOLVING PROJECT SIGNAL` scene was moved to a root-persistent entry overlay.
 - The overlay now waits for the real `.pr-shell`, satisfies its minimum display time, then waits two consecutive `requestAnimationFrame` ticks before clearing. A long safety timer is exception-only, not part of normal transition timing.
 
-<!-- deploy-trigger: 2026-08-17T22:16+08:00 -->
+<!-- phase-closure: 2026-08-19 -->
