@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { href: "/explore", label: "Explore", short: "E" },
   { href: "/radar", label: "Radar", short: "R" },
   { href: "/saved", label: "Saved", short: "S" },
-  { href: "/idea-lab", label: "Idea Lab", short: "I" },
 ];
 
 function shouldEagerPrefetch(href: string) {
@@ -22,7 +21,7 @@ export function SiteNav() {
   const project = pathname.startsWith("/project/");
   const explore = pathname === "/explore" || pathname.startsWith("/explore/");
   const radar = pathname === "/radar" || pathname.startsWith("/radar/");
-  const memorySurface = pathname === "/saved" || pathname.startsWith("/idea-lab");
+  const memorySurface = pathname === "/saved";
   const lightEditorial = explore || radar;
 
   if (today) {
