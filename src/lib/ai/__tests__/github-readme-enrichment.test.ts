@@ -36,7 +36,7 @@ function mockSupabase(onUpsert?: (payload: Record<string, unknown>) => void) {
   } as never;
 }
 
-test("non-GitHub items never fetch README", async () => {
+test("items without a GitHub repository identity never fetch README", async () => {
   let calls = 0;
   const client: GithubReadmeClient = {
     getReadme: async () => {
@@ -52,6 +52,36 @@ test("non-GitHub items never fetch README", async () => {
 
   assert.equal(calls, 0);
   assert.equal(result, docs);
+});
+
+test("Hacker News item pointing to GitHub is eligible for targeted README fetch", async () => {
+  let calls = 0;
+  const client: GithubReadmeClient = {
+    getReadme: async (owner, repo) => {
+      calls++;
+      assert.equal(owner, "octocat");
+      assert.equal(repo, "example");
+      return {
+        data: {} as never,
+        status: 404,
+        rateLimit: null,
+        etag: null,
+        lastModified: null,
+        notModified: false,
+        notFound: true,
+      };
+    },
+  };
+  const hn = item("hackernews");
+  hn.source_url = "https://github.com/octocat/example";
+
+  const result = await enrichGithubReadmeForAnalysis(mockSupabase(), hn, [], {
+    maxBytes: 12_000,
+    client,
+  });
+
+  assert.equal(calls, 1);
+  assert.deepEqual(result, []);
 });
 
 test("existing stored README is reused without another GitHub request", async () => {
