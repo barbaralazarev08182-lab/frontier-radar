@@ -94,9 +94,18 @@
     margin:0!important;
     padding:0!important;
     color:inherit!important;
-    font:inherit!important;
-    letter-spacing:inherit!important;
-    text-transform:inherit!important;
+    font-size:0!important;
+    line-height:1!important;
+  }
+
+  /* Keep the visible action word OPEN in both compact and active states. The
+     active click behavior is unchanged; it still enters the project detail. */
+  .today-r27-production .fr-band .fr-band-gate > span::after{
+    content:"OPEN";
+    font:750 8px/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace!important;
+    letter-spacing:.18em!important;
+    text-transform:uppercase!important;
+    color:inherit!important;
   }
 
   /* Remove both the old arrow glyph and any geometry it inherited. */
