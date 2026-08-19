@@ -18,9 +18,10 @@ import "./today-five-zone-boundary-r3.css";
 import "./today-five-zone-alignment-r4.css";
 import "./today-open-gradient-r5.css";
 import "./today-open-active-label-r6.css";
+import "./today-core-sheen-r7.css";
 import { TodayWheelNavigation } from "./today-wheel-navigation";
 
-// Today R6: page-scoped visual layers plus desktop wheel navigation; isolated from every other route.
+// Today R7: page-scoped visual layers plus desktop wheel navigation; isolated from every other route.
 export default function TodayLayout({ children }: { children: ReactNode }) {
   return (
     <>
