@@ -20,7 +20,7 @@ import type { InterestKey } from "@/config/interest-profile";
 import { EmptyState } from "@/components/frontier/empty-state";
 import { FeedErrorState } from "@/components/frontier/feed-error";
 import type { EditorialSignal } from "@/components/frontier/today-editorial";
-import { TodayR27Production } from "@/components/frontier/today-r27-production";
+import { TodayEditorialIntelligencePreview } from "@/components/frontier/today-editorial-intelligence-preview";
 import { VISITOR_COOKIE } from "@/lib/personalization/constants";
 import { personalizeFeed } from "@/lib/personalization/server";
 
@@ -158,7 +158,7 @@ export default async function TodayPage() {
     .toUpperCase();
 
   return (
-    <TodayR27Production
+    <TodayEditorialIntelligencePreview
       dateLabel={dateLabel}
       dataLabel={mode === "supabase" ? "LIVE DATA" : "DEMO DATA"}
       totalDiscoveries={totalDiscoveries}
