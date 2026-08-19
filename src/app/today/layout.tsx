@@ -16,6 +16,7 @@ import "./today-five-zone-layout.css";
 import "./today-five-zone-layout-r2.css";
 import "./today-five-zone-boundary-r3.css";
 import "./today-five-zone-alignment-r4.css";
+import "./today-open-gradient-r5.css";
 
 export default function TodayLayout({ children }: { children: ReactNode }) {
   return children;
