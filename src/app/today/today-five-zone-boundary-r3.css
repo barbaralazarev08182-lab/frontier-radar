@@ -1,0 +1,147 @@
+/* TODAY FIVE-ZONE R3 — broken instrument boundaries.
+   Desktop-only. Adds a shared structural skeleton between the four content zones
+   without turning the layout into four conventional bordered cards. */
+
+@media (min-width:1181px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]{
+    --fz-divider-x:63.85%;
+    --fz-divider-y:39.25%;
+    --fz-boundary:rgba(11,11,11,.20);
+    --fz-boundary-soft:rgba(11,11,11,.085);
+    --fz-boundary-light:rgba(255,255,255,.42);
+  }
+
+  /* Shared broken cross-rail. The line intentionally disappears around the
+     central gap and at the outer edges so it reads as an instrument chassis,
+     not a spreadsheet grid. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-detail{
+    background-image:
+      linear-gradient(to bottom,transparent 0 7.5%,var(--fz-boundary) 7.5% 31.8%,transparent 31.8% 44.2%,var(--fz-boundary) 44.2% 91.5%,transparent 91.5%),
+      linear-gradient(to bottom,transparent 0 7.5%,var(--fz-boundary-light) 7.5% 31.8%,transparent 31.8% 44.2%,var(--fz-boundary-light) 44.2% 91.5%,transparent 91.5%),
+      linear-gradient(to right,transparent 0 18.9%,var(--fz-boundary) 18.9% 59.7%,transparent 59.7% 67.0%,var(--fz-boundary) 67.0% 95.7%,transparent 95.7%),
+      linear-gradient(to right,transparent 0 18.9%,var(--fz-boundary-light) 18.9% 59.7%,transparent 59.7% 67.0%,var(--fz-boundary-light) 67.0% 95.7%,transparent 95.7%),
+      linear-gradient(90deg,var(--row-accent),var(--row-accent)),
+      linear-gradient(var(--row-accent),var(--row-accent)),
+      radial-gradient(circle,color-mix(in srgb,var(--row-accent) 72%,#111) 0 1.3px,rgba(255,255,255,.72) 1.5px 2.2px,transparent 2.5px);
+    background-position:
+      var(--fz-divider-x) 0,
+      calc(var(--fz-divider-x) + 1px) 0,
+      0 var(--fz-divider-y),
+      0 calc(var(--fz-divider-y) + 1px),
+      var(--fz-divider-x) var(--fz-divider-y),
+      var(--fz-divider-x) var(--fz-divider-y),
+      var(--fz-divider-x) var(--fz-divider-y);
+    background-size:
+      1px 100%,
+      1px 100%,
+      100% 1px,
+      100% 1px,
+      22px 2px,
+      2px 22px,
+      10px 10px;
+    background-repeat:no-repeat!important;
+  }
+
+  /* Each quadrant gets only two incomplete corner cues. These are deliberately
+     asymmetric so the eye completes the panel boundary instead of seeing a box. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary{
+    background-repeat:no-repeat!important;
+  }
+
+  /* TITLE / upper-left: strong top-left registration corner + faint exit notch. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-entity{
+    background-image:
+      linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 58%,rgba(11,11,11,.35)),color-mix(in srgb,var(--row-accent) 20%,rgba(11,11,11,.14))),
+      linear-gradient(color-mix(in srgb,var(--row-accent) 58%,rgba(11,11,11,.35)),color-mix(in srgb,var(--row-accent) 20%,rgba(11,11,11,.14))),
+      linear-gradient(90deg,var(--fz-boundary-soft),var(--fz-boundary-soft)),
+      linear-gradient(var(--fz-boundary-soft),var(--fz-boundary-soft))!important;
+    background-position:left top,left top,right bottom,right bottom!important;
+    background-size:42px 2px,2px 42px,24px 1px,1px 24px!important;
+  }
+
+  /* THE SIGNAL / lower-left: opposite registration so the two left regions lock
+     to the same vertical axis without enclosing themselves. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary{
+    background-image:
+      linear-gradient(90deg,var(--fz-boundary-soft),var(--fz-boundary-soft)),
+      linear-gradient(var(--fz-boundary-soft),var(--fz-boundary-soft)),
+      linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 46%,rgba(11,11,11,.28)),transparent)!important;
+    background-position:left bottom,left bottom,right top!important;
+    background-size:30px 1px,1px 30px,44px 1px!important;
+  }
+
+  /* WHY NOW / upper-right: accent notch faces inward toward the shared cross. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
+    background-image:
+      linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 48%,rgba(11,11,11,.30)),transparent),
+      linear-gradient(color-mix(in srgb,var(--row-accent) 42%,rgba(11,11,11,.26)),transparent),
+      linear-gradient(90deg,var(--fz-boundary-soft),var(--fz-boundary-soft))!important;
+    background-position:left top,left top,right bottom!important;
+    background-size:34px 2px,2px 34px,26px 1px!important;
+  }
+
+  /* Secondary / lower-right: quiet outer corner plus a short inner registration. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary{
+    background-image:
+      linear-gradient(90deg,var(--fz-boundary-soft),var(--fz-boundary-soft)),
+      linear-gradient(var(--fz-boundary-soft),var(--fz-boundary-soft)),
+      linear-gradient(90deg,color-mix(in srgb,var(--row-accent) 42%,rgba(11,11,11,.24)),transparent)!important;
+    background-position:right bottom,right bottom,left top!important;
+    background-size:30px 1px,1px 30px,38px 1px!important;
+  }
+
+  /* Tiny calibration ticks after section labels. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary > span::after,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why > span::after,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you > span::after,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build > span::after{
+    content:"";
+    display:inline-block;
+    width:16px;
+    height:1px;
+    margin-left:8px;
+    vertical-align:middle;
+    background:linear-gradient(90deg,var(--row-accent),transparent);
+    opacity:.52;
+  }
+
+  /* Boundary reveal is deliberately later than the rank expansion: the content
+     plane first opens, then its chassis resolves around it. */
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-detail{
+    animation:frFiveZoneBoundaryReveal 1.18s cubic-bezier(.16,1,.3,1) .22s both!important;
+  }
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-entity,
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-summary,
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-why,
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-secondary{
+    --fz-corner-alpha:1;
+  }
+
+  /* When switching rows, give the chassis one quick pulse rather than rebuilding
+     the entire composition. */
+  .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-detail{
+    animation:frFiveZoneBoundarySwitch .62s cubic-bezier(.16,1,.3,1) both!important;
+  }
+}
+
+@keyframes frFiveZoneBoundaryReveal{
+  0%{opacity:.72;background-size:1px 0%,1px 0%,0% 1px,0% 1px,0 2px,2px 0,0 0}
+  46%{opacity:.92;background-size:1px 72%,1px 72%,74% 1px,74% 1px,10px 2px,2px 10px,6px 6px}
+  100%{opacity:1;background-size:1px 100%,1px 100%,100% 1px,100% 1px,22px 2px,2px 22px,10px 10px}
+}
+
+@keyframes frFiveZoneBoundarySwitch{
+  0%{filter:contrast(.94);background-position:var(--fz-divider-x) 0,calc(var(--fz-divider-x) + 1px) 0,0 var(--fz-divider-y),0 calc(var(--fz-divider-y) + 1px),var(--fz-divider-x) var(--fz-divider-y),var(--fz-divider-x) var(--fz-divider-y),var(--fz-divider-x) var(--fz-divider-y)}
+  44%{filter:contrast(1.1)}
+  100%{filter:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack[data-transition="opening"] .fr-band[data-active="true"] .fr-band-detail,
+  .today-r27-production .fr-stack[data-switching="true"] .fr-band[data-active="true"] .fr-band-detail{
+    animation:none!important;
+  }
+}
