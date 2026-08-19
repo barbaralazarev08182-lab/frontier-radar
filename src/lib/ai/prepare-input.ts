@@ -5,7 +5,8 @@
  *  - 高价值字段（元数据、标题、描述）优先保留；
  *  - 文档内容（README / Card / Abstract）保留前段，超长时截断而非从结尾丢；
  *  - 不把 README / 摘要拼接进指令，只作为数据文本交给 prompts.buildUserPrompt 放入边界；
- *  - inputHash 由最终输入文本生成（用于 ai_analyses 幂等去重）。
+ *  - inputHash 是稳定的语义内容指纹：保留实际模型输入中的热度指标，但计算指纹时排除
+ *    Stars / Forks / Downloads / Likes，避免纯指标变化触发重复付费分析。
  */
 
 import { sha256Hex } from "@/lib/hash";
@@ -111,6 +112,26 @@ function assemble(header: string[], contentKey: string, content: string, maxChar
   return { text: head + separator + content.slice(0, budget), truncated };
 }
 
+function buildSourceText(
+  row: AnalysisItemRow,
+  doc: AnalysisDocument | null,
+  snapshot: AnalysisSnapshot | null,
+  maxChars: number
+): { text: string; truncated: boolean } {
+  switch (row.source_slug) {
+    case "github":
+      return buildGitHubText(row, doc, snapshot, maxChars);
+    case "huggingface":
+      return buildHFText(row, doc, snapshot, maxChars);
+    case "arxiv":
+      return buildArxivText(row, doc, snapshot, maxChars);
+    default: {
+      const header = buildHeader(row, [sectionLine("Topics", row.topics.join(", "))]);
+      return assemble(header, "内容（前段）", doc?.content_text?.replace(/\s+/g, " ") ?? "", maxChars);
+    }
+  }
+}
+
 /**
  * 准备统一模型输入。
  * 按 source 分发；未识别来源退回通用输入。
@@ -123,30 +144,20 @@ export function prepareAnalysisInput(
 ): PreparedAnalysisInput {
   const maxChars = Math.max(100, opts.maxInputChars ?? DEFAULT_MAX_INPUT_CHARS);
   const doc = documents[0] ?? null;
+  const prepared = buildSourceText(row, doc, snapshot, maxChars);
 
-  const { text, truncated } = (() => {
-    switch (row.source_slug) {
-      case "github":
-        return buildGitHubText(row, doc, snapshot, maxChars);
-      case "huggingface":
-        return buildHFText(row, doc, snapshot, maxChars);
-      case "arxiv":
-        return buildArxivText(row, doc, snapshot, maxChars);
-      default: {
-        const header = buildHeader(row, [sectionLine("Topics", row.topics.join(", "))]);
-        return assemble(header, "内容（前段）", doc?.content_text?.replace(/\s+/g, " ") ?? "", maxChars);
-      }
-    }
-  })();
+  // 幂等缓存只跟随语义内容变化。热度指标仍进入模型输入和评分，
+  // 但 Stars / Forks / Downloads / Likes 的日常波动不会改变 inputHash。
+  const stableSemanticText = buildSourceText(row, doc, null, maxChars).text;
 
   return {
     source: row.source_slug,
     itemType: row.item_type,
     title: row.title,
     sourceUrl: row.source_url,
-    text,
-    charCount: text.length,
-    inputHash: sha256Hex(text),
-    truncated,
+    text: prepared.text,
+    charCount: prepared.text.length,
+    inputHash: sha256Hex(stableSemanticText),
+    truncated: prepared.truncated,
   };
 }
