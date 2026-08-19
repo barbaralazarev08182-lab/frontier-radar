@@ -145,4 +145,16 @@
     color: var(--ink);
     font-weight: 700;
   }
+
+  /* Post-closure Explore polish: remove the redundant canvas heading strip and
+     enlarge only the L12 colonnade itself. CSS transform preserves the outer
+     canvas geometry, so surrounding controls/footer do not reflow. */
+  .lf4-viewport .lf4-canvas-head {
+    display: none;
+  }
+
+  .lf4-viewport .lf4-colonnade {
+    transform: scale(1.075);
+    transform-origin: 50% 50%;
+  }
 }
