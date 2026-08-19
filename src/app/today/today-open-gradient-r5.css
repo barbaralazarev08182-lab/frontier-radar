@@ -3,6 +3,7 @@
       and occupy the full row height + the whole right rail area.
    2) active card: remove the rectangular box completely, keep only OPEN text and
       a larger top-right -> lower-left emission.
+   Preview sync marker: R6 interaction bundle.
 */
 
 @media (min-width:1181px){
@@ -37,9 +38,6 @@
     clip-path:none!important;
   }
 
-  /* base continuous gradient rail:
-     starts at the absolute right edge, spans full row height,
-     and covers the whole right-side action rail area */
   .today-r27-production .fr-band .fr-band-tail::before{
     content:"";
     position:absolute;
@@ -61,7 +59,6 @@
       );
   }
 
-  /* hover/deeper state */
   .today-r27-production .fr-band .fr-band-tail::after{
     content:"";
     position:absolute;
@@ -104,7 +101,6 @@
     margin-right:4px!important;
   }
 
-  /* gate itself becomes text only; no framed button block */
   .today-r27-production .fr-band .fr-band-gate{
     display:flex!important;
     align-items:center!important;
@@ -116,7 +112,6 @@
     height:100%!important;
     margin:0!important;
     padding:0 18px 0 0!important;
-
     border:0!important;
     outline:0!important;
     box-shadow:none!important;
@@ -180,7 +175,6 @@
     justify-content:flex-end!important;
     overflow:visible!important;
     isolation:isolate!important;
-
     border:0!important;
     outline:0!important;
     box-shadow:none!important;
@@ -188,9 +182,6 @@
     clip-path:none!important;
   }
 
-  /* IMPORTANT:
-     remove the rectangular frame completely.
-     only keep a larger emission in the top-right corner. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-tail::before{
     content:"";
     position:absolute;
@@ -236,15 +227,12 @@
     align-items:flex-start!important;
     justify-content:flex-end!important;
     align-self:flex-start!important;
-
     flex:0 0 auto!important;
     width:auto!important;
     min-width:0!important;
     height:auto!important;
-
     margin:0!important;
     padding:13px 20px 0 0!important;
-
     border:0!important;
     outline:0!important;
     box-shadow:none!important;
