@@ -1,0 +1,86 @@
+/* TODAY FIVE-ZONE R4 — content alignment refinement.
+   Keep the approved title, broken cross skeleton, calibration ticks, and giant rank.
+   Only tidy THE SIGNAL, WHY NOW, and the lower-right secondary content. */
+
+@media (min-width:1181px){
+  /* LOWER LEFT — keep the title axis, but tighten the reading measure and place
+     the first text baseline on the same lower-row rhythm as the secondary zone. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary{
+    left:19.25%!important;
+    top:42.2%!important;
+    width:39.2%!important;
+    height:47.8%!important;
+    justify-content:flex-start!important;
+    padding:5.0% 4.1% 0 0!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary > span{
+    margin-bottom:13px!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary p{
+    max-width:31.5ch!important;
+    font-size:clamp(17px,1.34vw,22px)!important;
+    line-height:1.5!important;
+  }
+
+  /* UPPER RIGHT — remove the floating feeling by giving WHY NOW a compact,
+     centered editorial block inside its quadrant rather than a padded strip. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why{
+    left:67.05%!important;
+    top:15.8%!important;
+    width:27.4%!important;
+    height:20.6%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    padding:0 2.7% 0 0!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why > span{
+    margin-bottom:11px!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why p{
+    max-width:23ch!important;
+    font-size:clamp(19px,1.48vw,25px)!important;
+    line-height:1.12!important;
+  }
+
+  /* LOWER RIGHT — same lower-row start as THE SIGNAL. If WHY YOU is missing,
+     BUILD DIRECTION lands directly on that shared baseline instead of hovering
+     around the vertical center. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary{
+    left:67.05%!important;
+    top:42.2%!important;
+    width:27.4%!important;
+    height:47.8%!important;
+    justify-content:flex-start!important;
+    padding:5.0% 2.7% 0 0!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you{
+    margin:0 0 21px!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build{
+    margin:0!important;
+    padding-top:14px!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-secondary > div:empty + .fr-band-build{
+    padding-top:0!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build p{
+    max-width:29ch!important;
+    font-size:clamp(14px,1.10vw,18px)!important;
+    line-height:1.38!important;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-evidence{
+    margin-top:15px!important;
+    padding-top:12px!important;
+  }
+
+  /* Keep the approved broken-boundary language but make the three adjusted
+     regions sit inside it more quietly. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-summary::before,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-why::before,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-you::before,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-build::before{
+    inset:-8px -12px!important;
+    opacity:.40!important;
+  }
+}
