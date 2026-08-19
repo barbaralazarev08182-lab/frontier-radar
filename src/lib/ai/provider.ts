@@ -42,7 +42,12 @@ export interface AnalyzeItemOutput {
   schemaVersion: string;
   inputHash: string;
   result: ItemAnalysisResult;
+  /** 主调用 + repair 调用的完整 Token 用量；任一调用缺 usage 时为 null，避免低估。 */
   tokenUsage: TokenUsage | null;
+  /** 逻辑模型调用次数：正常为 1，发生 JSON repair 时为 2；不包含底层网络重试。 */
+  modelCallCount: number;
+  /** 结构化结果 repair 次数，当前只可能为 0 或 1。 */
+  repairCount: number;
   /** 无法可靠定价时保存 null，不编造费用 */
   estimatedCost: number | null;
   latencyMs: number;
@@ -65,6 +70,15 @@ export interface TencentProviderOptions {
   logger?: Logger;
 }
 
+function combineTokenUsage(first: TokenUsage | null, second: TokenUsage | null): TokenUsage | null {
+  if (!first || !second) return null;
+  return {
+    promptTokens: first.promptTokens + second.promptTokens,
+    completionTokens: first.completionTokens + second.completionTokens,
+    totalTokens: first.totalTokens + second.totalTokens,
+  };
+}
+
 /** 腾讯 TokenHub / OpenAI 兼容 Provider */
 export class TencentProvider implements AiProvider {
   readonly slug: AiProviderSlug = "tencent";
@@ -85,8 +99,11 @@ export class TencentProvider implements AiProvider {
   async analyzeItem(input: AnalyzeItemInput): Promise<AnalyzeItemOutput> {
     const started = Date.now();
     let res: ChatCompletionResult;
+    let tokenUsage: TokenUsage | null;
+    let repairCount = 0;
 
     res = await this.client.chatCompletion(buildAnalysisMessages(input.text));
+    tokenUsage = res.tokenUsage;
     let result: ItemAnalysisResult;
     try {
       result = parseAndValidateAnalysis(res.content);
@@ -95,11 +112,13 @@ export class TencentProvider implements AiProvider {
       if (!(firstErr instanceof AnalysisValidationError)) {
         throw firstErr;
       }
+      repairCount = 1;
       this.logger.warn("ai.provider.validation_retry", { reason: firstErr.message });
       const repairRes = await this.client.chatCompletion(
         buildRepairMessages(input.text, res.content)
       );
       result = parseAndValidateAnalysis(repairRes.content);
+      tokenUsage = combineTokenUsage(res.tokenUsage, repairRes.tokenUsage);
       res = repairRes;
     }
 
@@ -110,7 +129,9 @@ export class TencentProvider implements AiProvider {
       schemaVersion: this.schemaVersion,
       inputHash: input.inputHash,
       result,
-      tokenUsage: res.tokenUsage,
+      tokenUsage,
+      modelCallCount: 1 + repairCount,
+      repairCount,
       estimatedCost: null,
       latencyMs: Date.now() - started,
     };
