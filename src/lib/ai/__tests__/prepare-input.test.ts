@@ -56,7 +56,48 @@ test("HF 输入准备：含 repo ID、pipeline、下载量与 Card 内容", () =
 });
 
 // ---------------------------------------------------------------------------
-// 3. arXiv 输入准备
+// 3. AI 成本幂等：热度指标变化不触发重新分析
+// ---------------------------------------------------------------------------
+
+test("inputHash 排除 GitHub / HF 热度指标，但语义内容变化仍会失效", () => {
+  const githubBase = prepareAnalysisInput(
+    GITHUB_FIXTURE.item,
+    GITHUB_FIXTURE.documents,
+    GITHUB_FIXTURE.snapshot
+  );
+  const githubMetricsChanged = prepareAnalysisInput(
+    GITHUB_FIXTURE.item,
+    GITHUB_FIXTURE.documents,
+    { stars: 9999, forks: 777, downloads: null, likes: null }
+  );
+
+  assert.notEqual(githubMetricsChanged.text, githubBase.text);
+  assert.equal(githubMetricsChanged.inputHash, githubBase.inputHash);
+
+  const githubSemanticChanged = prepareAnalysisInput(
+    GITHUB_FIXTURE.item,
+    GITHUB_FIXTURE.documents.map((doc, index) =>
+      index === 0
+        ? { ...doc, content_text: `${doc.content_text ?? ""}\nNew semantic capability.` }
+        : doc
+    ),
+    GITHUB_FIXTURE.snapshot
+  );
+  assert.notEqual(githubSemanticChanged.inputHash, githubBase.inputHash);
+
+  const hfBase = prepareAnalysisInput(HF_FIXTURE.item, HF_FIXTURE.documents, HF_FIXTURE.snapshot);
+  const hfMetricsChanged = prepareAnalysisInput(
+    HF_FIXTURE.item,
+    HF_FIXTURE.documents,
+    { stars: null, forks: null, downloads: 8_000_000, likes: 12_000 }
+  );
+
+  assert.notEqual(hfMetricsChanged.text, hfBase.text);
+  assert.equal(hfMetricsChanged.inputHash, hfBase.inputHash);
+});
+
+// ---------------------------------------------------------------------------
+// 4. arXiv 输入准备
 // ---------------------------------------------------------------------------
 
 test("arXiv 输入准备：含摘要、作者、分类，且不分析 PDF", () => {
