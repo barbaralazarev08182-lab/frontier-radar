@@ -1,0 +1,213 @@
+/* TODAY GLASS REFLECTION R18 — wider per-card primary highlights
+   Desktop-only material pass:
+   - keep wildcard/orange giant rank readable;
+   - keep every OPEN label white;
+   - 01–05 only: the active card remains one glass pane with reflection strips
+     aligned to the same diagonal language as the background facets.
+   - Each core card keeps the approved stable pair of strong primary reflections;
+     only those two primary strips are widened. The other five strips keep their
+     approved R17 width and intensity.
+   - IMPORTANT: this layer never overrides the approved absolute positioning of
+     rank / head / detail / tail, so the four content zones and broken cross skeleton
+     remain exactly where the five-zone layout placed them.
+   - 06 adjacent / blue and 07 wildcard / orange remain excluded. */
+
+@media (min-width:1181px){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
+    color:rgba(255,241,223,.90)!important;
+    opacity:.86!important;
+    filter:drop-shadow(0 18px 34px rgba(83,29,17,.28))!important;
+  }
+
+  /* Every OPEN label stays white in collapsed and active states. */
+  .today-r27-production .fr-band .fr-band-gate,
+  .today-r27-production .fr-band .fr-band-gate > span,
+  .today-r27-production .fr-band .fr-band-gate > span::after,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span::after{
+    color:#fff!important;
+    text-shadow:0 2px 10px rgba(20,20,20,.20),0 0 18px rgba(255,255,255,.10)!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]{
+    --glass-shift-x:0px;
+    --glass-shift-y:0px;
+    --glass-angle:0deg;
+    --glass-strength:1;
+    --glass-r1-core:.330;
+    --glass-r2-core:.270;
+    --glass-r3-core:.390;
+    --glass-r4-core:.315;
+    --glass-r5-core:.285;
+    --glass-r6-core:.245;
+    --glass-r7-core:.320;
+    --glass-r1-spread:0%;
+    --glass-r2-spread:0%;
+    --glass-r3-spread:0%;
+    --glass-r4-spread:0%;
+    --glass-r5-spread:0%;
+    --glass-r6-spread:0%;
+    --glass-r7-spread:0%;
+    isolation:isolate!important;
+    overflow:hidden!important;
+    position:relative!important;
+  }
+
+  /* Stable pseudo-random emphasis: exactly two strong + wider strips per core card.
+     Width expansion is isolated through per-strip spread variables; all secondary
+     strips stay at zero spread and therefore retain the approved R17 geometry. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(1)[data-active="true"]{
+    --glass-r2-core:.960;
+    --glass-r6-core:.900;
+    --glass-r2-spread:1.15%;
+    --glass-r6-spread:1.00%;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(2)[data-active="true"]{
+    --glass-r1-core:1;
+    --glass-r4-core:.930;
+    --glass-r1-spread:1.20%;
+    --glass-r4-spread:1.05%;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(3)[data-active="true"]{
+    --glass-r3-core:1;
+    --glass-r7-core:.970;
+    --glass-r3-spread:1.25%;
+    --glass-r7-spread:1.10%;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(4)[data-active="true"]{
+    --glass-r2-core:.940;
+    --glass-r5-core:.980;
+    --glass-r2-spread:1.05%;
+    --glass-r5-spread:1.15%;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(5)[data-active="true"]{
+    --glass-r4-core:.990;
+    --glass-r6-core:.920;
+    --glass-r4-spread:1.20%;
+    --glass-r6-spread:1.05%;
+  }
+
+  /* Disable older reflection experiments on the band itself. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::before,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
+    content:none!important;
+    display:none!important;
+  }
+
+  /* Dedicated glass sheet. It remains the first child so legacy :last-child
+     layout rules still target the real card content. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer{
+    position:absolute!important;
+    inset:-9%!important;
+    z-index:1!important;
+    display:block!important;
+    pointer-events:none!important;
+    overflow:hidden!important;
+    opacity:1!important;
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.070) 0%,rgba(255,255,255,.025) 20%,rgba(255,255,255,.006) 46%,rgba(255,255,255,.016) 100%),
+      linear-gradient(109deg,transparent 0%,rgba(255,255,255,.020) 23%,rgba(255,255,255,.060) 37%,transparent 52%,transparent 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.38),
+      inset 0 -1px 0 rgba(255,255,255,.09);
+    backdrop-filter:contrast(1.024) saturate(1.018) brightness(1.014);
+    -webkit-backdrop-filter:contrast(1.024) saturate(1.018) brightness(1.014);
+    transform:
+      translate3d(var(--glass-shift-x),var(--glass-shift-y),0)
+      rotate(var(--glass-angle))
+      scale(1.055);
+    transform-origin:50% 50%;
+    transition:
+      transform 170ms cubic-bezier(.22,.61,.36,1),
+      opacity .20s ease;
+    will-change:transform,opacity;
+  }
+
+  /* Broad environment reflections that follow the same diagonal as the card
+     facets. These are visible enough to make the surface read as glass even when
+     the pointer is still. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer::before{
+    content:"";
+    position:absolute;
+    inset:-5%;
+    z-index:1;
+    pointer-events:none;
+    background:
+      linear-gradient(
+        109deg,
+        transparent 0%,
+        transparent 6%,
+        rgba(255,255,255,.035) 11%,
+        rgba(255,255,255,.120) 16%,
+        rgba(255,255,255,.055) 22%,
+        transparent 29%,
+        transparent 44%,
+        rgba(255,255,255,.025) 49%,
+        rgba(255,255,255,.100) 55%,
+        rgba(255,255,255,.040) 61%,
+        transparent 68%,
+        transparent 79%,
+        rgba(255,255,255,.020) 83%,
+        rgba(255,255,255,.070) 87%,
+        rgba(255,255,255,.025) 91%,
+        transparent 96%,
+        transparent 100%
+      ),
+      linear-gradient(
+        109deg,
+        transparent 0%,
+        transparent 34%,
+        rgba(54,70,106,.022) 38%,
+        rgba(255,255,255,.052) 42%,
+        transparent 47%,
+        transparent 70%,
+        rgba(55,70,105,.018) 74%,
+        rgba(255,255,255,.040) 78%,
+        transparent 84%,
+        transparent 100%
+      );
+    opacity:calc(var(--glass-strength) * .82);
+    filter:blur(4.5px);
+    mix-blend-mode:screen;
+  }
+
+  /* Seven unequal specular strips. Their 109deg direction stays aligned with the
+     background facets. Only the selected pair per card receives non-zero spread,
+     widening the complete reflection profile around the same bright core. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer::after{
+    content:"";
+    position:absolute;
+    inset:-7%;
+    z-index:2;
+    pointer-events:none;
+    background:
+      linear-gradient(109deg,transparent 0%,transparent calc(6.0% - var(--glass-r1-spread)),rgba(45,59,94,.028) calc(6.8% - var(--glass-r1-spread)),rgba(255,255,255,.090) calc(7.8% - var(--glass-r1-spread)),rgba(255,255,255,var(--glass-r1-core)) 8.8%,rgba(255,255,255,.155) calc(9.8% + var(--glass-r1-spread)),rgba(255,255,255,.040) calc(10.8% + var(--glass-r1-spread)),transparent calc(12.2% + var(--glass-r1-spread)),transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent calc(16.2% - var(--glass-r2-spread)),rgba(255,255,255,.025) calc(17.0% - var(--glass-r2-spread)),rgba(255,255,255,.105) calc(18.1% - var(--glass-r2-spread)),rgba(255,255,255,var(--glass-r2-core)) 19.0%,rgba(255,255,255,.115) calc(20.1% + var(--glass-r2-spread)),rgba(48,62,96,.022) calc(21.0% + var(--glass-r2-spread)),transparent calc(22.3% + var(--glass-r2-spread)),transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent calc(29.0% - var(--glass-r3-spread)),rgba(255,255,255,.038) calc(29.7% - var(--glass-r3-spread)),rgba(255,255,255,.180) calc(30.5% - var(--glass-r3-spread)),rgba(255,255,255,var(--glass-r3-core)) 31.2%,rgba(255,255,255,.150) calc(32.0% + var(--glass-r3-spread)),transparent calc(33.1% + var(--glass-r3-spread)),transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent calc(42.4% - var(--glass-r4-spread)),rgba(47,61,95,.026) calc(43.1% - var(--glass-r4-spread)),rgba(255,255,255,.075) calc(44.0% - var(--glass-r4-spread)),rgba(255,255,255,.205) calc(45.0% - var(--glass-r4-spread)),rgba(255,255,255,var(--glass-r4-core)) 46.0%,rgba(255,255,255,.135) calc(47.0% + var(--glass-r4-spread)),rgba(255,255,255,.032) calc(48.2% + var(--glass-r4-spread)),transparent calc(49.6% + var(--glass-r4-spread)),transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent calc(58.2% - var(--glass-r5-spread)),rgba(255,255,255,.022) calc(59.0% - var(--glass-r5-spread)),rgba(255,255,255,.110) calc(60.0% - var(--glass-r5-spread)),rgba(255,255,255,var(--glass-r5-core)) 61.0%,rgba(255,255,255,.110) calc(62.0% + var(--glass-r5-spread)),rgba(47,61,95,.018) calc(63.0% + var(--glass-r5-spread)),transparent calc(64.3% + var(--glass-r5-spread)),transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent calc(72.0% - var(--glass-r6-spread)),rgba(255,255,255,.020) calc(72.8% - var(--glass-r6-spread)),rgba(255,255,255,.095) calc(73.8% - var(--glass-r6-spread)),rgba(255,255,255,var(--glass-r6-core)) 74.7%,rgba(255,255,255,.092) calc(75.8% + var(--glass-r6-spread)),transparent calc(77.1% + var(--glass-r6-spread)),transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent calc(86.0% - var(--glass-r7-spread)),rgba(255,255,255,.028) calc(86.7% - var(--glass-r7-spread)),rgba(255,255,255,.150) calc(87.5% - var(--glass-r7-spread)),rgba(255,255,255,var(--glass-r7-core)) 88.2%,rgba(255,255,255,.110) calc(89.0% + var(--glass-r7-spread)),transparent calc(90.2% + var(--glass-r7-spread)),transparent 100%);
+    opacity:calc(var(--glass-strength) * 1);
+    filter:blur(.55px);
+    mix-blend-mode:screen;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"] > .fr-glass-reflection-layer::before{
+    opacity:calc(var(--glass-strength) * .92);
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"] > .fr-glass-reflection-layer::after{
+    opacity:1;
+  }
+
+  /* DO NOT assign position here. The approved five-zone layers already own their
+     absolute positioning and z-index hierarchy (head 5 / detail 3 / tail 8).
+     The glass sits at z-index 1, safely beneath all of them. */
+}
+
+@media (prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer{
+    transition:none!important;
+  }
+}

@@ -12,7 +12,21 @@ import "../qa/today-tear-aperture/today-signal-stage-r24.css";
 import "../qa/today-tear-aperture/today-signal-stage-r25.css";
 import "./today-r27-final.css";
 import "./today-production-guardrails.css";
+import "./today-five-zone-layout.css";
+import "./today-five-zone-layout-r2.css";
+import "./today-five-zone-boundary-r3.css";
+import "./today-five-zone-alignment-r4.css";
+import "./today-open-gradient-r5.css";
+import "./today-open-active-label-r6.css";
+import "./today-core-sheen-r7.css";
+import { TodayWheelNavigation } from "./today-wheel-navigation";
 
+// Today R7 preview rebuild after Vercel hourly build window reset; isolated from every other route.
 export default function TodayLayout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <>
+      {children}
+      <TodayWheelNavigation />
+    </>
+  );
 }

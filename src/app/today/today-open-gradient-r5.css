@@ -1,0 +1,268 @@
+/* TODAY OPEN GRADIENT R5 — corrected
+   1) collapsed rows: the right-side gradient must start from the absolute right edge
+      and occupy the full row height + the whole right rail area.
+   2) active card: remove the rectangular box completely, keep only OPEN text and
+      a larger top-right -> lower-left emission.
+   Preview sync marker: R6 interaction bundle.
+*/
+
+@media (min-width:1181px){
+  .today-r27-production .fr-band{
+    position:relative!important;
+  }
+
+  /* ---------- collapsed rows ---------- */
+
+  .today-r27-production .fr-band .fr-band-tail{
+    position:absolute!important;
+    z-index:9!important;
+    right:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:clamp(240px,18vw,330px)!important;
+    height:100%!important;
+    min-height:100%!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:stretch!important;
+    justify-content:flex-end!important;
+    gap:14px!important;
+    overflow:visible!important;
+    isolation:isolate!important;
+    pointer-events:none!important;
+    background:transparent!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    clip-path:none!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-tail::before{
+    content:"";
+    position:absolute;
+    right:0;
+    top:-1px;
+    bottom:-1px;
+    width:100%;
+    pointer-events:none;
+    z-index:0;
+    background:
+      linear-gradient(
+        270deg,
+        color-mix(in srgb,var(--row-accent) 46%,transparent) 0%,
+        color-mix(in srgb,var(--row-accent) 32%,transparent) 20%,
+        color-mix(in srgb,var(--row-accent) 20%,transparent) 42%,
+        color-mix(in srgb,var(--row-accent) 10%,transparent) 64%,
+        color-mix(in srgb,var(--row-accent) 4%,transparent) 80%,
+        transparent 100%
+      );
+  }
+
+  .today-r27-production .fr-band .fr-band-tail::after{
+    content:"";
+    position:absolute;
+    right:0;
+    top:-1px;
+    bottom:-1px;
+    width:100%;
+    pointer-events:none;
+    z-index:0;
+    opacity:0;
+    background:
+      linear-gradient(
+        270deg,
+        color-mix(in srgb,var(--row-accent) 64%,transparent) 0%,
+        color-mix(in srgb,var(--row-accent) 45%,transparent) 20%,
+        color-mix(in srgb,var(--row-accent) 27%,transparent) 43%,
+        color-mix(in srgb,var(--row-accent) 13%,transparent) 65%,
+        color-mix(in srgb,var(--row-accent) 5%,transparent) 81%,
+        transparent 100%
+      );
+    transition:opacity .24s ease!important;
+  }
+
+  .today-r27-production .fr-band:hover .fr-band-tail::after,
+  .today-r27-production .fr-band-head:hover .fr-band-tail::after,
+  .today-r27-production .fr-band-head:focus-visible .fr-band-tail::after{
+    opacity:1!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-score,
+  .today-r27-production .fr-band .fr-band-gate{
+    position:relative!important;
+    z-index:2!important;
+    background:none!important;
+    pointer-events:auto!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-score{
+    align-self:center!important;
+    margin-right:4px!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-gate{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    align-self:stretch!important;
+    flex:0 0 clamp(122px,10vw,156px)!important;
+    width:clamp(122px,10vw,156px)!important;
+    min-width:clamp(122px,10vw,156px)!important;
+    height:100%!important;
+    margin:0!important;
+    padding:0 18px 0 0!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    clip-path:none!important;
+    border-radius:0!important;
+    background:none!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-gate::before,
+  .today-r27-production .fr-band .fr-band-gate::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-gate > b,
+  .today-r27-production .fr-band .fr-band-gate svg,
+  .today-r27-production .fr-band .fr-band-gate i{
+    display:none!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-gate > span{
+    position:relative!important;
+    z-index:3!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:0!important;
+    line-height:1!important;
+    color:color-mix(in srgb,var(--row-accent) 84%,#2c2b28)!important;
+    letter-spacing:.18em!important;
+    text-transform:uppercase!important;
+    text-align:right!important;
+  }
+
+  .today-r27-production .fr-band .fr-band-gate > span::after{
+    content:"OPEN";
+    font:750 8px/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace!important;
+    letter-spacing:.18em!important;
+    text-transform:uppercase!important;
+    color:inherit!important;
+  }
+
+  .today-r27-production .fr-band:hover .fr-band-gate > span,
+  .today-r27-production .fr-band-head:hover .fr-band-gate > span,
+  .today-r27-production .fr-band-head:focus-visible .fr-band-gate > span{
+    color:color-mix(in srgb,var(--row-accent) 96%,#151515)!important;
+  }
+
+  /* ---------- active / opened card ---------- */
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-tail{
+    position:absolute!important;
+    right:0!important;
+    top:0!important;
+    bottom:auto!important;
+    width:clamp(420px,34vw,620px)!important;
+    height:clamp(150px,20vh,220px)!important;
+    min-height:clamp(150px,20vh,220px)!important;
+    padding:0!important;
+    gap:12px!important;
+    align-items:flex-start!important;
+    justify-content:flex-end!important;
+    overflow:visible!important;
+    isolation:isolate!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    background:none!important;
+    clip-path:none!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-tail::before{
+    content:"";
+    position:absolute;
+    right:0;
+    top:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:0;
+    background:
+      radial-gradient(
+        ellipse 150% 145% at 100% 0%,
+        color-mix(in srgb,var(--row-accent) 48%,transparent) 0%,
+        color-mix(in srgb,var(--row-accent) 30%,transparent) 24%,
+        color-mix(in srgb,var(--row-accent) 16%,transparent) 45%,
+        color-mix(in srgb,var(--row-accent) 8%,transparent) 63%,
+        transparent 84%
+      ),
+      linear-gradient(
+        225deg,
+        color-mix(in srgb,var(--row-accent) 25%,transparent) 0%,
+        color-mix(in srgb,var(--row-accent) 12%,transparent) 35%,
+        transparent 76%
+      );
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-tail::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-score{
+    position:relative!important;
+    z-index:2!important;
+    margin-top:14px!important;
+    margin-right:6px!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate{
+    position:relative!important;
+    z-index:2!important;
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:flex-end!important;
+    align-self:flex-start!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    height:auto!important;
+    margin:0!important;
+    padding:13px 20px 0 0!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    background:none!important;
+    clip-path:none!important;
+    border-radius:0!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate::before,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span{
+    font-size:0!important;
+    color:color-mix(in srgb,var(--row-accent) 90%,#222)!important;
+  }
+
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span::after{
+    content:"OPEN";
+    font:750 8px/1 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace!important;
+    letter-spacing:.18em!important;
+    text-transform:uppercase!important;
+    color:inherit!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .today-r27-production .fr-band .fr-band-tail::after{
+    transition:none!important;
+  }
+}
