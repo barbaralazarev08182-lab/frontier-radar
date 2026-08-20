@@ -35,6 +35,8 @@ export function TodayWheelNavigation() {
       if (stack.dataset.open !== "true" || activeIndex < 0 || activeIndex > 4) return null;
 
       const activeBand = bands[activeIndex];
+      if (!activeBand) return null;
+
       let layer = activeBand.querySelector<HTMLElement>(".fr-glass-reflection-layer");
 
       if (!layer) {
@@ -127,11 +129,13 @@ export function TodayWheelNavigation() {
       ? new MutationObserver(() => requestAnimationFrame(ensureGlassLayer))
       : null;
 
-    observer?.observe(stack!, {
-      attributes: true,
-      subtree: true,
-      attributeFilter: ["data-active", "data-open"],
-    });
+    if (stack && observer) {
+      observer.observe(stack, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ["data-active", "data-open"],
+      });
+    }
 
     requestAnimationFrame(ensureGlassLayer);
 
