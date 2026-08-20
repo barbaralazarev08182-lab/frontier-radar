@@ -1,10 +1,12 @@
-/* TODAY GLASS REFLECTION R15 — restore approved five-zone positioning
+/* TODAY GLASS REFLECTION R16 — per-card emphasis variation
    Desktop-only material pass:
    - keep wildcard/orange giant rank readable;
    - keep every OPEN label white;
    - 01–05 only: the active card is one glass pane with several clearly visible
      reflection strips aligned to the same diagonal language as the background
      facets. The whole reflection field shifts only slightly with pointer movement.
+   - Each core card has a stable pseudo-random pair of stronger reflection cores,
+     so the glass does not look copy-pasted from card to card.
    - IMPORTANT: this layer never overrides the approved absolute positioning of
      rank / head / detail / tail, so the four content zones and broken cross skeleton
      remain exactly where the five-zone layout placed them.
@@ -33,9 +35,39 @@
     --glass-shift-y:0px;
     --glass-angle:0deg;
     --glass-strength:1;
+    --glass-r1-core:.330;
+    --glass-r2-core:.270;
+    --glass-r3-core:.390;
+    --glass-r4-core:.315;
+    --glass-r5-core:.285;
+    --glass-r6-core:.245;
+    --glass-r7-core:.320;
     isolation:isolate!important;
     overflow:hidden!important;
     position:relative!important;
+  }
+
+  /* Stable pseudo-random emphasis: exactly two stronger strips per core card.
+     Only the bright core changes; strip geometry, motion and every other layer stay untouched. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(1)[data-active="true"]{
+    --glass-r2-core:.510;
+    --glass-r6-core:.470;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(2)[data-active="true"]{
+    --glass-r1-core:.540;
+    --glass-r4-core:.500;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(3)[data-active="true"]{
+    --glass-r3-core:.590;
+    --glass-r7-core:.550;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(4)[data-active="true"]{
+    --glass-r2-core:.500;
+    --glass-r5-core:.520;
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(5)[data-active="true"]{
+    --glass-r4-core:.550;
+    --glass-r6-core:.490;
   }
 
   /* Disable older reflection experiments on the band itself. */
@@ -124,7 +156,8 @@
 
   /* Seven unequal specular strips. Their 109deg gradient direction produces
      diagonal highlight edges that visually align with the large background
-     facets instead of standing vertically. */
+     facets instead of standing vertically. Only the central intensity of each
+     strip is variable so per-card emphasis cannot disturb spacing or geometry. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer::after{
     content:"";
     position:absolute;
@@ -132,13 +165,13 @@
     z-index:2;
     pointer-events:none;
     background:
-      linear-gradient(109deg,transparent 0%,transparent 6.0%,rgba(45,59,94,.028) 6.8%,rgba(255,255,255,.090) 7.8%,rgba(255,255,255,.330) 8.8%,rgba(255,255,255,.155) 9.8%,rgba(255,255,255,.040) 10.8%,transparent 12.2%,transparent 100%),
-      linear-gradient(109deg,transparent 0%,transparent 16.2%,rgba(255,255,255,.025) 17.0%,rgba(255,255,255,.105) 18.1%,rgba(255,255,255,.270) 19.0%,rgba(255,255,255,.115) 20.1%,rgba(48,62,96,.022) 21.0%,transparent 22.3%,transparent 100%),
-      linear-gradient(109deg,transparent 0%,transparent 29.0%,rgba(255,255,255,.038) 29.7%,rgba(255,255,255,.180) 30.5%,rgba(255,255,255,.390) 31.2%,rgba(255,255,255,.150) 32.0%,transparent 33.1%,transparent 100%),
-      linear-gradient(109deg,transparent 0%,transparent 42.4%,rgba(47,61,95,.026) 43.1%,rgba(255,255,255,.075) 44.0%,rgba(255,255,255,.205) 45.0%,rgba(255,255,255,.315) 46.0%,rgba(255,255,255,.135) 47.0%,rgba(255,255,255,.032) 48.2%,transparent 49.6%,transparent 100%),
-      linear-gradient(109deg,transparent 0%,transparent 58.2%,rgba(255,255,255,.022) 59.0%,rgba(255,255,255,.110) 60.0%,rgba(255,255,255,.285) 61.0%,rgba(255,255,255,.110) 62.0%,rgba(47,61,95,.018) 63.0%,transparent 64.3%,transparent 100%),
-      linear-gradient(109deg,transparent 0%,transparent 72.0%,rgba(255,255,255,.020) 72.8%,rgba(255,255,255,.095) 73.8%,rgba(255,255,255,.245) 74.7%,rgba(255,255,255,.092) 75.8%,transparent 77.1%,transparent 100%),
-      linear-gradient(109deg,transparent 0%,transparent 86.0%,rgba(255,255,255,.028) 86.7%,rgba(255,255,255,.150) 87.5%,rgba(255,255,255,.320) 88.2%,rgba(255,255,255,.110) 89.0%,transparent 90.2%,transparent 100%);
+      linear-gradient(109deg,transparent 0%,transparent 6.0%,rgba(45,59,94,.028) 6.8%,rgba(255,255,255,.090) 7.8%,rgba(255,255,255,var(--glass-r1-core)) 8.8%,rgba(255,255,255,.155) 9.8%,rgba(255,255,255,.040) 10.8%,transparent 12.2%,transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent 16.2%,rgba(255,255,255,.025) 17.0%,rgba(255,255,255,.105) 18.1%,rgba(255,255,255,var(--glass-r2-core)) 19.0%,rgba(255,255,255,.115) 20.1%,rgba(48,62,96,.022) 21.0%,transparent 22.3%,transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent 29.0%,rgba(255,255,255,.038) 29.7%,rgba(255,255,255,.180) 30.5%,rgba(255,255,255,var(--glass-r3-core)) 31.2%,rgba(255,255,255,.150) 32.0%,transparent 33.1%,transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent 42.4%,rgba(47,61,95,.026) 43.1%,rgba(255,255,255,.075) 44.0%,rgba(255,255,255,.205) 45.0%,rgba(255,255,255,var(--glass-r4-core)) 46.0%,rgba(255,255,255,.135) 47.0%,rgba(255,255,255,.032) 48.2%,transparent 49.6%,transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent 58.2%,rgba(255,255,255,.022) 59.0%,rgba(255,255,255,.110) 60.0%,rgba(255,255,255,var(--glass-r5-core)) 61.0%,rgba(255,255,255,.110) 62.0%,rgba(47,61,95,.018) 63.0%,transparent 64.3%,transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent 72.0%,rgba(255,255,255,.020) 72.8%,rgba(255,255,255,.095) 73.8%,rgba(255,255,255,var(--glass-r6-core)) 74.7%,rgba(255,255,255,.092) 75.8%,transparent 77.1%,transparent 100%),
+      linear-gradient(109deg,transparent 0%,transparent 86.0%,rgba(255,255,255,.028) 86.7%,rgba(255,255,255,.150) 87.5%,rgba(255,255,255,var(--glass-r7-core)) 88.2%,rgba(255,255,255,.110) 89.0%,transparent 90.2%,transparent 100%);
     opacity:calc(var(--glass-strength) * 1);
     filter:blur(.55px);
     mix-blend-mode:screen;
