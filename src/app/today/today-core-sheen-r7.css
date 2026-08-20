@@ -1,11 +1,11 @@
-/* TODAY GLASS REFLECTION R12 — dedicated full-surface glass layer
+/* TODAY GLASS REFLECTION R13 — narrow multi-strip glass
    Desktop-only material pass:
    - keep wildcard/orange giant rank readable;
    - keep every OPEN label white;
-   - 01–05 only: mount a real reflection surface over the entire active card.
-     Reflection is made from broad environmental bands, a sharper specular streak,
-     and subtle refractive contrast. Pointer movement only shifts the whole sheet
-     a limited amount, like changing the viewing angle of a glass panel.
+   - 01–05 only: the active card is treated as one glass pane with several
+     narrow, soft-edged vertical/diagonal reflection strips inspired by the
+     reference. The entire reflection pattern shifts only slightly with pointer
+     movement, like the viewing angle of real glass changing.
    - 06 adjacent / blue and 07 wildcard / orange remain excluded. */
 
 @media (min-width:1181px){
@@ -29,157 +29,128 @@
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]{
     --glass-shift-x:0px;
     --glass-shift-y:0px;
-    --glass-angle:-1.4deg;
-    --glass-strength:.92;
+    --glass-angle:-0.8deg;
+    --glass-strength:.94;
     isolation:isolate!important;
     overflow:hidden!important;
+    position:relative!important;
   }
 
-  /* Disable older pseudo-element reflection implementations so only the dedicated
-     glass surface is visible. */
+  /* Disable the older pseudo-element experiments on the card itself. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::before,
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     content:none!important;
     display:none!important;
   }
 
-  /* The whole active card is one glass pane. This layer is deliberately more
-     visible than previous attempts: it includes both bright and slightly darker
-     refractive bands, so the reflection reads even on very pale card surfaces. */
+  /* Real decorative glass surface. It is prepended as the first child so it does
+     not interfere with legacy :last-child layout rules. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer{
     position:absolute!important;
-    z-index:2!important;
-    inset:-9%!important;
+    inset:-7%!important;
+    z-index:1!important;
     display:block!important;
     pointer-events:none!important;
     overflow:hidden!important;
-    opacity:var(--glass-strength)!important;
-
+    opacity:1!important;
     background:
-      /* broad left environmental reflection */
-      linear-gradient(
-        112deg,
-        rgba(255,255,255,.025) 0%,
-        rgba(255,255,255,.080) 9%,
-        rgba(255,255,255,.235) 16%,
-        rgba(255,255,255,.380) 20%,
-        rgba(255,255,255,.165) 25%,
-        rgba(255,255,255,.045) 31%,
-        transparent 37%,
-        transparent 45%,
-        rgba(49,62,90,.030) 50%,
-        rgba(255,255,255,.028) 55%,
-        rgba(255,255,255,.125) 61%,
-        rgba(255,255,255,.245) 66%,
-        rgba(255,255,255,.090) 71%,
-        transparent 78%,
-        transparent 100%
-      ),
-      /* cool refractive field tied lightly to the lane color */
-      linear-gradient(
-        112deg,
-        transparent 0%,
-        transparent 28%,
-        color-mix(in srgb,var(--row-accent) 7%,transparent) 36%,
-        rgba(255,255,255,.050) 43%,
-        transparent 51%,
-        transparent 64%,
-        color-mix(in srgb,var(--row-accent) 5%,transparent) 72%,
-        transparent 82%,
-        transparent 100%
-      ),
-      /* polished top-surface reflection */
-      linear-gradient(
-        180deg,
-        rgba(255,255,255,.125) 0%,
-        rgba(255,255,255,.050) 13%,
-        rgba(255,255,255,.014) 28%,
-        transparent 46%,
-        transparent 100%
-      );
-
+      linear-gradient(180deg,rgba(255,255,255,.040) 0%,rgba(255,255,255,.016) 22%,transparent 46%,rgba(255,255,255,.012) 100%),
+      linear-gradient(100deg,transparent 0%,rgba(255,255,255,.018) 28%,rgba(255,255,255,.035) 39%,transparent 53%,transparent 100%);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.38),
-      inset 0 -1px 0 rgba(255,255,255,.10),
-      inset 18px 0 40px rgba(255,255,255,.025),
-      inset -22px 0 46px rgba(42,56,87,.018);
-
-    backdrop-filter:contrast(1.035) saturate(1.025) brightness(1.012);
-    -webkit-backdrop-filter:contrast(1.035) saturate(1.025) brightness(1.012);
-
+      inset 0 1px 0 rgba(255,255,255,.30),
+      inset 0 -1px 0 rgba(255,255,255,.07);
+    backdrop-filter:contrast(1.018) saturate(1.015) brightness(1.008);
+    -webkit-backdrop-filter:contrast(1.018) saturate(1.015) brightness(1.008);
     transform:
       translate3d(var(--glass-shift-x),var(--glass-shift-y),0)
       rotate(var(--glass-angle))
-      scale(1.075);
+      scale(1.035);
     transform-origin:50% 50%;
     transition:
-      transform 150ms cubic-bezier(.22,.61,.36,1),
-      opacity .24s ease;
+      transform 185ms cubic-bezier(.22,.61,.36,1),
+      opacity .22s ease;
     will-change:transform,opacity;
   }
 
-  /* Main narrow specular streak — the part that makes the surface read as glass. */
+  /* Soft glass body: two broad, low-contrast environmental reflections. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer::before{
     content:"";
     position:absolute;
-    top:-22%;
-    bottom:-22%;
-    left:13%;
-    width:34%;
+    inset:-4%;
+    z-index:1;
     pointer-events:none;
     background:
       linear-gradient(
-        90deg,
+        98deg,
         transparent 0%,
-        rgba(255,255,255,.020) 18%,
-        rgba(255,255,255,.120) 36%,
-        rgba(255,255,255,.480) 49%,
-        rgba(255,255,255,.225) 57%,
-        rgba(255,255,255,.055) 71%,
+        transparent 9%,
+        rgba(255,255,255,.022) 13%,
+        rgba(255,255,255,.070) 18%,
+        rgba(255,255,255,.028) 24%,
+        transparent 31%,
+        transparent 57%,
+        rgba(255,255,255,.018) 62%,
+        rgba(255,255,255,.058) 68%,
+        rgba(255,255,255,.022) 74%,
+        transparent 82%,
+        transparent 100%
+      ),
+      linear-gradient(
+        98deg,
+        transparent 0%,
+        transparent 42%,
+        color-mix(in srgb,var(--row-accent) 4%,transparent) 48%,
+        rgba(255,255,255,.026) 54%,
+        transparent 61%,
         transparent 100%
       );
-    transform:skewX(-13deg);
-    filter:blur(2.2px);
-    opacity:.76;
+    opacity:calc(var(--glass-strength) * .58);
+    filter:blur(3.2px);
+    mix-blend-mode:screen;
   }
 
-  /* A wider, softer secondary reflection creates depth across the rest of the pane. */
+  /* Multiple narrow reflection strips — similar to the reference image:
+     uneven widths, uneven strengths, soft edges, and a tiny refractive shadow
+     beside some highlights so they read as glass rather than white paint. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] > .fr-glass-reflection-layer::after{
     content:"";
     position:absolute;
-    top:-18%;
-    bottom:-18%;
-    right:8%;
-    width:48%;
+    inset:-6%;
+    z-index:2;
     pointer-events:none;
     background:
-      linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255,255,255,.030) 18%,
-        rgba(255,255,255,.125) 42%,
-        rgba(255,255,255,.205) 54%,
-        rgba(255,255,255,.070) 67%,
-        rgba(43,58,92,.020) 78%,
-        transparent 100%
-      );
-    transform:skewX(-10deg);
-    filter:blur(10px);
-    opacity:.54;
+      /* 1 — slim strong strip */
+      linear-gradient(96deg,transparent 0%,transparent 8.6%,rgba(52,67,102,.020) 9.2%,rgba(255,255,255,.060) 10.0%,rgba(255,255,255,.245) 10.9%,rgba(255,255,255,.110) 11.8%,rgba(255,255,255,.020) 12.7%,transparent 13.6%,transparent 100%),
+      /* 2 — medium, softer */
+      linear-gradient(96deg,transparent 0%,transparent 22.2%,rgba(255,255,255,.018) 23.1%,rgba(255,255,255,.080) 24.0%,rgba(255,255,255,.175) 25.1%,rgba(255,255,255,.070) 26.3%,rgba(51,66,101,.014) 27.1%,transparent 28.2%,transparent 100%),
+      /* 3 — very thin accent */
+      linear-gradient(96deg,transparent 0%,transparent 36.8%,rgba(255,255,255,.040) 37.3%,rgba(255,255,255,.220) 37.9%,rgba(255,255,255,.075) 38.6%,transparent 39.2%,transparent 100%),
+      /* 4 — wider central reflection */
+      linear-gradient(96deg,transparent 0%,transparent 47.1%,rgba(49,64,98,.018) 48.0%,rgba(255,255,255,.050) 49.0%,rgba(255,255,255,.135) 50.4%,rgba(255,255,255,.205) 51.4%,rgba(255,255,255,.095) 52.6%,rgba(255,255,255,.024) 53.9%,transparent 55.2%,transparent 100%),
+      /* 5 — medium narrow */
+      linear-gradient(96deg,transparent 0%,transparent 63.2%,rgba(255,255,255,.018) 64.0%,rgba(255,255,255,.090) 65.0%,rgba(255,255,255,.165) 66.0%,rgba(255,255,255,.060) 67.1%,rgba(50,65,99,.012) 67.9%,transparent 69.0%,transparent 100%),
+      /* 6 — faint secondary strip */
+      linear-gradient(96deg,transparent 0%,transparent 76.5%,rgba(255,255,255,.014) 77.2%,rgba(255,255,255,.060) 78.1%,rgba(255,255,255,.120) 79.0%,rgba(255,255,255,.042) 80.0%,transparent 81.0%,transparent 100%),
+      /* 7 — far-right hairline */
+      linear-gradient(96deg,transparent 0%,transparent 88.4%,rgba(255,255,255,.025) 89.0%,rgba(255,255,255,.145) 89.7%,rgba(255,255,255,.045) 90.4%,transparent 91.1%,transparent 100%);
+    opacity:calc(var(--glass-strength) * .88);
+    filter:blur(.55px);
+    mix-blend-mode:screen;
   }
 
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"] > .fr-glass-reflection-layer{
-    opacity:1!important;
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"] > .fr-glass-reflection-layer::before{
+    opacity:calc(var(--glass-strength) * .64);
+  }
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"] > .fr-glass-reflection-layer::after{
+    opacity:calc(var(--glass-strength) * .96);
   }
 
-  /* Keep editorial copy / controls above the glass reflection. */
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail{
-    position:relative!important;
-    z-index:3!important;
-  }
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-head{
-    position:relative!important;
-    z-index:5!important;
+  /* Explicitly keep the existing card content above the glass. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-rank,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-head,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-tail{
+    z-index:4!important;
   }
 }
 
