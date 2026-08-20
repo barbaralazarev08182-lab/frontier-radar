@@ -1,12 +1,13 @@
-/* TODAY GLASS REFLECTION R16 — per-card emphasis variation
+/* TODAY GLASS REFLECTION R17 — stronger per-card primary highlights
    Desktop-only material pass:
    - keep wildcard/orange giant rank readable;
    - keep every OPEN label white;
    - 01–05 only: the active card is one glass pane with several clearly visible
      reflection strips aligned to the same diagonal language as the background
      facets. The whole reflection field shifts only slightly with pointer movement.
-   - Each core card has a stable pseudo-random pair of stronger reflection cores,
-     so the glass does not look copy-pasted from card to card.
+   - Each core card has a stable pseudo-random pair of much stronger reflection
+     cores, pushed close to specular-white while all five secondary strips remain
+     at the approved R16 intensity.
    - IMPORTANT: this layer never overrides the approved absolute positioning of
      rank / head / detail / tail, so the four content zones and broken cross skeleton
      remain exactly where the five-zone layout placed them.
@@ -47,27 +48,27 @@
     position:relative!important;
   }
 
-  /* Stable pseudo-random emphasis: exactly two stronger strips per core card.
+  /* Stable pseudo-random emphasis: exactly two much stronger strips per core card.
      Only the bright core changes; strip geometry, motion and every other layer stay untouched. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(1)[data-active="true"]{
-    --glass-r2-core:.510;
-    --glass-r6-core:.470;
+    --glass-r2-core:.960;
+    --glass-r6-core:.900;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(2)[data-active="true"]{
-    --glass-r1-core:.540;
-    --glass-r4-core:.500;
+    --glass-r1-core:1;
+    --glass-r4-core:.930;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(3)[data-active="true"]{
-    --glass-r3-core:.590;
-    --glass-r7-core:.550;
+    --glass-r3-core:1;
+    --glass-r7-core:.970;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(4)[data-active="true"]{
-    --glass-r2-core:.500;
-    --glass-r5-core:.520;
+    --glass-r2-core:.940;
+    --glass-r5-core:.980;
   }
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(5)[data-active="true"]{
-    --glass-r4-core:.550;
-    --glass-r6-core:.490;
+    --glass-r4-core:.990;
+    --glass-r6-core:.920;
   }
 
   /* Disable older reflection experiments on the band itself. */
