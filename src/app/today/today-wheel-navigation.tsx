@@ -43,7 +43,9 @@ export function TodayWheelNavigation() {
         layer = document.createElement("div");
         layer.className = "fr-glass-reflection-layer";
         layer.setAttribute("aria-hidden", "true");
-        activeBand.appendChild(layer);
+        /* Insert first so legacy :last-child selectors keep targeting the real
+           card content / action rail instead of the decorative glass layer. */
+        activeBand.prepend(layer);
       }
 
       return activeBand;
@@ -91,12 +93,12 @@ export function TodayWheelNavigation() {
       const nx = (x - 0.5) * 2;
       const ny = (y - 0.5) * 2;
 
-      /* The reflection belongs to the full glass sheet. Pointer motion only nudges
-         the sheet by a limited amount, like changing viewing angle. */
-      const shiftX = nx * 30;
-      const shiftY = ny * 17;
-      const angle = -1.4 + nx * 0.95 - ny * 0.2;
-      const strength = 0.9 + (1 - Math.abs(nx) * 0.24) * 0.08;
+      /* Real glass behavior: the reflection pattern stays attached to the whole
+         pane and only shifts a little when the viewing angle changes. */
+      const shiftX = nx * 18;
+      const shiftY = ny * 9;
+      const angle = -0.8 + nx * 0.48 - ny * 0.12;
+      const strength = 0.9 + (1 - Math.abs(nx) * 0.22) * 0.07;
 
       activeBand.style.setProperty("--glass-shift-x", `${shiftX.toFixed(1)}px`);
       activeBand.style.setProperty("--glass-shift-y", `${shiftY.toFixed(1)}px`);
@@ -110,8 +112,8 @@ export function TodayWheelNavigation() {
       if (!activeBand) return;
       activeBand.style.setProperty("--glass-shift-x", "0px");
       activeBand.style.setProperty("--glass-shift-y", "0px");
-      activeBand.style.setProperty("--glass-angle", "-1.4deg");
-      activeBand.style.setProperty("--glass-strength", ".92");
+      activeBand.style.setProperty("--glass-angle", "-0.8deg");
+      activeBand.style.setProperty("--glass-strength", ".94");
       delete activeBand.dataset.glassActive;
     };
 
