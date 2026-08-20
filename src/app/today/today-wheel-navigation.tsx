@@ -58,12 +58,20 @@ export function TodayWheelNavigation() {
 
       const x = clamp01((clientX - rect.left) / rect.width);
       const y = clamp01((clientY - rect.top) / rect.height);
-      const tilt = -10 + x * 14;
-      const strength = 0.72 + (1 - Math.abs(x - 0.5) * 1.15) * 0.18;
+      const nx = (x - 0.5) * 2;
+      const ny = (y - 0.5) * 2;
 
-      activeBand.style.setProperty("--glass-x", `${(x * 100).toFixed(2)}%`);
-      activeBand.style.setProperty("--glass-y", `${(y * 100).toFixed(2)}%`);
-      activeBand.style.setProperty("--glass-tilt", `${tilt.toFixed(2)}deg`);
+      /* The pointer changes the viewing angle of the whole glass sheet rather than
+         dragging a local hotspot. Movement is intentionally limited so the
+         reflection feels attached to the material. */
+      const shiftX = nx * 5.8;
+      const shiftY = ny * 3.6;
+      const angle = -1.8 + nx * 1.35 - ny * 0.35;
+      const strength = 0.72 + (1 - Math.abs(nx) * 0.32) * 0.08;
+
+      activeBand.style.setProperty("--glass-shift-x", `${shiftX.toFixed(2)}%`);
+      activeBand.style.setProperty("--glass-shift-y", `${shiftY.toFixed(2)}%`);
+      activeBand.style.setProperty("--glass-angle", `${angle.toFixed(2)}deg`);
       activeBand.style.setProperty("--glass-strength", strength.toFixed(3));
       activeBand.dataset.glassActive = "true";
     };
@@ -73,10 +81,10 @@ export function TodayWheelNavigation() {
         '.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]',
       );
       if (!activeBand) return;
-      activeBand.style.setProperty("--glass-x", "68%");
-      activeBand.style.setProperty("--glass-y", "24%");
-      activeBand.style.setProperty("--glass-tilt", "-2deg");
-      activeBand.style.setProperty("--glass-strength", ".62");
+      activeBand.style.setProperty("--glass-shift-x", "0%");
+      activeBand.style.setProperty("--glass-shift-y", "0%");
+      activeBand.style.setProperty("--glass-angle", "-1.8deg");
+      activeBand.style.setProperty("--glass-strength", ".72");
       delete activeBand.dataset.glassActive;
     };
 
