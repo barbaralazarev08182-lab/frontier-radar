@@ -1,52 +1,72 @@
 /* TODAY CORE SHEEN R7
-   Final desktop-only polish:
+   Desktop-only polish:
    - restore contrast for the giant rank on the wildcard/orange card;
-   - add a restrained, broad moving light sweep to active cards 01–05 only.
-   Blue adjacent (06) and orange wildcard (07) are intentionally excluded.
-   Preview sync marker: R7. */
+   - keep every OPEN label white in both collapsed and active states;
+   - add a clearly visible, restrained, continuously moving broad light sweep to
+     active cards 01–05 only. Blue adjacent (06) and orange wildcard (07) remain
+     intentionally excluded from the moving sheen. */
 
 @media (min-width:1181px){
   /* 07 / wildcard: keep the giant rank visible against the orange field. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
-    color:rgba(255,240,216,.82)!important;
-    opacity:.72!important;
-    filter:drop-shadow(0 18px 34px rgba(83,29,17,.24))!important;
+    color:rgba(255,240,216,.88)!important;
+    opacity:.82!important;
+    filter:drop-shadow(0 18px 34px rgba(83,29,17,.28))!important;
   }
 
-  /* 01–05 only: broad restrained moving sheen across the active card surface. */
+  /* Every OPEN label is white, regardless of lane or active state. */
+  .today-r27-production .fr-band .fr-band-gate,
+  .today-r27-production .fr-band .fr-band-gate > span,
+  .today-r27-production .fr-band .fr-band-gate > span::after,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span,
+  .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span::after{
+    color:rgba(255,255,255,.97)!important;
+    text-shadow:0 2px 9px rgba(20,20,20,.18),0 0 18px rgba(255,255,255,.08)!important;
+  }
+
+  /* 01–05 only: full-card continuous moving sheen.
+     The pseudo-element always covers the whole active card. Two broad light bands
+     move across it at different offsets, so there is no long invisible pause. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     content:"";
     position:absolute;
     z-index:2;
-    top:-18%;
-    bottom:-18%;
-    left:-60%;
-    width:76%;
+    inset:-7% -3%;
+    width:auto;
+    height:auto;
     pointer-events:none;
-    opacity:.58;
-    will-change:transform,opacity;
+    opacity:.86;
+    will-change:background-position,filter;
     background:
       linear-gradient(
         112deg,
         transparent 0%,
-        rgba(255,255,255,.018) 19%,
-        rgba(255,255,255,.072) 33%,
-        rgba(255,255,255,.18) 47%,
-        rgba(255,255,255,.29) 52%,
-        rgba(255,255,255,.13) 58%,
-        rgba(255,255,255,.047) 69%,
-        transparent 84%
+        transparent 24%,
+        rgba(255,255,255,.06) 31%,
+        rgba(255,255,255,.18) 37%,
+        rgba(255,255,255,.42) 44%,
+        rgba(255,255,255,.62) 49%,
+        rgba(255,255,255,.30) 55%,
+        rgba(255,255,255,.10) 63%,
+        transparent 72%,
+        transparent 100%
       ),
       linear-gradient(
         112deg,
-        transparent 15%,
-        color-mix(in srgb,var(--row-accent) 4%,transparent) 43%,
-        color-mix(in srgb,var(--row-accent) 9%,transparent) 54%,
-        transparent 76%
+        transparent 0%,
+        transparent 34%,
+        color-mix(in srgb,var(--row-accent) 7%,transparent) 42%,
+        rgba(255,255,255,.18) 49%,
+        color-mix(in srgb,var(--row-accent) 10%,transparent) 57%,
+        transparent 69%,
+        transparent 100%
       );
-    filter:blur(13px) saturate(.92);
-    transform:translate3d(-38%,0,0) skewX(-8deg);
-    animation:frTodayCoreSheen 9.2s cubic-bezier(.42,0,.22,1) infinite;
+    background-size:215% 118%,185% 118%;
+    background-repeat:no-repeat,no-repeat;
+    background-position:-118% 50%,42% 50%;
+    filter:blur(8px) saturate(.96);
+    animation:frTodayCoreSheen 6.8s linear infinite!important;
   }
 
   /* Keep the sweep behind all five-zone copy and controls. */
@@ -60,31 +80,23 @@
 
 @keyframes frTodayCoreSheen{
   0%{
-    transform:translate3d(-44%,0,0) skewX(-8deg);
-    opacity:0;
+    background-position:-118% 50%,42% 50%;
+    filter:blur(8px) saturate(.96);
   }
-  8%{
-    opacity:.24;
+  50%{
+    background-position:22% 50%,182% 50%;
+    filter:blur(9px) saturate(1);
   }
-  18%{
-    opacity:.58;
-  }
-  54%{
-    opacity:.54;
-  }
-  74%{
-    opacity:.22;
-  }
-  82%,100%{
-    transform:translate3d(248%,0,0) skewX(-8deg);
-    opacity:0;
+  100%{
+    background-position:162% 50%,322% 50%;
+    filter:blur(8px) saturate(.96);
   }
 }
 
 @media (prefers-reduced-motion:reduce){
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     animation:none!important;
-    transform:translate3d(72%,0,0) skewX(-8deg)!important;
-    opacity:.14!important;
+    background-position:38% 50%,142% 50%!important;
+    opacity:.26!important;
   }
 }
