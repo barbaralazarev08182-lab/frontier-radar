@@ -1,19 +1,21 @@
-/* TODAY CORE SHEEN R8
-   Desktop-only polish:
-   - restore contrast for the giant rank on the wildcard/orange card;
-   - keep every OPEN label white in both collapsed and active states;
-   - render an unmistakably moving, restrained, broad light band across active
-     cards 01–05 only. Blue adjacent (06) and orange wildcard (07) stay excluded. */
+/* TODAY CORE SHEEN R9
+   Premium desktop material pass:
+   - keep wildcard/orange giant rank readable;
+   - keep every OPEN label white;
+   - 01–05 only: replace the flat white sweep with an asymmetric layered
+     material reflection: colored pre-glow, concentrated highlight core,
+     softer secondary bloom and a diffused trailing edge.
+   - 06 adjacent / blue and 07 wildcard / orange remain excluded. */
 
 @media (min-width:1181px){
-  /* 07 / wildcard: keep the giant rank visible against the orange field. */
+  /* 07 / wildcard: preserve giant-rank contrast on the orange field. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
-    color:rgba(255,240,216,.90)!important;
+    color:rgba(255,241,223,.90)!important;
     opacity:.86!important;
-    filter:drop-shadow(0 18px 34px rgba(83,29,17,.30))!important;
+    filter:drop-shadow(0 18px 34px rgba(83,29,17,.28))!important;
   }
 
-  /* Every OPEN label is white, regardless of lane or active state. */
+  /* Every OPEN label stays white in collapsed and active states. */
   .today-r27-production .fr-band .fr-band-gate,
   .today-r27-production .fr-band .fr-band-gate > span,
   .today-r27-production .fr-band .fr-band-gate > span::after,
@@ -21,54 +23,81 @@
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span,
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"] .fr-band-gate > span::after{
     color:#fff!important;
-    text-shadow:0 2px 10px rgba(20,20,20,.22),0 0 20px rgba(255,255,255,.12)!important;
+    text-shadow:0 2px 10px rgba(20,20,20,.20),0 0 18px rgba(255,255,255,.10)!important;
   }
 
-  /* 01–05 only: a real moving band, not a nearly-static full-card texture.
-     The band starts fully off-canvas on the left and continuously traverses the
-     complete active card to the right. Its broad body gives the requested large
-     surface area while the soft edges keep it restrained. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]{
+    isolation:isolate!important;
+    overflow:hidden!important;
+  }
+
+  /* 01–05 only: layered, asymmetric reflection.
+     It deliberately avoids a uniform white bar: each portion has a different
+     intensity and a slightly different hue so it reads like light moving over
+     material rather than an overlay sliding across the UI. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     content:"";
     position:absolute;
     z-index:2;
-    top:-28%;
-    bottom:-28%;
-    left:-74%;
-    width:72%;
+    top:-34%;
+    bottom:-34%;
+    left:-66%;
+    width:62%;
     height:auto;
     pointer-events:none;
-    opacity:.82;
-    will-change:transform;
+    opacity:.78;
+    will-change:transform,opacity,filter;
+
     background:
+      /* cool/accent-tinted pre-reflection */
+      radial-gradient(
+        ellipse 58% 62% at 31% 42%,
+        color-mix(in srgb,var(--row-accent) 13%,transparent) 0%,
+        color-mix(in srgb,var(--row-accent) 7%,transparent) 35%,
+        transparent 72%
+      ),
+      /* small upper specular bloom */
+      radial-gradient(
+        ellipse 38% 28% at 57% 29%,
+        rgba(255,255,255,.22) 0%,
+        rgba(255,255,255,.09) 38%,
+        transparent 78%
+      ),
+      /* broad lower reflection, deliberately dimmer */
+      radial-gradient(
+        ellipse 62% 42% at 49% 73%,
+        rgba(255,255,255,.085) 0%,
+        color-mix(in srgb,var(--row-accent) 5%,transparent) 44%,
+        transparent 80%
+      ),
+      /* main asymmetric highlight body */
       linear-gradient(
-        112deg,
+        109deg,
         transparent 0%,
-        transparent 18%,
-        color-mix(in srgb,var(--row-accent) 5%,transparent) 27%,
-        rgba(255,255,255,.08) 34%,
-        rgba(255,255,255,.20) 40%,
-        rgba(255,255,255,.48) 47%,
-        rgba(255,255,255,.72) 51%,
-        rgba(255,255,255,.42) 56%,
-        rgba(255,255,255,.16) 63%,
-        color-mix(in srgb,var(--row-accent) 8%,transparent) 69%,
-        transparent 80%,
+        transparent 20%,
+        rgba(255,255,255,.018) 27%,
+        color-mix(in srgb,var(--row-accent) 5%,transparent) 32%,
+        rgba(255,255,255,.055) 37%,
+        rgba(255,255,255,.13) 42%,
+        rgba(255,255,255,.33) 46.5%,
+        rgba(255,255,255,.50) 49.2%,
+        rgba(255,255,255,.27) 51.5%,
+        rgba(255,255,255,.12) 55%,
+        color-mix(in srgb,var(--row-accent) 9%,transparent) 59%,
+        rgba(255,255,255,.045) 64%,
+        rgba(255,255,255,.016) 69%,
+        transparent 77%,
         transparent 100%
       );
-    filter:blur(12px) saturate(.94);
-    box-shadow:0 0 110px rgba(255,255,255,.10);
-    transform:translate3d(0,0,0) skewX(-7deg);
-    animation:frTodayCoreSheenTraverse 5.4s linear infinite!important;
+
+    filter:blur(9px) saturate(1.04);
+    mix-blend-mode:screen;
+    transform:translate3d(-8%,1.5%,0) rotate(-1.8deg) skewX(-6deg);
+    transform-origin:50% 50%;
+    animation:frTodayPremiumTraverse 6.2s cubic-bezier(.38,.02,.20,1) infinite!important;
   }
 
-  /* A faint moving refraction edge makes the sweep readable on very pale cards
-     without turning it into a neon effect. */
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]{
-    isolation:isolate;
-  }
-
-  /* Keep the moving band behind all five-zone copy and controls. */
+  /* Keep all editorial copy / controls clearly above the reflection. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail{
     z-index:3!important;
   }
@@ -77,19 +106,45 @@
   }
 }
 
-@keyframes frTodayCoreSheenTraverse{
+@keyframes frTodayPremiumTraverse{
   0%{
-    transform:translate3d(0,0,0) skewX(-7deg);
+    transform:translate3d(-12%,2.5%,0) rotate(-1.8deg) skewX(-6deg);
+    opacity:.16;
+    filter:blur(11px) saturate(1.00);
+  }
+  12%{
+    opacity:.58;
+  }
+  30%{
+    transform:translate3d(58%,-.5%,0) rotate(-1.3deg) skewX(-6deg);
+    opacity:.80;
+    filter:blur(8px) saturate(1.04);
+  }
+  52%{
+    transform:translate3d(124%,-2.0%,0) rotate(-.8deg) skewX(-6deg);
+    opacity:.88;
+    filter:blur(7px) saturate(1.06);
+  }
+  72%{
+    transform:translate3d(186%,.5%,0) rotate(-.4deg) skewX(-6deg);
+    opacity:.66;
+    filter:blur(9px) saturate(1.03);
+  }
+  88%{
+    opacity:.26;
   }
   100%{
-    transform:translate3d(268%,0,0) skewX(-7deg);
+    transform:translate3d(252%,2.2%,0) rotate(0deg) skewX(-6deg);
+    opacity:.10;
+    filter:blur(12px) saturate(1.00);
   }
 }
 
 @media (prefers-reduced-motion:reduce){
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     animation:none!important;
-    transform:translate3d(92%,0,0) skewX(-7deg)!important;
-    opacity:.24!important;
+    transform:translate3d(112%,0,0) rotate(-1deg) skewX(-6deg)!important;
+    opacity:.18!important;
+    filter:blur(9px)!important;
   }
 }
