@@ -1,10 +1,13 @@
-/* TODAY GLASS REFLECTION R14 — stronger facet-aligned glass
+/* TODAY GLASS REFLECTION R15 — restore approved five-zone positioning
    Desktop-only material pass:
    - keep wildcard/orange giant rank readable;
    - keep every OPEN label white;
    - 01–05 only: the active card is one glass pane with several clearly visible
      reflection strips aligned to the same diagonal language as the background
      facets. The whole reflection field shifts only slightly with pointer movement.
+   - IMPORTANT: this layer never overrides the approved absolute positioning of
+     rank / head / detail / tail, so the four content zones and broken cross skeleton
+     remain exactly where the five-zone layout placed them.
    - 06 adjacent / blue and 07 wildcard / orange remain excluded. */
 
 @media (min-width:1181px){
@@ -148,14 +151,9 @@
     opacity:1;
   }
 
-  /* Existing card content always remains above the glass reflection. */
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-rank,
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-head,
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail,
-  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-tail{
-    position:relative!important;
-    z-index:4!important;
-  }
+  /* DO NOT assign position here. The approved five-zone layers already own their
+     absolute positioning and z-index hierarchy (head 5 / detail 3 / tail 8).
+     The glass sits at z-index 1, safely beneath all of them. */
 }
 
 @media (prefers-reduced-motion:reduce){
