@@ -43,8 +43,8 @@ export function TodayWheelNavigation() {
         layer = document.createElement("div");
         layer.className = "fr-glass-reflection-layer";
         layer.setAttribute("aria-hidden", "true");
-        /* Insert first so legacy :last-child selectors keep targeting the real
-           card content / action rail instead of the decorative glass layer. */
+        /* Keep the decorative glass first so legacy :last-child layout rules
+           continue to target the real card content. */
         activeBand.prepend(layer);
       }
 
@@ -93,12 +93,13 @@ export function TodayWheelNavigation() {
       const nx = (x - 0.5) * 2;
       const ny = (y - 0.5) * 2;
 
-      /* Real glass behavior: the reflection pattern stays attached to the whole
-         pane and only shifts a little when the viewing angle changes. */
-      const shiftX = nx * 18;
-      const shiftY = ny * 9;
-      const angle = -0.8 + nx * 0.48 - ny * 0.12;
-      const strength = 0.9 + (1 - Math.abs(nx) * 0.22) * 0.07;
+      /* The highlights are already drawn on the same diagonal as the background
+         facets. Pointer motion therefore only nudges the complete reflection
+         sheet instead of rotating it away from that visual language. */
+      const shiftX = nx * 24 + ny * 4;
+      const shiftY = ny * 12 + nx * 2.5;
+      const angle = nx * 0.34 - ny * 0.08;
+      const strength = 1 + (1 - Math.abs(nx) * 0.16) * 0.08;
 
       activeBand.style.setProperty("--glass-shift-x", `${shiftX.toFixed(1)}px`);
       activeBand.style.setProperty("--glass-shift-y", `${shiftY.toFixed(1)}px`);
@@ -112,8 +113,8 @@ export function TodayWheelNavigation() {
       if (!activeBand) return;
       activeBand.style.setProperty("--glass-shift-x", "0px");
       activeBand.style.setProperty("--glass-shift-y", "0px");
-      activeBand.style.setProperty("--glass-angle", "-0.8deg");
-      activeBand.style.setProperty("--glass-strength", ".94");
+      activeBand.style.setProperty("--glass-angle", "0deg");
+      activeBand.style.setProperty("--glass-strength", "1");
       delete activeBand.dataset.glassActive;
     };
 
