@@ -1,13 +1,14 @@
-/* TODAY CORE SHEEN R10 — pointer glass reflection
-   Desktop-only polish:
+/* TODAY GLASS REFLECTION R11
+   Desktop-only material pass:
    - keep wildcard/orange giant rank readable;
    - keep every OPEN label white;
-   - 01–05 only: replace automatic sweep animation with a glass-like reflection
-     that follows the user's pointer across the active card surface.
+   - 01–05 only: the entire active card reads as one glass sheet. Reflection is
+     made from broad environmental bands plus a thinner specular band. Pointer
+     movement only shifts/tilts the whole reflection by a limited amount, like a
+     changing viewing angle rather than a hotspot following the cursor.
    - 06 adjacent / blue and 07 wildcard / orange remain excluded. */
 
 @media (min-width:1181px){
-  /* 07 / wildcard: preserve giant-rank contrast on the orange field. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"][data-lane="wildcard"] .fr-band-rank{
     color:rgba(255,241,223,.90)!important;
     opacity:.86!important;
@@ -26,97 +27,130 @@
   }
 
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]{
-    --glass-x:68%;
-    --glass-y:24%;
-    --glass-tilt:-2deg;
-    --glass-strength:.62;
+    --glass-shift-x:0%;
+    --glass-shift-y:0%;
+    --glass-angle:-1.8deg;
+    --glass-strength:.72;
     isolation:isolate!important;
     overflow:hidden!important;
   }
 
-  /* Broad glass bloom that follows pointer position. */
+  /* Broad environmental reflection across the whole glass surface.
+     No local light source: the complete reflection sheet moves together. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::before{
     content:"";
     position:absolute;
     z-index:1;
-    inset:-8%;
+    inset:-15%;
     pointer-events:none;
-    opacity:calc(var(--glass-strength) * .78);
+    opacity:calc(var(--glass-strength) * .76);
     background:
-      radial-gradient(
-        circle at var(--glass-x) var(--glass-y),
-        rgba(255,255,255,.26) 0%,
-        rgba(255,255,255,.13) 8%,
-        rgba(255,255,255,.060) 17%,
-        color-mix(in srgb,var(--row-accent) 7%,transparent) 25%,
-        rgba(255,255,255,.020) 33%,
-        transparent 47%
+      /* large soft window / sky reflection */
+      linear-gradient(
+        111deg,
+        transparent 0%,
+        transparent 12%,
+        rgba(255,255,255,.018) 17%,
+        rgba(255,255,255,.055) 23%,
+        rgba(255,255,255,.115) 29%,
+        rgba(255,255,255,.072) 35%,
+        rgba(255,255,255,.030) 42%,
+        transparent 49%,
+        transparent 58%,
+        rgba(255,255,255,.018) 63%,
+        rgba(255,255,255,.062) 69%,
+        rgba(255,255,255,.092) 73%,
+        rgba(255,255,255,.038) 78%,
+        transparent 85%,
+        transparent 100%
       ),
-      radial-gradient(
-        ellipse 44% 30% at calc(var(--glass-x) + 7%) calc(var(--glass-y) - 5%),
-        rgba(255,255,255,.11) 0%,
-        color-mix(in srgb,var(--row-accent) 8%,transparent) 34%,
-        transparent 72%
+      /* very faint cool reflection, tied to the card material */
+      linear-gradient(
+        111deg,
+        transparent 0%,
+        transparent 30%,
+        color-mix(in srgb,var(--row-accent) 5%,transparent) 39%,
+        rgba(255,255,255,.028) 47%,
+        transparent 56%,
+        transparent 100%
+      ),
+      /* subtle top-surface polish */
+      linear-gradient(
+        180deg,
+        rgba(255,255,255,.055) 0%,
+        rgba(255,255,255,.018) 18%,
+        transparent 42%,
+        transparent 100%
       );
-    filter:blur(10px) saturate(1.04);
+    transform:
+      translate3d(var(--glass-shift-x),var(--glass-shift-y),0)
+      rotate(var(--glass-angle))
+      scale(1.08);
+    transform-origin:50% 50%;
+    filter:blur(1.8px) saturate(1.01);
     mix-blend-mode:screen;
-    transition:opacity .28s ease,filter .28s ease;
-    will-change:background,opacity,filter;
+    transition:
+      transform 170ms cubic-bezier(.22,.61,.36,1),
+      opacity .24s ease,
+      filter .24s ease;
+    will-change:transform,opacity;
   }
 
-  /* A larger directional reflection sheet, offset from the pointer like real glass. */
+  /* Specular layer: one thinner glass glint plus a softer secondary strip.
+     It is part of the same sheet and shifts as a whole with the broad reflection. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     content:"";
     position:absolute;
     z-index:2;
-    left:var(--glass-x);
-    top:var(--glass-y);
-    width:68%;
-    height:138%;
+    inset:-18%;
     pointer-events:none;
-    opacity:var(--glass-strength);
+    opacity:calc(var(--glass-strength) * .60);
     background:
       linear-gradient(
         111deg,
         transparent 0%,
-        transparent 24%,
-        rgba(255,255,255,.018) 31%,
-        color-mix(in srgb,var(--row-accent) 4%,transparent) 37%,
-        rgba(255,255,255,.060) 42%,
-        rgba(255,255,255,.16) 46%,
-        rgba(255,255,255,.32) 49%,
-        rgba(255,255,255,.20) 52%,
-        rgba(255,255,255,.080) 56%,
-        color-mix(in srgb,var(--row-accent) 7%,transparent) 61%,
-        rgba(255,255,255,.028) 66%,
-        transparent 75%,
+        transparent 31%,
+        rgba(255,255,255,.018) 34%,
+        rgba(255,255,255,.090) 37.2%,
+        rgba(255,255,255,.215) 39.5%,
+        rgba(255,255,255,.110) 41.4%,
+        rgba(255,255,255,.028) 44.5%,
+        transparent 48%,
         transparent 100%
       ),
       linear-gradient(
         111deg,
         transparent 0%,
-        transparent 42%,
-        rgba(255,255,255,.06) 48%,
-        rgba(255,255,255,.015) 58%,
-        transparent 70%
+        transparent 61%,
+        rgba(255,255,255,.016) 64%,
+        rgba(255,255,255,.072) 67%,
+        rgba(255,255,255,.034) 70%,
+        transparent 74%,
+        transparent 100%
       );
-    transform:translate(-50%,-50%) rotate(var(--glass-tilt)) skewX(-5deg);
+    transform:
+      translate3d(var(--glass-shift-x),var(--glass-shift-y),0)
+      rotate(var(--glass-angle))
+      scale(1.11);
     transform-origin:50% 50%;
-    filter:blur(9px) saturate(1.03);
+    filter:blur(.9px);
     mix-blend-mode:screen;
     transition:
-      left 90ms cubic-bezier(.22,.61,.36,1),
-      top 90ms cubic-bezier(.22,.61,.36,1),
-      transform 120ms cubic-bezier(.22,.61,.36,1),
+      transform 205ms cubic-bezier(.22,.61,.36,1),
       opacity .24s ease;
-    will-change:left,top,transform,opacity;
+    will-change:transform,opacity;
   }
 
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"]::before{
-    filter:blur(8px) saturate(1.06);
+    opacity:calc(var(--glass-strength) * .84);
+    filter:blur(1.4px) saturate(1.015);
   }
 
-  /* Keep editorial copy / controls above the reflection. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"]::after{
+    opacity:calc(var(--glass-strength) * .68);
+  }
+
+  /* Keep editorial copy / controls above the glass reflection. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail{
     z-index:3!important;
   }
@@ -126,6 +160,7 @@
 }
 
 @media (prefers-reduced-motion:reduce){
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::before,
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     transition:none!important;
   }
