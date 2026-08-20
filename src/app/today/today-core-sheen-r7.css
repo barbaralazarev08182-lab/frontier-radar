@@ -1,10 +1,9 @@
-/* TODAY CORE SHEEN R9
-   Premium desktop material pass:
+/* TODAY CORE SHEEN R10 — pointer glass reflection
+   Desktop-only polish:
    - keep wildcard/orange giant rank readable;
    - keep every OPEN label white;
-   - 01–05 only: replace the flat white sweep with an asymmetric layered
-     material reflection: colored pre-glow, concentrated highlight core,
-     softer secondary bloom and a diffused trailing edge.
+   - 01–05 only: replace automatic sweep animation with a glass-like reflection
+     that follows the user's pointer across the active card surface.
    - 06 adjacent / blue and 07 wildcard / orange remain excluded. */
 
 @media (min-width:1181px){
@@ -27,77 +26,97 @@
   }
 
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]{
+    --glass-x:68%;
+    --glass-y:24%;
+    --glass-tilt:-2deg;
+    --glass-strength:.62;
     isolation:isolate!important;
     overflow:hidden!important;
   }
 
-  /* 01–05 only: layered, asymmetric reflection.
-     It deliberately avoids a uniform white bar: each portion has a different
-     intensity and a slightly different hue so it reads like light moving over
-     material rather than an overlay sliding across the UI. */
+  /* Broad glass bloom that follows pointer position. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::before{
+    content:"";
+    position:absolute;
+    z-index:1;
+    inset:-8%;
+    pointer-events:none;
+    opacity:calc(var(--glass-strength) * .78);
+    background:
+      radial-gradient(
+        circle at var(--glass-x) var(--glass-y),
+        rgba(255,255,255,.26) 0%,
+        rgba(255,255,255,.13) 8%,
+        rgba(255,255,255,.060) 17%,
+        color-mix(in srgb,var(--row-accent) 7%,transparent) 25%,
+        rgba(255,255,255,.020) 33%,
+        transparent 47%
+      ),
+      radial-gradient(
+        ellipse 44% 30% at calc(var(--glass-x) + 7%) calc(var(--glass-y) - 5%),
+        rgba(255,255,255,.11) 0%,
+        color-mix(in srgb,var(--row-accent) 8%,transparent) 34%,
+        transparent 72%
+      );
+    filter:blur(10px) saturate(1.04);
+    mix-blend-mode:screen;
+    transition:opacity .28s ease,filter .28s ease;
+    will-change:background,opacity,filter;
+  }
+
+  /* A larger directional reflection sheet, offset from the pointer like real glass. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
     content:"";
     position:absolute;
     z-index:2;
-    top:-34%;
-    bottom:-34%;
-    left:-66%;
-    width:62%;
-    height:auto;
+    left:var(--glass-x);
+    top:var(--glass-y);
+    width:68%;
+    height:138%;
     pointer-events:none;
-    opacity:.78;
-    will-change:transform,opacity,filter;
-
+    opacity:var(--glass-strength);
     background:
-      /* cool/accent-tinted pre-reflection */
-      radial-gradient(
-        ellipse 58% 62% at 31% 42%,
-        color-mix(in srgb,var(--row-accent) 13%,transparent) 0%,
-        color-mix(in srgb,var(--row-accent) 7%,transparent) 35%,
-        transparent 72%
-      ),
-      /* small upper specular bloom */
-      radial-gradient(
-        ellipse 38% 28% at 57% 29%,
-        rgba(255,255,255,.22) 0%,
-        rgba(255,255,255,.09) 38%,
-        transparent 78%
-      ),
-      /* broad lower reflection, deliberately dimmer */
-      radial-gradient(
-        ellipse 62% 42% at 49% 73%,
-        rgba(255,255,255,.085) 0%,
-        color-mix(in srgb,var(--row-accent) 5%,transparent) 44%,
-        transparent 80%
-      ),
-      /* main asymmetric highlight body */
       linear-gradient(
-        109deg,
+        111deg,
         transparent 0%,
-        transparent 20%,
-        rgba(255,255,255,.018) 27%,
-        color-mix(in srgb,var(--row-accent) 5%,transparent) 32%,
-        rgba(255,255,255,.055) 37%,
-        rgba(255,255,255,.13) 42%,
-        rgba(255,255,255,.33) 46.5%,
-        rgba(255,255,255,.50) 49.2%,
-        rgba(255,255,255,.27) 51.5%,
-        rgba(255,255,255,.12) 55%,
-        color-mix(in srgb,var(--row-accent) 9%,transparent) 59%,
-        rgba(255,255,255,.045) 64%,
-        rgba(255,255,255,.016) 69%,
-        transparent 77%,
+        transparent 24%,
+        rgba(255,255,255,.018) 31%,
+        color-mix(in srgb,var(--row-accent) 4%,transparent) 37%,
+        rgba(255,255,255,.060) 42%,
+        rgba(255,255,255,.16) 46%,
+        rgba(255,255,255,.32) 49%,
+        rgba(255,255,255,.20) 52%,
+        rgba(255,255,255,.080) 56%,
+        color-mix(in srgb,var(--row-accent) 7%,transparent) 61%,
+        rgba(255,255,255,.028) 66%,
+        transparent 75%,
         transparent 100%
+      ),
+      linear-gradient(
+        111deg,
+        transparent 0%,
+        transparent 42%,
+        rgba(255,255,255,.06) 48%,
+        rgba(255,255,255,.015) 58%,
+        transparent 70%
       );
-
-    filter:blur(9px) saturate(1.04);
-    mix-blend-mode:screen;
-    transform:translate3d(-8%,1.5%,0) rotate(-1.8deg) skewX(-6deg);
+    transform:translate(-50%,-50%) rotate(var(--glass-tilt)) skewX(-5deg);
     transform-origin:50% 50%;
-    animation:frTodayPremiumTraverse 6.2s cubic-bezier(.38,.02,.20,1) infinite!important;
+    filter:blur(9px) saturate(1.03);
+    mix-blend-mode:screen;
+    transition:
+      left 90ms cubic-bezier(.22,.61,.36,1),
+      top 90ms cubic-bezier(.22,.61,.36,1),
+      transform 120ms cubic-bezier(.22,.61,.36,1),
+      opacity .24s ease;
+    will-change:left,top,transform,opacity;
   }
 
-  /* Keep all editorial copy / controls clearly above the reflection. */
+  .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"][data-glass-active="true"]::before{
+    filter:blur(8px) saturate(1.06);
+  }
+
+  /* Keep editorial copy / controls above the reflection. */
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"] .fr-band-detail{
     z-index:3!important;
   }
@@ -106,45 +125,8 @@
   }
 }
 
-@keyframes frTodayPremiumTraverse{
-  0%{
-    transform:translate3d(-12%,2.5%,0) rotate(-1.8deg) skewX(-6deg);
-    opacity:.16;
-    filter:blur(11px) saturate(1.00);
-  }
-  12%{
-    opacity:.58;
-  }
-  30%{
-    transform:translate3d(58%,-.5%,0) rotate(-1.3deg) skewX(-6deg);
-    opacity:.80;
-    filter:blur(8px) saturate(1.04);
-  }
-  52%{
-    transform:translate3d(124%,-2.0%,0) rotate(-.8deg) skewX(-6deg);
-    opacity:.88;
-    filter:blur(7px) saturate(1.06);
-  }
-  72%{
-    transform:translate3d(186%,.5%,0) rotate(-.4deg) skewX(-6deg);
-    opacity:.66;
-    filter:blur(9px) saturate(1.03);
-  }
-  88%{
-    opacity:.26;
-  }
-  100%{
-    transform:translate3d(252%,2.2%,0) rotate(0deg) skewX(-6deg);
-    opacity:.10;
-    filter:blur(12px) saturate(1.00);
-  }
-}
-
 @media (prefers-reduced-motion:reduce){
   .today-r27-production .fr-stack[data-open="true"] .fr-band:nth-child(-n+5)[data-active="true"]::after{
-    animation:none!important;
-    transform:translate3d(112%,0,0) rotate(-1deg) skewX(-6deg)!important;
-    opacity:.18!important;
-    filter:blur(9px)!important;
+    transition:none!important;
   }
 }
