@@ -14,13 +14,46 @@ export function TodayWheelNavigation() {
   const glassFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
+    const getStack = () =>
+      document.querySelector<HTMLElement>(".today-r27-production .fr-stack");
+
+    const ensureGlassLayer = () => {
+      const stack = getStack();
+      if (!stack) return null;
+
+      const bands = Array.from(stack.querySelectorAll<HTMLElement>(".fr-band"));
+      const activeIndex = bands.findIndex((band) => band.dataset.active === "true");
+
+      bands.forEach((band, index) => {
+        const existing = band.querySelector<HTMLElement>(".fr-glass-reflection-layer");
+        const shouldHaveGlass =
+          stack.dataset.open === "true" && index === activeIndex && activeIndex >= 0 && activeIndex <= 4;
+
+        if (!shouldHaveGlass && existing) existing.remove();
+      });
+
+      if (stack.dataset.open !== "true" || activeIndex < 0 || activeIndex > 4) return null;
+
+      const activeBand = bands[activeIndex];
+      let layer = activeBand.querySelector<HTMLElement>(".fr-glass-reflection-layer");
+
+      if (!layer) {
+        layer = document.createElement("div");
+        layer.className = "fr-glass-reflection-layer";
+        layer.setAttribute("aria-hidden", "true");
+        activeBand.appendChild(layer);
+      }
+
+      return activeBand;
+    };
+
     const onWheel = (event: WheelEvent) => {
       if (event.ctrlKey || Math.abs(event.deltaY) < WHEEL_DELTA_THRESHOLD) return;
 
       const target = event.target instanceof Element ? event.target : null;
       if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
 
-      const stack = document.querySelector<HTMLElement>(".today-r27-production .fr-stack");
+      const stack = getStack();
       if (!stack || stack.dataset.open !== "true") return;
 
       event.preventDefault();
@@ -41,17 +74,12 @@ export function TodayWheelNavigation() {
 
       lastMoveAtRef.current = now;
       nextButton.click();
+      requestAnimationFrame(ensureGlassLayer);
     };
 
     const setGlassPosition = (clientX: number, clientY: number) => {
-      const stack = document.querySelector<HTMLElement>(".today-r27-production .fr-stack");
-      if (!stack || stack.dataset.open !== "true") return;
-
-      const bands = Array.from(stack.querySelectorAll<HTMLElement>(".fr-band"));
-      const activeIndex = bands.findIndex((band) => band.dataset.active === "true");
-      const activeBand = activeIndex >= 0 ? bands[activeIndex] : null;
-
-      if (!activeBand || activeIndex > 4) return;
+      const activeBand = ensureGlassLayer();
+      if (!activeBand) return;
 
       const rect = activeBand.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
@@ -61,30 +89,27 @@ export function TodayWheelNavigation() {
       const nx = (x - 0.5) * 2;
       const ny = (y - 0.5) * 2;
 
-      /* The pointer changes the viewing angle of the whole glass sheet rather than
-         dragging a local hotspot. Movement is intentionally limited so the
-         reflection feels attached to the material. */
-      const shiftX = nx * 5.8;
-      const shiftY = ny * 3.6;
-      const angle = -1.8 + nx * 1.35 - ny * 0.35;
-      const strength = 0.72 + (1 - Math.abs(nx) * 0.32) * 0.08;
+      /* The reflection belongs to the full glass sheet. Pointer motion only nudges
+         the sheet by a limited amount, like changing viewing angle. */
+      const shiftX = nx * 30;
+      const shiftY = ny * 17;
+      const angle = -1.4 + nx * 0.95 - ny * 0.2;
+      const strength = 0.9 + (1 - Math.abs(nx) * 0.24) * 0.08;
 
-      activeBand.style.setProperty("--glass-shift-x", `${shiftX.toFixed(2)}%`);
-      activeBand.style.setProperty("--glass-shift-y", `${shiftY.toFixed(2)}%`);
+      activeBand.style.setProperty("--glass-shift-x", `${shiftX.toFixed(1)}px`);
+      activeBand.style.setProperty("--glass-shift-y", `${shiftY.toFixed(1)}px`);
       activeBand.style.setProperty("--glass-angle", `${angle.toFixed(2)}deg`);
       activeBand.style.setProperty("--glass-strength", strength.toFixed(3));
       activeBand.dataset.glassActive = "true";
     };
 
     const resetGlass = () => {
-      const activeBand = document.querySelector<HTMLElement>(
-        '.today-r27-production .fr-stack[data-open="true"] .fr-band[data-active="true"]',
-      );
+      const activeBand = ensureGlassLayer();
       if (!activeBand) return;
-      activeBand.style.setProperty("--glass-shift-x", "0%");
-      activeBand.style.setProperty("--glass-shift-y", "0%");
-      activeBand.style.setProperty("--glass-angle", "-1.8deg");
-      activeBand.style.setProperty("--glass-strength", ".72");
+      activeBand.style.setProperty("--glass-shift-x", "0px");
+      activeBand.style.setProperty("--glass-shift-y", "0px");
+      activeBand.style.setProperty("--glass-angle", "-1.4deg");
+      activeBand.style.setProperty("--glass-strength", ".92");
       delete activeBand.dataset.glassActive;
     };
 
@@ -97,17 +122,34 @@ export function TodayWheelNavigation() {
       });
     };
 
+    const stack = getStack();
+    const observer = stack
+      ? new MutationObserver(() => requestAnimationFrame(ensureGlassLayer))
+      : null;
+
+    observer?.observe(stack!, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ["data-active", "data-open"],
+    });
+
+    requestAnimationFrame(ensureGlassLayer);
+
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("blur", resetGlass);
     document.addEventListener("mouseleave", resetGlass);
 
     return () => {
+      observer?.disconnect();
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("blur", resetGlass);
       document.removeEventListener("mouseleave", resetGlass);
       if (glassFrameRef.current !== null) cancelAnimationFrame(glassFrameRef.current);
+      document
+        .querySelectorAll<HTMLElement>(".fr-glass-reflection-layer")
+        .forEach((layer) => layer.remove());
     };
   }, []);
 
