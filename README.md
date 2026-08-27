@@ -7,6 +7,8 @@
 **Live product:** https://www.xrduly.cn  
 **Today:** https://www.xrduly.cn/today
 
+![Frontier Radar Today — seven-signal daily frontier](docs/assets/readme/today.webp)
+
 ```text
 Discover → Understand → Connect → Get Inspired → Build
 ```
@@ -15,7 +17,7 @@ Discover → Understand → Connect → Get Inspired → Build
 
 Technical discovery has a timing problem.
 
-By the time a project reaches a trending page, a paper becomes widely discussed, or a new tool appears in every AI newsletter, the interesting part may already be obvious. At the same time, trying to stay early by manually watching GitHub, Hugging Face, arXiv, Hacker News, Product Hunt, and social feeds creates a different problem: too much noise, too little context, and no clear answer to **what is actually worth your attention**.
+By the time a project reaches a trending page, a paper becomes widely discussed, or a new tool appears in every AI newsletter, the interesting part may already be obvious. Trying to stay early by manually watching GitHub, Hugging Face, arXiv, Hacker News, Product Hunt, and social feeds creates the opposite problem: too much noise, too little context, and no clear answer to **what is actually worth your attention**.
 
 Frontier Radar was built around a narrower question:
 
@@ -29,45 +31,12 @@ Instead of treating discovery as a feed-reading problem, Frontier Radar treats i
 | --- | --- |
 | Shows what is already popular | Looks for signals whose momentum is changing now |
 | Optimizes for clicks, stars, or raw ranking | Combines recency, momentum, evidence, source context, and structured analysis |
-| Gives you an infinite feed | Deliberately compresses the day into a bounded set of high-signal items |
+| Gives you an infinite feed | Compresses the day into a bounded set of high-signal items |
 | Summarizes each item independently | Connects multiple signals into shared patterns and directions |
 | Treats everyone the same | Uses explicit and behavioral feedback to personalize what matters |
 | Ends at “here is a project/paper” | Continues toward “why now?”, “why you?”, and “what could be built?” |
 
 The goal is not to predict the future with certainty. The goal is to improve the quality and timing of attention.
-
-## Who it is for
-
-Frontier Radar is designed for people who regularly ask questions like:
-
-- **Researchers:** Which emerging projects, methods, or papers are worth investigating before they become mainstream?
-- **Engineers:** Which tools or technical shifts are gaining enough momentum to justify a closer look?
-- **Product builders:** Where are multiple technical signals converging into a possible product opportunity?
-- **Technical generalists:** How can I follow fast-moving AI and software ecosystems without living inside five different feeds?
-
-## How the product works
-
-A simplified example:
-
-```text
-A new GitHub project begins accelerating
-        ↓
-Related evidence appears on Hugging Face / arXiv / Hacker News
-        ↓
-Frontier Radar normalizes the evidence and measures momentum
-        ↓
-AI analysis explains the project, its context, and WHY NOW
-        ↓
-Personalization estimates whether it is relevant to you
-        ↓
-Today selects it as one of a small number of daily signals
-        ↓
-Signal Weave connects it with other signals
-        ↓
-Project Intelligence turns the signal into evidence, questions, and build directions
-```
-
-This creates a loop that is closer to a lightweight research analyst than a conventional news reader.
 
 ## Product surfaces
 
@@ -79,7 +48,23 @@ A daily editorial selection of seven signals rather than an infinite feed.
 - `06 Adjacent` — deliberately nearby but less obvious
 - `07 Wildcard` — higher-variance exploratory direction
 
-Each expanded signal is designed around more than a title and score. The interface exposes the signal itself, timing, interpretation, and possible build direction while preserving the spatial feel of an instrument rather than a conventional analytics dashboard.
+Each expanded signal exposes more than a title and score: the signal itself, timing, interpretation, personal relevance, and a possible build direction. The interface is intentionally closer to an instrument than a conventional analytics dashboard.
+
+### Explore — read the frontier as a field
+
+Explore widens the candidate pool while keeping ranking and source context visible. Lenses such as `FOR YOU`, `ADJACENT`, `RISING`, `NEW`, and `WILDCARD` change how the field is ranked without pretending that editorial position is a semantic coordinate.
+
+![Frontier Radar Explore — ranked records and tag families](docs/assets/readme/explore.webp)
+
+The current Explore visualization uses a Type Colonnade / record-field grammar: one record, one hairline, one metadata-derived tag family. The goal is to make relationships inspectable without hiding the underlying records.
+
+### Radar — personal direction, not just personal ranking
+
+Radar turns interaction evidence into an inspectable interest frontier. It shows which technical directions are pulling hardest now, how much evidence contributes to that view, and how confident the current profile is.
+
+![Frontier Radar Personal Radar — interest frontier](docs/assets/readme/radar.webp)
+
+The intent is not to claim a permanent personality model. The profile is evidence-qualified, changes with observed behavior, and keeps strength, evidence, and freshness visible as separate concepts.
 
 ### Signal Weave — from items to patterns
 
@@ -119,27 +104,50 @@ Is it worth pursuing?
 What could be built from it?
 ```
 
-### Explore — broader discovery
-
-A field-first surface for the wider candidate pool, with filtering, source context, ranking lenses, and explicit preference feedback such as `MORE LIKE THIS` / `LESS LIKE THIS`.
-
-### Radar — personal direction, not just personal ranking
-
-A personalized view of emerging themes derived from observed signals and interaction history. The intent is to help the system learn not only which individual items you click, but which frontier directions are repeatedly becoming relevant to you.
-
 ### Saved — research memory
 
 A lightweight research shelf for keeping useful findings. The current v1 Saved state is browser-local and supports local backup/export behavior.
 
-## Product principles
+## Who it is for
 
-Frontier Radar is built around a few deliberate constraints:
+Frontier Radar is designed for people who regularly ask questions like:
+
+- **Researchers:** Which emerging projects, methods, or papers are worth investigating before they become mainstream?
+- **Engineers:** Which tools or technical shifts are gaining enough momentum to justify a closer look?
+- **Product builders:** Where are multiple technical signals converging into a possible product opportunity?
+- **Technical generalists:** How can I follow fast-moving AI and software ecosystems without living inside five different feeds?
+
+## How the product works
+
+A simplified example:
+
+```text
+A new GitHub project begins accelerating
+        ↓
+Related evidence appears on Hugging Face / arXiv / Hacker News
+        ↓
+Frontier Radar normalizes the evidence and measures momentum
+        ↓
+AI analysis explains the project, its context, and WHY NOW
+        ↓
+Personalization estimates whether it is relevant to you
+        ↓
+Today selects it as one of a small number of daily signals
+        ↓
+Signal Weave connects it with other signals
+        ↓
+Project Intelligence turns the signal into evidence, questions, and build directions
+```
+
+This creates a loop that is closer to a lightweight research analyst than a conventional news reader.
+
+## Product principles
 
 1. **Early is more useful than merely popular.** Raw popularity is evidence, not the final objective.
 2. **Evidence should stay attached to interpretation.** AI analysis must remain traceable to source material.
 3. **A smaller daily set can be more useful than an infinite feed.** Attention is treated as a scarce resource.
 4. **Personalization should be explicit and inspectable.** Feedback signals should improve relevance without hiding the underlying evidence.
-5. **Discovery should lead somewhere.** The product should help turn a signal into a question, a research direction, or a build direction.
+5. **Discovery should lead somewhere.** A useful signal should become a question, a research direction, or a build direction.
 6. **Interaction design is part of the intelligence system.** The UI is designed to slow down scanning at the right moments rather than optimize only for throughput.
 
 ## Data sources
@@ -206,6 +214,16 @@ e2e/                      Browser integration checks
 - GitHub Actions
 
 The AI layer is provider-abstracted; application code is not intended to depend directly on one model vendor.
+
+## Visualization attribution
+
+Selected visualization and interaction patterns in Explore and Personal Radar were developed with reference to the **Lieflat Charts** chart and interaction system.
+
+- Upstream: https://github.com/larashero3-dotcom/lieflat-charts
+- Lieflat Charts license: **PolyForm Noncommercial License 1.0.0**
+- Full notice: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+
+Frontier Radar's own source-visible status does not replace third-party license obligations for any Lieflat-derived material.
 
 ## Local development
 
