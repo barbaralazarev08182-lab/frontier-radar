@@ -2,7 +2,7 @@
   "name": "frontier-radar",
   "version": "0.0.0",
   "private": true,
-  "description": "个人前沿信息雷达（阶段 1.2：GitHub 采集器）",
+  "description": "Personalized frontier intelligence for discovering emerging technical signals and turning them into research and product directions.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
