@@ -1,5 +1,5 @@
 # GitHub Actions CI — Frontier Radar
-# 无需任何密钥；仅验证类型检查、Lint、测试和构建
+# 无需任何密钥；仅验证类型检查、Lint、测试、构建与生产依赖安全审计
 # 不运行采集器、不访问外部 API、不写入数据库
 
 name: CI
@@ -37,6 +37,9 @@ jobs:
 
       - name: Install dependencies (npm ci)
         run: npm ci
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
 
       - name: TypeCheck (tsc --noEmit)
         run: npm run typecheck
