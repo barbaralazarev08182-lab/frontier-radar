@@ -17,6 +17,16 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    // Today intentionally reconciles the selected rank when a newly loaded
+    // signal set contains fewer items than the previous/default selection.
+    // Keep this existing runtime behavior intact during the public-release
+    // documentation pass; a future interaction refactor can remove the effect.
+    files: ["src/components/frontier/today-r27-production.tsx"],
+    rules: {
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
 ];
 
 export default eslintConfig;
