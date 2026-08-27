@@ -1,0 +1,48 @@
+name: Public Release Dependency Fix
+
+on:
+  push:
+    branches: [chore/public-release-readiness]
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-lockfile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout preparation branch
+        uses: actions/checkout@v4
+        with:
+          ref: chore/public-release-readiness
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Apply npm security fix to lockfile only
+        run: npm audit fix --package-lock-only
+
+      - name: Verify production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Commit regenerated lockfile when changed
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "package-lock.json already secure"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "Update vulnerable transitive dependency lock"
+          git push origin HEAD:chore/public-release-readiness
