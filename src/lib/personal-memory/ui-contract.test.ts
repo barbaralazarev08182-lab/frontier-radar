@@ -15,11 +15,15 @@ test("Phase closure UI: global nav exposes no personal-memory backup controls", 
   assert.doesNotMatch(siteNav, /\/idea-lab/);
 });
 
-test("Global nav uses one Explore-style shell across product surfaces", () => {
+test("Global nav keeps one shared shell with route-aware positioning and Saved theme", () => {
   assert.doesNotMatch(siteNav, /if \(today\)/);
   assert.doesNotMatch(siteNav, /pointer-events-none fixed/);
-  assert.match(siteNav, /sticky inset-x-0 top-0 z-\[120\] border-b border-black\/10 bg-\[#f3f0e7\]/);
-  assert.match(siteNav, /border-y border-black\/20 bg-white\/30/);
+  assert.match(siteNav, /const fixedToViewport = today \|\| project;/);
+  assert.match(siteNav, /fixedToViewport \? "fixed" : "sticky"/);
+  assert.match(siteNav, /inset-x-0 top-0 z-\[120\] h-12 border-b transition-colors/);
+  assert.match(siteNav, /border-white\/\[0\.09\] bg-\[#0b121c\]/);
+  assert.match(siteNav, /border-black\/10 bg-\[#f3f0e7\]/);
+  assert.match(siteNav, /saved \? "border-white\/15 bg-white\/\[0\.035\]" : "border-black\/20 bg-white\/30"/);
 });
 
 test("Gate 12B compatibility: export and import actions still use the Gate 12A backup contract", () => {
